@@ -13,6 +13,10 @@ Delver is a Java project built via Gradle. Import the Gradle project into your I
 
 ### Main Applications
 
+Run configurations for IntelliJ have been included, for manual setup use the following:
+
 Game: `DungeoneerDesktop/src/com/interrupt/dungeoneer/DesktopStarter.java`
 
 Editor: `DelvEdit/src/com/interrupt/dungeoneer/EditorStarter.java`
+
+Working directory: `Dungeoneer`
