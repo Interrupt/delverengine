@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+
+    version = '1.0'
+    ext {
+        appName = "delver"
+        gdxVersion = '1.9.3'
+        roboVMVersion = '2.1.0'
+        kryoVersion = '2.23.0'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+}
+
+project(":DungeoneerDesktop") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(":Dungeoneer")
+        compile "com.code-disaster.steamworks4j:steamworks4j:1.6.0"
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+    }
+}
+
+project(":DelvEdit") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(":Dungeoneer")
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "com.code-disaster.steamworks4j:steamworks4j:1.6.0"
+        //compile "com.kotcrab.vis:vis-ui:1.2.5"
+    }
+}
+
+project(":Dungeoneer") {
+    apply plugin: "java"
+
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "com.esotericsoftware.kryo:kryo:$kryoVersion"
+    }
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+}

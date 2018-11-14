@@ -1,0 +1,169 @@
+{
+	entities:{
+		"Areas": {
+			"Spawn Blocker": {
+				class:com.interrupt.dungeoneer.entities.areas.SpawnBlockerArea,
+				tex: 19,
+				collision:{x: 1, y: 1, z: 1}
+			},
+			"Collision Area": {
+				class:com.interrupt.dungeoneer.entities.areas.Area,
+				tex: 19,
+				isSolid:true,
+				collision:{x: 0.5, y: 0.5, z: 1}
+			},
+			"Skybox Area": {
+                class:com.interrupt.dungeoneer.entities.areas.SkyboxArea,
+                tex: 19,
+                isSolid:false,
+                collision:{x: 5, y: 5, z: 10}
+            },
+            "Fog Area": {
+				class:com.interrupt.dungeoneer.entities.areas.FogArea,
+				tex: 19,
+				isSolid:false,
+				collision:{x: 5, y: 5, z: 10}
+			},
+			"Teleporter Area": { class: com.interrupt.dungeoneer.entities.areas.TeleportArea },
+			"Secret Area": { class: com.interrupt.dungeoneer.entities.triggers.Trigger,
+				message: "A secret has been revealed!",
+				collision: {x: 0.65, y: 0.65, z: 1},
+				triggerType: "PLAYER_TOUCHED",
+				triggerResets: false,
+				messageTime: 2.0,
+				triggerSound: "ui/ui_secret_found.mp3",
+				isSecret: true
+			},
+			"Status Effect Area": {class: com.interrupt.dungeoneer.entities.areas.StatusEffectArea}
+		},
+		"Camera": {
+			"Splash Camera": {
+				class: com.interrupt.dungeoneer.entities.Camera
+			}
+		},
+		"Lights": {
+			"Ambient": {class:com.interrupt.dungeoneer.entities.Light,isDynamic: false},
+			"Dynamic": {class:com.interrupt.dungeoneer.entities.DynamicLight}
+		},
+		"Meshes": {
+			"Chair": {class:com.interrupt.dungeoneer.entities.Breakable,meshFile:meshes/chair.obj,textureFile: "textures.png",stepHeight:0.0,collision:{x:0.17,y:0.17,z:0.4},isSolid:true,gibNum:4,lootSpawnChance:0, surpriseSpawnChance:0, shadowType: "RECTANGLE"}
+		},
+		"Triggers": {
+			"Basic": { class: com.interrupt.dungeoneer.entities.triggers.Trigger, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"ProgressionCheck": { class: com.interrupt.dungeoneer.entities.triggers.ProgressionTrigger, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Conditional": { class: com.interrupt.dungeoneer.entities.triggers.ConditionalTrigger, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Music": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredMusic, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"AmbientSound": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredAmbientSound, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Shake": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredShake, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Flash": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredFlash, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Trap": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredTrap, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Teleport": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredTeleportPlayer, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Shop": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredShop, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Message": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredMessage, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"GameOver": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredGameOver, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Button": {
+				"class": "com.interrupt.dungeoneer.entities.triggers.ButtonModel",
+				"floating": true,
+				"meshFile": "meshes/button.obj",
+				"textureFile": "door.png",
+				"triggerResetTime": 10,
+				"useVerb": "Press",
+				"triggeredTransformation": {
+					"y": -0.03
+				},
+				"triggeredRotation": {},
+				"triggerAnimationTime": 10
+			},
+			"Repeater": { class: com.interrupt.dungeoneer.entities.triggers.RepeatingTrigger, floating: true },
+			"DamageTrigger": { class: com.interrupt.dungeoneer.entities.triggers.DamageTrigger, floating: true, isSolid: true },
+			"LookAtTrigger": { class: com.interrupt.dungeoneer.entities.triggers.LookAtTrigger, floating: true},
+			"DeleteTrigger": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredDelete, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"InventoryCheck": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredInventoryCheck, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"Lever": {
+				class: com.interrupt.dungeoneer.entities.Group,
+				entities: [
+					{
+						class: com.interrupt.dungeoneer.entities.Model,
+						meshFile: meshes/lever_base.obj,
+						artType: entity,
+						collision: {
+							x: 0.0625,
+							y: 0.15,
+							z: 0.25
+						},
+						drawable: {
+							class: com.interrupt.dungeoneer.gfx.drawables.DrawableMesh,
+							isStaticMesh: true,
+							meshFile: meshes/lever_base.obj,
+							color: {
+								a: 1,
+								b: 0.49803922,
+								g: 0.49803922,
+								r: 1
+							},
+							x: 0,
+							y: 0
+						},
+						id: "",
+						isSolid: true,
+						x: 0,
+						y: 0,
+						isDynamic: false
+					},
+					{
+						class: com.interrupt.dungeoneer.entities.triggers.ButtonModel,
+						meshFile: meshes/lever_arm.obj,
+						triggerAnimationTime: 60,
+						id: "",
+						drawable: {
+							class: com.interrupt.dungeoneer.gfx.drawables.DrawableMesh,
+							meshFile: meshes/lever_arm.obj,
+							color: {
+								a: 1,
+								b: 0.49803922,
+								g: 0.49803922,
+								r: 1
+							},
+							x: 0,
+							y: 0
+						},
+						triggerSound: "",
+						artType: entity,
+						triggeredTransformation: {
+							z: -0.15
+						},
+						triggeredRotation: {
+							x: -30
+						},
+						x: 0,
+						y: 0
+					}
+				]
+            },
+            "Achievement": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredAchievement, floating: true }
+		},
+		"Movers": {
+			"Basic": { class: com.interrupt.dungeoneer.entities.Mover, isSolid: true, collision: {x: 0.5,y: 0.5,z: 0.1} },
+			"Trap": {
+				class: com.interrupt.dungeoneer.entities.Mover,
+				meshFile: meshes/trap.obj,
+				squishDamage: 0,
+				moverEndMode: PRESSURE,
+				isSolid: true,
+				collision: {
+					x: 0.37,
+					y: 0.37,
+					z: 0.125
+				},
+				movesBy: {
+					z: -0.03
+				},
+				artType: entity,
+				moveTime: 0.4,
+				startSound: trap_activate.mp3,
+				endWait: 6,
+				moverMode: ON_ANY_TOUCH
+			}
+		}
+	}
+}

@@ -1,0 +1,71 @@
+ {
+    com.badlogic.gdx.graphics.Color: {
+            white: { r: 1, g: 1, b: 1, a: 1 },
+            downFontColor: { r: 0.8, g: 0.8, b: 0.8, a: 1 },
+            gray: { r: 0.6, g: 0.6, b: 0.6, a: 1 },
+            gamepad-selected: { r: 0.9294, g: 0.7882, b: 0.1921, a: 1 },
+    },
+    com.badlogic.gdx.graphics.g2d.BitmapFont: {
+            default-font: { file: pixel.fnt, scale: 0.1 }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+            default: {
+                    checkboxOn: check-on, checkboxOff: check-off,
+                    font: default-font, fontColor: white
+            }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+            default: {
+                    
+            }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
+            default: {
+                   background: slider,
+                   knob: sliderKnob
+                    
+            }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+    		default: {
+                    font: default-font, fontColor: white
+            },
+            input: {
+                font: default-font, 
+                fontColor: gray
+            },
+            inputover: {
+                font: default-font, 
+                fontColor: white
+            }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+            default: {
+                    font: default-font, 
+                    fontColor: white,
+                    downFontColor: downFontColor,
+                    up: up,
+                    down: down
+            },
+            gamepad-selected: {
+                    font: default-font, 
+                    fontColor: gamepad-selected,
+                    downFontColor: gamepad-selected,
+                    up: up,
+                    down: down
+            },
+            input: {
+            	font: default-font, 
+                fontColor: gray,
+                downFontColor: downFontColor
+            },
+            inputover: {
+                font: default-font, 
+                fontColor: white,
+                downFontColor: downFontColor
+            },
+            mainmenu: {
+                font: default-font
+            }
+    }
+ }

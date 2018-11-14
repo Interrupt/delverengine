@@ -1,0 +1,8 @@
+{
+	repeats: true,
+	messages: [
+		[
+			"      ..."
+		]
+	]
+}

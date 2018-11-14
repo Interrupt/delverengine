@@ -1,0 +1,25 @@
+{
+	monsters:{
+		"DEBUG" : [
+			{
+				class:com.delver.modding.JumpingMonster2,
+				tex:48,
+				name:"Jumping Man 2",
+				speed:0.0052,
+				atk:2,
+				maxHp:4,
+				hostile: false,
+				alertSound:"mobs/human/male_alert1.mp3,mobs/human/male_alert2.mp3,mobs/human/male_alert3.mp3,mobs/human/male_alert4.mp3",
+				dieSound:"mobs/human/male_ouch1.mp3",
+				walkSound:"mobs/human/human_steps.mp3",
+				idleSound:"mobs/melee/en_melee_idle_01.mp3,mobs/melee/en_melee_idle_02.mp3,mobs/melee/en_melee_idle_03.mp3",
+				dieSound:"mobs/melee/en_melee_die_01.mp3,mobs/melee/en_melee_die_02.mp3,mobs/melee/en_melee_die_03.mp3",
+				walkAnimation: { start: 48, end: 51, speed: 30 },
+				attackAnimation: { start: 52, end: 55, speed: 30, actions:{"54":[{class:com.interrupt.dungeoneer.gfx.animation.DamageAction}]} },
+				hurtAnimation: { start: 56, end: 59, speed: 22 },
+				dieAnimation: { start: 60, end: 62, speed: 22 },
+				spriteAtlas: "entities_dungeon"
+			}
+		]
+	}
+}

@@ -1,0 +1,68 @@
+[
+	{
+		"name": "magic-item",
+		"vertex": "magic-item.vert",
+		"fragment": "magic-item.frag",
+		"attributes": {
+			"u_magic_color": { class:com.badlogic.gdx.graphics.Color, r: 0.0, g: 0.05, b: 0.3 }
+		}
+	},
+	{
+		"name": "magic-item-red",
+		"vertex": "magic-item.vert",
+		"fragment": "magic-item.frag",
+		"attributes": {
+			"u_magic_color": { class:com.badlogic.gdx.graphics.Color, r: 0.3, g: 0.05, b: 0.0 }
+		}
+	},
+	{
+		"name": "magic-item-white",
+		"vertex": "magic-item.vert",
+		"fragment": "magic-item.frag",
+		"attributes": {
+			"u_magic_color": { class:com.badlogic.gdx.graphics.Color, r: 0.3, g: 0.3, b: 0.3 }
+		}
+	},
+	{
+		"name": "magic-item-green",
+		"vertex": "magic-item.vert",
+		"fragment": "magic-item.frag",
+		"attributes": {
+			"u_magic_color": { class:com.badlogic.gdx.graphics.Color, r: 0.0, g: 0.3, b: 0.05 }
+		}
+	},
+	{
+		"name": "magic-item-purple",
+		"vertex": "magic-item.vert",
+		"fragment": "magic-item.frag",
+		"attributes": {
+			"u_magic_color": { class:com.badlogic.gdx.graphics.Color, r: 0.305, g: 0.045, b: 0.37 }
+		}
+	},
+	{
+		"name": "grass_hanging",
+		"vertex": "grass.vert",
+		"fragment": "grass.frag",
+		"attributes": {
+			"u_wave_offset": 1.0
+		}
+	},
+	{
+		"name": "grass_mid",
+		"vertex": "grass.vert",
+		"fragment": "grass.frag",
+		"attributes": {
+			"u_wave_offset": 0.5
+		}
+	},
+	{
+		"name": "post_filter_Fancy",
+		"vertex": "post_filter_fancy.vert",
+		"fragment": "post_filter_fancy.frag"
+	},
+	{
+        "name": "post_filter_Underworld",
+        "vertex": "post_filter_underworld.vert",
+        "fragment": "post_filter_underworld.frag"
+    }
+]

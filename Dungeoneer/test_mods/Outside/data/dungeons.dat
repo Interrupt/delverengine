@@ -1,0 +1,66 @@
+[
+	{
+		class:com.interrupt.dungeoneer.game.OverworldLevel,
+		dungeonLevel:1,
+		levelName: "Overworld",
+		darkness:1,
+        fogStart:10,
+        fogEnd:75,
+		viewDistance:80,
+		theme:"OUTDOOR",
+		generated:true,
+		wallPainter: { "0": [0, 0, 0, 0, 1, 1, 1, 2, 2, 3], "4": [4,4,4,5] },
+        floorPainter: { "0": [0, 0, 0, 0, 0, 14, 14, 14, 15, 15] },
+		ceilPainter: { },
+		skybox: { meshFile: "meshes/sky.obj", textureFile: "sky.png" },
+		fogColor: { r:0.2,g:0.2,b:0.6},
+        skyLightColor: { r:0.35,g:0.35,b:0.55},
+        fogColor: { r:0.2,g:0.2,b:0.6},
+        ambientSound:"env_outdoor.mp3",
+        areas: { "0,0": "levels/overworld-start.bin" },
+		traps: [],
+		randomInterestChance: 0.1,
+		areasOfInterest: ["levels/monument.bin", "levels/monument2.bin", "levels/monument3.bin", "levels/monument4.bin", "levels/camp1.bin", "levels/camp2.bin", "levels/lava.bin", "levels/well1.bin", "levels/pond1.bin", "levels/pond1.bin"],
+		terrainGenerator: {
+            noiseFunctions: [
+                { comment: "Noise for large hills", seed: 1, persistence: 1, frequency: 0.5, amplitude: 9, octaves: 2, filter: true },
+                { comment: "Small details", seed: 1, persistence: 1, frequency: 6, amplitude: 0.5, octaves: 1, filter: true },
+                { comment: "Ridges", seed: 2, persistence: 1, frequency: 1, amplitude: 10, octaves: 2, filter: false, threshold: 4, texture: { texAtlas: "t1", tex: 4 } }
+            ],
+            foliageGenerators: [
+                {
+                    threshold: 1,
+                    placementNoise: { seed: 1, persistence: 3, frequency: 1, amplitude: 6, octaves: 2 },
+                    entities: [
+                        {
+                            class: com.interrupt.dungeoneer.entities.Prefab,
+                            category: "Trees",
+                            name: "Tree1"
+                        },
+                        {
+                            class: com.interrupt.dungeoneer.entities.Prefab,
+                            category: "Breakables",
+                            name: "Bush"
+                        }
+                    ]
+                },
+                {
+                    threshold: 1.5,
+                    placementNoise: { seed: 10, persistence: 3, frequency: 0.15, amplitude: 2, octaves: 2 },
+                    entities: [
+                        {
+                            class: com.interrupt.dungeoneer.entities.Prefab,
+                            category: "Trees",
+                            name: "Pine1"
+                        },
+                        {
+                            class: com.interrupt.dungeoneer.entities.Prefab,
+                            category: "Breakables",
+                            name: "Bush"
+                        }
+                    ]
+                }
+            ]
+		}
+	}
+]

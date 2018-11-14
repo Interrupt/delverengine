@@ -1,0 +1,30 @@
+*.class
+
+# Package Files #
+#*.jar
+*.war
+*.ear
+
+.metadata/*
+
+*/bin/*
+
+**/.DS_Store
+
+save/
+Dungeoneer/save/
+DungeoneerDesktop/save
+
+*.iml
+.idea/*
+!/.idea/runConfigurations
+
+Manifest.java
+
+# Gradle ignores
+.gradle
+Dungeoneer/build
+DungeoneerDesktop/build
+DelvEdit/build
+build/
+**/BuildConfig.java

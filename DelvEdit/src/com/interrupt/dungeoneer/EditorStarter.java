@@ -1,0 +1,26 @@
+package com.interrupt.dungeoneer;
+
+import com.interrupt.api.steam.SteamApi;
+import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.game.ModManager;
+import com.interrupt.dungeoneer.scripting.ScriptLoader;
+import com.interrupt.dungeoneer.steamapi.SteamEditorApi;
+
+public class EditorStarter {
+	public static void main(String[] args) {
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "DelvEdit");
+        new Editor();
+
+        // Start the steam API
+        SteamApi.api = new SteamEditorApi();
+        SteamApi.api.init();
+
+        if(args != null) {
+            for (String arg : args) {
+                if(arg.toLowerCase().endsWith("enable-mod-classes=true")) {
+                    ModManager.setScriptingApi(new ScriptLoader());
+                }
+            }
+        }
+	}
+}

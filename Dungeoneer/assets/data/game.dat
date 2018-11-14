@@ -1,0 +1,7 @@
+{
+    "entityDataFiles": ["entities.dat"],
+    "monsterDataFiles": ["monsters.dat"],
+    "itemDataFiles": ["items.dat"],
+    "playerDataFile": "player.dat",
+    "playerJumpEnabled": true
+}
