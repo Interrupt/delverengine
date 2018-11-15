@@ -22,3 +22,5 @@ Game: `DungeoneerDesktop/src/com/interrupt/dungeoneer/DesktopStarter.java`
 Editor: `DelvEdit/src/com/interrupt/dungeoneer/EditorStarter.java`
 
 Working directory: `Dungeoneer`
+
+Resources directory: `Dungeoneeer/assets`
