@@ -31,7 +31,6 @@ project(":DungeoneerDesktop") {
 
     dependencies {
         compile project(":Dungeoneer")
-        compile "com.code-disaster.steamworks4j:steamworks4j:1.6.0"
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
@@ -46,8 +45,6 @@ project(":DelvEdit") {
         compile project(":Dungeoneer")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "com.code-disaster.steamworks4j:steamworks4j:1.6.0"
-        //compile "com.kotcrab.vis:vis-ui:1.2.5"
     }
 }
 

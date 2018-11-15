@@ -181,13 +181,6 @@ public class EditorUi {
             }
         };
 
-        uploadModAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                UploadModDialog uploadModDialog = new UploadModDialog("Upload Mod to Steam Workshop", smallSkin);
-                uploadModDialog.show(stage);
-            }
-        };
-
         setFogSettingsAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 final SetFogDialog fogDialog = new SetFogDialog(smallSkin, editorFrame.getLevel()) {

@@ -32,7 +32,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.*;
-import com.codedisaster.steamworks.SteamAPI;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
@@ -497,15 +496,6 @@ public class EditorFrame implements ApplicationListener {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
         }
-
-        try {
-			if(SteamAPI.isSteamRunning()) {
-				SteamAPI.runCallbacks();
-			}
-		}
-		catch(Exception ex) {
-			Gdx.app.log("DelvEdit", ex.getMessage());
-		}
 	}
 
 	Vector3 t_dragVector = new Vector3();
