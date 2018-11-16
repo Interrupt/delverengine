@@ -11,7 +11,9 @@ This source code release is licensed under the GNU General Public License v2.0 l
 
 # Notes
 
-Delver is a Java project built via Gradle. Import the Gradle project into your IDE of choice.
+Delver is a Java project most easily built via Gradle. Import the Gradle project into your IDE of choice.
+
+This is built on the LibGDX game framework, more information on LibGDX is available at https://libgdx.badlogicgames.com/
 
 ### Main Applications
 
