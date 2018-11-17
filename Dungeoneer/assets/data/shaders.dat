@@ -64,5 +64,10 @@
         "name": "post_filter_Underworld",
         "vertex": "post_filter_underworld.vert",
         "fragment": "post_filter_underworld.frag"
+    },
+    {
+        "name": "post_filter_Retro",
+        "vertex": "post_filter_retro.vert",
+        "fragment": "post_filter_retro.frag"
     }
 ]
