@@ -13,7 +13,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = "delver"
-        gdxVersion = '1.9.3'
+        gdxVersion = '1.9.9'
         roboVMVersion = '2.1.0'
         kryoVersion = '2.23.0'
     }

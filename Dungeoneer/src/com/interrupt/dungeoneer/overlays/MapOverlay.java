@@ -231,7 +231,7 @@ public class MapOverlay extends Overlay {
 
         renderer.uiBatch.begin();
         renderer.uiBatch.enableBlending();
-        renderer.uiBatch.setColor(Color.toFloatBits(0, 0, 0, 0.5f * lerpValue));
+        renderer.uiBatch.setColor(0, 0, 0, 0.5f * lerpValue);
         renderer.uiBatch.draw(renderer.flashRegion, -renderer.camera2D.viewportWidth / 2,-renderer.camera2D.viewportHeight / 2, renderer.camera2D.viewportWidth, renderer.camera2D.viewportHeight);
         renderer.uiBatch.end();
 

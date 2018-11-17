@@ -329,9 +329,9 @@ public abstract class WindowOverlay extends Overlay {
 			renderer.uiBatch.enableBlending();
 
 			if(animateBackground)
-				renderer.uiBatch.setColor(Color.toFloatBits(0, 0, 0, 0.5f * lerpValue));
+				renderer.uiBatch.setColor(0, 0, 0, 0.5f * lerpValue);
 			else
-				renderer.uiBatch.setColor(Color.toFloatBits(0, 0, 0, 0.5f));
+				renderer.uiBatch.setColor(0, 0, 0, 0.5f);
 
 			renderer.uiBatch.draw(renderer.flashRegion, -renderer.camera2D.viewportWidth / 2, -renderer.camera2D.viewportHeight / 2, renderer.camera2D.viewportWidth, renderer.camera2D.viewportHeight);
 			renderer.uiBatch.end();
