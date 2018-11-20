@@ -24,27 +24,79 @@ import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.tiles.Tile;
 
+/**
+ * Base class for all entities in Delver Engine Levels.
+ */
 public class Entity {
-	
+	/**
+	 * Id of the Entity.
+	 */
 	@EditorProperty( group = "General" )
 	public String id;
 	
 	@EditorProperty( group = "Visual" )
 	public Drawable drawable;
-	
-	public float x, y, z;
-	public float xa, ya, za;
+
+	/**
+	 * X component of the position vector.
+	 */
+	public float x;
+
+	/**
+	 * Y component of the position vector.
+	 */
+	public float y;
+
+	/**
+	 * Z component of the position vector.
+	 */
+	public float z;
+
+	/**
+	 * X component of the velocity vector.
+	 */
+	public float xa;
+
+	/**
+	 * Y component of the velocity vector.
+	 */
+	public float ya;
+
+	/**
+	 * Z component of the velocity vector.
+	 */
+	public float za;
+
+	/**
+	 * The roll used when drawing the Entity.
+	 */
 	public float roll;
-	
+
+	/**
+	 * Sprite index.
+	 */
 	@EditorProperty( group = "Visual", type = "SPRITE_ATLAS_NUM" )
 	public int tex;
-	
+
+	/**
+	 * Should the Entity be ticked and drawn?
+	 */
 	public boolean isActive = true;
+
+	/**
+	 * Z component of the Entity position last tick.
+	 */
 	protected float lastZ;
-	
+
+	/**
+	 * The vertical offset used when drawing the Entity.
+	 */
 	@EditorProperty( group = "Visual" )
 	public float yOffset = 0;
 
+	/**
+	 * The shader used to draw the Entity.
+	 */
 	@EditorProperty( group = "Visual" )
 	public String shader = null;
 
@@ -55,104 +107,251 @@ public class Entity {
 	public enum EntityType { generic, item, monster };
 	public enum CollidesWith { staticOnly, all, actorsOnly, nonActors };
 	public enum EditorState { none, hovered, picked };
-	public enum DetailLevel { LOW, MEDIUM, HIGH, ULTRA }
-	public enum ShadowType { NONE, BLOB, RECTANGLE }
-	public enum DrawDistance { NEAR, MEDIUM, FAR }
+
+	/**
+	 * Detail level for Entity.
+	 */
+	public enum DetailLevel {
+		/**
+		 * Low detail level. Always create Entity.
+		 */
+		LOW,
+
+		/**
+		 * Medium detail level. Create Entity if at least medium level of detail.
+		 */
+		MEDIUM,
+
+		/**
+		 * High detail level. Create Entity if at least high level of detail.
+		 */
+		HIGH,
+
+		/**
+		 * Ultra detail level. Only Create Entity if ultra level of detail.
+		 */
+		ULTRA
+	}
+
+	/**
+	 * Shadow for Entity.
+	 */
+	public enum ShadowType {
+		/**
+		 * No shadow.
+		 */
+		NONE,
+
+		/**
+		 * Round shadow.
+		 */
+		BLOB,
+
+		/**
+		 * Rectangular shadow.
+		 */
+		RECTANGLE
+	}
+
+	/**
+	 * Draw distance for Entity
+	 */
+	public enum DrawDistance {
+		/**
+		 * Near draw distance.
+		 */
+		NEAR,
+
+		/**
+		 * Medium draw distance.
+		 */
+		MEDIUM,
+
+		/**
+		 * Far draw distance.
+		 */
+		FAR
+	}
 	public enum BlendMode { OPAQUE, ALPHA, ADD }
 	public enum HaloMode { NONE, BOTH, STENCIL_ONLY, CORONA_ONLY }
 	
 	public ArtType artType;
 
+	/**
+	 * Sprite Atlas name.
+	 */
 	public String spriteAtlas = null;
 	
 	public EntityType type;
-	
-	// whether entities collide with this
+
+	/**
+	 * Can other entities collide with this Entity?
+ 	 */
 	@EditorProperty( group = "Physics" )
 	public boolean isSolid = false;
-	
+
+	/**
+	 * Dimensions of the Entity bounding box.
+	 */
 	@EditorProperty( group = "Physics" )
 	public Vector3 collision = new Vector3(0.125f, 0.125f, 0.25f);
 	
 	@EditorProperty( group = "Physics" )
 	public CollidesWith collidesWith = CollidesWith.all;
-	
+
+	/**
+	 * The scale used when drawing the Entity.
+	 */
 	@EditorProperty( group = "Visual" )
 	public float scale = 1f;
-	
+
+	/**
+	 * Should the Entity not be drawn?
+	 */
 	@EditorProperty( group = "Visual" )
 	public boolean hidden = false;
-	
-	// whether this is a physics object
+
+	/**
+	 * Is this is a physics object?
+ 	 */
 	@EditorProperty( group = "General" )
 	public boolean isDynamic = true;
-	
-	// chance to be created
+
+	/**
+	 * Chance to be created.
+ 	 */
 	@EditorProperty( group = "General" )
 	public float spawnChance = 1f;
-	
-	// detail level at which to be created
+
+	/**
+	 *  Detail level at which to be created.
+	 */
 	@EditorProperty( group = "General" )
 	public DetailLevel detailLevel = DetailLevel.LOW;
 
+	/**
+	 * Distance at which to be drawn.
+	 */
 	@EditorProperty( group = "General" )
 	public DrawDistance drawDistance = DrawDistance.FAR;
+
+	/**
+	 * Is the Entity out of draw distance?
+	 */
 	public transient boolean outOfDrawDistance = false;
-	
+
+	/**
+	 * Can the Entity be stepped up on?
+	 */
 	public boolean canStepUpOn = true;
-	
+
+	/**
+	 * Is the floating?
+	 */
 	@EditorProperty( group = "Physics" )
 	public boolean floating = false;
-	
+
+	/**
+	 * The mass of the Entity.
+	 */
 	@EditorProperty( group = "Physics" )
 	public float mass = 1f;
 
+	/**
+	 * Sound to play when Entity hits the floor.
+	 */
 	public String dropSound = "drops/drop_soft.mp3";
 
 	@EditorProperty( group = "Visual" )
 	public ShadowType shadowType = ShadowType.NONE;
-	
+
+	/**
+	 * Does the Entity bounce?
+	 */
 	public boolean bounces = true;
+
+	/**
+	 * How high can the Entity step up?
+	 */
 	public float stepHeight = 0.5f;
 	public float calcStepHeight = stepHeight;
-	
-	// player can move this by bumping into it
+
+	/**
+	 * Entity can be moved by being bumped.
+	 */
 	public boolean pushable = false;
-	
-	// non directional sprite
+
+	/**
+	 * Non-directional sprite.
+	 */
 	public boolean isStatic = false;
-	
+
+	/**
+	 * Is the Entity on the floor?
+	 */
 	public boolean isOnFloor = false;
+
+	/**
+	 * Is the Entity on another Entity?
+	 */
 	public boolean isOnEntity = false;
+
+	/**
+	 * Is the Entity in water?
+	 */
 	public transient boolean inwater = false;
+
+	/**
+	 * Ignore collision with the Player?
+	 */
 	public boolean ignorePlayerCollision = false;
 	
 	protected boolean wasOnFloorLast = false;
 	private float lastSplashTime = 0;
 	
 	private float tickcount = 0;
-	
+
+	/**
+	 * Entity tint color.
+	 */
 	public Color color = Color.WHITE;
-	
+
+	/**
+	 * Draw Entity without shading?
+	 */
 	@EditorProperty( group = "Physics" )
 	public boolean fullbrite = false;
 	
 	public float lavaHurtTimer = 0;
 	
 	protected transient Collision hitLoc = new Collision();
-	
-	// whether to save this entity to the level file
+
+	/**
+	 * Should this Entity be saved to the level file?
+	 */
 	public boolean persists = true;
-	
-	// turn off physics when this entity is at rest
+
+	/**
+	 * Turn off physics when this Entity is at rest.
+	 */
 	public transient boolean physicsSleeping = false;
 	public boolean canSleep = false;
 	
 	public transient EditorState editorState = EditorState.none;
-	
-	// attachments
+
+	/**
+	 * The position offset of the attached Entities.
+	 */
 	protected Vector3 attachmentTransform = null;
+
+	/**
+	 * An Array of attached Entities.
+	 */
 	protected Array<Entity> attached = null;
+
+	/**
+	 * The Entity this Entity is attached to.
+	 */
 	public transient Entity owner = null;
 
 	public float slideEffectTimer = 0;
@@ -212,7 +411,7 @@ public class Entity {
 			if(isSolid) encroaching = level.getHighestEntityCollision(nextx, y, z, collision, this);
 			
 			if(encroaching == null || z > encroaching.z + encroaching.collision.z - stepHeight) {
-				// are we touching an entity?
+				// are we touching an Entity?
 				if(encroaching != null) {
 					// maybe we can climb on it
 					if(z > encroaching.z + encroaching.collision.z - stepHeight && 
@@ -282,7 +481,7 @@ public class Entity {
 			if(isSolid) encroaching = level.getHighestEntityCollision(x, nexty, z, collision, this);
 			
 			if(encroaching == null || z > encroaching.z + encroaching.collision.z - stepHeight) {
-				// are we touching an entity?
+				// are we touching an Entity?
 				if(encroaching != null) {
 					// maybe we can climb on it
 					if(z > encroaching.z + encroaching.collision.z - stepHeight &&
@@ -355,7 +554,7 @@ public class Entity {
 		Array<Entity> allStandingOn = level.getEntitiesColliding(x, y, (z + za * delta) - 0.02f, this);
 		Entity standingOn = null;
 		
-		// check which entity standing on is the highest
+		// check which Entity standing on is the highest
 		for(Entity on : allStandingOn) {
 			if(!on.isDynamic || (isSolid)) {
 				if(standingOn == null || on.z + on.collision.z > standingOn.z + standingOn.collision.z) {
@@ -390,7 +589,7 @@ public class Entity {
 				ya -= (ya - (ya * 0.8f)) * delta;
 			}
 			else {
-				// offset some for the player not clamping to the entity as easily as the floor
+				// offset some for the player not clamping to the Entity as easily as the floor
 				xa -= (xa - (xa * 0.7f)) * delta;
 				ya -= (ya - (ya * 0.7f)) * delta;
 			}
@@ -647,7 +846,7 @@ public class Entity {
 		// overload this
 	}
 	
-	// touching entity
+	// touching Entity
 	public void encroached(Entity hit)
 	{
 		// overload this
@@ -887,7 +1086,7 @@ public class Entity {
 		}
 	}
 
-	// Generated level chunks need to make entity IDs unique per-chunk, in case of duplicates
+	// Generated level chunks need to make Entity IDs unique per-chunk, in case of duplicates
 	public void makeEntityIdUnique(String idPrefix) {
 		id = makeUniqueIdentifier(id, idPrefix);
 	}
