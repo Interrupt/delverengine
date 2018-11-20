@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.dungeoneer.Art;
+import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
+import com.interrupt.managers.ShaderManager;
 
 public class TextureAtlas {
 	public int spriteSize = 16;
@@ -19,6 +21,7 @@ public class TextureAtlas {
 
 	public String filename = "";
 	public String name = "";
+	public String shader = null;
 
 	public float scale = 1;
 	public float y_offset = 0;
@@ -31,7 +34,6 @@ public class TextureAtlas {
 	private Vector2[] clipped_size_mod = null;
 	
 	public boolean filter = false;
-
 
 	public boolean isRepeatingAtlas = false;
 	public boolean didLoad = false;
@@ -90,14 +92,18 @@ public class TextureAtlas {
         return cachedAtlases.get(index);
     }
 
-    public static void bindTextureAtlasByIndex(byte index) {
+    public static TextureAtlas bindTextureAtlasByIndex(byte index) {
         TextureAtlas atlas = cachedAtlases.getValueAt(index);
         if(atlas != null && atlas.texture != null) atlas.texture.bind();
+        return atlas;
     }
 
-    public static void bindRepeatingTextureAtlasByIndex(String index) {
+    public static TextureAtlas bindRepeatingTextureAtlasByIndex(String index) {
         TextureAtlas atlas = cachedRepeatingAtlases.get(index);
-        if(atlas != null && atlas.texture != null) GlRenderer.bindTexture(atlas.texture);
+        if(atlas != null && atlas.texture != null) {
+        	GlRenderer.bindTexture(atlas.texture);
+		}
+		return atlas;
     }
 	
 	public TextureAtlas(int columns, String filename, float scale) {
@@ -138,7 +144,7 @@ public class TextureAtlas {
         }
 
         texture = new Texture(remappedWall);
-        texture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.Repeat);
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         if(filter) texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
         sprite_regions = new TextureRegion[columns * atlasHeight];
@@ -327,6 +333,21 @@ public class TextureAtlas {
 			loadIfNeeded();
 		}
     	return clipped_size_mod;
+	}
+
+	public int getTotalRegions() {
+    	if(sprite_regions == null)
+    		return 0;
+
+		return sprite_regions.length;
+	}
+
+	public ShaderInfo getShader() {
+    	if(shader == null || shader.isEmpty())
+    		return null;
+
+		// If a custom shader is set for the atlas, try to return or load it
+		return ShaderManager.getShaderManager().getCompiledShader(shader);
 	}
 
     public int GetNextPowerOf2(int v) {

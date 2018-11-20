@@ -1,19 +1,21 @@
 package com.interrupt.dungeoneer.gfx;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Triangle;
+import com.interrupt.dungeoneer.gfx.decals.DDecal;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 
 public class TesselatorGroup {
     private ArrayMap<String, Tesselator> tesselators = new ArrayMap<String, Tesselator>();
     private BoundingBox bounds = new BoundingBox();
-    private ShaderInfo shader;
+    private ShaderInfo defaultShader;
 
-    public TesselatorGroup(ShaderInfo shader) {
-        this.shader = shader;
+    public TesselatorGroup(ShaderInfo defaultShader) {
+        this.defaultShader = defaultShader;
     }
 
     public boolean needsTesselation() {
@@ -45,10 +47,45 @@ public class TesselatorGroup {
     }
 
     public void render() {
+        if(tesselators.size == 0)
+            return;
+
+        ShaderInfo lastShader = null;
+
         for(int i = 0; i < tesselators.size; i++) {
-            TextureAtlas.bindRepeatingTextureAtlasByIndex(tesselators.getKeyAt(i));
+            // Bind the atlas for drawing
+            TextureAtlas atlas = TextureAtlas.bindRepeatingTextureAtlasByIndex(tesselators.getKeyAt(i));
+            ShaderInfo shader = atlas.getShader();
+
+            // If there's no custom shader set, use the default one
+            if(shader == null)
+                shader = defaultShader;
+
+            if(shader != lastShader) {
+                // End the last shader before starting the new one
+                if(lastShader != null)
+                    lastShader.end();
+
+                shader.begin();
+
+                // Set some shader properties based on the atlas
+                Texture tex = atlas.texture;
+                if(tex != null) {
+                    shader.setAttribute("u_tex_width", (1f / tex.getWidth()) * atlas.getTotalRegions());
+                    shader.setAttribute("u_tex_height", 1f / tex.getHeight());
+                }
+
+                shader.setAttribute("u_sprite_columns", atlas.columns);
+                shader.setAttribute("u_sprite_rows", atlas.rows);
+            }
+
             tesselators.getValueAt(i).renderMesh(shader);
+            lastShader = shader;
         }
+
+        // Finish any shaders before continuing
+        if(lastShader != null)
+            lastShader.end();
     }
 
     public void build() {

@@ -2,9 +2,8 @@ package com.interrupt.dungeoneer.gfx;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -37,7 +36,10 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredMusic;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredShop;
 import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.decals.DDecal;
-import com.interrupt.dungeoneer.gfx.drawables.*;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableProjectedDecal;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.gfx.shaders.WaterShaderInfo;
@@ -45,15 +47,14 @@ import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.Tile;
-import com.interrupt.dungeoneer.ui.*;
+import com.interrupt.dungeoneer.ui.EquipLoc;
+import com.interrupt.dungeoneer.ui.FontBounds;
+import com.interrupt.dungeoneer.ui.Hotbar;
+import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.ShaderManager;
-import com.interrupt.managers.StringManager;
 import com.interrupt.managers.TileManager;
 import com.noise.PerlinNoise;
 
-import javax.xml.soap.Text;
-import java.awt.*;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -120,8 +121,6 @@ public class GlRenderer {
 	public static ShaderProgram blurShader;
 	public static ShaderProgram waterShader;
 	public static ShaderProgram fxaaShader;
-
-	public ArrayMap<String, ShaderInfo> shaders = new ArrayMap<String, ShaderInfo>();
 
 	public static ShaderInfo worldShaderInfo;
 	public static ShaderInfo modelShaderInfo;
@@ -330,7 +329,7 @@ public class GlRenderer {
 		return null;
 	}
 
-	public String getShaderPrefix() {
+	public static String getShaderPrefix() {
 		if(Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS)
 			return "android/";
 		else
@@ -345,46 +344,23 @@ public class GlRenderer {
 
         opaqueSpriteBatches.clear();
         transparentSpriteBatches.clear();
-        shaders.clear();
 
-        smoothLighting = loadShader(shaderPrefix, "main.vert", "main.frag");
-        smoothLightingTransparent = loadShader(shaderPrefix, "main.vert", "main-transparent.frag");
-        spriteShader = loadShader(shaderPrefix, "sprite.vert", "sprite.frag");
-        waterShader = loadShader(shaderPrefix, "water.vert", "water.frag");
-        uiShader = loadShader(shaderPrefix, "ui.vert", "ui.frag");
+        smoothLighting = sm.loadShader(shaderPrefix, "main.vert", "main.frag");
+        smoothLightingTransparent = sm.loadShader(shaderPrefix, "main.vert", "main-transparent.frag");
+        spriteShader = sm.loadShader(shaderPrefix, "sprite.vert", "sprite.frag");
+        waterShader = sm.loadShader(shaderPrefix, "water.vert", "water.frag");
+        uiShader = sm.loadShader(shaderPrefix, "ui.vert", "ui.frag");
         uiShader.pedantic = false;
 
-		blurShader = loadShader(shaderPrefix, "blur.vert", "blur.frag");
-		fxaaShader = loadShader(shaderPrefix, "fxaa.vert", "fxaa.frag");
+		blurShader = sm.loadShader(shaderPrefix, "blur.vert", "blur.frag");
+		fxaaShader = sm.loadShader(shaderPrefix, "fxaa.vert", "fxaa.frag");
 
         worldShaderInfo = new ShaderInfo(smoothLighting);
         spriteShaderInfo = new ShaderInfo(spriteShader);
         waterShaderInfo = new WaterShaderInfo(waterShader);
-        modelShaderInfo = new ShaderInfo(loadShader(shaderPrefix, "main-dynamic.vert", "main.frag"));
-        waterEdgeShaderInfo = new ShaderInfo(loadShader(shaderPrefix, "water-edges.vert", "water-edges.frag"));
-        fogShaderInfo = new ShaderInfo(loadShader(shaderPrefix, "fog.vert", "fog.frag"));
-	}
-
-	// Load a shader, and throw an exception if it doesn't compile properly
-	public ShaderProgram loadShader(String prefix, String vertexShaderFilename, String fragmentShaderFilename) {
-		String maxDynamicLightsString = Integer.toString(MAX_DYNAMIC_LIGHTS);
-
-		try {
-			ShaderProgram shaderProgram = new ShaderProgram(Game.modManager.findFile("shaders/" + prefix + vertexShaderFilename).readString().replace("{{MAX_DYNAMIC_LIGHTS}}", maxDynamicLightsString), Game.modManager.findFile("shaders/" + prefix + fragmentShaderFilename).readString().replace("{{MAX_DYNAMIC_LIGHTS}}", maxDynamicLightsString));
-			if (!shaderProgram.isCompiled()) {
-				Gdx.app.log("DelverShaders", shaderProgram.getLog());
-				throw new GdxRuntimeException("Couldn't compile shader (" + prefix + vertexShaderFilename + "," + prefix + fragmentShaderFilename + "): " + shaderProgram.getLog());
-			}
-			return shaderProgram;
-		}
-		catch(Exception ex) {
-			// Try without a prefix
-			if(!prefix.equals("")) {
-				return loadShader("", vertexShaderFilename, fragmentShaderFilename);
-			}
-
-			return null;
-		}
+        modelShaderInfo = new ShaderInfo(sm.loadShader(shaderPrefix, "main-dynamic.vert", "main.frag"));
+        waterEdgeShaderInfo = new ShaderInfo(sm.loadShader(shaderPrefix, "water-edges.vert", "water-edges.frag"));
+        fogShaderInfo = new ShaderInfo(sm.loadShader(shaderPrefix, "fog.vert", "fog.frag"));
 	}
 
 	public void init() {
@@ -790,8 +766,9 @@ public class GlRenderer {
 			ambientColor = ((OverworldLevel)loadedLevel).timeOfDayAmbientLightColor;
 		}
 
-		for(int i = 0; i < shaders.size; i++) {
-			ShaderInfo shader = shaders.getValueAt(i);
+		ShaderManager shaderManager = ShaderManager.getShaderManager();
+		for(int i = 0; i < shaderManager.loadedShaders.size; i++) {
+			ShaderInfo shader = shaderManager.loadedShaders.getValueAt(i);
 			shader.setAttributes(camera.combined,
 					0,
 					fogStart,
@@ -953,49 +930,40 @@ public class GlRenderer {
 			chunks.sort(WorldChunk.sorter);
 
 			// draw static mesh batches
-			if(worldShaderInfo != null) worldShaderInfo.begin();
 			for(WorldChunk chunk : chunks) {
 				chunk.UpdateVisiblity(camera);
 				if(chunk.visible) {
 					chunk.renderStaticMeshBatch(worldShaderInfo);
 				}
 			}
-			if(worldShaderInfo != null) worldShaderInfo.end();
 
 			// draw walls / floors / ceilings
-			if(worldShaderInfo != null) worldShaderInfo.begin();
 			for(WorldChunk chunk : chunks) {
 				if(chunk.visible) {
 					chunk.render();
 					drawnChunks++;
 				}
 			}
-			if(worldShaderInfo != null) worldShaderInfo.end();
 
 			// draw water
 			if(waterShaderInfo != null) {
 				waterShaderInfo.setScrollSpeed(0f);
-				waterShaderInfo.begin();
 			}
 			for(WorldChunk chunk : chunks) {
 				if(chunk.visible) {
 					chunk.renderWater();
 				}
 			}
-			if(waterShaderInfo != null) waterShaderInfo.end();
 
 			// draw waterfalls
 			if(waterShaderInfo != null) {
 				waterShaderInfo.setScrollSpeed(0.03f);
-				waterShaderInfo.begin();
 			}
 			for(WorldChunk chunk : chunks) {
 				if(chunk.visible) {
 					chunk.renderWaterfall();
 				}
 			}
-
-            if(waterShaderInfo != null) waterShaderInfo.end();
 
             Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
             Gdx.gl.glPolygonOffset(-1f, -1f);
@@ -1005,28 +973,24 @@ public class GlRenderer {
             if(waterEdgeShaderInfo != null) {
                 waterEdgeShaderInfo.setAttribute("u_noise_mod", 1f);
                 waterEdgeShaderInfo.setAttribute("u_waveMod", 1f);
-                waterEdgeShaderInfo.begin();
             }
             for(WorldChunk chunk : chunks) {
                 if(chunk.visible) {
                     chunk.renderWaterEdges();
                 }
             }
-            if(waterEdgeShaderInfo != null) waterEdgeShaderInfo.end();
 
             // draw waterfall edges
             Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
             if(waterEdgeShaderInfo != null) {
                 waterEdgeShaderInfo.setAttribute("u_noise_mod", 4f);
                 waterEdgeShaderInfo.setAttribute("u_waveMod", 0f);
-                waterEdgeShaderInfo.begin();
             }
             for(WorldChunk chunk : chunks) {
                 if(chunk.visible) {
                     chunk.renderWaterfallEdges();
                 }
             }
-            if(waterEdgeShaderInfo != null) waterEdgeShaderInfo.end();
 
             Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 		}
@@ -3533,11 +3497,7 @@ public class GlRenderer {
 	public DecalBatch makeNewDecalBatch(String shader, boolean transparent) {
 
 		try {
-			ShaderInfo shaderInfo = shaders.get(shader);
-
-			if(shaderInfo == null) {
-				shaderInfo = makeDynamicShader(shader);
-			}
+			ShaderInfo shaderInfo = ShaderManager.getShaderManager().getCompiledShader(shader);
 
 			DecalBatch newBatch = new DecalBatch(new SpriteGroupStrategy(camera, game, shaderInfo, !transparent ? 1 : -1));
 			if(transparent) {
@@ -3552,61 +3512,6 @@ public class GlRenderer {
 		catch(Exception ex) {
 			Gdx.app.error("Delver-makeNewDecalBatch", ex.getMessage());
 			return getDecalBatch("sprite", transparent ? Entity.BlendMode.ALPHA : Entity.BlendMode.OPAQUE);
-		}
-	}
-
-	public ShaderInfo makeDynamicShader(String shader) {
-		ShaderInfo shaderInfo;
-
-		try {
-			ShaderData data = ShaderManager.getShaderManager().getShader(shader);
-			String vertexShader = shader + ".vert";
-			String fragmentShader = shader + ".frag";
-
-			if (data != null) {
-				if (data.vertex != null) vertexShader = data.vertex;
-				if (data.fragment != null) fragmentShader = data.fragment;
-			}
-
-			ShaderProgram sp = loadShader(getShaderPrefix(), vertexShader, fragmentShader);
-			shaderInfo = new ShaderInfo(sp);
-
-			if (data != null) {
-				// set attributes
-				if (data.attributes != null) {
-					for (int i = 0; i < data.attributes.size; i++) {
-						Object value = data.attributes.getValueAt(i);
-
-						// Floats and Integers might come in as a String, ugh...
-						if (value instanceof String) {
-							try {
-								Integer val = Integer.parseInt((String) value);
-								value = val;
-							} catch (Exception ex) {
-							}
-
-							try {
-								Float val = Float.parseFloat((String) value);
-								value = val;
-							} catch (Exception ex) {
-							}
-						}
-
-						shaderInfo.setAttribute(data.attributes.getKeyAt(i), value);
-					}
-				}
-
-				// set textures
-				if (data.textures != null) {
-					shaderInfo.setTextures(data.textures, data.textureFilter);
-				}
-			}
-
-			shaders.put(shader, shaderInfo);
-			return shaderInfo;
-		}
-		catch(Exception ex) {
-			return null;
 		}
 	}
 
@@ -3779,10 +3684,7 @@ public class GlRenderer {
 			postShader = Options.instance.postProcessFilter;
 		}
 
-		ShaderInfo postProcessShader = shaders.get(postShader);
-		if(postProcessShader == null) {
-			postProcessShader = makeDynamicShader(postShader);
-		}
+		ShaderInfo postProcessShader = ShaderManager.getShaderManager().getCompiledShader(postShader);
 
 		ShaderProgram shader = null;
 		if(postProcessShader != null) {
