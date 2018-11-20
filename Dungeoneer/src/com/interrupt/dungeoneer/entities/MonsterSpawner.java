@@ -89,8 +89,8 @@ public class MonsterSpawner extends DirectionalEntity {
 				}
 			}
 
-			boolean levelFree = level.isFree(m.x - 0.5f, m.y - 0.5f, m.z, m.collision, m.stepHeight, m.floating, null);
-			boolean entityFree = level.checkEntityCollision(m.x - 0.5f, m.y - 0.5f, m.z, m.collision, m) == null;
+			boolean levelFree = level.isFree(m.x, m.y, m.z, m.collision, m.stepHeight, m.floating, null);
+			boolean entityFree = level.checkEntityCollision(m.x, m.y, m.z, m.collision, m) == null;
 			didPlace = levelFree && entityFree;
 		}
 

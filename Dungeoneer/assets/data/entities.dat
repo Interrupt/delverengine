@@ -142,6 +142,17 @@
             },
             "Achievement": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredAchievement, floating: true }
 		},
+		"Spawners": {
+            "Item Spawner": {
+                class: com.interrupt.dungeoneer.entities.ItemSpawner
+            },
+            "Monster Spawner": {
+                class: com.interrupt.dungeoneer.entities.MonsterSpawner
+            },
+            "Entity Spawner": {
+                class: com.interrupt.dungeoneer.entities.EntitySpawner
+            }
+        },
 		"Movers": {
 			"Basic": { class: com.interrupt.dungeoneer.entities.Mover, isSolid: true, collision: {x: 0.5,y: 0.5,z: 0.1} },
 			"Trap": {
