@@ -15,6 +15,8 @@ Delver is a Java project most easily built via Gradle. Import the Gradle project
 
 This is built on the LibGDX game framework, more information on LibGDX is available at https://libgdx.badlogicgames.com/
 
+For discussion and help, check out the [Official Delver Community Discord](https://discord.gg/gyhmH5f)
+
 ### Main Applications
 
 Run configurations for IntelliJ have been included, for manual setup use the following:
