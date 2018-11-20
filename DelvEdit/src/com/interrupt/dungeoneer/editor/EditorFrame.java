@@ -563,19 +563,13 @@ public class EditorFrame implements ApplicationListener {
 
 		Tesselate();
 
-        GlRenderer.worldShaderInfo.begin();
         tesselators.world.render();
-        GlRenderer.worldShaderInfo.end();
 
         GlRenderer.waterShaderInfo.setScrollSpeed(0f);
-        GlRenderer.waterShaderInfo.begin();
         tesselators.water.render();
-        GlRenderer.waterShaderInfo.end();
 
         GlRenderer.waterShaderInfo.setScrollSpeed(0.03f);
-        GlRenderer.waterShaderInfo.begin();
         tesselators.waterfall.render();
-        GlRenderer.waterShaderInfo.end();
 
         gl.glDepthFunc(GL20.GL_LEQUAL);
 
@@ -585,16 +579,12 @@ public class EditorFrame implements ApplicationListener {
         Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
         Gdx.gl.glPolygonOffset(-1f, -1f);
 
-        GlRenderer.waterEdgeShaderInfo.begin();
         tesselators.waterEdges.render();
-        GlRenderer.waterEdgeShaderInfo.end();
 
         GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 4f);
         GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 0f);
 
-        GlRenderer.waterEdgeShaderInfo.begin();
         tesselators.waterfallEdges.render();
-        GlRenderer.waterEdgeShaderInfo.end();
 
 		gl.glDisable(GL20.GL_CULL_FACE);
 
@@ -1575,19 +1565,13 @@ public class EditorFrame implements ApplicationListener {
 		Tesselate();
 
 		// render world, keep depth buffer
-		GlRenderer.worldShaderInfo.begin();
 		tesselators.world.render();
-		GlRenderer.worldShaderInfo.end();
 
 		GlRenderer.waterShaderInfo.setScrollSpeed(0f);
-		GlRenderer.waterShaderInfo.begin();
 		tesselators.water.render();
-		GlRenderer.waterShaderInfo.end();
 
 		GlRenderer.waterShaderInfo.setScrollSpeed(0.03f);
-		GlRenderer.waterShaderInfo.begin();
 		tesselators.waterfall.render();
-		GlRenderer.waterShaderInfo.end();
 
 		GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 1f);
 		GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 1f);
@@ -1595,16 +1579,12 @@ public class EditorFrame implements ApplicationListener {
 		Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
 		Gdx.gl.glPolygonOffset(-1f, -1f);
 
-		GlRenderer.waterEdgeShaderInfo.begin();
 		tesselators.waterEdges.render();
-		GlRenderer.waterEdgeShaderInfo.end();
 
 		GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 4f);
 		GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 0f);
 
-		GlRenderer.waterEdgeShaderInfo.begin();
 		tesselators.waterfallEdges.render();
-		GlRenderer.waterEdgeShaderInfo.end();
 
 		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

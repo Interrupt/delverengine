@@ -19,6 +19,7 @@ import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
+import com.interrupt.managers.ShaderManager;
 
 public class DrawableMesh extends Drawable {
 	public String meshFile = "meshes/chair.obj";
@@ -87,19 +88,13 @@ public class DrawableMesh extends Drawable {
 			}
 
 			if (this.shader != null && !this.shader.isEmpty()) {
-				shaderOverride = GameManager.renderer.shaders.get(this.shader);
-				if (shaderOverride == null) {
-					shaderOverride = GameManager.renderer.makeDynamicShader(this.shader);
-				}
+				shaderOverride = ShaderManager.getShaderManager().getCompiledShader(this.shader);
 			}
 
 			if (shaderOverride != null) shader = shaderOverride;
 
 			if(GameManager.renderer.renderingForPicking) {
-				shader = GameManager.renderer.shaders.get("mesh-picking");
-				if(shader == null) {
-					shader = GameManager.renderer.makeDynamicShader("mesh-picking");
-				}
+				shader = ShaderManager.getShaderManager().getCompiledShader("mesh-picking");
 			}
 
 			if(bakedMesh != null && !GameManager.renderer.renderingForPicking) {

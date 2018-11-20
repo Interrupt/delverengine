@@ -68,7 +68,7 @@ public class SplashScreen extends BaseScreen {
 		EntityManager.setSingleton(entityManager);
 
 		try {
-			logoShader = GameManager.renderer.loadShader("", "logo.vert", "logo.frag");
+			logoShader = ShaderManager.getShaderManager().loadShader("", "logo.vert", "logo.frag");
 		}
 		catch(Exception ex) {
 			Gdx.app.error("Delver", ex.getMessage());

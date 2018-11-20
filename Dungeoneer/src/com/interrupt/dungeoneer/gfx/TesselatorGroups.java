@@ -11,8 +11,8 @@ public class TesselatorGroups {
         world = new TesselatorGroup(GlRenderer.worldShaderInfo);
         water = new TesselatorGroup(GlRenderer.waterShaderInfo);
         waterfall = new TesselatorGroup(GlRenderer.waterShaderInfo);
-        waterEdges = new TesselatorGroup(GlRenderer.worldShaderInfo);
-        waterfallEdges = new TesselatorGroup(GlRenderer.worldShaderInfo);
+        waterEdges = new TesselatorGroup(GlRenderer.waterEdgeShaderInfo);
+        waterfallEdges = new TesselatorGroup(GlRenderer.waterEdgeShaderInfo);
     }
 
     public void clear() {

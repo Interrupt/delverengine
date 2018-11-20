@@ -4,5 +4,12 @@
         "filename": "textures.png",
         "scale": 1,
         "name": "t1"
+    },
+    {
+        "columns": 4,
+        "filename": "textures.png",
+        "scale": 1,
+        "name": "t1-animated",
+        "shader": "animate"
     }
 ]

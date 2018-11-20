@@ -158,12 +158,6 @@ public class Game {
 			entityManager = new EntityManager();
 		}
 		EntityManager.setSingleton(entityManager);
-
-		// load shaders
-		ShaderManager sm = modManager.loadShaderManager();
-		if(sm != null) {
-			ShaderManager.setSingleton(sm);
-		}
 	}
 	
 	public Game(Level levelToStart) {
