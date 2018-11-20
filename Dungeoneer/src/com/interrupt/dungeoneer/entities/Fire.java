@@ -123,10 +123,13 @@ public class Fire extends AnimatedSprite {
             light.haloMode = HaloMode.BOTH;
         }
 
-        if (this.particleEmitter == null && makeParticles) {
-            this.particleEmitter = EntityManager.instance.getEntity("Generator", particleEffect);
-            this.particleEmitter.z -= 0.2f;
-            this.attach(this.particleEmitter);
+        if (particleEmitter == null && makeParticles) {
+            particleEmitter = EntityManager.instance.getEntity("Generator", particleEffect);
+
+            if(particleEmitter != null) {
+                particleEmitter.z -= 0.2f;
+                attach(particleEmitter);
+            }
         }
 
         if(makeSound && ambientSound == null) {
