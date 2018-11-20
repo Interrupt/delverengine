@@ -24,79 +24,51 @@ import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.tiles.Tile;
 
-/**
- * Base class for all entities in Delver Engine Levels.
- */
+/** Base class for all entities in Delver Engine Levels. */
 public class Entity {
-	/**
-	 * Id of the Entity.
-	 */
+	/** Id of the Entity. */
 	@EditorProperty( group = "General" )
 	public String id;
 	
 	@EditorProperty( group = "Visual" )
 	public Drawable drawable;
 
-	/**
-	 * X component of the position vector.
-	 */
+	/** X component of the position vector. */
 	public float x;
 
-	/**
-	 * Y component of the position vector.
-	 */
+	/** Y component of the position vector. */
 	public float y;
 
-	/**
-	 * Z component of the position vector.
-	 */
+	/** Z component of the position vector. */
 	public float z;
 
-	/**
-	 * X component of the velocity vector.
-	 */
+	/** X component of the velocity vector. */
 	public float xa;
 
-	/**
-	 * Y component of the velocity vector.
-	 */
+	/** Y component of the velocity vector. */
 	public float ya;
 
-	/**
-	 * Z component of the velocity vector.
-	 */
+	/** Z component of the velocity vector. */
 	public float za;
 
-	/**
-	 * The roll used when drawing the Entity.
-	 */
+	/** The roll used when drawing the Entity. */
 	public float roll;
 
-	/**
-	 * Sprite index.
-	 */
+	/** Sprite index. */
 	@EditorProperty( group = "Visual", type = "SPRITE_ATLAS_NUM" )
 	public int tex;
 
-	/**
-	 * Should the Entity be ticked and drawn?
-	 */
+	/** Should the Entity be ticked and drawn? */
 	public boolean isActive = true;
 
-	/**
-	 * Z component of the Entity position last tick.
-	 */
+	/** Z component of the Entity position last tick. */
 	protected float lastZ;
 
-	/**
-	 * The vertical offset used when drawing the Entity.
-	 */
+	/** The vertical offset used when drawing the Entity. */
 	@EditorProperty( group = "Visual" )
 	public float yOffset = 0;
 
-	/**
-	 * The shader used to draw the Entity.
-	 */
+	/** The shader used to draw the Entity. */
 	@EditorProperty( group = "Visual" )
 	public String shader = null;
 
@@ -108,68 +80,42 @@ public class Entity {
 	public enum CollidesWith { staticOnly, all, actorsOnly, nonActors };
 	public enum EditorState { none, hovered, picked };
 
-	/**
-	 * Detail level for Entity.
-	 */
+	/** Detail level for Entity. */
 	public enum DetailLevel {
-		/**
-		 * Low detail level. Always create Entity.
-		 */
+		/** Low detail level. Always create Entity. */
 		LOW,
 
-		/**
-		 * Medium detail level. Create Entity if at least medium level of detail.
-		 */
+		/** Medium detail level. Create Entity if at least medium level of detail. */
 		MEDIUM,
 
-		/**
-		 * High detail level. Create Entity if at least high level of detail.
-		 */
+		/** High detail level. Create Entity if at least high level of detail. */
 		HIGH,
 
-		/**
-		 * Ultra detail level. Only Create Entity if ultra level of detail.
-		 */
+		/** Ultra detail level. Only Create Entity if ultra level of detail. */
 		ULTRA
 	}
 
-	/**
-	 * Shadow for Entity.
-	 */
+	/** Shadow for Entity. */
 	public enum ShadowType {
-		/**
-		 * No shadow.
-		 */
+		/** No shadow. */
 		NONE,
 
-		/**
-		 * Round shadow.
-		 */
+		/** Round shadow. */
 		BLOB,
 
-		/**
-		 * Rectangular shadow.
-		 */
+		/** Rectangular shadow. */
 		RECTANGLE
 	}
 
-	/**
-	 * Draw distance for Entity
-	 */
+	/** Draw distance for Entity */
 	public enum DrawDistance {
-		/**
-		 * Near draw distance.
-		 */
+		/** Near draw distance. */
 		NEAR,
 
-		/**
-		 * Medium draw distance.
-		 */
+		/** Medium draw distance. */
 		MEDIUM,
 
-		/**
-		 * Far draw distance.
-		 */
+		/** Far draw distance. */
 		FAR
 	}
 	public enum BlendMode { OPAQUE, ALPHA, ADD }
@@ -177,133 +123,89 @@ public class Entity {
 	
 	public ArtType artType;
 
-	/**
-	 * Sprite Atlas name.
-	 */
+	/** Sprite Atlas name. */
 	public String spriteAtlas = null;
 	
 	public EntityType type;
 
-	/**
-	 * Can other entities collide with this Entity?
- 	 */
+	/** Can other entities collide with this Entity? */
 	@EditorProperty( group = "Physics" )
 	public boolean isSolid = false;
 
-	/**
-	 * Dimensions of the Entity bounding box.
-	 */
+	/** Dimensions of the Entity bounding box. */
 	@EditorProperty( group = "Physics" )
 	public Vector3 collision = new Vector3(0.125f, 0.125f, 0.25f);
 	
 	@EditorProperty( group = "Physics" )
 	public CollidesWith collidesWith = CollidesWith.all;
 
-	/**
-	 * The scale used when drawing the Entity.
-	 */
+	/** The scale used when drawing the Entity. */
 	@EditorProperty( group = "Visual" )
 	public float scale = 1f;
 
-	/**
-	 * Should the Entity not be drawn?
-	 */
+	/** Should the Entity not be drawn? */
 	@EditorProperty( group = "Visual" )
 	public boolean hidden = false;
 
-	/**
-	 * Is this is a physics object?
- 	 */
+	/** Is this is a physics object? */
 	@EditorProperty( group = "General" )
 	public boolean isDynamic = true;
 
-	/**
-	 * Chance to be created.
- 	 */
+	/** Chance to be created. */
 	@EditorProperty( group = "General" )
 	public float spawnChance = 1f;
 
-	/**
-	 *  Detail level at which to be created.
-	 */
+	/** Detail level at which to be created. */
 	@EditorProperty( group = "General" )
 	public DetailLevel detailLevel = DetailLevel.LOW;
 
-	/**
-	 * Distance at which to be drawn.
-	 */
+	/** Distance at which to be drawn. */
 	@EditorProperty( group = "General" )
 	public DrawDistance drawDistance = DrawDistance.FAR;
 
-	/**
-	 * Is the Entity out of draw distance?
-	 */
+	/** Is the Entity out of draw distance? */
 	public transient boolean outOfDrawDistance = false;
 
-	/**
-	 * Can the Entity be stepped up on?
-	 */
+	/** Can the Entity be stepped up on? */
 	public boolean canStepUpOn = true;
 
-	/**
-	 * Is the floating?
-	 */
+	/** Is the Entity floating? */
 	@EditorProperty( group = "Physics" )
 	public boolean floating = false;
 
-	/**
-	 * The mass of the Entity.
-	 */
+	/** The mass of the Entity. */
 	@EditorProperty( group = "Physics" )
 	public float mass = 1f;
 
-	/**
-	 * Sound to play when Entity hits the floor.
-	 */
+	/** Sound to play when Entity hits the floor. */
 	public String dropSound = "drops/drop_soft.mp3";
 
 	@EditorProperty( group = "Visual" )
 	public ShadowType shadowType = ShadowType.NONE;
 
-	/**
-	 * Does the Entity bounce?
-	 */
+	/** Does the Entity bounce? */
 	public boolean bounces = true;
 
-	/**
-	 * How high can the Entity step up?
-	 */
+	/** How high can the Entity step up? */
 	public float stepHeight = 0.5f;
 	public float calcStepHeight = stepHeight;
 
-	/**
-	 * Entity can be moved by being bumped.
-	 */
+	/** Entity can be moved by being bumped. */
 	public boolean pushable = false;
 
-	/**
-	 * Non-directional sprite.
-	 */
+	/** Non-directional sprite. */
 	public boolean isStatic = false;
 
-	/**
-	 * Is the Entity on the floor?
-	 */
+	/** Is the Entity on the floor? */
 	public boolean isOnFloor = false;
 
-	/**
-	 * Is the Entity on another Entity?
-	 */
+	/** Is the Entity on another Entity? */
 	public boolean isOnEntity = false;
 
-	/**
-	 * Is the Entity in water?
-	 */
+	/** Is the Entity in water? */
 	public transient boolean inwater = false;
 
-	/**
-	 * Ignore collision with the Player?
-	 */
+	/** Ignore collision with the Player? */
 	public boolean ignorePlayerCollision = false;
 	
 	protected boolean wasOnFloorLast = false;
@@ -311,14 +213,10 @@ public class Entity {
 	
 	private float tickcount = 0;
 
-	/**
-	 * Entity tint color.
-	 */
+	/** Entity tint color. */
 	public Color color = Color.WHITE;
 
-	/**
-	 * Draw Entity without shading?
-	 */
+	/** Draw Entity without shading? */
 	@EditorProperty( group = "Physics" )
 	public boolean fullbrite = false;
 	
@@ -326,32 +224,22 @@ public class Entity {
 	
 	protected transient Collision hitLoc = new Collision();
 
-	/**
-	 * Should this Entity be saved to the level file?
-	 */
+	/** Should this Entity be saved to the level file? */
 	public boolean persists = true;
 
-	/**
-	 * Turn off physics when this Entity is at rest.
-	 */
+	/** Turn off physics when this Entity is at rest. */
 	public transient boolean physicsSleeping = false;
 	public boolean canSleep = false;
 	
 	public transient EditorState editorState = EditorState.none;
 
-	/**
-	 * The position offset of the attached Entities.
-	 */
+	/** The position offset of the attached Entities. */
 	protected Vector3 attachmentTransform = null;
 
-	/**
-	 * An Array of attached Entities.
-	 */
+	/** An Array of attached Entities. */
 	protected Array<Entity> attached = null;
 
-	/**
-	 * The Entity this Entity is attached to.
-	 */
+	/** The Entity this Entity is attached to. */
 	public transient Entity owner = null;
 
 	public float slideEffectTimer = 0;
