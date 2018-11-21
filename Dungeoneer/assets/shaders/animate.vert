@@ -39,7 +39,7 @@ void main() {
   v_color = a_color + u_AmbientColor;
 
   // Flip through the atlas on this row
-  v_texCoords.x += float(int(u_time * c_animateSpeed) % u_sprite_columns) * u_tex_width;
+  v_texCoords.x += mod(floor(u_time * c_animateSpeed), float(u_sprite_columns)) * u_tex_width;
 
   if(u_UsedLights != 0) {
     for(int i=0; i < {{MAX_DYNAMIC_LIGHTS}}; i++)
