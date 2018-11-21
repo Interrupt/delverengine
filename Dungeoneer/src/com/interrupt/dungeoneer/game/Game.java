@@ -48,6 +48,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Game {
+    // The save game version, gets saved in the player
+    public static int SAVE_VERSION = 1;
+
 	public float time = 0;
 	public Player player;
 	public GameInput input;
@@ -206,6 +209,9 @@ public class Game {
 			Gdx.app.error("Delver", ex.getMessage());
 			player = new Player(this);
 		}
+
+        // Save version is always up to date in the editor
+		player.saveVersion = SAVE_VERSION;
 
 		levelNum = 0;
 		level.loadFromEditor();
@@ -450,6 +456,10 @@ public class Game {
 				progression.sawTutorial = true;
 			}
 
+			// Keep track of what engine version we're playing on
+			player.saveVersion = SAVE_VERSION;
+
+			// Now we can load the level
 			level.load();
 			
 			if(level.playerStartX != null && level.playerStartY != null) {
@@ -1068,6 +1078,11 @@ public class Game {
 			else return false;
 			
 			levelNum = player.levelNum;
+
+			// Might need to do something if breaking changes were made between save versions
+			if(player.saveVersion != SAVE_VERSION) {
+				handleVersionMismatch(player);
+			}
 			
 			// load the level the player is on
 			loadLevel(levelNum, player.getCurrentTravelKey());
@@ -1086,7 +1101,17 @@ public class Game {
 			return false;
 		}
 	}
-	
+
+	private void handleVersionMismatch(Player player) {
+        // Handle the player offset bug that was present in pre-opensource days
+		if(player.saveVersion < 1) {
+			player.x += 0.5f;
+			player.y += 0.5f;
+		}
+
+		player.saveVersion = SAVE_VERSION;
+	}
+
 	public static FileHandle getFile(String file)
 	{
 		if(Gdx.app.getType() != ApplicationType.Android && Gdx.app.getType() != ApplicationType.iOS) {

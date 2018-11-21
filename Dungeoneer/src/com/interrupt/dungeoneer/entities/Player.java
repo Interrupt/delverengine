@@ -202,6 +202,9 @@ public class Player extends Actor {
 
     public boolean godMode = false;
 
+    // Used to act on breaking changes between save versions
+    public int saveVersion = -1;
+
 	public Player() {
 		isSolid = true;
 		collision.set(0.2f,0.2f,0.65f);
