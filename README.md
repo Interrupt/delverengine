@@ -7,7 +7,7 @@ This source release does not contain or cover the game data from Delver, the gam
 
 # License
 
-This source code release is licensed under the GNU General Public License v2.0 license. [See LICENSE.txt for more information.](LICENSE.txt)
+This source code release is licensed under the Delver Open Source license. [See LICENSE.txt for more information.](LICENSE.txt)
 
 # Notes
 
