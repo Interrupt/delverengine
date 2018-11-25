@@ -23,6 +23,9 @@ void main() {
 
   tex_Color = texture2D( u_texture, v_texCoords );
   color = v_color * tex_Color;
+
+  color += tex_Color * (1.0 - tex_Color.a) * 3.0;
+
   if(tex_Color.a < 0.01) discard;
 
   gl_FragColor = mix(u_FogColor, color, v_fogFactor);
