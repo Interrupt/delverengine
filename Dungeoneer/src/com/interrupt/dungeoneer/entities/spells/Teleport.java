@@ -9,11 +9,9 @@ import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.entities.Door;
 import com.interrupt.dungeoneer.entities.DynamicLight;
 import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Monster;
 import com.interrupt.dungeoneer.entities.Mover;
 import com.interrupt.dungeoneer.entities.Particle;
 import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.PositionedSound;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.game.Game;
@@ -30,12 +28,13 @@ public class Teleport extends Spell {
 		this.damageType = damageType;
 	}
 	
+	/** Handles individual teleport (ex. casting a spell from a scroll). */
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
-		Vector3 pos = new Vector3(owner.x, owner.y, owner.z);
 		teleport(owner, Game.rand.nextInt());
 	}
 
+	/** Handles teleport for every actor, including the player, within a certain radius (ex. stepping on a pressure plate trap). */
 	public void doCast(Vector3 pos, Vector3 direction) {
 		Level level = Game.GetLevel();
 		
@@ -48,12 +47,16 @@ public class Teleport extends Spell {
 		}
 		
 		Player p = Game.instance.player;
-		if(Math.abs(p.x + 0.5f - pos.x) < 0.5f + p.collision.x && Math.abs(p.y + 0.5f - pos.y) < 0.5f + p.collision.y) {
+		if(Math.abs(p.x - pos.x) < 0.5f + p.collision.x && Math.abs(p.y - pos.y) < 0.5f + p.collision.y) {
 			teleport(p, seed);
 			p.history.teleported();
 		}
 	}
 	
+	/**
+	 * Teleports the specified entity to a random location based on the provided seed number. Providing the same seed
+	 * will result in the same location. Any actor entity, such as a monster, already at that location will be killed.
+	 */
 	public void teleport(Entity e, int seed) {
 		Level level = Game.GetLevel();
 		if(level.dungeonLevel == 0) return;
@@ -67,32 +70,14 @@ public class Teleport extends Spell {
 			if(checkTile.CanSpawnHere()) {
 				e.x = checkX + 0.5f;
 				e.y = checkY + 0.5f;
-				
-				float height1 = checkTile.getFloorHeight(e.x - e.collision.x, e.y - e.collision.y);
-				float height2 = checkTile.getFloorHeight(e.x - e.collision.x, e.y + e.collision.y);
-				float height3 = checkTile.getFloorHeight(e.x + e.collision.x, e.y - e.collision.y);
-				float height4 = checkTile.getFloorHeight(e.x + e.collision.x, e.y + e.collision.y);
-				float max = Math.max(height4, Math.max(height3, Math.max(height1, height2)));
-				
-				e.z = max + 0.5f;
-				
-				if(e instanceof Player) {
-					e.x -= 0.5;
-					e.y -= 0.5;
-				}
-				
-				Entity toFrag = level.checkEntityCollision(e.x, e.y, e.z, e.collision, e);
-				if(toFrag != null && toFrag instanceof Actor) {
-					((Actor)toFrag).hp = 0;
-				}
-				else if(toFrag != null) {
-					// this didn't work out, try again
-					continue;
-				}
+				e.z = level.maxFloorHeight(e.x, e.y, 0, e.collision.x) + 0.5f; // Assumes collision.x and y are the same.
 
-				doCastEffect(new Vector3((float)checkX + 0.5f, (float)checkY + 0.5f, checkTile.floorHeight + 0.5f), level, e);
-				
-				return;
+				Entity toFrag = level.checkEntityCollision(e.x, e.y, e.z, e.collision, e);
+				if (toFrag == null || toFrag instanceof Actor) {
+					if (toFrag instanceof Actor) ((Actor)toFrag).hp = 0; // Kill an actor already in that position.
+					doCastEffect(new Vector3(e.x, e.y, e.z), level, e);
+					return;
+				}
 			}
 		}
 	}
