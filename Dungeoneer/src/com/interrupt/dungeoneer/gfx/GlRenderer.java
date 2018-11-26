@@ -930,12 +930,14 @@ public class GlRenderer {
 			chunks.sort(WorldChunk.sorter);
 
 			// draw static mesh batches
+			if(worldShaderInfo != null) worldShaderInfo.begin();
 			for(WorldChunk chunk : chunks) {
 				chunk.UpdateVisiblity(camera);
 				if(chunk.visible) {
 					chunk.renderStaticMeshBatch(worldShaderInfo);
 				}
 			}
+			if(worldShaderInfo != null) worldShaderInfo.end();
 
 			// draw walls / floors / ceilings
 			for(WorldChunk chunk : chunks) {
