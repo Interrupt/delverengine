@@ -33,8 +33,6 @@ public class InventoryScreen {
 
         fontScale = 2f;
 
-        Game.ui.getActors().removeValue(outerWindow, true);
-
         outerWindow.clear();
         contentTable.clear();
 
@@ -75,7 +73,8 @@ public class InventoryScreen {
         outerWindow.setY(-136f * uiScale);
         outerWindow.setX(buttonTable.getWidth() * 0.5f);
 
-        Game.ui.addActor(outerWindow);
+        if(!Game.ui.getActors().contains(outerWindow, true))
+            Game.ui.addActor(outerWindow);
     }
 
     public void show() {
