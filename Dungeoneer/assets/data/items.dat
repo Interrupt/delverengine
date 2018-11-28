@@ -114,7 +114,27 @@
                     "hasHalo": false,
                     "explodeSound": null,
                     "fullbrite": false,
-                    "impulseAmount": 0
+                    "impulseAmount": 0,
+                    "scale": 0.3
+                },
+                "muzzleFlash": {
+                    "shakeAmount": 2.0,
+                    "shakeDistance": 2.0,
+                    "lightMod": 0.2,
+                    "explosionLightLifetime": 6.0,
+                    "particleCount": 0,
+                    "damage": 0,
+                    "tex": 18,
+                    "explosionStartTex": 18,
+                    "explosionEndTex": 23,
+                    "explosionAnimSpeed": 22,
+                    "hasHalo": false,
+                    "explodeSound": null,
+                    "fullbrite": false,
+                    "impulseAmount": 0,
+                    "scale": 0.4,
+                    "color": {"r":0.9,"g":0.6,"b":0.2,"a":1.0},
+                    "fullbrite": true
                 }
             },
             {
