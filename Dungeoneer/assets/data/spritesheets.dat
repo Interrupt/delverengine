@@ -41,7 +41,8 @@
         "columns": 4,
         "filename": "fog.png",
         "scale": 1,
-        "name": "fog_sprites"
+        "name": "fog_sprites",
+        "filter": true
     },
     {
         "columns": 16,
