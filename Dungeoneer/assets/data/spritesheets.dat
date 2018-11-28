@@ -38,6 +38,12 @@
         "name": "particle"
     },
     {
+        "columns": 4,
+        "filename": "fog.png",
+        "scale": 1,
+        "name": "fog_sprites"
+    },
+    {
         "columns": 16,
         "filename": "font.png",
         "scale": 1,
