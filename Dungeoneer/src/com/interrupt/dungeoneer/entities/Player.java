@@ -2111,7 +2111,7 @@ public class Player extends Actor {
 			level++; // ding!
 			hp = getMaxHp();
 			
-			OverlayManager.instance.push(new LevelUpOverlayMark2(this));
+			OverlayManager.instance.push(new LevelUpOverlay(this));
 		}
 	}
 	
