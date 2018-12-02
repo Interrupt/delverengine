@@ -40,7 +40,6 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableProjectedDecal;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
-import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.gfx.shaders.WaterShaderInfo;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
@@ -2614,9 +2613,9 @@ public class GlRenderer {
 		else return t;
 	}
 
-	public float GetTexVAt(float posy)
+	public float GetTexVAt(float posy, TextureAtlas atlas)
 	{
-		return -posy + 0.5f;
+		return (-posy + 0.5f) / atlas.rowScale;
 	}
 
 	public GL20 getGL() {
