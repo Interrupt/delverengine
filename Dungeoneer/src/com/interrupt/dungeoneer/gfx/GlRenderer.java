@@ -50,6 +50,7 @@ import com.interrupt.dungeoneer.ui.EquipLoc;
 import com.interrupt.dungeoneer.ui.FontBounds;
 import com.interrupt.dungeoneer.ui.Hotbar;
 import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.helpers.FloatTuple;
 import com.interrupt.managers.ShaderManager;
 import com.interrupt.managers.TileManager;
 import com.noise.PerlinNoise;
@@ -2615,7 +2616,45 @@ public class GlRenderer {
 
 	public float GetTexVAt(float posy, TextureAtlas atlas)
 	{
-		return (-posy + 0.5f) / atlas.rowScale;
+		int scale = atlas.rowScale * (int)atlas.scale;
+		if(scale == 1) {
+			// Easy to figure out what the texture should be if the scale is 1
+			return -posy + 0.5f;
+		}
+
+		return (-posy + scale - 0.5f) / scale;
+	}
+
+	public float GetTexUAt(float posx_start, float posx_end, float posy_start, float posy_end, float uMod, TextureRegion region, TextureAtlas atlas) {
+		int textureScale = (int)atlas.scale;
+		if(textureScale == 1) {
+			// Can skip most of the work here if the scale is easy
+			return (region.getU2() - region.getU()) * uMod + region.getU();
+		}
+
+		// Need to spread this texture along multiple walls, time to do some work
+		if(uMod == 0f)      uMod = 0.00001f;
+		else if(uMod == 1f) uMod = 0.99999f;
+		float start;
+		float end;
+		if(posy_start == posy_end) {
+			start = posx_start;
+			end = posx_end;
+		}
+		else if(posx_start == posx_end) {
+			start = posy_start;
+			end = posy_end;
+		}
+		else {
+			start = posx_start - posy_start;
+			end = posx_end - posy_end;
+		}
+		float x = (end - start) * uMod + start;
+		float m = (x % textureScale) / (float)textureScale;
+		if(end < start) {
+			m = 1.0f - m;
+		}
+		return (region.getU2() - region.getU()) * m + region.getU();
 	}
 
 	public GL20 getGL() {
