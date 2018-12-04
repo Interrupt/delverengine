@@ -588,15 +588,18 @@ public class Tesselator {
 									starts.add(ceilPairTuple);
 				        			ends.add(floorPairTuple);
 								}
+
+								float texU1 = renderer.GetTexUAt(x + x_offsets.val1, x + x_offsets.val2, 0, 0, 0f, reg, atlas);
+								float texU2 = renderer.GetTexUAt(x + x_offsets.val1, x + x_offsets.val2, 0, 0, 1f, reg, atlas);
 								
 								// now have enough info to add vertices for all the collected wall segments
 								for(int i = 0; i < starts.size; i++)
 								{
-										selectedTesselator.addVertex(x + x_offsets.val1, ends.get(i).val1 , y + y_offsets.val1, reg.getU(), renderer.GetTexVAt(ends.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, ends.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, reg.getU(), renderer.GetTexVAt(starts.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, reg.getU2(), renderer.GetTexVAt(ends.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, reg.getU2(), renderer.GetTexVAt(starts.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
-                                    selectedTesselator.finishQuad();
+									selectedTesselator.addVertex(x + x_offsets.val1, ends.get(i).val1 , y + y_offsets.val1, texU1, renderer.GetTexVAt(ends.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, ends.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
+									selectedTesselator.addVertex(x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, texU1, renderer.GetTexVAt(starts.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
+									selectedTesselator.addVertex(x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, texU2, renderer.GetTexVAt(ends.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
+									selectedTesselator.addVertex(x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, texU2, renderer.GetTexVAt(starts.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
+									selectedTesselator.finishQuad();
 								}
 								
 								starts.clear();
@@ -1084,19 +1087,19 @@ public class Tesselator {
 		float x;
 		float y;
 		if(rot == 1) {
-			y = (xLoc + vMod) + 1;
+			y = (xLoc + vMod);
 			x = (yLoc + uMod);
 		}
 		else if(rot == 2) {
-			x = (xLoc + uMod) + 1;
+			x = (xLoc + uMod);
 			y = (yLoc - vMod) + 1;
 		}
 		else if(rot == 3) {
-			y = (xLoc - vMod);
+			y = (xLoc - vMod) + 1;
 			x = (yLoc - uMod) + 1;
 		}
 		else {
-			x = (xLoc - uMod);
+			x = (xLoc - uMod) + 1;
 			y = (yLoc + vMod);
 		}
 
