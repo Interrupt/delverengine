@@ -135,7 +135,7 @@ public class LerpedAnimation {
 			curRotation.y = lerpFrame.apply(curFrameRotation.y, nextFrameRotation.y, t);
 			curRotation.z = lerpFrame.apply(curFrameRotation.z, nextFrameRotation.z, t);
 
-			if(startTexOffset == endTexOffset) {
+			if(startTexOffset == endTexOffset || !playing) {
 				curTexOffset = startTexOffset;
 			}
 			else {

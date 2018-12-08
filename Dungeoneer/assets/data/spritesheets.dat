@@ -26,9 +26,23 @@
     },
     {
         "columns": 4,
+        "filename": "items-guns.png",
+        "scale": 0.5,
+        "name": "item-guns",
+        "y_offset": 0.25
+    },
+    {
+        "columns": 4,
         "filename": "particles.png",
         "scale": 1,
         "name": "particle"
+    },
+    {
+        "columns": 4,
+        "filename": "fog.png",
+        "scale": 1,
+        "name": "fog_sprites",
+        "filter": true
     },
     {
         "columns": 16,

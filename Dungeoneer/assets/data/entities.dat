@@ -142,6 +142,11 @@
             },
             "Achievement": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredAchievement, floating: true }
 		},
+		"LevelWarp": {
+            "LevelWarp": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredWarp },
+            "WarpMarker": { class: com.interrupt.dungeoneer.entities.WarpMarker },
+            "Teleporter": { class: com.interrupt.dungeoneer.entities.areas.TeleportArea }
+        },
 		"Spawners": {
             "Item Spawner": {
                 class: com.interrupt.dungeoneer.entities.ItemSpawner

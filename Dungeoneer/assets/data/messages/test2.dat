@@ -1,0 +1,7 @@
+{
+	"repeats": true,
+	"messages": [
+		["This area uses a tile texture that is set not to draw walls or ceilings.","It also uses a skybox area to draw the sky."],
+		["Outdoor areas automatically light their tiles. This color can be set as a level property."]
+	]
+}
