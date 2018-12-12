@@ -130,6 +130,11 @@ public class TextureAtlas {
         Pixmap pixmap = Art.loadPixmap(filename);
         spriteSize = pixmap.getWidth() / columns;
 
+        // Clamp to a valid size
+        if(rowScale < 1) {
+        	rowScale = 1;
+		}
+
         int spriteVerticalSize = spriteSize * rowScale;
 
         final int atlasHeight = pixmap.getHeight() / spriteVerticalSize;
