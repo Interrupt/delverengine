@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.gfx;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,6 +16,8 @@ public class TextureAtlas {
 	public int spriteSize = 16;
 	public int columns = 16;
 	public int rows = 1;
+
+	public int rowScale = 1;
 
 	public String filename = "";
 	public String name = "";
@@ -130,15 +130,22 @@ public class TextureAtlas {
         Pixmap pixmap = Art.loadPixmap(filename);
         spriteSize = pixmap.getWidth() / columns;
 
-        final int atlasHeight = pixmap.getHeight() / spriteSize;
+        // Clamp to a valid size
+        if(rowScale < 1) {
+        	rowScale = 1;
+		}
+
+        int spriteVerticalSize = spriteSize * rowScale;
+
+        final int atlasHeight = pixmap.getHeight() / spriteVerticalSize;
         int next_pow = GetNextPowerOf2(columns * atlasHeight);
-        Pixmap remappedWall = new Pixmap(spriteSize * next_pow, spriteSize, Pixmap.Format.RGBA8888);
+        Pixmap remappedWall = new Pixmap(spriteSize * next_pow, spriteVerticalSize, Pixmap.Format.RGBA8888);
 
         // redraw them horizontally
         int pos = 0;
         for(int y = 0; y < atlasHeight; y++) {
             for(int x = 0; x < columns; x++) {
-                remappedWall.drawPixmap(pixmap, pos * spriteSize, 0, x * spriteSize, y * spriteSize, spriteSize, spriteSize);
+                remappedWall.drawPixmap(pixmap, pos * spriteSize, 0, x * spriteSize, y * spriteVerticalSize, spriteSize, spriteVerticalSize);
                 pos++;
             }
         }
@@ -154,7 +161,7 @@ public class TextureAtlas {
         float xMod = (1f / pos) * 0.001f;
 
         for(int i = 0; i < sprite_regions.length; i++) {
-            TextureRegion wallRegion = new TextureRegion(texture, i * spriteSize, 0, spriteSize, spriteSize);
+            TextureRegion wallRegion = new TextureRegion(texture, i * spriteSize, 0, spriteSize, spriteVerticalSize);
 
             // clamp the region some
             wallRegion.setU(wallRegion.getU() + xMod);

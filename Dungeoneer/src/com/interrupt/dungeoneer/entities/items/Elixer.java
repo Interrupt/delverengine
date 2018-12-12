@@ -2,9 +2,7 @@ package com.interrupt.dungeoneer.entities.items;
 
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
-import com.interrupt.dungeoneer.overlays.LevelUpOverlayMark2;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.managers.StringManager;
 
@@ -22,7 +20,7 @@ public class Elixer extends Potion {
 	public void Drink(Player player) {	
 		player.history.drankPotion(this);
 		Audio.playSound("cons_drink.mp3", 0.5f);
-		OverlayManager.instance.push(new LevelUpOverlayMark2(player));
+		OverlayManager.instance.push(new LevelUpOverlay(player));
 		player.removeFromInventory(this);
 	}
 }
