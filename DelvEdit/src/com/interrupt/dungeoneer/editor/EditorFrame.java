@@ -820,7 +820,9 @@ public class EditorFrame implements ApplicationListener {
 				if(!selected) selectionHeights.set(t.ceilHeight, selZ);
 			}
 			else {
-				if(!selected) selectionHeights.set(0.5f, -0.5f);
+				TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
+				float size = atlas.rowScale * atlas.scale;
+				if(!selected) selectionHeights.set(size - 0.5f, -0.5f);
 			}
 
 			if(slopePointMode || slopeEdgeMode)
@@ -4045,6 +4047,12 @@ public class EditorFrame implements ApplicationListener {
 		Tile selectedTile = level.getTile(selectionX, selectionY);
 		t.floorHeight = selectedTile.floorHeight;
 		t.ceilHeight = selectedTile.ceilHeight;
+
+		if(pickedSurface == null || !pickedSurface.isPicked) {
+			TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
+			float size = atlas.rowScale * atlas.scale;
+			t.ceilHeight = size - 0.5f;
+		}
 
 		t.floorHeight = selectionHeights.y;
 
