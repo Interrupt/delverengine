@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.overlays;
 
 import java.util.HashMap;
-import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -15,12 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.ArrayMap.Entries;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.interrupt.dungeoneer.Art;
-import com.interrupt.dungeoneer.Audio;
-import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
@@ -28,14 +22,10 @@ import com.interrupt.dungeoneer.entities.Monster;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
-import com.interrupt.dungeoneer.gfx.StaticMeshPool;
 import com.interrupt.dungeoneer.gfx.Tesselator;
 import com.interrupt.dungeoneer.ui.UiSkin;
-import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.ItemManager;
-import com.interrupt.managers.MonsterManager;
 
 public class DebugOverlay extends WindowOverlay {
 
@@ -156,7 +146,7 @@ public class DebugOverlay extends WindowOverlay {
 			public void clicked(InputEvent event, float x, float y) {
 				OverlayManager.instance.remove(thisOverlay);
 				Game.instance.player.level++;
-				OverlayManager.instance.push(new LevelUpOverlayMark2(Game.instance.player));
+				OverlayManager.instance.push(new LevelUpOverlay(Game.instance.player));
 			}
 
 			@Override
