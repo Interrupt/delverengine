@@ -241,7 +241,7 @@ public class EditorFrame implements ApplicationListener {
     float camZ = 4.5f;
 
     float rotX = 0;
-    float rotY = 20;
+    float rotY = 20f;
     double rota = 0;
     double rotya = 0;
 
@@ -2174,27 +2174,31 @@ public class EditorFrame implements ApplicationListener {
 		rotY += rotya;
 		rotya *= 0.8;
 
-		float xm = 0;
-		float zm = 0;
-		if(editorInput.isKeyPressed(Keys.A))
-			xm = -0.8f;
-		if(editorInput.isKeyPressed(Keys.D))
-			xm = 0.8f;
+		float xm = 0f;
+		float zm = 0f;
 
-		if(editorInput.isKeyPressed(Keys.W))
-			zm = -0.8f;
-		if(editorInput.isKeyPressed(Keys.S))
-			zm = 0.8f;
-
-		if(editorInput.isKeyPressed(Keys.Q)) {
-			camZ -= 0.1f;
+		if(editorInput.isKeyPressed(Keys.A)) {
+			xm = -1f;
 		}
-		if(editorInput.isKeyPressed(Keys.E)) {
-			camZ += 0.1f;
+		if(editorInput.isKeyPressed(Keys.D)) {
+			xm = 1f;
+		}
+
+		if(editorInput.isKeyPressed(Keys.W)) {
+			zm = -1f;
+		}
+		if(editorInput.isKeyPressed(Keys.S)) {
+			zm = 1f;
+		}
+
+		if (editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
+			xm *= 2.0f;
+			zm *= 2.0f;
 		}
 
 		camX += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * walkSpeed;
-		camY += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * walkSpeed;
+		camY += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * walkSpeed * Math.cos(rotY);
+		camZ += (zm * Math.sin(rotY)) * walkSpeed;
 
 		if(player != null) {
 			player.rot = rotX;
