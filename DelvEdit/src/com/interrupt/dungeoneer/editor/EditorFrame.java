@@ -2196,9 +2196,10 @@ public class EditorFrame implements ApplicationListener {
 			zm *= 2.0f;
 		}
 
-		camX += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * walkSpeed;
-		camY += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * walkSpeed * Math.cos(rotY);
 		camZ += (zm * Math.sin(rotY)) * walkSpeed;
+		zm *= Math.cos(rotY);
+		camX += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * walkSpeed;
+		camY += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * walkSpeed;
 
 		if(player != null) {
 			player.rot = rotX;
