@@ -116,7 +116,7 @@ public class LevelsOverlay extends WindowOverlay {
                     //Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
                     // GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
                     // GameApplication.SetScreen(new LoadingScreen(StringManager.get("Loading level: "+levelName), -1));
-                    GameManager gm = new GameManager();
+                    GameManager gm = new GameManager(GameApplication.instance);
                     Level lvl = new Level();
                     lvl.theme = "TEST";
                     lvl.levelName = levelName;
