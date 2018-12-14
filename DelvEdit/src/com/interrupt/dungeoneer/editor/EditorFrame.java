@@ -243,7 +243,8 @@ public class EditorFrame implements ApplicationListener {
     float rotX = 0;
     float rotY = 20f;
     double rota = 0;
-    double rotya = 0;
+	double rotya = 0;
+	float rotYClamp = 1.571f;
 
     double walkVel = 0.05;
 	double walkSpeed = 0.15;
@@ -2172,6 +2173,10 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		rotY += rotya;
+		
+		if (rotY < -rotYClamp) rotY = -rotYClamp;
+		if (rotY > rotYClamp) rotY = rotYClamp;
+
 		rotya *= 0.8;
 
 		float xm = 0f;
