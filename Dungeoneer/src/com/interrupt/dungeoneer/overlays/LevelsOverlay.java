@@ -125,7 +125,7 @@ public class LevelsOverlay extends WindowOverlay {
                     lvl.generated = false;
                     lvl.levelFileName = "levels/"+level;
                     gm.startGame(lvl);
-                    lvl.load();
+                    // lvl.load();
                     OverlayManager.instance.remove(thisOverlay);
                 }
             });

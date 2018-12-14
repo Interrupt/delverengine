@@ -221,6 +221,8 @@ public class Game {
 		
 		if (inEditor) {
 			level.loadFromEditor();
+		} else {
+			level.load();
 		}
 
 		player.randomSeed = rand.nextInt();
