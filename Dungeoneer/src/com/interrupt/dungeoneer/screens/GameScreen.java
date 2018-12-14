@@ -179,7 +179,7 @@ public class GameScreen implements Screen {
 			Gdx.app.log("DelverGameScreen", "Starting game");
 			
 			if(editorLevel == null) gameManager.startGame(saveLoc);
-			else gameManager.startGame(editorLevel);
+			else gameManager.startEditorGame(editorLevel);
 			
 			didStart = true;
 		}

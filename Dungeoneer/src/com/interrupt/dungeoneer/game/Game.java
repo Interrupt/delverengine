@@ -166,12 +166,11 @@ public class Game {
 		EntityManager.setSingleton(entityManager);
 	}
 	
-	public Game(Level levelToStart) {
+	public Game(Level levelToStart, Boolean editor) {
 		instance = this;
 		level = levelToStart;
 		
-		// we're in the editor
-		inEditor = true;
+		inEditor = editor;
 		
 		Game.flashTimer = 0;
 		message.clear();
@@ -201,7 +200,9 @@ public class Game {
 
 		loadManagers();
 		
-		Gdx.app.log("DelverLifeCycle", "READY EDITOR ONE");
+		if (inEditor) {
+			Gdx.app.log("DelverLifeCycle", "READY EDITOR ONE");
+		}
 
 		// try loading the player template
 		try {
@@ -217,7 +218,10 @@ public class Game {
 		player.saveVersion = SAVE_VERSION;
 
 		levelNum = 0;
-		level.loadFromEditor();
+		
+		if (inEditor) {
+			level.loadFromEditor();
+		}
 
 		player.randomSeed = rand.nextInt();
 		player.gold = 1000;

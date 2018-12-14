@@ -26,6 +26,7 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
+import com.interrupt.dungeoneer.overlays.LevelsOverlay;
 import com.interrupt.dungeoneer.overlays.ModsOverlay;
 import com.interrupt.dungeoneer.overlays.OptionsOverlay;
 import com.interrupt.dungeoneer.ui.UiSkin;
@@ -134,6 +135,14 @@ public class MainMenuScreen extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameApplication.SetScreen(new OverlayWrapperScreen(new ModsOverlay()));
+            }
+        });
+
+        TextButton levelsButton = new TextButton(MessageFormat.format(paddedButtonText, "Levels"), skin);
+        levelsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                GameApplication.SetScreen(new OverlayWrapperScreen(new LevelsOverlay()));
             }
         });
 
@@ -289,6 +298,8 @@ public class MainMenuScreen extends BaseScreen {
 
         if(hasMods())
             buttonTable.add(modsButton).align(Align.right).height(20);
+
+        buttonTable.add(levelsButton).align(Align.right).height(20f);
 
         buttonTable.add(optionsButton).align(Align.right).height(20f);
         buttonTable.pack();
