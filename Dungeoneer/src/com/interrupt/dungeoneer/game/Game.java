@@ -233,6 +233,21 @@ public class Game {
 		
 		try {
 			player.init();
+
+			if(!inEditor) {
+				if(level.playerStartX != null && level.playerStartY != null) {
+					player.x = level.playerStartX + 0.5f;
+					player.y = level.playerStartY + 0.5f;
+				}
+				else {
+					player.x = 0;
+					player.y = 0;
+				}
+
+				player.z = level.getTile((int)player.x, (int)player.y).getFloorHeight() + 0.5f;
+				if(level.playerStartRot != null) player.rot = (float)Math.toRadians(-(level.playerStartRot + 180f));
+			}
+
 			level.setPlayer(player);
 		}
 		catch(Exception ex) { Gdx.app.log("DelverLifeCycle", ex.getMessage()); }

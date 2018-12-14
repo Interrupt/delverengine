@@ -41,12 +41,24 @@ public class GameScreen implements Screen {
     public OverlayManager overlayManager = OverlayManager.instance;
 
 	private Level editorLevel = null;
+	private Level levelToStart = null;
     
     public GameScreen(Level level, GameManager gameManager, GameInput input) {
     	this.gameManager = gameManager;
 		this.input = input;
 		this.editorLevel  = level;
     }
+
+    public GameScreen(Level level, GameManager gameManager, GameInput input, boolean isEditor) {
+		this.gameManager = gameManager;
+		this.input = input;
+
+    	if(isEditor) {
+    		this.editorLevel = level;
+		} else {
+    		this.levelToStart = level;
+		}
+	}
 	
 	public GameScreen(GameManager gameManager, GameInput input) {
 		this.gameManager = gameManager;
@@ -177,8 +189,9 @@ public class GameScreen implements Screen {
 		
 		if(!didStart) {
 			Gdx.app.log("DelverGameScreen", "Starting game");
-			
-			if(editorLevel == null) gameManager.startGame(saveLoc);
+
+			if(levelToStart != null) gameManager.startGame(levelToStart);
+			else if(editorLevel == null) gameManager.startGame(saveLoc);
 			else gameManager.startEditorGame(editorLevel);
 			
 			didStart = true;
