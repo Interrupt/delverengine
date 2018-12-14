@@ -2327,7 +2327,11 @@ public class EditorFrame implements ApplicationListener {
         }
         else {
             clearEntitySelection();
-        }
+		}
+		
+		if (editorUi.isShowingContextMenu()) {
+			editorUi.hideContextMenu();
+		}
 
         history.saveState(level);
     }
