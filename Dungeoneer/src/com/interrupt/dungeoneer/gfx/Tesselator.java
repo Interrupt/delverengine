@@ -616,11 +616,11 @@ public class Tesselator {
 							} else if(dir == TileEdges.South) {
 								checkDir = n;
 								normal.set(0, 1, 0);
-							} else if(dir == TileEdges.East) {
-								checkDir = w;
+							} else if(dir == TileEdges.West) {
+								checkDir = e;
 								normal.set(-1, 0, 0);
 							} else {
-								checkDir = e;
+								checkDir = w;
 								normal.set(0, 0, 1);
 							}
 							
