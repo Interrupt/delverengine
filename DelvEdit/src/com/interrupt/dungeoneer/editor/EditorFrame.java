@@ -241,9 +241,10 @@ public class EditorFrame implements ApplicationListener {
     float camZ = 4.5f;
 
     float rotX = 0;
-    float rotY = 20;
+    float rotY = 20f;
     double rota = 0;
-    double rotya = 0;
+	double rotya = 0;
+	float rotYClamp = 1.571f;
 
     double walkVel = 0.05;
 	double walkSpeed = 0.15;
@@ -820,7 +821,9 @@ public class EditorFrame implements ApplicationListener {
 				if(!selected) selectionHeights.set(t.ceilHeight, selZ);
 			}
 			else {
-				if(!selected) selectionHeights.set(0.5f, -0.5f);
+				TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
+				float size = atlas.rowScale * atlas.scale;
+				if(!selected) selectionHeights.set(size - 0.5f, -0.5f);
 			}
 
 			if(slopePointMode || slopeEdgeMode)
@@ -2170,27 +2173,36 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		rotY += rotya;
+		
+		if (rotY < -rotYClamp) rotY = -rotYClamp;
+		if (rotY > rotYClamp) rotY = rotYClamp;
+
 		rotya *= 0.8;
 
-		float xm = 0;
-		float zm = 0;
-		if(editorInput.isKeyPressed(Keys.A))
-			xm = -0.8f;
-		if(editorInput.isKeyPressed(Keys.D))
-			xm = 0.8f;
+		float xm = 0f;
+		float zm = 0f;
 
-		if(editorInput.isKeyPressed(Keys.W))
-			zm = -0.8f;
-		if(editorInput.isKeyPressed(Keys.S))
-			zm = 0.8f;
-
-		if(editorInput.isKeyPressed(Keys.Q)) {
-			camZ -= 0.1f;
+		if(editorInput.isKeyPressed(Keys.A)) {
+			xm = -1f;
 		}
-		if(editorInput.isKeyPressed(Keys.E)) {
-			camZ += 0.1f;
+		if(editorInput.isKeyPressed(Keys.D)) {
+			xm = 1f;
 		}
 
+		if(editorInput.isKeyPressed(Keys.W)) {
+			zm = -1f;
+		}
+		if(editorInput.isKeyPressed(Keys.S)) {
+			zm = 1f;
+		}
+
+		if (editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
+			xm *= 2.0f;
+			zm *= 2.0f;
+		}
+
+		camZ += (zm * Math.sin(rotY)) * walkSpeed;
+		zm *= Math.cos(rotY);
 		camX += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * walkSpeed;
 		camY += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * walkSpeed;
 
@@ -2320,7 +2332,11 @@ public class EditorFrame implements ApplicationListener {
         }
         else {
             clearEntitySelection();
-        }
+		}
+		
+		if (editorUi.isShowingContextMenu()) {
+			editorUi.hideContextMenu();
+		}
 
         history.saveState(level);
     }
@@ -4045,6 +4061,12 @@ public class EditorFrame implements ApplicationListener {
 		Tile selectedTile = level.getTile(selectionX, selectionY);
 		t.floorHeight = selectedTile.floorHeight;
 		t.ceilHeight = selectedTile.ceilHeight;
+
+		if(pickedSurface == null || !pickedSurface.isPicked) {
+			TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
+			float size = atlas.rowScale * atlas.scale;
+			t.ceilHeight = size - 0.5f;
+		}
 
 		t.floorHeight = selectionHeights.y;
 

@@ -27,4 +27,4 @@ Editor: `DelvEdit/src/com/interrupt/dungeoneer/EditorStarter.java`
 
 Working directory: `Dungeoneer`
 
-Resources directory: `Dungeoneeer/assets`
+Resources directory: `Dungeoneer/assets`

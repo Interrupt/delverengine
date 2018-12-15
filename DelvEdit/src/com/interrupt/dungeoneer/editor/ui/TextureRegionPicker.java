@@ -106,11 +106,13 @@ public abstract class TextureRegionPicker extends Window {
     protected void makeRegionButtons() {
         buttonLayout.reset();
 
+        TextureAtlas atlas = atlases.get(selectBox.getSelectedIndex());
+
         int num = 0;
-        for(TextureRegion region : atlases.get(selectBox.getSelectedIndex()).getSpriteRegions()) {
+        for(TextureRegion region : atlas.getSpriteRegions()) {
             ImageButton button = new ImageButton(new TextureRegionDrawable(region));
             button.getImage().setScaling(Scaling.fill);
-            button.getImageCell().width(spriteSize).height(spriteSize);
+            button.getImageCell().width(spriteSize).height(spriteSize * atlas.rowScale);
 
             button(button, num++, ((TextureAtlas)selectBox.getSelected()).name);
 

@@ -444,6 +444,18 @@ public class MainMenuScreen extends BaseScreen {
         if(fadeFactor < 1f) {
             renderer.drawFlashOverlay(fadeColor.set(0f, 0f, 0f, 1f - fadeFactor));
         }
+
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+        float fontSize = Game.getDynamicUiScale() * 140;
+        float smallFontSize = fontSize * 0.15f;
+
+        renderer.uiBatch.setProjectionMatrix(renderer.camera2D.combined);
+        renderer.uiBatch.begin();
+
+        renderer.drawTextRightJustified(Game.VERSION, (w / 2) - smallFontSize, (-h / 2) + smallFontSize, smallFontSize, Color.GRAY, Color.BLACK);
+
+        renderer.uiBatch.end();
 	}
 	
 	private String getSaveName(Progression p, Integer levelNum, String levelName) {
