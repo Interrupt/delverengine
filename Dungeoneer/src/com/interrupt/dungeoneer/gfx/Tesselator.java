@@ -309,10 +309,9 @@ public class Tesselator {
 				int x = chunk_x + xOffset;
 				int y = chunk_y + yOffset;
 				
-				if(getTileOrNull(level, x, y) == null) continue;
-				
 				// grab the current tile, and all the adjacent ones
-				Tile c = getTile(level, x, y);
+				Tile c = getTileOrNull(level, x, y);
+				if (c == null) continue;
 				Tile e = getTile(level, x - 1, y);
 				Tile n = getTile(level, x, y - 1);
 				Tile w = getTile(level, x + 1, y);
@@ -611,36 +610,50 @@ public class Tesselator {
 						// check for walls to be drawn in each of the cardinal directions
 						for(TileEdges dir : TileEdges.values()) {
 							Tile checkDir = null;
-							if(dir == TileEdges.North) checkDir = s;
-							if(dir == TileEdges.South) checkDir = n;
-							if(dir == TileEdges.East) checkDir = w;
-							if(dir == TileEdges.West) checkDir = e;
-
 							if(dir == TileEdges.North) {
+								checkDir = s;
 								normal.set(0, -1, 0);
-							}
-							else if(dir == TileEdges.South) {
+							} else if(dir == TileEdges.South) {
+								checkDir = n;
 								normal.set(0, 1, 0);
-							}
-							else if(dir == TileEdges.West) {
+							} else if(dir == TileEdges.West) {
+								checkDir = e;
 								normal.set(-1, 0, 0);
-							}
-							else {
+							} else {
+								checkDir = w;
 								normal.set(0, 0, 1);
 							}
 							
 							TileEdges oppositeDir = Tile.opposite(dir);
 
+							// Caching the various tile checks here for performance and readability.
+							boolean showWall;
+							boolean isOtherSolid = checkDir.IsSolid();
+							boolean isOtherSky = checkDir.isSky();
+							boolean isOtherEdgeVisible = checkDir.isTileEdgeVisible(dir, c);
+							boolean isOtherFloorHigher = checkDir.IsHigher(dir, c);
+							boolean isOtherCeilLower = checkDir.IsCeilLower(dir, c);
+
+							// Determine if any portion of the wall of the tile in the current direction should be shown.
+							if (c.isSky() && isOtherSolid) {
+								// This makes the edge of an outdoor map transparent for sky tiles.
+								showWall = false;
+							} else if (isOtherSky && isOtherFloorHigher) {
+								// Make sure we show the lower portion of a raised sky tile.
+								showWall = true;
+							} else {
+								// Look at the tile in the check direction to find walls (either fully solid, or partial segments)
+								showWall = (!isOtherSky && (isOtherEdgeVisible || (!isOtherSolid && (isOtherFloorHigher || isOtherCeilLower))));
+							}
+
 							// add wall floor and ceiling height pairs
-							// look at the tile in the check direction to find walls (either fully solid, or partial segments)
-							if((!checkDir.isSky() && ((checkDir.isTileEdgeVisible(dir, c) || (!checkDir.IsSolid() && (checkDir.IsHigher(dir, c) || checkDir.IsCeilLower(dir, c)))))))
-							{
+							if (showWall) {
 								Integer bottomWallIndex = null;
 
 								starts.clear();
 								ends.clear();
 								
-								if(checkDir.IsSolid() || checkDir.isTileEdgeVisible(dir, c))	{
+								if (isOtherSolid || isOtherEdgeVisible) {
 									// fully solid wall! make a wall from floor to ceiling
 									FloatTuple ceilPair = c.getCeilingPair(dir, tuplePool);
 									FloatTuple floorPair = c.getFloorPair(dir, tuplePool);
@@ -668,7 +681,8 @@ public class Tesselator {
 								}
 								else {
 									// add any partial segments that are exposed
-									if(checkDir.IsHigher(dir, c))	{
+									// Show the floor portion that is higher than this tile.
+									if (isOtherFloorHigher) {
 										bottomWallIndex = starts.size;
 										
 										FloatTuple ceilPair = checkDir.getFloorPair(oppositeDir, tuplePool).reverse();
@@ -694,7 +708,8 @@ public class Tesselator {
 											ends.add(floorPair);
 										}
 									}
-									if(checkDir.IsCeilLower(dir, c)) {
+									// Show the ceiling portion that is lower than this tile, but not if it is a sky tile.
+									if (isOtherCeilLower && !isOtherSky) {
 										
 										FloatTuple ceilPair = tuplePool.get(Math.max(checkDir.getCeilingPair(oppositeDir, tuplePool).val1, c.getCeilingPair(dir, tuplePool).val1), Math.max(checkDir.getCeilingPair(oppositeDir, tuplePool).val2, c.getCeilingPair(dir, tuplePool).val2));
 										FloatTuple floorPair = checkDir.getCeilingPair(oppositeDir, tuplePool).reverse();

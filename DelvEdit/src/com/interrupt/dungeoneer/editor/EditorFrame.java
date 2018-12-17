@@ -468,7 +468,7 @@ public class EditorFrame implements ApplicationListener {
 				camY = Game.instance.player.y;
 
 				rotX = Game.instance.player.rot + 3.14159265f;
-				rotY = -(Game.instance.player.yrot - 18.9f);
+				rotY = -Game.instance.player.yrot;
 
 				Audio.stopLoopingSounds();
 
@@ -2375,9 +2375,9 @@ public class EditorFrame implements ApplicationListener {
 
 		Game.instance.player.x = camera.position.x;
 		Game.instance.player.y = camera.position.z;
-		Game.instance.player.z = camera.position.y - 0.4f;
+		Game.instance.player.z = camera.position.y - 0.5f;
 		Game.instance.player.rot = rotX - 3.14159265f;
-		Game.instance.player.yrot = -rotY + 18.9f;
+		Game.instance.player.yrot = -rotY;
 		Game.isDebugMode = true;
 	}
 
