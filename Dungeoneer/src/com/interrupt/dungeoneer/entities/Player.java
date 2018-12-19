@@ -58,6 +58,9 @@ public class Player extends Actor {
 	public float rot2 = 0;
 
 	public float jumpHeight = 0.05f;
+	public float eyeHeight = 0.12f;
+	public float headBobSpeed = 0.319f;
+	public float headBobHeight = 0.3f;
 	
 	public boolean hasAttacked;
 	
@@ -523,7 +526,7 @@ public class Player extends Actor {
 		}
 		
 		// headbob
-		headbob = (float)Math.sin(tickcount * 0.319f) * Math.min((Math.abs(xa) + Math.abs(ya)), 0.15f) * 0.3f; //TODO: Add an option to disable bob
+		headbob = (float)Math.sin(tickcount * headBobSpeed) * Math.min((Math.abs(xa) + Math.abs(ya)), (headBobHeight * 0.5f)) * headBobHeight;
         if(floating) headbob = 0;
 		
 		// water movement
@@ -564,7 +567,7 @@ public class Player extends Actor {
 			// let the player climb up out of the water
 			stepHeight = 0.3499f + (waterTile.floorHeight + 0.5f - z);
 			
-			headbob = (float)Math.sin(tickcount / 24.0f) * 0.02f;
+			headbob = (float)Math.sin(tickcount / 24.0f) * (headBobHeight * 0.067f);
 			inwater = true;
 		}
 		else {

@@ -451,7 +451,7 @@ public class GlRenderer {
 		// Update camera
 		xPos = game.player.x;
 		yPos = game.player.y;
-		zPos = game.player.z + game.player.getStepUpValue();
+		zPos = game.player.z + game.player.getStepUpValue() + game.player.eyeHeight;
 
 		if(Options.instance.headBobEnabled) {
 		    zPos += game.player.headbob;
@@ -464,7 +464,7 @@ public class GlRenderer {
 
 		if(!inCutscene) {
 			camera.position.x = xPos;
-			camera.position.y = zPos + 0.12f;
+			camera.position.y = zPos;
 			camera.position.z = yPos;
 			camera.direction.set(0, 0, -1);
 
