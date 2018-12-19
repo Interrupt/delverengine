@@ -464,7 +464,7 @@ public class EditorFrame implements ApplicationListener {
 				input.clear();
 
 				camX = Game.instance.player.x;
-				camZ = Game.instance.player.z + 0.5f;
+				camZ = Game.instance.player.z + Game.instance.player.eyeHeight;
 				camY = Game.instance.player.y;
 
 				rotX = Game.instance.player.rot + 3.14159265f;
@@ -2375,7 +2375,7 @@ public class EditorFrame implements ApplicationListener {
 
 		Game.instance.player.x = camera.position.x;
 		Game.instance.player.y = camera.position.z;
-		Game.instance.player.z = camera.position.y - 0.5f;
+		Game.instance.player.z = camera.position.y - Game.instance.player.eyeHeight;
 		Game.instance.player.rot = rotX - 3.14159265f;
 		Game.instance.player.yrot = -rotY;
 		Game.isDebugMode = true;

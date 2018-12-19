@@ -58,6 +58,7 @@ public class Player extends Actor {
 	public float rot2 = 0;
 
 	public float jumpHeight = 0.05f;
+	public float eyeHeight = 0.12f;
 	
 	public boolean hasAttacked;
 	
