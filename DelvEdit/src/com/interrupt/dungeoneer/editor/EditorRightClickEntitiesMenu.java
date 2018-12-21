@@ -162,7 +162,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 			// surface editing stuff
 			MenuItem surfacePaint = new MenuItem("Paint Surface", skin);
-			MenuItem floodPaintTexture = new MenuItem("Flood Paint Surface", skin);
+			MenuItem floodPaintTexture = new MenuItem("Flood Fill Surface", skin);
 			MenuItem surfaceGrabTexture = new MenuItem("Grab Texture", skin);
 			MenuItem surfaceChangeTexture = new MenuItem("Change Texture", skin);
 
