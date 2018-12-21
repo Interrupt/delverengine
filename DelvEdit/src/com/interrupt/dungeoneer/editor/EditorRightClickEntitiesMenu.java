@@ -162,6 +162,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 			// surface editing stuff
 			MenuItem surfacePaint = new MenuItem("Paint Surface", skin);
+			MenuItem floodPaintTexture = new MenuItem("Flood Fill Surface", skin);
 			MenuItem surfaceGrabTexture = new MenuItem("Grab Texture", skin);
 			MenuItem surfaceChangeTexture = new MenuItem("Change Texture", skin);
 
@@ -183,7 +184,14 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 				}
 			});
 
+			floodPaintTexture.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent event) {
+					editor.fillSurfaceTexture();
+				}
+			});
+
 			surfaceMenu.addItem(surfacePaint);
+			surfaceMenu.addItem(floodPaintTexture);
 			surfaceMenu.addItem(surfaceGrabTexture);
 			surfaceMenu.addItem(surfaceChangeTexture);
 

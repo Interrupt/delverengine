@@ -3871,6 +3871,160 @@ public class EditorFrame implements ApplicationListener {
 		editorUi.showModal(picker);
 	}
 
+	public void fillSurfaceTexture() {
+		if(pickedSurface == null)
+			return;
+
+		int xPos = (int)pickedSurface.position.x;
+		int yPos = (int)pickedSurface.position.z;
+
+		Tile t = level.getTileOrNull(xPos, yPos);
+		if(t == null)
+			return;
+
+		history.saveState(level);
+
+		if(pickedSurface.tileSurface == TileSurface.Floor) {
+			floodFillFloorTexture(xPos, yPos, t.floorTex, t.floorTexAtlas, t.floorHeight);
+		}
+		else if (pickedSurface.tileSurface == TileSurface.Ceiling) {
+			floodFillCeilingTexture(xPos, yPos, t.ceilTex, t.ceilTexAtlas, t.ceilHeight);
+		}
+		else if (pickedSurface.tileSurface == TileSurface.UpperWall) {
+			floodFillWallTexture(xPos, yPos, t.getWallTex(pickedSurface.edge), t.getWallTexAtlas(pickedSurface.edge), null);
+		}
+		else if (pickedSurface.tileSurface == TileSurface.LowerWall) {
+			floodFillWallTexture(xPos, yPos, t.getWallBottomTex(pickedSurface.edge), t.getWallBottomTexAtlas(pickedSurface.edge), null);
+		}
+
+		history.saveState(level);
+		refreshLights();
+	}
+
+	public void floodFillFloorTexture(int x, int y, byte checkTex, String checkAtlas, float lastHeight) {
+		Tile t = level.getTileOrNull(x, y);
+		if(t != null) {
+			if(t.renderSolid) {
+				return;
+			}
+			if(t.floorTex == (byte)pickedFloorTexture && t.floorTexAtlas == pickedFloorTextureAtlas) {
+				return;
+			}
+			if(t.floorHeight != lastHeight || t.floorTex != checkTex || t.floorTexAtlas != checkAtlas) {
+				return;
+			}
+
+			t.floorTex = (byte)pickedFloorTexture;
+			t.floorTexAtlas = pickedFloorTextureAtlas;
+
+			floodFillFloorTexture(x + 1, y, checkTex, checkAtlas, t.floorHeight);
+			floodFillFloorTexture(x - 1, y, checkTex, checkAtlas, t.floorHeight);
+			floodFillFloorTexture(x, y + 1, checkTex, checkAtlas, t.floorHeight);
+			floodFillFloorTexture(x, y - 1, checkTex, checkAtlas, t.floorHeight);
+		}
+	}
+
+	public void floodFillCeilingTexture(int x, int y, byte checkTex, String checkAtlas, float lastHeight) {
+		Tile t = level.getTileOrNull(x, y);
+		if(t != null) {
+			if(t.renderSolid) {
+				return;
+			}
+			if(t.ceilTex == (byte)pickedCeilingTexture && t.ceilTexAtlas == pickedCeilingTextureAtlas) {
+				return;
+			}
+			if(t.ceilHeight != lastHeight || t.ceilTex != checkTex || t.ceilTexAtlas != checkAtlas) {
+				return;
+			}
+
+			t.ceilTex = (byte)pickedCeilingTexture;
+			t.ceilTexAtlas = pickedCeilingTextureAtlas;
+
+			floodFillCeilingTexture(x + 1, y, checkTex, checkAtlas, t.ceilHeight);
+			floodFillCeilingTexture(x - 1, y, checkTex, checkAtlas, t.ceilHeight);
+			floodFillCeilingTexture(x, y + 1, checkTex, checkAtlas, t.ceilHeight);
+			floodFillCeilingTexture(x, y - 1, checkTex, checkAtlas, t.ceilHeight);
+		}
+	}
+
+	public void floodFillWallTexture(int x, int y, byte checkTex, String checkAtlas, Tile last) {
+		Tile t = level.getTileOrNull(x, y);
+		if(t == null) {
+			return;
+		}
+
+		if(pickedSurface.tileSurface == TileSurface.UpperWall) {
+			if (t.getWallTex(pickedSurface.edge) == pickedWallTexture && t.getWallTexAtlas(pickedSurface.edge) == pickedWallTextureAtlas) {
+				return;
+			}
+			if (t.getWallTex(pickedSurface.edge) != checkTex || t.getWallTexAtlas(pickedSurface.edge) != checkAtlas) {
+				return;
+			}
+		}
+		else {
+			if (t.getWallBottomTex(pickedSurface.edge) == pickedWallBottomTexture && t.getWallBottomTexAtlas(pickedSurface.edge) == pickedWallBottomTextureAtlas) {
+				return;
+			}
+			if (t.getWallBottomTex(pickedSurface.edge) != checkTex || t.getWallBottomTexAtlas(pickedSurface.edge) != checkAtlas) {
+				return;
+			}
+		}
+
+		// Find the open tile we are facing
+		Tile adjacent = null;
+		if(pickedSurface.edge == TileEdges.North) {
+			adjacent = level.getTileOrNull(x, y - 1);
+		}
+		else if(pickedSurface.edge == TileEdges.South) {
+			adjacent = level.getTileOrNull(x, y + 1);
+		}
+		else if(pickedSurface.edge == TileEdges.East) {
+			adjacent = level.getTileOrNull(x - 1, y);
+		}
+		else if(pickedSurface.edge == TileEdges.West) {
+			adjacent = level.getTileOrNull(x + 1, y);
+		}
+		if(adjacent == null || adjacent.blockMotion) {
+			return;
+		}
+
+		// Make sure there's a connection
+		if(last != null) {
+			if (adjacent.ceilHeight <= last.floorHeight || adjacent.floorHeight >= last.ceilHeight) {
+				return;
+			}
+			if(adjacent.ceilHeight == t.ceilHeight && adjacent.floorHeight == t.floorHeight) {
+				return;
+			}
+			if(pickedSurface.tileSurface == TileSurface.LowerWall) {
+				// Is there actually even a lower wall?
+				if(adjacent.floorHeight >= t.floorHeight) {
+					return;
+				}
+			}
+		}
+
+		// Set texture, flood to the next
+		int nextXOffset = 0;
+		int nextYOffset = 0;
+
+		if(pickedSurface.edge == TileEdges.North || pickedSurface.edge == TileEdges.South) {
+			nextXOffset = 1;
+		}
+		else {
+			nextYOffset = 1;
+		}
+
+		if(pickedSurface.tileSurface == TileSurface.UpperWall)
+			t.setWallTexture(pickedSurface.edge, (byte)pickedWallTexture, pickedWallTextureAtlas);
+		else
+			t.setBottomWallTexture(pickedSurface.edge, (byte)pickedWallBottomTexture, pickedWallBottomTextureAtlas);
+
+		// Two dimensional, a bit easier than floors or ceilings
+		floodFillWallTexture(x + nextXOffset, y + nextYOffset, checkTex, checkAtlas, adjacent);
+		floodFillWallTexture(x - nextXOffset, y - nextYOffset, checkTex, checkAtlas, adjacent);
+	}
+
 	public TextureRegion[] loadAtlas(String texture, int spritesHorizontal, boolean filter) {
 		Texture spriteTextures = Art.loadTexture(texture);
 
