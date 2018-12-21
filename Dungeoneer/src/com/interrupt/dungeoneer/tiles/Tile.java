@@ -1024,6 +1024,44 @@ public class Tile implements Serializable {
         return null;
     }
 
+    public void setWallTexture(TileEdges dir, byte tex, String atlas) {
+		if(dir == TileEdges.North) {
+			northTex = tex;
+			northTexAtlas = atlas;
+		}
+		else if(dir == TileEdges.South) {
+			southTex = tex;
+			southTexAtlas = atlas;
+		}
+		else if(dir == TileEdges.East) {
+			eastTex = tex;
+			eastTexAtlas = atlas;
+		}
+		else if(dir == TileEdges.West) {
+			westTex = tex;
+			westTexAtlas = atlas;
+		}
+	}
+
+	public void setBottomWallTexture(TileEdges dir, byte tex, String atlas) {
+		if(dir == TileEdges.North) {
+			bottomNorthTex = tex;
+			bottomNorthTexAtlas = atlas;
+		}
+		else if(dir == TileEdges.South) {
+			bottomSouthTex = tex;
+			bottomSouthTexAtlas = atlas;
+		}
+		else if(dir == TileEdges.East) {
+			bottomEastTex = tex;
+			bottomEastTexAtlas = atlas;
+		}
+		else if(dir == TileEdges.West) {
+			bottomWestTex = tex;
+			bottomWestTexAtlas = atlas;
+		}
+	}
+
 	public void init(Level.Source source) {
 		data = TileManager.instance.getDataForTile(this);
 		drawCeiling = TileManager.instance.drawCeiling(this);

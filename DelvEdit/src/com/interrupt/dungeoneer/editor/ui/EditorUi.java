@@ -247,6 +247,7 @@ public class EditorUi {
                                 .addItem(new MenuItem("Paint Surface Texture", smallSkin, editor.paintWallAction).setAccelerator(new MenuAccelerator(Keys.NUM_1, false, false)))
                                 .addItem(new MenuItem("Grab Surface Texture", smallSkin, editor.pickWallAction).setAccelerator(new MenuAccelerator(Keys.NUM_2, false, false)))
                                 .addItem(new MenuItem("Pick Surface Texture", smallSkin, editor.pickNewWallTexAction).setAccelerator(new MenuAccelerator(Keys.NUM_2, false, true)))
+                                .addItem(new MenuItem("Flood Fill Surface Texture", smallSkin, editor.fillTextureAction).setAccelerator(new MenuAccelerator(Keys.NUM_5, false, false)))
                         )
                         .addItem(new MenuItem("Tiles", smallSkin)
                                 .addItem(new MenuItem("Raise Floor", smallSkin, editor.raiseFloorAction).setAccelerator(new MenuAccelerator(Keys.NUM_3, false, false)))
