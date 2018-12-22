@@ -65,6 +65,7 @@ public class Editor {
     public ActionListener paintWallAction;
     public ActionListener pickWallAction;
     public ActionListener pickNewWallTexAction;
+    public ActionListener fillTextureAction;
 
     public ActionListener xDragMode;
     public ActionListener yDragMode;
@@ -453,6 +454,13 @@ public class Editor {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 editorFrame.pickNewSurfaceTexture();
+            }
+        };
+
+        fillTextureAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.fillSurfaceTexture();
             }
         };
 
