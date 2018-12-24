@@ -219,8 +219,6 @@ public class EditorFrame implements ApplicationListener {
 
 	private boolean rightClickWasDown = false;
 
-	public TesselatorGroups tesselators;
-
     public PerspectiveCamera camera = new PerspectiveCamera();
 
     protected Pixmap wallPixmap;
@@ -302,6 +300,7 @@ public class EditorFrame implements ApplicationListener {
 	private Player player = null;
 
     private boolean showLights = false;
+	private boolean lightsDirty = true;
 
 	private Entity hoveredEntity = null;
     private Entity pickedEntity = null;
@@ -377,8 +376,6 @@ public class EditorFrame implements ApplicationListener {
 		Gdx.input.setInputProcessor( input );
 
         renderer.init();
-
-        tesselators = new TesselatorGroups();
 
 		cubeMesh = genCube();
 		spriteBatch = new DecalBatch(new SpriteGroupStrategy(camera, null, GlRenderer.worldShaderInfo, 1));
@@ -471,8 +468,6 @@ public class EditorFrame implements ApplicationListener {
 				rotY = -Game.instance.player.yrot;
 
 				Audio.stopLoopingSounds();
-
-				tesselators.refresh();
 			}
 
 			return;
@@ -562,30 +557,13 @@ public class EditorFrame implements ApplicationListener {
 		gl.glClearColor(0.2235f, 0.2235f, 0.2235f, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
 
-		Tesselate();
+		if(showLights && lightsDirty) {
+			lightsDirty = false;
+			level.updateLights(Source.EDITOR);
+		}
 
-        tesselators.world.render();
-
-        GlRenderer.waterShaderInfo.setScrollSpeed(0f);
-        tesselators.water.render();
-
-        GlRenderer.waterShaderInfo.setScrollSpeed(0.03f);
-        tesselators.waterfall.render();
-
-        gl.glDepthFunc(GL20.GL_LEQUAL);
-
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 1f);
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 1f);
-
-        Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
-        Gdx.gl.glPolygonOffset(-1f, -1f);
-
-        tesselators.waterEdges.render();
-
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 4f);
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 0f);
-
-        tesselators.waterfallEdges.render();
+        renderer.Tesselate(level);
+        renderer.renderWorld(level);
 
 		gl.glDisable(GL20.GL_CULL_FACE);
 
@@ -1565,29 +1543,8 @@ public class EditorFrame implements ApplicationListener {
 		Gdx.gl.glCullFace(GL20.GL_BACK);
 		Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 
-		Tesselate();
-
-		// render world, keep depth buffer
-		tesselators.world.render();
-
-		GlRenderer.waterShaderInfo.setScrollSpeed(0f);
-		tesselators.water.render();
-
-		GlRenderer.waterShaderInfo.setScrollSpeed(0.03f);
-		tesselators.waterfall.render();
-
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 1f);
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 1f);
-
-		Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
-		Gdx.gl.glPolygonOffset(-1f, -1f);
-
-		tesselators.waterEdges.render();
-
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 4f);
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 0f);
-
-		tesselators.waterfallEdges.render();
+		renderer.Tesselate(level);
+		renderer.renderWorld(level);
 
 		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -1608,14 +1565,17 @@ public class EditorFrame implements ApplicationListener {
 			triangleSpatialHash.AddTriangle(staticMeshCollisionTriangles.get(i));
 		}
 
-		tesselators.world.addCollisionTriangles(triangleSpatialHash);
+		// TODO: Fix spatial hash
+		/*tesselators.world.addCollisionTriangles(triangleSpatialHash);
 		tesselators.water.addCollisionTriangles(triangleSpatialHash);
-		tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
+		tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);*/
 	}
 
 	private void refreshEntity(Entity theEntity) {
 		if(theEntity instanceof Light && showLights) {
-			refreshLights();
+			markWorldAsDirty((int)theEntity.x, (int)theEntity.y, (int)((Light)theEntity).range + 1);
+			((Light)theEntity).clearCanSee();
+			lightsDirty = true;
 		}
 		else if(theEntity instanceof ProjectedDecal) {
 			((ProjectedDecal)theEntity).refresh();
@@ -2562,29 +2522,6 @@ public class EditorFrame implements ApplicationListener {
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-    public Tesselator tesselator = new Tesselator();
-    public void Tesselate()
-	{
-        if(!tesselators.world.needsTesselation()) return;
-
-        if(renderer.chunks != null)
-			renderer.chunks.clear();
-
-		int width = level.width;
-		int height = level.height;
-
-		int xOffset = 0;
-		int yOffset = 0;
-
-		boolean makeFloors = true;
-		boolean makeCeilings = true;
-		boolean makeWalls = true;
-
-		tesselator.Tesselate(level, renderer, null, xOffset, yOffset, width, height, tesselators, makeFloors, makeCeilings, makeWalls, showLights);
-
-        refreshTriangleSpatialHash();
-	}
-
 	public int GetNextPowerOf2(int v) {
 		v--;
 		v |= v >> 1;
@@ -2865,11 +2802,10 @@ public class EditorFrame implements ApplicationListener {
 				for(int y = selY; y < selY + selHeight; y++) {
 				   EditorMarker eM = new EditorMarker(selectedItem, x, y);
 				   level.editorMarkers.add(eM);
+				   markWorldAsDirty(x, y, 4);
 				}
 		   }
 	   }
-
-	   refreshLights();
 
        history.saveState(level);
    }
@@ -2913,11 +2849,11 @@ public class EditorFrame implements ApplicationListener {
 		   if(at != null) copy.z = at.floorHeight + 0.5f;
 
 		   level.entities.add(copy);
+
+		   markWorldAsDirty(x, y, 4);
 	   }
 
        history.saveState(level);
-
-	   refreshLights();
    }
 
    public void clearSelectedMarkers() {
@@ -2947,14 +2883,16 @@ public class EditorFrame implements ApplicationListener {
 						if(m.x == x && m.y == y) toDelete.add(m);
 					}
 
+					if(toDelete.size > 0) {
+						markWorldAsDirty(x, y, 4);
+					}
+
 					for(EditorMarker m : toDelete) {
 						level.editorMarkers.removeValue(m, true);
 					}
 				}
 			}
 		}
-
-	   refreshLights();
    }
 
 	public void refresh() {
@@ -2966,8 +2904,31 @@ public class EditorFrame implements ApplicationListener {
 		refreshLights();
 	}
 
+	public void markWorldAsDirty(int xPos, int yPos, int radius) {
+		int startX = (xPos - radius) / 17;
+		int startY = (yPos - radius) / 17;
+		int endX = (xPos + radius) / 17;
+		int endY = (yPos + radius) / 17;
+
+		for(int x = startX; x <= endX; x++) {
+			for(int y = startY; y <= endY; y++) {
+				WorldChunk chunk = renderer.GetWorldChunkAt(x * 17, y * 17);
+
+				if(chunk == null) {
+					// No chunk here yet, so make one
+					chunk = new WorldChunk(renderer);
+					chunk.setOffset(x * 17, y * 17);
+					chunk.setSize(17, 17);
+					renderer.chunks.add(chunk);
+				}
+
+				chunk.hasBuilt = false;
+			}
+		}
+	}
+
 	public void refreshLights() {
-        tesselators.refresh();
+		level.isDirty = true;
 
 		if(showLights) {
 			level.cleanupLightCache();
@@ -3021,10 +2982,12 @@ public class EditorFrame implements ApplicationListener {
 
                 t.eastTex = t.westTex = t.northTex = t.southTex = null;
                 t.bottomEastTex = t.bottomWestTex = t.bottomNorthTex = t.bottomSouthTex = null;
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
 
-        // Paint directional tiles
+        // Paint directional tiless
         if(paintAdjacent.isChecked()) {
             if (selY - 1 >= 0) {
                 for (int x = selX; x < selX + selWidth; x++) {
@@ -3098,8 +3061,6 @@ public class EditorFrame implements ApplicationListener {
                 }
             }
         }
-
-		refreshLights();
 	}
 
 	public void paintTile(Tile tocopy) {
@@ -3155,6 +3116,8 @@ public class EditorFrame implements ApplicationListener {
                 t.bottomEastTexAtlas = t.bottomWestTexAtlas = t.bottomNorthTexAtlas = t.bottomSouthTexAtlas = null;
 
                 t.init(Source.EDITOR);
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
 
@@ -3231,8 +3194,6 @@ public class EditorFrame implements ApplicationListener {
                 }
             }
         }
-
-		refreshLights();
 	}
 
 	public void clearTiles() {
@@ -3268,12 +3229,12 @@ public class EditorFrame implements ApplicationListener {
 					t.wallTexAtlas = pickedWallTextureAtlas;
 					level.setTile(x, y, t);
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
 
 		clearSelectedMarkers();
-
-		refreshLights();
 	}
 
 	public void rotateFloorTex(int value) {
@@ -3302,10 +3263,10 @@ public class EditorFrame implements ApplicationListener {
 					t.floorTexRot += value;
 					t.floorTexRot %= 4;
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
     public Entity copyEntity(Entity entity) {
@@ -3398,6 +3359,8 @@ public class EditorFrame implements ApplicationListener {
                         Tile.copy(clipboard.tiles[x][y],t);
                         level.setTile(x + selX, y + selY, t);
                     }
+
+					markWorldAsDirty(x, y, 1);
                 }
             }
 
@@ -3412,13 +3375,13 @@ public class EditorFrame implements ApplicationListener {
 				}
 
                 level.entities.add(copy);
+
+				markWorldAsDirty((int)copy.x, (int)copy.y, 4);
             }
 
             // save undo history
             history.saveState(level);
         }
-
-        refreshLights();
     }
 
 	public void rotateAngle() {
@@ -3448,10 +3411,10 @@ public class EditorFrame implements ApplicationListener {
 					t.renderSolid = false;
 					t.tileSpaceType = TileSpaceType.values()[(t.tileSpaceType.ordinal() + 1) % TileSpaceType.values().length];
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void rotateCeilTex(int value) {
@@ -3480,10 +3443,10 @@ public class EditorFrame implements ApplicationListener {
 					t.ceilTexRot += value;
 					t.ceilTexRot %= 4;
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void moveFloor(int value) {
@@ -3508,10 +3471,10 @@ public class EditorFrame implements ApplicationListener {
 				Tile t = level.getTileOrNull(x,y);
 				if(t != null)
 					t.floorHeight += (value * 0.0625f);
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void moveCeiling(int value) {
@@ -3536,10 +3499,10 @@ public class EditorFrame implements ApplicationListener {
 				Tile t = level.getTileOrNull(x,y);
 				if(t != null)
 					t.ceilHeight += (value * 0.0625f);
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void doFloorMoveUp() {
@@ -3809,7 +3772,7 @@ public class EditorFrame implements ApplicationListener {
 			t.init(Source.EDITOR);
 
 			history.saveState(level);
-			refreshLights();
+			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
 		}
 	}
 
@@ -4108,10 +4071,11 @@ public class EditorFrame implements ApplicationListener {
 
             for(Entity selEntity : additionalSelected) {
                 level.entities.removeValue(selEntity, true);
+
+				markWorldAsDirty((int)selEntity.x, (int)selEntity.y, 4);
             }
 
             clearEntitySelection();
-            refreshLights();
 
             canDelete = false;
         }
@@ -4147,9 +4111,10 @@ public class EditorFrame implements ApplicationListener {
                     t.floorHeight = matchFloorHeight;
                     t.slopeNE = t.slopeNW = t.slopeSE = t.slopeSW = 0;
                 }
+
+				markWorldAsDirty(x, y, 1);
             }
         }
-        refreshLights();
     }
 
     public void flattenCeiling() {
@@ -4166,9 +4131,10 @@ public class EditorFrame implements ApplicationListener {
                     t.ceilHeight = matchCeilHeight;
                     t.ceilSlopeNE = t.ceilSlopeNW = t.ceilSlopeSE = t.ceilSlopeSW = 0;
                 }
+
+				markWorldAsDirty(x, y, 1);
             }
         }
-        refreshLights();
     }
 
     public void toggleSimulation() {
