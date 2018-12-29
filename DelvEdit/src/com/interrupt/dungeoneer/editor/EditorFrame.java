@@ -1598,7 +1598,7 @@ public class EditorFrame implements ApplicationListener {
 		tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
 	}
 
-	private void refreshEntity(Entity theEntity) {
+	protected void refreshEntity(Entity theEntity) {
 		if(theEntity instanceof Light && showLights) {
 			refreshLights();
 		}
