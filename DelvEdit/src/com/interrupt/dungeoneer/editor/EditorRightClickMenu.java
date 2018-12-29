@@ -31,6 +31,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
     	MenuItem toJson = new MenuItem("To JSON", skin);
 		MenuItem onFloor = new MenuItem("Move to Floor", skin);
 		MenuItem onCeiling = new MenuItem("Move to Ceiling", skin);
+		MenuItem center = new MenuItem("Center in Tile", skin);
     	
     	if(e instanceof Group && !(e instanceof Prefab)) {
     		MenuItem unGroup = new MenuItem("Ungroup", skin);
@@ -84,16 +85,27 @@ public class EditorRightClickMenu extends Scene2dMenu {
 			public void actionPerformed(ActionEvent event) {
 				float floorHeight = lvl.getTile((int)entity.x, (int)entity.y).getFloorHeight(entity.x, entity.y);
 				entity.z = floorHeight + 0.5f;
+				editor.refreshEntity(entity);
 			}
 		});
 
-		addItem(onCeiling);
+	addItem(onCeiling);
 		onCeiling.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				float ceilHeight = lvl.getTile((int)entity.x, (int)entity.y).getCeilHeight(entity.x, entity.y);
 				entity.z = ceilHeight - entity.collision.z + 0.5f;
+				editor.refreshEntity(entity);
 			}
 		});
+
+        addItem(center);
+		center.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				entity.x = (int)entity.x + 0.5f;
+				entity.y = (int)entity.y + 0.5f;
+				editor.refreshEntity(entity);
+			}
+		});		
     }
     
     public EditorRightClickMenu(final Entity main, final Array<Entity> additionalSelected, final EditorFrame editor, final JFrame window, final Level level) {
@@ -147,6 +159,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 
 		MenuItem onFloor = new MenuItem("Move to Floor", skin);
 		MenuItem onCeiling = new MenuItem("Move to Ceiling", skin);
+		MenuItem center = new MenuItem("Center in Tile", skin);
 
 		addItem(onFloor);
 		onFloor.addActionListener(new ActionListener() {
@@ -158,6 +171,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 				for(Entity entity : allSelected) {
 					float floorHeight = level.getTile((int) entity.x, (int) entity.y).getFloorHeight(entity.x, entity.y);
 					entity.z = floorHeight + 0.5f;
+					editor.refreshEntity(entity);
 				}
 			}
 		});
@@ -172,6 +186,22 @@ public class EditorRightClickMenu extends Scene2dMenu {
 				for(Entity entity : allSelected) {
 					float ceilHeight = level.getTile((int) entity.x, (int) entity.y).getCeilHeight(entity.x, entity.y);
 					entity.z = ceilHeight - entity.collision.z + 0.5f;
+					editor.refreshEntity(entity);
+				}
+			}
+		});
+
+		addItem(center);
+		center.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				Array<Entity> allSelected = new Array<Entity>();
+				allSelected.add(main);
+				allSelected.addAll(additionalSelected);
+
+				for(Entity entity : allSelected) {
+					entity.x = (int)entity.x + 0.5f;
+					entity.y = (int)entity.y + 0.5f;
+					editor.refreshEntity(entity);
 				}
 			}
 		});
