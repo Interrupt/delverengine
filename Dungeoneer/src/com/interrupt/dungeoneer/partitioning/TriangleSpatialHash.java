@@ -3,12 +3,10 @@ package com.interrupt.dungeoneer.partitioning;
 import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntArray;
-import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.Triangle;
+import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.CachePools;
+import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 
@@ -132,6 +130,20 @@ public class TriangleSpatialHash {
 		
 		key = getKey(e.v3.x, e.v3.z);
 		PutTriangle(key, e);
+	}
+
+	public void dropWorldChunk(WorldChunk chunk) {
+		temp.clear();
+		IntArray cells = getCellsNear(chunk.getWorldX(), chunk.getWorldY(), chunk.getRadius());
+
+		// drop triangles in these cells
+		for(int i = 0; i < cells.size; i++) {
+			int cell = cells.get(i);
+			Array<Triangle> inCell = hash.get(cell);
+			if(inCell != null) {
+				inCell.clear();
+			}
+		}
 	}
 	
 	// Returns triangles found near an entity

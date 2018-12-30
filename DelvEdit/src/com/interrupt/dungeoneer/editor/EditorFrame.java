@@ -55,7 +55,6 @@ import com.interrupt.dungeoneer.gfx.*;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.interfaces.Directional;
-import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -68,7 +67,6 @@ import com.noise.PerlinNoise;
 
 import javax.swing.*;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 public class EditorFrame implements ApplicationListener {
 
@@ -108,7 +106,6 @@ public class EditorFrame implements ApplicationListener {
 
 	public boolean canDelete = true;
 
-    protected static TriangleSpatialHash triangleSpatialHash = new TriangleSpatialHash(1);
     protected static Array<Triangle> staticMeshCollisionTriangles = new Array<Triangle>();
 
     protected Array<Vector3> spatialWorkerList = new Array<Vector3>();
@@ -611,46 +608,6 @@ public class EditorFrame implements ApplicationListener {
 
 		Gdx.gl.glEnable(GL20.GL_ALPHA);
         Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-		if(staticMeshBatch == null) {
-			staticMeshCollisionTriangles.clear();
-			EditorCachePools.freeAllCaches();
-
-			// sort the mesh entities into buckets, determined by their texture
-			HashMap<String, Array<Entity>> meshesByTexture = new HashMap<String, Array<Entity>>();
-			groupStaticMeshesByTexture(level.entities, meshesByTexture);
-
-			// make a static mesh from each entity bucket
-			staticMeshBatch = new HashMap<String, Array<Mesh>>();
-			for(String key : meshesByTexture.keySet()) {
-				staticMeshBatch.put(key, mergeStaticMeshes(level, meshesByTexture.get(key)));
-			}
-
-			// cleanup, don't need the mesh buckets anmyore
-			meshesByTexture.clear();
-
-			refreshTriangleSpatialHash();
-		}
-		if(staticMeshBatch != null) {
-			for(Entry<String, Array<Mesh>> meshBuckets : staticMeshBatch.entrySet()) {
-				Texture t = Art.cachedTextures.get(meshBuckets.getKey());
-				if(t != null) GlRenderer.bindTexture(t);
-				if(meshBuckets.getValue() != null) {
-					GlRenderer.worldShaderInfo.setAttributes(camera.combined,
-							0,
-							1000,
-							1000,
-							time,
-							Color.BLACK,
-							Color.BLACK);
-
-					GlRenderer.worldShaderInfo.begin();
-					for(Mesh m : meshBuckets.getValue()) {
-						m.render(GlRenderer.worldShaderInfo.shader, GL20.GL_TRIANGLES);
-					}
-					GlRenderer.worldShaderInfo.end();
-				}
-			}
-		}
 
 		renderer.renderDecals();
 		renderer.renderStencilPasses();
@@ -1557,18 +1514,7 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	private void refreshTriangleSpatialHash() {
-		GlRenderer.triangleSpatialHash = triangleSpatialHash;
-		triangleSpatialHash.Flush();
-
-		// add the collision triangles to the spatial hash
-		for(int i = 0; i < staticMeshCollisionTriangles.size; i++) {
-			triangleSpatialHash.AddTriangle(staticMeshCollisionTriangles.get(i));
-		}
-
-		// TODO: Fix spatial hash
-		/*tesselators.world.addCollisionTriangles(triangleSpatialHash);
-		tesselators.water.addCollisionTriangles(triangleSpatialHash);
-		tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);*/
+		GlRenderer.triangleSpatialHash.Flush();
 	}
 
 	private void refreshEntity(Entity theEntity) {
@@ -1581,7 +1527,11 @@ public class EditorFrame implements ApplicationListener {
 			((ProjectedDecal)theEntity).refresh();
 		}
 		else if(theEntity instanceof Model) {
-			if(!((Model)theEntity).isDynamic) staticMeshBatch = null;
+			Model m = (Model)theEntity;
+			if(!m.isDynamic) {
+				// Todo: Get range from the bounding box
+				markWorldAsDirty((int)theEntity.x, (int)theEntity.y, 5);
+			}
 		}
 		else if(theEntity instanceof Prefab) {
 			Array<Entity> contains = ((Prefab)theEntity).entities;
@@ -2049,7 +1999,7 @@ public class EditorFrame implements ApplicationListener {
 
 		// try world intersection
 		Intersector.intersectRayPlane(ray, p, intpos);
-		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, triangleSpatialHash.getAllTriangles(), intpos, intersectNormal)) {
+		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, GlRenderer.triangleSpatialHash.getAllTriangles(), intpos, intersectNormal)) {
 			intersectTemp.set(intpos).sub(camera.position).nor();
 			intpos.add(intersectTemp.x * -0.05f, 0.0001f, intersectTemp.z * -0.05f);
 			worldHitDistance = intersectTemp.set(intpos).sub(camera.position).len();
@@ -3539,7 +3489,7 @@ public class EditorFrame implements ApplicationListener {
 
 	Vector3 t_pickerVector = new Vector3();
 	public void updatePickedSurface() {
-		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, triangleSpatialHash.getAllTriangles(), t_pickerVector, intersectNormal)) {
+		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, GlRenderer.triangleSpatialHash.getAllTriangles(), t_pickerVector, intersectNormal)) {
 			t_pickerVector.add(intersectTemp.x * 0.0001f, intersectTemp.y * 0.0001f, intersectTemp.z * 0.0001f);
 			pickedSurface.position.set(t_pickerVector);
 			pickedSurface.isPicked = true;
@@ -4246,7 +4196,7 @@ public class EditorFrame implements ApplicationListener {
     }
 
     public Array<Triangle> GetCollisionTriangles() {
-        return triangleSpatialHash.getAllTriangles();
+        return GlRenderer.triangleSpatialHash.getAllTriangles();
     }
 
     public Array<Vector3> TriangleArrayToVectorList(Array<Triangle> triangles) {

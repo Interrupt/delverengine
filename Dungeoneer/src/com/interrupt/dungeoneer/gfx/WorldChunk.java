@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
+import com.badlogic.gdx.utils.Triangle;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -144,6 +145,16 @@ public class WorldChunk {
 				e.updateLight(level);
 			}
 		}
+
+		// renderer hasn't sorted entities into static_entities yet
+		if(renderer.editorIsRendering) {
+			for(Entity e : level.entities) {
+				if(e.x >= xOffset && e.x < xOffset + width && e.y >= yOffset && e.y < yOffset + height) {
+					entities.add(e);
+					e.updateLight(level);
+				}
+			}
+		}
 		
 		if(level instanceof OverworldLevel) {
 			for(OverworldChunk chunk : ((OverworldLevel)level).chunks.values()) {
@@ -243,5 +254,17 @@ public class WorldChunk {
 
 	public void setOverworldChunk(OverworldChunk overworldChunk) {
 		this.overworldChunk = overworldChunk;
+	}
+
+	public int getWorldX() {
+		return xOffset + (width / 2);
+	}
+
+	public int getWorldY() {
+		return yOffset + (height / 2);
+	}
+
+	public int getRadius() {
+		return width / 2;
 	}
 }
