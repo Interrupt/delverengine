@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Triangle;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.Group;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.OverworldChunk;
@@ -128,6 +129,19 @@ public class WorldChunk {
 			staticMeshBatch.clear();
 		}
 	}
+
+	public void AddEntityForEditor(Entity e, Level level) {
+		// Needed for static meshes in groups in the editor
+		if(e instanceof Group) {
+			e.init(level, Level.Source.EDITOR);
+			for(Entity g : ((Group) e).entities) {
+				AddEntityForEditor(g, level);
+			}
+		} else {
+			entities.add(e);
+			e.updateLight(level);
+		}
+	}
 	
 	public void Tesselate(Level level, GlRenderer renderer)
 	{
@@ -150,8 +164,7 @@ public class WorldChunk {
 		if(renderer.editorIsRendering) {
 			for(Entity e : level.entities) {
 				if(e.x >= xOffset && e.x < xOffset + width && e.y >= yOffset && e.y < yOffset + height) {
-					entities.add(e);
-					e.updateLight(level);
+					AddEntityForEditor(e, level);
 				}
 			}
 		}

@@ -220,6 +220,9 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 		}
 
 		editor.level.entities.add(entity);
+		entity.init(editor.level, Level.Source.EDITOR);
+		editor.markWorldAsDirty((int)entity.x, (int)entity.y, 4);
+
 		editor.refreshLights();
 		editor.history.saveState(editor.level);
 	}

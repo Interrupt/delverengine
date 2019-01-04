@@ -3314,6 +3314,7 @@ public class EditorFrame implements ApplicationListener {
 				}
 
                 level.entities.add(copy);
+                copy.init(level, Source.EDITOR);
 
 				markWorldAsDirty((int)copy.x, (int)copy.y, 4);
             }
@@ -3854,6 +3855,7 @@ public class EditorFrame implements ApplicationListener {
 	public void doDelete() {
         if(pickedEntity != null) {
             level.entities.removeValue(pickedEntity, true);
+			markWorldAsDirty((int)pickedEntity.x, (int)pickedEntity.y, 4);
 
             for(Entity selEntity : additionalSelected) {
                 level.entities.removeValue(selEntity, true);

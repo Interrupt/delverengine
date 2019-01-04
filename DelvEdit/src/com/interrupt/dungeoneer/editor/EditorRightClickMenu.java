@@ -110,12 +110,16 @@ public class EditorRightClickMenu extends Scene2dMenu {
 				newGroup.x = main.x;
 				newGroup.y = main.y;
 				newGroup.z = main.z;
+
+				editor.markWorldAsDirty((int)main.x, (int)main.y, 4);
 				
 				for(Entity selected : additionalSelected) {
 					selected.x = selected.x - main.x;
 					selected.y = selected.y - main.y;
 					selected.z = selected.z - main.z;
 					newGroup.entities.add(selected);
+
+					editor.markWorldAsDirty((int)selected.x, (int)selected.y, 4);
 					
 					level.entities.removeValue(selected, true);
 				}
@@ -133,9 +137,11 @@ public class EditorRightClickMenu extends Scene2dMenu {
     	remove.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent event) {
 				level.entities.removeValue(main, true);
+				editor.markWorldAsDirty((int)main.x, (int)main.y, 4);
 				
 				for(Entity selected : additionalSelected) {
 					level.entities.removeValue(selected, true);
+					editor.markWorldAsDirty((int)selected.x, (int)selected.y, 4);
 				}
 				
 				editor.refreshLights();
