@@ -365,6 +365,7 @@ public class EditorFrame implements ApplicationListener {
 		Gdx.input.setInputProcessor( input );
 
         renderer.init();
+		renderer.enableLighting = showLights;
 
 		cubeMesh = genCube();
 		spriteBatch = new DecalBatch(new SpriteGroupStrategy(camera, null, GlRenderer.worldShaderInfo, 1));
