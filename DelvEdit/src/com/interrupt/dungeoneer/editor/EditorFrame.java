@@ -2775,25 +2775,9 @@ public class EditorFrame implements ApplicationListener {
    }
 
    public void addEntity(Entity e) {
-	   if(selected) {
-		   int x = selectionX;
-		   int y = selectionY;
-
-		   String objCopy = Game.toJson(e);
-
-		   Entity copy = Game.fromJson(e.getClass(), objCopy);
-		   copy.x = x + 0.5f;
-		   copy.y = y + 0.5f;
-
-		   Tile at = level.getTileOrNull(x, y);
-		   if(at != null) copy.z = at.floorHeight + 0.5f;
-
-		   level.entities.add(copy);
-
-		   markWorldAsDirty(x, y, 4);
-	   }
-
-       history.saveState(level);
+	   level.entities.add(e);
+	   e.init(level, Source.EDITOR);
+	   markWorldAsDirty((int)e.x, (int)e.y, 4);
    }
 
    public void clearSelectedMarkers() {
@@ -3314,10 +3298,7 @@ public class EditorFrame implements ApplicationListener {
                 	copy.z += copyAt.getFloorHeight(0.5f, 0.5f);
 				}
 
-                level.entities.add(copy);
-                copy.init(level, Source.EDITOR);
-
-				markWorldAsDirty((int)copy.x, (int)copy.y, 4);
+				addEntity(copy);
             }
 
             // save undo history
@@ -3871,6 +3852,8 @@ public class EditorFrame implements ApplicationListener {
         else {
             clearTiles();
         }
+
+		refreshLights();
 
         // save undo history
         history.saveState(level);
