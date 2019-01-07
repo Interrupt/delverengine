@@ -65,6 +65,7 @@ import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.StringManager;
 import com.noise.PerlinNoise;
+import com.badlogic.gdx.math.MathUtils;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -507,6 +508,11 @@ public class EditorFrame implements ApplicationListener {
 	Vector3 intersectNormal = new Vector3();
 	Vector3 intersectTemp = new Vector3();
 	Array<Entity> selectedEntities = new Array<Entity>();
+
+	// Track the starting point of the selection area.
+	int selStartX = 0;
+	int selStartY = 0;
+
 	public void draw() {
 		GL20 gl = renderer.getGL();
         GlRenderer.clearBoundTexture();
@@ -755,6 +761,9 @@ public class EditorFrame implements ApplicationListener {
 				if(selectionY >= level.height) selectionY = level.height - 1;
 
                 selectionWidth = selectionHeight = 1;
+				selStartX = selectionX;
+				selStartY = selectionY;
+				controlPoints.clear();
 			}
 			else if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
 				if(Gdx.input.isKeyPressed(Keys.ALT_LEFT)) {
@@ -778,17 +787,15 @@ public class EditorFrame implements ApplicationListener {
 						// don't modify selection area!
 						movingControlPoint = true;
 					} else {
+						// The user is dragging the selection area to set its size. Update the selection area based on their mouse position.
+						int newX = MathUtils.clamp((int) intpos.x, 0, level.width - 1);
+						int newY = MathUtils.clamp((int) intpos.z, 0, level.height - 1);
 
-						float selectXMod = 0.8f;
-						float selectYMod = 0.8f;
-						if (intpos.x < selectionX) selectXMod *= -1f;
-						if (intpos.z < selectionY) selectYMod *= -1f;
-
-						selectionWidth = ((int) (intpos.x + selectXMod) - selectionX);
-						selectionHeight = ((int) (intpos.z + selectYMod) - selectionY);
-
-						if (selectionWidth == 0) selectionWidth = 1;
-						if (selectionHeight == 0) selectionHeight = 1;
+						selectionWidth = Math.abs(selStartX - newX) + 1;
+						selectionHeight = Math.abs(selStartY - newY) + 1;
+						// Always make this the lowest corner so that the selection size, which is relative to this, is positive.
+						selectionX = Math.min(newX, selStartX);
+						selectionY = Math.min(newY, selStartY);
 
 						controlPoints.clear();
 					}
@@ -916,17 +923,6 @@ public class EditorFrame implements ApplicationListener {
 			int selY = selectionY;
 			int selWidth = selectionWidth;
 			int selHeight = selectionHeight;
-
-			if(selWidth < 0) {
-				selX = selX + selWidth;
-				selWidth *= -1;
-				selX += 1;
-			}
-			if(selHeight < 0) {
-				selY = selY + selHeight;
-				selHeight *= -1;
-				selY += 1;
-			}
 
 			Tile startTile = level.getTile(selectionX, selectionY);
 
@@ -1085,17 +1081,6 @@ public class EditorFrame implements ApplicationListener {
 				int selY = selectionY;
 				int selWidth = selectionWidth;
 				int selHeight = selectionHeight;
-
-				if(selWidth < 0) {
-					selX = selX + selWidth;
-					selWidth *= -1;
-					selX += 1;
-				}
-				if(selHeight < 0) {
-					selY = selY + selHeight;
-					selHeight *= -1;
-					selY += 1;
-				}
 
 				for(int x = selX; x < selX + selWidth; x++) {
 					for(int y = selY; y < selY + selHeight; y++) {
@@ -1613,7 +1598,7 @@ public class EditorFrame implements ApplicationListener {
 		tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
 	}
 
-	private void refreshEntity(Entity theEntity) {
+	protected void refreshEntity(Entity theEntity) {
 		if(theEntity instanceof Light && showLights) {
 			refreshLights();
 		}
@@ -1854,17 +1839,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
@@ -2212,22 +2186,6 @@ public class EditorFrame implements ApplicationListener {
 
 			player.xa += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
 			player.ya += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
-		}
-
-		int selX = selectionX;
-		int selY = selectionY;
-		int selWidth = selectionWidth;
-		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
 		}
 
 		// Tile editing mode?
@@ -2847,17 +2805,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 	   clearSelectedMarkers();
 
 	   if(selectedItem != Markers.none) {
@@ -2879,17 +2826,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 	   for(EditorMarker marker : level.editorMarkers) {
 		   if(marker.x >= selX && marker.x < selX + selWidth && marker.y >= selY && marker.y < selY + selHeight) return true;
@@ -2925,17 +2861,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 	   for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
@@ -2994,17 +2919,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 		Tile selected = level.getTile(selectionX, selectionY);
 
@@ -3107,17 +3021,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
@@ -3241,17 +3144,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile n = level.getTile(x, y - 1);
@@ -3283,17 +3175,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
@@ -3341,17 +3222,6 @@ public class EditorFrame implements ApplicationListener {
         int selWidth = selectionWidth;
         int selHeight = selectionHeight;
 
-        if(selWidth < 0) {
-            selX = selX + selWidth;
-            selWidth *= -1;
-            selX += 1;
-        }
-        if(selHeight < 0) {
-            selY = selY + selHeight;
-            selHeight *= -1;
-            selY += 1;
-        }
-
         if(pickedEntity == null) {
             clipboard.tiles = new Tile[selWidth][selHeight];
             clipboard.selWidth = selWidth;
@@ -3377,17 +3247,6 @@ public class EditorFrame implements ApplicationListener {
         if(clipboard != null) {
             int selX = selectionX;
             int selY = selectionY;
-            int selWidth = selectionWidth;
-            int selHeight = selectionHeight;
-
-            if(selWidth < 0) {
-                selX = selX + selWidth;
-                selX += 1;
-            }
-            if(selHeight < 0) {
-                selY = selY + selHeight;
-                selY += 1;
-            }
 
             for(int x = 0; x < clipboard.selWidth; x++) {
                 for(int y = 0; y < clipboard.selHeight; y++) {
@@ -3429,17 +3288,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
@@ -3462,17 +3310,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
@@ -3492,17 +3329,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
@@ -3519,17 +3345,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {

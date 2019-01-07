@@ -638,7 +638,7 @@ public class Tesselator {
 							if (c.isSky() && isOtherSolid) {
 								// This makes the edge of an outdoor map transparent for sky tiles.
 								showWall = false;
-							} else if (isOtherSky && isOtherFloorHigher) {
+							} else if (isOtherSky && (isOtherFloorHigher && !isOtherSolid)) {
 								// Make sure we show the lower portion of a raised sky tile.
 								showWall = true;
 							} else {
