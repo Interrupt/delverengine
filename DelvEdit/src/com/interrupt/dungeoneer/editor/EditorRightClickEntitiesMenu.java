@@ -227,7 +227,8 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 			}
 		}
 
-		editor.level.entities.add(entity);
+		editor.addEntity(entity);
+
 		editor.refreshLights();
 		editor.history.saveState(editor.level);
 	}

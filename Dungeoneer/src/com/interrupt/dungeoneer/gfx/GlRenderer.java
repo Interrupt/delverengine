@@ -2527,6 +2527,23 @@ public class GlRenderer {
 		}
 	}
 
+	public WorldChunk GetWorldChunkAt(int x, int y) {
+		if(chunks == null)
+			return null;
+
+		for(int i = 0; i < chunks.size; i++) {
+			WorldChunk c = chunks.get(i);
+
+			if(x >= c.xOffset && x < c.xOffset + c.width) {
+				if(y >= c.yOffset && y < c.yOffset + c.height) {
+					return c;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public void Tesselate(Level level)
 	{
 		if(level.isDirty) {
@@ -2572,7 +2589,9 @@ public class GlRenderer {
 			for (int i = 0; i < chunks.size; i++) {
 				WorldChunk c = chunks.get(i);
 				if(c != null && !c.hasBuilt) {
+					triangleSpatialHash.dropWorldChunk(c);
 					c.Tesselate(loadedLevel, this);
+					c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
 				}
 			}
 		}
