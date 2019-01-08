@@ -19,7 +19,7 @@ import com.interrupt.dungeoneer.game.Level;
 
 public class EditorRightClickMenu extends Scene2dMenu {
     
-    public EditorRightClickMenu(Entity e, EditorFrame editor, final JFrame wdw, Level level) {
+    public EditorRightClickMenu(Entity e, final EditorFrame editor, final JFrame wdw, Level level) {
         super(EditorUi.getSmallSkin());
         Skin skin = EditorUi.getSmallSkin();
     	
