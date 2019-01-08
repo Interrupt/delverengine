@@ -234,10 +234,10 @@ public class EditorFrame implements ApplicationListener {
 
     float camX = 7.5f;
     float camY = 8;
-    float camZ = 4.5f;
+    float camZ = 6.5f;
 
-    float rotX = 0;
-    float rotY = 20f;
+    float rotX = 3.14159f;
+    float rotY = 1.4f;
     double rota = 0;
 	double rotya = 0;
 	float rotYClamp = 1.571f;
@@ -666,6 +666,11 @@ public class EditorFrame implements ApplicationListener {
 		boolean shouldDrawBox = !pickedSurface.isPicked;
 		if(pickedSurface.isPicked && editorInput.isButtonPressed(Input.Buttons.LEFT) && !editorUi.isShowingMenuOrModal()) {
 			shouldDrawBox = true;
+		}
+
+		// don't draw the box when freelooking
+		if(shouldDrawBox && !selected && Gdx.input.isCursorCatched()) {
+			shouldDrawBox = false;
 		}
 
 		if(pickedEntity == null && hoveredEntity == null || tileDragging) {
@@ -2020,10 +2025,10 @@ public class EditorFrame implements ApplicationListener {
 		}
 		if(pickedEntity == null) movingEntity = false;
 
-		boolean turnLeft = editorInput.isKeyPressed(Keys.LEFT) || (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnRight = editorInput.isKeyPressed(Keys.RIGHT) || (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnUp = editorInput.isKeyPressed(Keys.UP) || (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnDown = editorInput.isKeyPressed(Keys.DOWN) || (Gdx.input.getDeltaY() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnLeft = editorInput.isKeyPressed(Keys.Q) || (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnRight = editorInput.isKeyPressed(Keys.E) || (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnUp = (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnDown = (Gdx.input.getDeltaY() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
 
 		if(turnLeft) {
 			rota += rotSpeed;
@@ -4043,6 +4048,75 @@ public class EditorFrame implements ApplicationListener {
         usedDecals.add(sd);
         return sd;
     }
+
+	public void moveTiles(int moveX, int moveY) {
+		int selX = selectionX;
+		int selY = selectionY;
+		int selWidth = selectionWidth;
+		int selHeight = selectionHeight;
+
+		// Move Tiles
+		if(selected) {
+			Tile[] moving = new Tile[selWidth * selHeight];
+
+			for (int x = 0; x < selWidth; x++) {
+				for (int y = 0; y < selHeight; y++) {
+					int tileX = selX + x;
+					int tileY = selY + y;
+
+					Tile t = level.getTileOrNull(tileX, tileY);
+					moving[x + y * selectionWidth] = t;
+
+					level.setTile(tileX, tileY, null);
+					markWorldAsDirty(tileX, tileY, 1);
+				}
+			}
+
+			for (int x = 0; x < selWidth; x++) {
+				for (int y = 0; y < selHeight; y++) {
+					int tileX = selX + x + moveX;
+					int tileY = selY + y + moveY;
+
+					level.setTile(tileX, tileY, moving[x + y * selectionWidth]);
+					markWorldAsDirty(tileX, tileY, 1);
+				}
+			}
+
+			// Move Markers
+			for(int x = selX; x < selX + selWidth; x++) {
+				for(int y = selY; y < selY + selHeight; y++) {
+					if(level.editorMarkers != null && level.editorMarkers.size > 0) {
+						for(int i = 0; i < level.editorMarkers.size; i++) {
+							EditorMarker m = level.editorMarkers.get(i);
+							if(m.x == x && m.y == y) {
+								m.x += moveX;
+								m.y += moveY;
+							}
+						}
+					}
+				}
+			}
+
+			selectionX += moveX;
+			selectionY += moveY;
+			controlPoints.clear();
+		}
+
+		// Move Entities
+		Array<Entity> allSelected = new Array<Entity>();
+		if(pickedEntity != null) {
+			allSelected.add(pickedEntity);
+		}
+		allSelected.addAll(additionalSelected);
+
+		for(Entity e : allSelected) {
+			e.x += moveX;
+			e.y += moveY;
+			markWorldAsDirty((int)e.x, (int)e.y, 1);
+		}
+
+		history.saveState(level);
+	}
 
 	private void vizualizePicking() {
 		if(pickViz == null)

@@ -58,6 +58,11 @@ public class Editor {
     public ActionListener copyAction;
     public ActionListener pasteAction;
 
+    public ActionListener moveTileNorthAction;
+    public ActionListener moveTileSouthAction;
+    public ActionListener moveTileEastAction;
+    public ActionListener moveTileWestAction;
+
     public ActionListener raiseFloorAction;
     public ActionListener lowerFloorAction;
     public ActionListener raiseCeilingAction;
@@ -482,6 +487,34 @@ public class Editor {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 editorFrame.paste();
+            }
+        };
+
+        moveTileNorthAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, 1);
+            }
+        };
+
+        moveTileSouthAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, -1);
+            }
+        };
+
+        moveTileEastAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(1, 0);
+            }
+        };
+
+        moveTileWestAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(-1, 0);
             }
         };
 
