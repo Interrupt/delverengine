@@ -109,9 +109,7 @@ public class EditorFrame implements ApplicationListener {
 
 	public boolean canDelete = true;
 
-    protected static Array<Triangle> staticMeshCollisionTriangles = new Array<Triangle>();
-
-    protected Array<Vector3> spatialWorkerList = new Array<Vector3>();
+	protected Array<Vector3> spatialWorkerList = new Array<Vector3>();
 
 	public enum TileSurface {Ceiling, Floor, UpperWall, LowerWall};
 
@@ -124,12 +122,7 @@ public class EditorFrame implements ApplicationListener {
 
 	public PickedSurface pickedSurface = new PickedSurface();
 
-    Matrix4 selectionTempMatrix = new Matrix4();
-	Matrix4 selectionTempMatrix2 = new Matrix4();
-	BoundingBox selectionTempBoundingBox = new BoundingBox();
-
 	Vector3 selectionTempVector1 = new Vector3();
-	Vector3 selectionTempVector2 = new Vector3();
 
 	FrameBuffer pickerFrameBuffer = null;
 	Pixmap pickerPixelBuffer = null;
@@ -2025,10 +2018,15 @@ public class EditorFrame implements ApplicationListener {
 		}
 		if(pickedEntity == null) movingEntity = false;
 
-		boolean turnLeft = editorInput.isKeyPressed(Keys.Q) || (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnRight = editorInput.isKeyPressed(Keys.E) || (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnLeft = (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnRight = (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
 		boolean turnUp = (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
 		boolean turnDown = (Gdx.input.getDeltaY() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+
+		turnLeft |= Gdx.input.isKeyPressed(Keys.LEFT) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
+		turnRight |= Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
+		turnUp |= Gdx.input.isKeyPressed(Keys.DOWN) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
+		turnDown |= Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
 
 		if(turnLeft) {
 			rota += rotSpeed;
@@ -2073,6 +2071,13 @@ public class EditorFrame implements ApplicationListener {
 		}
 		if(editorInput.isKeyPressed(Keys.S)) {
 			zm = 1f;
+		}
+
+		if(editorInput.isKeyPressed(Keys.Q) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
+			camZ -= 0.1f;
+		}
+		if(editorInput.isKeyPressed(Keys.E) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
+			camZ += 0.1f;
 		}
 
 		if (editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
@@ -4049,7 +4054,7 @@ public class EditorFrame implements ApplicationListener {
         return sd;
     }
 
-	public void moveTiles(int moveX, int moveY) {
+	public void moveTiles(int moveX, int moveY, float moveZ) {
 		int selX = selectionX;
 		int selY = selectionY;
 		int selWidth = selectionWidth;
@@ -4077,7 +4082,15 @@ public class EditorFrame implements ApplicationListener {
 					int tileX = selX + x + moveX;
 					int tileY = selY + y + moveY;
 
-					level.setTile(tileX, tileY, moving[x + y * selectionWidth]);
+					Tile t = moving[x + y * selectionWidth];
+
+					if(moveZ != 0 && t != null) {
+						t.floorHeight += moveZ;
+						t.ceilHeight += moveZ;
+					}
+
+					level.setTile(tileX, tileY, t);
+
 					markWorldAsDirty(tileX, tileY, 1);
 				}
 			}
@@ -4099,6 +4112,8 @@ public class EditorFrame implements ApplicationListener {
 
 			selectionX += moveX;
 			selectionY += moveY;
+			selectionHeights.add(moveZ, moveZ);
+
 			controlPoints.clear();
 		}
 
@@ -4112,6 +4127,7 @@ public class EditorFrame implements ApplicationListener {
 		for(Entity e : allSelected) {
 			e.x += moveX;
 			e.y += moveY;
+			e.z += moveZ;
 			markWorldAsDirty((int)e.x, (int)e.y, 1);
 		}
 

@@ -62,6 +62,8 @@ public class Editor {
     public ActionListener moveTileSouthAction;
     public ActionListener moveTileEastAction;
     public ActionListener moveTileWestAction;
+    public ActionListener moveTileUpAction;
+    public ActionListener moveTileDownAction;
 
     public ActionListener raiseFloorAction;
     public ActionListener lowerFloorAction;
@@ -493,28 +495,42 @@ public class Editor {
         moveTileNorthAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                editorFrame.moveTiles(0, 1);
+                editorFrame.moveTiles(0, 1, 0);
             }
         };
 
         moveTileSouthAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                editorFrame.moveTiles(0, -1);
+                editorFrame.moveTiles(0, -1, 0);
             }
         };
 
         moveTileEastAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                editorFrame.moveTiles(1, 0);
+                editorFrame.moveTiles(1, 0, 0);
             }
         };
 
         moveTileWestAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                editorFrame.moveTiles(-1, 0);
+                editorFrame.moveTiles(-1, 0, 0);
+            }
+        };
+
+        moveTileUpAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, 0, 0.5f);
+            }
+        };
+
+        moveTileDownAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, 0, -0.5f);
             }
         };
 
