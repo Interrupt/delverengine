@@ -85,7 +85,7 @@ public class TriggeredElevator extends Trigger {
 					state = ElevatorState.NONE;
 				}
 			} else if (state == ElevatorState.WAITING) {
-				waitTime += delta * 0.01f;
+				waitTime += delta;
 
 				if(returnType == ReturnType.AUTO) {
 					if (waitTime > endWaitTime) {
@@ -114,6 +114,9 @@ public class TriggeredElevator extends Trigger {
 							t.floorHeight += moving;
 							t.ceilHeight -= moving;
 						}
+
+						// Make this tile totally solid when fully closed
+						t.blockMotion = t.getMinOpenHeight() <= 0.0f;
 
 						markWorldAsDirty(tileX, tileY);
 						markWorldAsDirty(tileX + 1, tileY);
