@@ -63,9 +63,11 @@ public class TriggeredElevator extends Trigger {
 		if(deltaBuffer >= 1f) {
 			if (state == ElevatorState.MOVING) {
 				moving = moveSpeed * deltaBuffer * 0.1f;
+				if(moveAmount < 0) moving *= -1;
+
 				hasMoved += moving;
 
-				if (hasMoved > moveAmount) {
+				if (Math.abs(hasMoved) > Math.abs(moveAmount)) {
 					moving -= hasMoved - moveAmount;
 					hasMoved = moveAmount;
 
@@ -73,9 +75,11 @@ public class TriggeredElevator extends Trigger {
 				}
 			} else if (state == ElevatorState.RETURNING) {
 				moving = -moveSpeed * deltaBuffer * 0.1f;
+				if(moveAmount < 0) moving *= -1;
+
 				hasMoved += moving;
 
-				if (hasMoved < 0) {
+				if (moveAmount > 0 && hasMoved < 0 || moveAmount < 0 && hasMoved > 0) {
 					moving += 0 - hasMoved;
 					hasMoved = 0;
 					state = ElevatorState.NONE;
