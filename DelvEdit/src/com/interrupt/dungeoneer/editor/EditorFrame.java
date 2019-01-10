@@ -3519,7 +3519,7 @@ public class EditorFrame implements ApplicationListener {
 			t.init(Source.EDITOR);
 
 			history.saveState(level);
-			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
+			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.z, 1);
 		}
 	}
 
