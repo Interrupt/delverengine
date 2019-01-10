@@ -70,6 +70,16 @@ public class Tile implements Serializable {
     public String bottomSouthTexAtlas = null;
     public String bottomEastTexAtlas = null;
     public String bottomWestTexAtlas = null;
+
+    public Integer northTexYOffset = null;
+    public Integer southTexYOffset = null;
+    public Integer eastTexYOffset = null;
+    public Integer westTexYOffset = null;
+
+	public Integer bottomNorthTexYOffset = null;
+	public Integer bottomSouthTexYOffset = null;
+	public Integer bottomEastTexYOffset = null;
+	public Integer bottomWestTexYOffset = null;
 	
 	public float floorHeight = -0.5f;
 	public float ceilHeight = 0.5f;
@@ -548,6 +558,8 @@ public class Tile implements Serializable {
         destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
         destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
         destination.bottomSouthTexAtlas = source.bottomSouthTexAtlas;
+        destination.ceilTexRot = source.ceilTexRot;
+        destination.floorTexRot = source.floorTexRot;
         destination.isLocked = source.isLocked;
 	}
 
@@ -1023,6 +1035,20 @@ public class Tile implements Serializable {
         else if(wallTexAtlas != null) return wallTexAtlas;
         return null;
     }
+
+    public int getWallYOffset(TileEdges dir) {
+		Integer found = null;
+		if(dir == TileEdges.North) found = northTexYOffset;
+		else if(dir == TileEdges.South) found = southTexYOffset;
+		else if(dir == TileEdges.East) found = eastTexYOffset;
+		else if(dir == TileEdges.West) found = westTexYOffset;
+
+		if(found == null) {
+			return 0;
+		}
+
+		return found;
+	}
 
     public void setWallTexture(TileEdges dir, byte tex, String atlas) {
 		if(dir == TileEdges.North) {
