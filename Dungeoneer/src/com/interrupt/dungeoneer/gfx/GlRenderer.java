@@ -2589,7 +2589,7 @@ public class GlRenderer {
 			// Might need to update these chunks if lights have changed
 			for (int i = 0; i < chunks.size; i++) {
 				WorldChunk c = chunks.get(i);
-				if(c != null && !c.hasBuilt) {
+				if(c != null && (!c.hasBuilt || c.needsRetessellation)) {
 					triangleSpatialHash.dropWorldChunk(c);
 					c.Tesselate(loadedLevel, this);
 					c.tesselators.world.addCollisionTriangles(triangleSpatialHash);

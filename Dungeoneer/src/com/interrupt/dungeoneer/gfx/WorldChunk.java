@@ -44,6 +44,7 @@ public class WorldChunk {
 	
 	public boolean visible = true;
 	public boolean hasBuilt = false;
+	public boolean needsRetessellation = false;
 	
 	public ArrayMap<String,Array<Mesh>> staticMeshBatch = null;
 	
@@ -146,6 +147,7 @@ public class WorldChunk {
 	public void Tesselate(Level level, GlRenderer renderer)
 	{
 		tesselator.Tesselate(level, renderer, this, xOffset, yOffset, width, height, tesselators, makeFloors, makeCeilings, makeWalls, true);
+		needsRetessellation = false;
 
 		if(hasBuilt) return;
 		hasBuilt = true;

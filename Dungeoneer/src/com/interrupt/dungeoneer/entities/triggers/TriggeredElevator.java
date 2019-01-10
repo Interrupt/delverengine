@@ -132,7 +132,7 @@ public class TriggeredElevator extends Trigger {
 	private void markWorldAsDirty(int xPos, int yPos) {
 		WorldChunk chunk = GameManager.renderer.GetWorldChunkAt(xPos, yPos);
 		if(chunk != null) {
-			chunk.hasBuilt = false;
+			chunk.needsRetessellation = true;
 		}
 	}
 }
