@@ -71,15 +71,15 @@ public class Tile implements Serializable {
     public String bottomEastTexAtlas = null;
     public String bottomWestTexAtlas = null;
 
-    public Integer northTexYOffset = null;
-    public Integer southTexYOffset = null;
-    public Integer eastTexYOffset = null;
-    public Integer westTexYOffset = null;
+    public Byte northTexYOffset = null;
+    public Byte southTexYOffset = null;
+    public Byte eastTexYOffset = null;
+    public Byte westTexYOffset = null;
 
-	public Integer bottomNorthTexYOffset = null;
-	public Integer bottomSouthTexYOffset = null;
-	public Integer bottomEastTexYOffset = null;
-	public Integer bottomWestTexYOffset = null;
+    public Byte bottomNorthTexYOffset = null;
+    public Byte bottomSouthTexYOffset = null;
+    public Byte bottomEastTexYOffset = null;
+    public Byte bottomWestTexYOffset = null;
 	
 	public float floorHeight = -0.5f;
 	public float ceilHeight = 0.5f;
@@ -1036,8 +1036,8 @@ public class Tile implements Serializable {
         return null;
     }
 
-    public int getWallYOffset(TileEdges dir) {
-		Integer found = null;
+    public byte getWallYOffset(TileEdges dir) {
+		Byte found = null;
 		if(dir == TileEdges.North) found = northTexYOffset;
 		else if(dir == TileEdges.South) found = southTexYOffset;
 		else if(dir == TileEdges.East) found = eastTexYOffset;
@@ -1048,6 +1048,34 @@ public class Tile implements Serializable {
 		}
 
 		return found;
+	}
+
+	public void setWallYOffset(TileEdges dir, byte val) {
+		if(dir == TileEdges.North) northTexYOffset = val;
+		else if(dir == TileEdges.South) southTexYOffset = val;
+		else if(dir == TileEdges.East) eastTexYOffset = val;
+		else if(dir == TileEdges.West) westTexYOffset = val;
+	}
+
+	public byte getBottomWallYOffset(TileEdges dir) {
+		Byte found = null;
+		if(dir == TileEdges.North) found = bottomNorthTexYOffset;
+		else if(dir == TileEdges.South) found = bottomSouthTexYOffset;
+		else if(dir == TileEdges.East) found = bottomEastTexYOffset;
+		else if(dir == TileEdges.West) found = bottomWestTexYOffset;
+
+		if(found == null) {
+			return 0;
+		}
+
+		return found;
+	}
+
+	public void setBottomWallYOffset(TileEdges dir, byte val) {
+		if(dir == TileEdges.North) bottomNorthTexYOffset = val;
+		else if(dir == TileEdges.South) bottomSouthTexYOffset = val;
+		else if(dir == TileEdges.East) bottomEastTexYOffset = val;
+		else if(dir == TileEdges.West) bottomWestTexYOffset = val;
 	}
 
     public void setWallTexture(TileEdges dir, byte tex, String atlas) {

@@ -1,0 +1,55 @@
+Fatal error in Game loop!
+
+com.badlogic.gdx.utils.SerializationException: Error reading file: /Users/cuddigan/Github/delverengine/Dungeoneer/assets/data/entities.dat
+	at com.badlogic.gdx.utils.Json.fromJson(Json.java:715)
+	at com.interrupt.dungeoneer.game.Game.fromJson(Game.java:1447)
+	at com.interrupt.dungeoneer.game.ModManager.loadEntityManager(ModManager.java:140)
+	at com.interrupt.dungeoneer.editor.EditorFrame.init(EditorFrame.java:376)
+	at com.interrupt.dungeoneer.editor.EditorFrame.create(EditorFrame.java:1866)
+	at com.badlogic.gdx.backends.lwjgl.LwjglApplication.mainLoop(LwjglApplication.java:149)
+	at com.badlogic.gdx.backends.lwjgl.LwjglApplication$1.run(LwjglApplication.java:126)
+Caused by: com.badlogic.gdx.utils.SerializationException: Serialization trace:
+entities (com.interrupt.managers.EntityManager)
+	at com.badlogic.gdx.utils.Json.readValue(Json.java:900)
+	at com.badlogic.gdx.utils.Json.readValue(Json.java:936)
+	at com.badlogic.gdx.utils.Json.readValue(Json.java:953)
+	at com.badlogic.gdx.utils.Json.readFields(Json.java:818)
+	at com.badlogic.gdx.utils.Json.readValue(Json.java:958)
+	at com.badlogic.gdx.utils.Json.fromJson(Json.java:713)
+	... 6 more
+Caused by: com.badlogic.gdx.utils.reflect.ReflectionException: Class not found: com.interrupt.dungeoneer.entities.triggers.ElevatorTrigger
+	at com.badlogic.gdx.utils.reflect.ClassReflection.forName(ClassReflection.java:30)
+	at com.badlogic.gdx.utils.Json.readValue(Json.java:898)
+	... 11 more
+Caused by: java.lang.ClassNotFoundException: com.interrupt.dungeoneer.entities.triggers.ElevatorTrigger
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:331)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:264)
+	at com.badlogic.gdx.utils.reflect.ClassReflection.forName(ClassReflection.java:28)
+	... 12 more
+
+Fatal error in Game loop!
+
+com.badlogic.gdx.utils.GdxRuntimeException: File not found: levels/first-death-screen-splash.bin (Internal)
+	at com.badlogic.gdx.files.FileHandle.read(FileHandle.java:142)
+	at com.interrupt.dungeoneer.serializers.v1.LevelSerializer.loadLevel(LevelSerializer.java:59)
+	at com.interrupt.dungeoneer.serializers.KryoSerializer.loadLevel(KryoSerializer.java:42)
+	at com.interrupt.dungeoneer.game.Level.load(Level.java:476)
+	at com.interrupt.dungeoneer.game.Level.loadForSplash(Level.java:234)
+	at com.interrupt.dungeoneer.screens.BaseScreen.loadBackgroundLevel(BaseScreen.java:382)
+	at com.interrupt.dungeoneer.screens.BaseScreen.show(BaseScreen.java:183)
+	at com.interrupt.dungeoneer.screens.GameOverScreen.show(GameOverScreen.java:222)
+	at com.badlogic.gdx.Game.setScreen(Game.java:61)
+	at com.interrupt.dungeoneer.GameApplication.ShowGameOverScreen(GameApplication.java:117)
+	at com.interrupt.dungeoneer.game.Game.OnGameOver(Game.java:897)
+	at com.interrupt.dungeoneer.game.Game.tick(Game.java:532)
+	at com.interrupt.dungeoneer.GameManager.tick(GameManager.java:113)
+	at com.interrupt.dungeoneer.screens.GameScreen.render(GameScreen.java:73)
+	at com.badlogic.gdx.Game.render(Game.java:46)
+	at com.interrupt.dungeoneer.editor.EditorFrame.render(EditorFrame.java:441)
+	at com.badlogic.gdx.backends.lwjgl.LwjglApplication.mainLoop(LwjglApplication.java:225)
+	at com.badlogic.gdx.backends.lwjgl.LwjglApplication$1.run(LwjglApplication.java:126)
+

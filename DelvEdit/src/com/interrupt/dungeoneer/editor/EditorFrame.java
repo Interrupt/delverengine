@@ -3509,7 +3509,7 @@ public class EditorFrame implements ApplicationListener {
 			t.init(Source.EDITOR);
 
 			history.saveState(level);
-			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
+			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.z, 1);
 		}
 	}
 
@@ -3723,6 +3723,24 @@ public class EditorFrame implements ApplicationListener {
 		// Two dimensional, a bit easier than floors or ceilings
 		floodFillWallTexture(x + nextXOffset, y + nextYOffset, checkTex, checkAtlas, adjacent);
 		floodFillWallTexture(x - nextXOffset, y - nextYOffset, checkTex, checkAtlas, adjacent);
+	}
+
+	public void panSurfaceV(byte amt) {
+		if(pickedSurface.isPicked) {
+			Tile t = level.getTileOrNull((int) pickedSurface.position.x, (int) pickedSurface.position.z);
+			if(t == null)
+				return;
+
+			boolean isUpperWall = pickedSurface.tileSurface == TileSurface.UpperWall;
+
+			if(isUpperWall)
+				t.setWallYOffset(pickedSurface.edge, (byte)(t.getWallYOffset(pickedSurface.edge) + amt));
+			else
+				t.setBottomWallYOffset(pickedSurface.edge, (byte)(t.getBottomWallYOffset(pickedSurface.edge) + amt));
+
+			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
+			history.saveState(level);
+		}
 	}
 
 	public TextureRegion[] loadAtlas(String texture, int spritesHorizontal, boolean filter) {

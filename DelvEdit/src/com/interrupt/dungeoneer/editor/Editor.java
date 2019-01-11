@@ -67,6 +67,8 @@ public class Editor {
     public ActionListener pickNewWallTexAction;
     public ActionListener fillTextureAction;
 
+    public ActionListener panSurfaceYAction;
+
     public ActionListener xDragMode;
     public ActionListener yDragMode;
     public ActionListener zDragMode;
@@ -461,6 +463,13 @@ public class Editor {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 editorFrame.fillSurfaceTexture();
+            }
+        };
+
+        panSurfaceYAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.panSurfaceV((byte)1);
             }
         };
 
