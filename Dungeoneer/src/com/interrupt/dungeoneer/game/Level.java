@@ -38,6 +38,7 @@ import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
+import com.interrupt.dungeoneer.tiles.TileMaterials;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.TileManager;
@@ -63,9 +64,16 @@ public class Level {
 	
 	public enum Source { LEVEL_START, LEVEL_LOAD, EDITOR, SPAWNED }
 	private enum Direction { NORTH, SOUTH, EAST, WEST }
+
+	public static int CURRENT_VERSION = 2;
+	public int version = -1;
 	
 	public int width, height;
 	public Tile[] tiles;
+
+	// Used to store tile materials when saving / loading levels
+	public TileMaterials[] savedTileMaterials;
+
 	public Array<Entity> entities;
 	public Array<Entity> non_collidable_entities;
 	public Array<Entity> static_entities = new Array<Entity>();
@@ -175,6 +183,9 @@ public class Level {
 		// make a blank level for the editor
 		this.width = width;
 		this.height = height;
+
+		// Set a version for serialization purposes
+		version = CURRENT_VERSION;
 		
 		tiles = new Tile[width * height];
 		entities = new Array<Entity>();

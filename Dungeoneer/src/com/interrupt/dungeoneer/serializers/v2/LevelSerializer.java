@@ -22,6 +22,7 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.serializers.*;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.dungeoneer.tiles.TileMaterials;
 
 import java.io.*;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class LevelSerializer {
 		kryo.register(Array.class);
 
 		// register some serializers
+		kryo.register(Level.class, new LevelFieldSerializer(kryo, Level.class));
 		kryo.register(Prefab.class, new PrefabSerializer());
 		kryo.register(ArrayIterator.class, new LibGdxArrayIteratorSerializer());
 		kryo.register(Tile.class, new TileSerializer());
