@@ -2,10 +2,16 @@ package com.interrupt.dungeoneer.entities.triggers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
+import com.interrupt.dungeoneer.editor.EditorMarker;
+import com.interrupt.dungeoneer.entities.DynamicLight;
+import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.Light;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.serializers.v2.LevelSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -13,6 +19,9 @@ public class LevelSwap extends Trigger {
 
     @EditorProperty
     public String levelFilename;
+
+    @EditorProperty
+    public boolean updateLights = true;
 
     public LevelSwap() { }
 
@@ -51,11 +60,57 @@ public class LevelSwap extends Trigger {
                 currentLevel.initEntities(level.static_entities, Level.Source.LEVEL_START);
                 currentLevel.initEntities(level.non_collidable_entities, Level.Source.LEVEL_START);
 
-                currentLevel.updateLights(Level.Source.SPAWNED);
+                if(updateLights) updateLights(level, currentLevel);
+
                 GameManager.renderer.refreshChunksNear(x, y, Math.max(level.width, level.height));
             }
         } catch (Exception ex) {
             Gdx.app.log("LevelSwapTrigger", ex.getMessage());
+        }
+    }
+
+    public void updateLights(Level newLevel, Level existingLevel)
+    {
+        // light emitting entities
+        for(int i = 0; i < newLevel.entities.size; i++)
+        {
+            Entity e = newLevel.entities.get(i);
+            if(e instanceof Light && e.isActive)
+            {
+                Light t = (Light)e;
+                existingLevel.lightSpatialHash.AddLight(t);
+            }
+        }
+
+        for(int i = 0; i < newLevel.non_collidable_entities.size; i++)
+        {
+            Entity e = newLevel.non_collidable_entities.get(i);
+            if(e instanceof Light && e.isActive)
+            {
+                Light t = (Light)e;
+                existingLevel.lightSpatialHash.AddLight(t);
+            }
+        }
+
+        for(int i = 0; i < newLevel.static_entities.size; i++)
+        {
+            Entity e = newLevel.static_entities.get(i);
+            if(e instanceof Light && e.isActive)
+            {
+                Light t = (Light)e;
+                existingLevel.lightSpatialHash.AddLight(t);
+            }
+        }
+
+        // light some entities
+        for(Entity e : newLevel.entities) {
+            e.updateLight(existingLevel);
+        }
+        for(Entity e : newLevel.non_collidable_entities) {
+            e.updateLight(existingLevel);
+        }
+        for(Entity e : newLevel.static_entities) {
+            e.updateLight(existingLevel);
         }
     }
 
