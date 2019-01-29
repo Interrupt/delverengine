@@ -2512,16 +2512,17 @@ public class GlRenderer {
 		}
 	}
 
-	public void refreshChunksNear(float x, float y, float range) {
-		if(chunks != null) {
-			for (int i = 0; i < chunks.size; i++) {
-				WorldChunk c = chunks.get(i);
+	public void refreshChunksNear(float xPos, float yPos, float range) {
+		int startX = ((int)xPos - (int)range) / 17;
+		int startY = ((int)yPos - (int)range) / 17;
+		int endX = ((int)xPos + (int)range) / 17;
+		int endY = ((int)yPos + (int)range) / 17;
 
-				float distanceX = Math.abs(x - c.position.x);
-				float distanceY = Math.abs(y - c.position.z);
-
-				if(distanceX <= range && distanceY <= range) {
-					c.refresh();
+		for(int x = startX; x <= endX; x++) {
+			for(int y = startY; y <= endY; y++) {
+				WorldChunk chunk = GetWorldChunkAt(x * 17, y * 17);
+				if(chunk != null) {
+					chunk.refresh();
 				}
 			}
 		}
@@ -2588,7 +2589,7 @@ public class GlRenderer {
 			// Might need to update these chunks if lights have changed
 			for (int i = 0; i < chunks.size; i++) {
 				WorldChunk c = chunks.get(i);
-				if(c != null && !c.hasBuilt) {
+				if(c != null && (!c.hasBuilt || c.needsRetessellation)) {
 					triangleSpatialHash.dropWorldChunk(c);
 					c.Tesselate(loadedLevel, this);
 					c.tesselators.world.addCollisionTriangles(triangleSpatialHash);

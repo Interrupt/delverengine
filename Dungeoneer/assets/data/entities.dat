@@ -75,6 +75,7 @@
 				"triggerAnimationTime": 10
 			},
 			"Repeater": { class: com.interrupt.dungeoneer.entities.triggers.RepeatingTrigger, floating: true },
+			"Elevator": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredElevator, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"DamageTrigger": { class: com.interrupt.dungeoneer.entities.triggers.DamageTrigger, floating: true, isSolid: true },
 			"LookAtTrigger": { class: com.interrupt.dungeoneer.entities.triggers.LookAtTrigger, floating: true},
 			"DeleteTrigger": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredDelete, floating: true, triggerType: "PLAYER_TOUCHED" },
