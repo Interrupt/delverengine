@@ -1511,7 +1511,7 @@ public class Level {
 		Game.pathfinding.InitForLevel(this);
 	}
 
-	private void initEntities(Array<Entity> entityList, Source source) {
+	public void initEntities(Array<Entity> entityList, Source source) {
 		if(entityList == null)
 			return;
 

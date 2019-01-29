@@ -78,6 +78,7 @@
 			"DamageTrigger": { class: com.interrupt.dungeoneer.entities.triggers.DamageTrigger, floating: true, isSolid: true },
 			"LookAtTrigger": { class: com.interrupt.dungeoneer.entities.triggers.LookAtTrigger, floating: true},
 			"DeleteTrigger": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredDelete, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"LevelSwapTrigger": { class: com.interrupt.dungeoneer.entities.triggers.LevelSwap, floating: true, triggerType: "PLAYER_TOUCHED", triggerResets: false },
 			"InventoryCheck": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredInventoryCheck, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"Lever": {
 				class: com.interrupt.dungeoneer.entities.Group,
