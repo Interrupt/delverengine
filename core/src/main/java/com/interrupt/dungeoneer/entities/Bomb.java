@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.entities.spells.SplashExplosion;
@@ -64,5 +65,10 @@ public class Bomb extends Entity {
 		bombSpell.explodeSound = "potions/sfx_explode.mp3";
 		bombSpell.applyStatusEffect = applyStatusEffect;
 		bombSpell.doCast(new Vector3(x,y,z + yOffset + 0.2f), Vector3.Z);
+	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload("potions/sfx_explode.mp3");
 	}
 }

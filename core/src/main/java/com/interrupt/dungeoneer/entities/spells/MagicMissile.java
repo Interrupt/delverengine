@@ -66,6 +66,9 @@ public class MagicMissile extends Spell {
 		if(explosion != null) {
 			Audio.preload(explosion.explodeSound);
 		}
+		if(magicMissileProjectile != null) {
+			magicMissileProjectile.preloadSounds();
+		}
 	}
 
 	// Make the projectile to fire

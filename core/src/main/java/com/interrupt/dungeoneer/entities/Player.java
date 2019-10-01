@@ -340,8 +340,11 @@ public class Player extends Actor {
 	public void init() {
 		makeStartingInventory();
 		setupController();
+		preloadSounds();
+	}
 
-		// Preload some sounds
+	@Override
+	public void preloadSounds() {
 		Audio.preload(dropSound);
 		Audio.preload("/ui/ui_map_open.mp3");
 		Audio.preload("/ui/ui_map_close.mp3");
@@ -351,6 +354,10 @@ public class Player extends Actor {
 		Audio.preload("ui/ui_equip_armor.mp3");
 		Audio.preload("break/earthquake1.mp3,break/earthquake2.mp3");
 		Audio.preload("magic/mg_fwoosh.mp3");
+
+		if(inventory == null) {
+			return;
+		}
 
 		for(int i = 0; i < inventory.size; i++) {
 			Item item = inventory.get(i);

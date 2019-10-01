@@ -24,6 +24,9 @@ public class SpreadMagicMissile extends MagicMissile {
         if(explosion != null) {
             Audio.preload(explosion.explodeSound);
         }
+        if(magicMissileProjectile != null) {
+            magicMissileProjectile.preloadSounds();
+        }
     }
 
 	@Override

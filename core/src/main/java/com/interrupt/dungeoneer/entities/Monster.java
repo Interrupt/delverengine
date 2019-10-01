@@ -370,19 +370,19 @@ public class Monster extends Actor implements Directional {
 		ranged = true;
 
 		placeMonster(level);
+	}
 
-		// Preload audio in some cases
-		if(Game.isMobile) {
-			Audio.preload(alertSound);
-			Audio.preload(attackSound);
-			Audio.preload(attackSwingSound);
-			Audio.preload(dieSound);
-			Audio.preload(fleeSound);
-			Audio.preload(hitSound);
-			Audio.preload(hurtSound);
-			Audio.preload(idleSound);
-			Audio.preload(walkSound);
-		}
+	@Override
+	public void preloadSounds() {
+		Audio.preload(alertSound);
+		Audio.preload(attackSound);
+		Audio.preload(attackSwingSound);
+		Audio.preload(dieSound);
+		Audio.preload(fleeSound);
+		Audio.preload(hitSound);
+		Audio.preload(hurtSound);
+		Audio.preload(idleSound);
+		Audio.preload(walkSound);
 	}
 
 	public void placeMonster(Level level) {
@@ -1358,25 +1358,6 @@ public class Monster extends Actor implements Directional {
 		if(attackAnimation == null && hasAttackAnim) {
 			attackAnimation = new SpriteAnimation(tex + 2, tex + 2, 24f, null);
 		}
-
-		// preload some sounds
-		/*if(!Game.isMobile) {
-			Audio.preload(dieSound);
-			Audio.preload(attackSwingSound);
-			Audio.preload(hurtSound);
-			Audio.preload(idleSound);
-			Audio.preload(alertSound);
-		}*/
-
-		// Let the lightmap color fade
-		if(drawable instanceof DrawableSprite)
-		{
-			DrawableSprite s = (DrawableSprite)drawable;
-			if(s.colorLastFrame == null) {
-				Color lightmap = GameManager.renderer.GetLightmapAt(level, x + drawable.drawOffset.x, z, y + drawable.drawOffset.y);
-				s.colorLastFrame = new Color(lightmap.r, lightmap.g, lightmap.b, 1f);
-			}
-		}
 	}
 
 	public void stun(float stunTime) {
@@ -1397,6 +1378,16 @@ public class Monster extends Actor implements Directional {
 		super.updateDrawable();
 		if(drawable != null) {
 			drawable.drawOffset.z = getStepUpValue() + yOffset;
+		}
+
+		// Let the lightmap color fade
+		if(drawable instanceof DrawableSprite)
+		{
+			DrawableSprite s = (DrawableSprite)drawable;
+			if(s.colorLastFrame == null) {
+				Color lightmap = GameManager.renderer.GetLightmapAt(level, x + drawable.drawOffset.x, z, y + drawable.drawOffset.y);
+				s.colorLastFrame = new Color(lightmap.r, lightmap.g, lightmap.b, 1f);
+			}
 		}
 	}
 

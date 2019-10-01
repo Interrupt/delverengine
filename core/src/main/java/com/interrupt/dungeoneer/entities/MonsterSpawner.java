@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
@@ -139,5 +140,25 @@ public class MonsterSpawner extends DirectionalEntity {
 		level.SpawnNonCollidingEntity( new DynamicLight(pos.x,pos.y,pos.z, new Vector3(Color.ORANGE.r * 2f, Color.ORANGE.g * 2f, Color.ORANGE.b * 2f)).startLerp(new Vector3(0,0,0), 40, true).setHaloMode(HaloMode.BOTH) );
 
 		Audio.playPositionedSound("trap_tele.mp3", new Vector3(pos.x, pos.y, pos.z), 0.6f, 12f);
+	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload("trap_tele.mp3");
+
+		// Go preload the sounds for the monsters that could be spawned
+		if (monsterName.equals("")) {
+			Array<Monster> monsters = Game.instance.monsterManager.monsters.get(monsterTheme);
+			if(monsters != null) {
+				for(int i = 0; i < monsters.size; i++) {
+					monsters.get(i).preloadSounds();
+				}
+			}
+		} else {
+			Monster m = Game.instance.monsterManager.GetMonster(monsterTheme, monsterName);
+			if(m != null) {
+				m.preloadSounds();
+			}
+		}
 	}
 }

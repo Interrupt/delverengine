@@ -44,7 +44,9 @@ public class GameApplication extends Game {
 
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(gameManager, input);
-        levelChangeScreen = new LevelChangeScreen();
+        gameoverScreen = new GameOverScreen(gameManager);
+        levelChangeScreen = new LevelChangeScreen(gameManager);
+        winScreen = new WinScreen(gameManager);
 
         if (com.interrupt.dungeoneer.game.Game.skipIntro)
         {
@@ -53,6 +55,11 @@ public class GameApplication extends Game {
         else {
             setScreen(new SplashScreen());
         }
+
+        // Set the max sounds per platform
+		Audio.MaxSoundsPerPlatform.put(com.interrupt.dungeoneer.game.Game.GamePlatform.Mobile.ordinal(), 1);
+		Audio.MaxSoundsPerPlatform.put(com.interrupt.dungeoneer.game.Game.GamePlatform.PC.ordinal(), 20);
+		Audio.MaxSoundsPerPlatform.put(com.interrupt.dungeoneer.game.Game.GamePlatform.Console.ordinal(), 2);
 	}
 
 	public void createFromEditor(Level level) {

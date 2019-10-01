@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.interrupt.dungeoneer.audio.PlayingSound;
@@ -61,6 +62,11 @@ public class Audio {
 	private static ArrayMap<String, Float> ambientSoundStackPlayTime = new ArrayMap<String, Float>();
 	private static float ambientSoundChangeSpeed = 0.1f;
 
+	private static String audioFilePrefix = "audio/";
+	private static String audioFilePostfix = ".wav";
+
+	public static IntMap<Integer> MaxSoundsPerPlatform = new IntMap<Integer>();
+
 	static public void init() {
 		attack = loadSound("whoosh1.mp3");
 		explode = loadSound("explode.mp3");
@@ -110,12 +116,12 @@ public class Audio {
 		if(filename == null || filename.isEmpty()) return;
 
 		String[] files = getFileList(filename);
-		if(!Game.isMobile) {
-			for(int i = 0; i < files.length; i++) {
-				loadSound(files[i]);
-			}
-		} else {
-			loadSound(files[0]);
+
+		int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+		if(numSounds > files.length) numSounds = files.length;
+
+		for(int i = 0; i < numSounds; i++) {
+			loadSound(files[i]);
 		}
 	}
 
@@ -384,10 +390,9 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 			Sound sfx = getSound(theFile);
 			if(sfx != null) {
@@ -404,10 +409,10 @@ public class Audio {
 			if(filename == null || filename.equals("")) return;
 			String[] files = getFileList(filename);
 			String theFile = null;
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+
+			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 			Sound sfx = getSound(theFile);
 			if(sfx != null) {
@@ -436,10 +441,9 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 	 		Sound sfx = Audio.getSound(theFile);
 			if(sfx != null && Game.instance.level != null) {
@@ -459,10 +463,9 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 	 		Sound sfx = Audio.getSound(theFile);
 			if(sfx != null && Game.instance.level != null) {
@@ -525,10 +528,9 @@ public class Audio {
 		String[] files = getFileList(filename);
 		String theFile = null;
 
-		if(!Game.isMobile)
-			theFile = files[Game.rand.nextInt(files.length)];
-		else
-			theFile = files[0];
+		int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+		if(numSounds > files.length) numSounds = files.length;
+		theFile = files[Game.rand.nextInt(numSounds)];
 
 		Sound sfx = getSound(theFile);
 		if(sfx != null) {

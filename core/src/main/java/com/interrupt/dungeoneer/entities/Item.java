@@ -191,6 +191,7 @@ public class Item extends Entity {
 	public void preloadSounds() {
 		Audio.preload(equipSound);
 		Audio.preload(pickupSound);
+		Audio.preload(dropSound);
 	}
 
 	@Override
@@ -209,11 +210,6 @@ public class Item extends Entity {
 			} else {
 				roll = 0f;
 			}
-		}
-
-		// Preload some sounds
-		if(source != Level.Source.SPAWNED) {
-			preloadSounds();
 		}
 	}
 
