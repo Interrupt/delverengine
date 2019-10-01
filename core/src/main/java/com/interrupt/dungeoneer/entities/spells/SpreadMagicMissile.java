@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.entities.spells;
 
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile;
 import com.interrupt.dungeoneer.game.Game;
@@ -17,11 +18,17 @@ public class SpreadMagicMissile extends MagicMissile {
 
     Vector3 tempDir = new Vector3();
 
-    public SpreadMagicMissile() { trailInterval = 2f; splashForce = 0.005f; }
-
     @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        if(explosion != null) {
+            Audio.preload(explosion.explodeSound);
+        }
+    }
+
+	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
-		
+
 		int dmg = doAttackRoll() / numProjectiles;
         if(dmg < 1) dmg = 1;
 

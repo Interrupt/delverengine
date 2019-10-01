@@ -7,6 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Json;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
@@ -47,6 +48,9 @@ public class TileManager {
                 }
 
                 parsedTiles.get(key).put(Integer.parseInt(data.getKey()), data.getValue());
+
+                Audio.preload(data.getValue().ambientSound);
+                Audio.preload(data.getValue().walkSound);
             }
         }
 	}

@@ -70,6 +70,12 @@ public class Wand extends Weapon {
 		else
 			return super.GetInfoText();
 	}
+
+	@Override
+	public void preloadSounds() {
+		super.preloadSounds();
+		spell.preloadSounds();
+	}
 	
 	@Override
 	public void doAttack(Player p, Level lvl, float attackPower) {

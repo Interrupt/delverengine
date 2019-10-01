@@ -374,6 +374,8 @@ public class Breakable extends Model {
         if(drawAsSprite) {
             drawable = new DrawableSprite(tex, artType);
         }
+
+        Audio.preload(breakSound);
 	}
 
 	// effect to show when hit by a melee weapon

@@ -29,6 +29,12 @@ public class Potion extends Item {
 		super(x, y, 0, ItemType.potion, StringManager.get("items.Potion.defaultNameText"));
 	}
 
+	@Override
+	public void preloadSounds() {
+		super.preloadSounds();
+		Audio.preload("cons_drink.mp3");
+	}
+
 	public void Drink(Player player) {
 		Random r = new Random();
 

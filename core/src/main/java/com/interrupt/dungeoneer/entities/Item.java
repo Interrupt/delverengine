@@ -188,6 +188,11 @@ public class Item extends Entity {
 		canSleep = true;
 	}
 
+	public void preloadSounds() {
+		Audio.preload(equipSound);
+		Audio.preload(pickupSound);
+	}
+
 	@Override
 	public void init(Level level, Level.Source source) {
 		super.init(level, source);
@@ -208,8 +213,7 @@ public class Item extends Entity {
 
 		// Preload some sounds
 		if(source != Level.Source.SPAWNED) {
-			Audio.preload(equipSound);
-			Audio.preload(pickupSound);
+			preloadSounds();
 		}
 	}
 

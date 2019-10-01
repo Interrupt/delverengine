@@ -37,15 +37,10 @@ public class Sword extends Weapon {
 	private float hitTime = 10f;
 
 	@Override
-	public void init(Level level, Level.Source source) {
-		super.init(level, source);
-
-		if(source != Level.Source.SPAWNED) {
-			Audio.preload(wallHitSound);
-			Audio.preload(swingSound);
-			Audio.preload(equipSound);
-			Audio.preload(pickupSound);
-		}
+	public void preloadSounds() {
+		super.preloadSounds();
+		Audio.preload(wallHitSound);
+		Audio.preload(swingSound);
 	}
 
 	@Override
