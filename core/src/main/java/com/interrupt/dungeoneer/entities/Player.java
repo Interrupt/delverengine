@@ -136,10 +136,6 @@ public class Player extends Actor {
 
 	public HashMap<String,Item> equippedItems = new HashMap<String,Item>();
 
-	// audio stuff
-	private Long torchSoundInstance = null;
-	private Long stepsSoundInstance = null;
-
 	private Integer tapLength = null;
 
 	public int hotbarSize = 5;
@@ -344,6 +340,9 @@ public class Player extends Actor {
 	public void init() {
 		makeStartingInventory();
 		setupController();
+
+		// Preload some sounds
+		Audio.preload(dropSound);
 	}
 
 	@Override

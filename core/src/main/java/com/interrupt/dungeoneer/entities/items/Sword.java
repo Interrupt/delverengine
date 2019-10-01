@@ -13,9 +13,9 @@ import com.interrupt.dungeoneer.game.Level;
 import java.util.Random;
 
 public class Sword extends Weapon {
-	
+
 	public Sword() { isSolid = true; attackAnimation = "swordAttack"; chargeAnimation = "swordCharge"; attackStrongAnimation = "swordAttackStrong"; equipSound = "/ui/ui_equip_item.mp3"; }
-	
+
 	public ProjectedDecal hitDecal = new ProjectedDecal(ArtType.sprite, 18, 1.0f);
 
 	public Sword(float x, float y) {
@@ -29,13 +29,25 @@ public class Sword extends Weapon {
 	/** Sound played when Sword is swung */
 	@EditorProperty
 	public String swingSound = "whoosh1.mp3,whoosh1_02.mp3,whoosh1_03.mp3,whoosh1_04.mp3";
-	
+
 	private float attackTimer = 0;
 	private float lastTickTime = 0;
 	private float attackPower = 0;
-	
+
 	private float hitTime = 10f;
-	
+
+	@Override
+	public void init(Level level, Level.Source source) {
+		super.init(level, source);
+
+		if(source != Level.Source.SPAWNED) {
+			Audio.preload(wallHitSound);
+			Audio.preload(swingSound);
+			Audio.preload(equipSound);
+			Audio.preload(pickupSound);
+		}
+	}
+
 	@Override
 	public void doAttack(Player p, Level lvl, float attackPower) {
 		this.attackPower = attackPower;
@@ -43,31 +55,31 @@ public class Sword extends Weapon {
 		if(p == null || p.handAnimation == null) {
 			return;
 		}
-		
+
 		p.setAttackSpeed(getSpeed());
 		p.handAnimateTimer = (p.handAnimation.length() / p.handAnimation.speed) * 0.75f;
-		
+
 		attackTimer = 0;
 		lastTickTime = 0;
-		
+
 		hitTime = (p.handAnimation.actionTime / p.handAnimation.speed) * 0.5f;
-		
+
 		Audio.playSound(swingSound, 0.25f, Game.rand.nextFloat() * 0.1f + 0.95f);
 	}
-	
+
 	public void tickAttack(Player p, Level lvl, float time) {
 		attackTimer += time;
-		
+
 		if(attackTimer >= hitTime && lastTickTime < hitTime) {
 			float usedist = reach;
 			Entity near = null;
-			
+
 			Vector3 attackDir = new Vector3(Game.camera.direction);
-			
+
 			float hitX = 0f;
 			float hitY = 0f;
 			float hitZ = 0f;
-			
+
 			// sweep the collision
 			for(int i = 1; i < 10 && near == null; i++)
 			{
@@ -75,22 +87,22 @@ public class Sword extends Weapon {
 				float projx = attackDir.x * dstep;
 				float projy = attackDir.z * dstep;
 				float projz = attackDir.y * dstep;
-				
+
 				hitX = p.x + projx;
 				hitY = p.y + projy;
 				hitZ = p.z + projz - 0.14f;
-				
+
 				near = lvl.checkEntityCollision(p.x + projx, p.y + projy, p.z + projz + 0.4f, 0.2f, 0.2f, 0.2f, null, p);
 			}
-			
+
 			if(near != null)
 			{
 				float projx = ( 0 * (float)Math.cos(p.rot) + usedist * (float)Math.sin(p.rot)) * 1;
 				float projy = (usedist * (float)Math.cos(p.rot) - 0 * (float)Math.sin(p.rot)) * 1;
-				
+
 				int attackroll = doAttackRoll(attackPower, p);
 				near.hit(projx, projy, attackroll, attackPower * (knockback + p.getKnockbackStatBoost()), getDamageType(), Game.instance.player);
-				
+
 				if (near instanceof Breakable) {
 					((Breakable)near).doHitEffect(hitX, hitY, hitZ, this, lvl);
 				}
@@ -107,7 +119,7 @@ public class Sword extends Weapon {
 				magicHitVfx(hitX, hitY, hitZ, lvl);
 			}
 			else
-			{	
+			{
 				for(int i = 1; i < 10 && near == null; i++)
 				{
 					float dstep = (i / 6.0f) * usedist;
@@ -124,23 +136,23 @@ public class Sword extends Weapon {
 				}
 			}
 		}
-		
+
 		lastTickTime = attackTimer;
 	}
-	
+
 	public void doHitEffect(float xLoc, float yLoc, float zLoc, Level lvl) {
 		Audio.playSound(wallHitSound, 0.25f, Game.rand.nextFloat() * 0.1f + 0.95f);
-		
+
 		Color hitColor = getEnchantmentColor();
 		boolean fullBright = getDamageType() != DamageType.PHYSICAL;
-		
+
 		if(fullBright) {
 			// make a light at this location
 			DynamicLight l = new DynamicLight(xLoc, yLoc, zLoc, new Vector3(hitColor.r * 0.85f, hitColor.g * 0.85f, hitColor.b * 0.85f));
 			l.startLerp(new Vector3(0,0,0), 20, true);
 			lvl.non_collidable_entities.add(l);
 		}
-		
+
 		Random r = Game.rand;
 		for(int ii = 0; ii < r.nextInt(5) + 3; ii++)
 		{
@@ -182,14 +194,14 @@ public class Sword extends Weapon {
 
 			Game.GetLevel().SpawnNonCollidingEntity(p);
 		}
-		
+
 		makeHitDecal(xLoc, yLoc, zLoc + 0.18f, new Vector3(Game.camera.direction.x, Game.camera.direction.z, Game.camera.direction.y));
 
 		wallHitSpark(xLoc, yLoc, zLoc, lvl);
-		
+
 		Game.instance.player.shake(1.5f);
 	}
-	
+
 	public void makeHitDecal(float hitx, float hity, float hitz, Vector3 direction) {
 		if(hitDecal != null) {
 			ProjectedDecal proj = new ProjectedDecal(hitDecal.artType, hitDecal.tex, hitDecal.decalWidth);
@@ -198,11 +210,11 @@ public class Sword extends Weapon {
 			proj.z = hitz;
 			proj.direction = new Vector3(Game.camera.direction.x, Game.camera.direction.z, Game.camera.direction.y);
 			proj.roll = Game.rand.nextFloat() * 360f;
-			
+
 			proj.end = 0.6f;
 			proj.start = 0.01f;
 			proj.isOrtho = true;
-			
+
 			Game.instance.level.entities.add(proj);
 		}
 	}

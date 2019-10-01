@@ -370,6 +370,19 @@ public class Monster extends Actor implements Directional {
 		ranged = true;
 
 		placeMonster(level);
+
+		// Preload audio in some cases
+		if(Game.isMobile) {
+			Audio.preload(alertSound);
+			Audio.preload(attackSound);
+			Audio.preload(attackSwingSound);
+			Audio.preload(dieSound);
+			Audio.preload(fleeSound);
+			Audio.preload(hitSound);
+			Audio.preload(hurtSound);
+			Audio.preload(idleSound);
+			Audio.preload(walkSound);
+		}
 	}
 
 	public void placeMonster(Level level) {

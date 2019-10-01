@@ -205,6 +205,12 @@ public class Item extends Entity {
 				roll = 0f;
 			}
 		}
+
+		// Preload some sounds
+		if(source != Level.Source.SPAWNED) {
+			Audio.preload(equipSound);
+			Audio.preload(pickupSound);
+		}
 	}
 
 	@Override
