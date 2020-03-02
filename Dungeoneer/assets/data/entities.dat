@@ -75,9 +75,11 @@
 				"triggerAnimationTime": 10
 			},
 			"Repeater": { class: com.interrupt.dungeoneer.entities.triggers.RepeatingTrigger, floating: true },
+			"Elevator": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredElevator, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"DamageTrigger": { class: com.interrupt.dungeoneer.entities.triggers.DamageTrigger, floating: true, isSolid: true },
 			"LookAtTrigger": { class: com.interrupt.dungeoneer.entities.triggers.LookAtTrigger, floating: true},
 			"DeleteTrigger": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredDelete, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"LevelSwapTrigger": { class: com.interrupt.dungeoneer.entities.triggers.LevelSwap, floating: true, triggerType: "PLAYER_TOUCHED", triggerResets: false },
 			"InventoryCheck": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredInventoryCheck, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"Lever": {
 				class: com.interrupt.dungeoneer.entities.Group,
@@ -142,6 +144,11 @@
             },
             "Achievement": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredAchievement, floating: true }
 		},
+		"LevelWarp": {
+            "LevelWarp": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredWarp },
+            "WarpMarker": { class: com.interrupt.dungeoneer.entities.WarpMarker },
+            "Teleporter": { class: com.interrupt.dungeoneer.entities.areas.TeleportArea }
+        },
 		"Spawners": {
             "Item Spawner": {
                 class: com.interrupt.dungeoneer.entities.ItemSpawner

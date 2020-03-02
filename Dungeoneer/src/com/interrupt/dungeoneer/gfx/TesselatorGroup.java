@@ -51,6 +51,7 @@ public class TesselatorGroup {
             return;
 
         ShaderInfo lastShader = null;
+        TextureAtlas lastAtlas = null;
 
         for(int i = 0; i < tesselators.size; i++) {
             // Bind the atlas for drawing
@@ -61,7 +62,7 @@ public class TesselatorGroup {
             if(shader == null)
                 shader = defaultShader;
 
-            if(shader != lastShader) {
+            if(shader != lastShader || atlas != lastAtlas) {
                 // End the last shader before starting the new one
                 if(lastShader != null)
                     lastShader.end();
@@ -71,7 +72,7 @@ public class TesselatorGroup {
                 // Set some shader properties based on the atlas
                 Texture tex = atlas.texture;
                 if(tex != null) {
-                    shader.setAttribute("u_tex_width", (1f / tex.getWidth()) * atlas.getTotalRegions());
+                    shader.setAttribute("u_tex_width", (float)atlas.spriteSize / tex.getWidth());
                     shader.setAttribute("u_tex_height", 1f / tex.getHeight());
                 }
 
@@ -81,6 +82,7 @@ public class TesselatorGroup {
 
             tesselators.getValueAt(i).renderMesh(shader);
             lastShader = shader;
+            lastAtlas = atlas;
         }
 
         // Finish any shaders before continuing

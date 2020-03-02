@@ -309,10 +309,9 @@ public class Tesselator {
 				int x = chunk_x + xOffset;
 				int y = chunk_y + yOffset;
 				
-				if(getTileOrNull(level, x, y) == null) continue;
-				
 				// grab the current tile, and all the adjacent ones
-				Tile c = getTile(level, x, y);
+				Tile c = getTileOrNull(level, x, y);
+				if (c == null) continue;
 				Tile e = getTile(level, x - 1, y);
 				Tile n = getTile(level, x, y - 1);
 				Tile w = getTile(level, x + 1, y);
@@ -339,7 +338,8 @@ public class Tesselator {
                     selectedTesselator = tesselators.world.getTesselatorByAtlas(selectedAtlas);
 					if(c.data.isWater) selectedTesselator = tesselators.water.getTesselatorByAtlas(selectedAtlas);
 
-					TextureRegion reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(c.floorTex);
+					TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas);
+					TextureRegion reg = atlas.getSprite(c.floorTex);
 
                     boolean skipFloorAndCeiling = c.floorAndCeilingAreSameHeight();
 					
@@ -377,6 +377,12 @@ public class Tesselator {
 							darkVertices.add(new Vector3(x, cFloorHeight + c.slopeSE, y + 1));
 							darkVertices.add(new Vector3(x, cFloorHeight + c.slopeNE, y));
 						}
+
+						// adjust verts for texture scale
+						adjustFloorUvs(vert_uv1, reg, x, y, c.floorTexRot, atlas);
+						adjustFloorUvs(vert_uv2, reg, x, y, c.floorTexRot, atlas);
+						adjustFloorUvs(vert_uv3, reg, x, y, c.floorTexRot, atlas);
+						adjustFloorUvs(vert_uv4, reg, x, y, c.floorTexRot, atlas);
 						
 						// add floor
 						if (c.tileSpaceType==TileSpaceType.OPEN_SE) {
@@ -425,7 +431,8 @@ public class Tesselator {
                     selectedAtlas = c.ceilTexAtlas != null ? c.ceilTexAtlas : defaultTextureAtlas;
                     selectedTesselator = tesselators.world.getTesselatorByAtlas(selectedAtlas);
 
-                    reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(c.ceilTex);
+					atlas = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas);
+                    reg = atlas.getSprite(c.ceilTex);
 					
 					if(makeCeilings && !c.skyCeiling() && !skipFloorAndCeiling) {
 						normal.set(Vector3.Z).scl(-1f);
@@ -455,6 +462,12 @@ public class Tesselator {
 							vert_uv3.set(reg.getU(), reg.getV2());
 							vert_uv4.set(reg.getU2(), reg.getV2());
 						}
+
+						// adjust verts for texture scale
+						adjustCeilingUvs(vert_uv1, reg, x, y, c.ceilTexRot, atlas);
+						adjustCeilingUvs(vert_uv2, reg, x, y, c.ceilTexRot, atlas);
+						adjustCeilingUvs(vert_uv3, reg, x, y, c.ceilTexRot, atlas);
+						adjustCeilingUvs(vert_uv4, reg, x, y, c.ceilTexRot, atlas);
 						
 						// add ceiling
 						if (c.tileSpaceType==TileSpaceType.OPEN_SE) {
@@ -506,7 +519,6 @@ public class Tesselator {
 						if (c.tileSpaceType != TileSpaceType.EMPTY || c.tileSpaceType != TileSpaceType.SOLID) {
 							boolean makeAngledWall = false;
 							if (c.tileSpaceType==TileSpaceType.OPEN_SE) {
-                                reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(c.wallTex);
 				        		normal.set((float)Math.sin(Math.PI/4),0,(float)Math.cos(Math.PI/4));
 				        		
 				        		x_offsets.set(0, 1);
@@ -518,7 +530,6 @@ public class Tesselator {
 				        		makeAngledWall = true;
 							}
 							else if (c.tileSpaceType==TileSpaceType.OPEN_SW) {
-                                reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(c.wallTex);
 				        		normal.set((float)Math.sin(-Math.PI/4),0,(float)Math.cos(-Math.PI/4));
 				        		
 				        		x_offsets.set(0, 1);
@@ -530,7 +541,6 @@ public class Tesselator {
 				        		makeAngledWall = true;
 							}
 							else if (c.tileSpaceType==TileSpaceType.OPEN_NE) {
-                                reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(c.wallTex);
 				        		normal.set((float)Math.sin(3*Math.PI/4),0,(float)Math.cos(3*Math.PI/4));
 				        		
 				        		x_offsets.set(1, 0);
@@ -542,7 +552,6 @@ public class Tesselator {
 				        		makeAngledWall = true;
 							}
 							else if (c.tileSpaceType==TileSpaceType.OPEN_NW) {
-                                reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(c.wallTex);
 				        		normal.set((float)Math.sin(-3*Math.PI/4),0,(float)Math.cos(-3*Math.PI/4));
 				        		
 				        		x_offsets.set(1, 0);
@@ -555,6 +564,9 @@ public class Tesselator {
 							}
 							
 							if(makeAngledWall) {
+								atlas = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas);
+								reg = atlas.getSprite(c.wallTex);
+
 								// subdivide the wall if needed
 								float h = Math.min(ceilPairTuple.val1, ceilPairTuple.val2) - Math.max(floorPairTuple.val1, floorPairTuple.val2);
 								if(h > subdivideSize) {
@@ -575,15 +587,18 @@ public class Tesselator {
 									starts.add(ceilPairTuple);
 				        			ends.add(floorPairTuple);
 								}
+
+								float texU1 = renderer.GetTexUAt(x + x_offsets.val1, x + x_offsets.val2, 0, 0, 0f, reg, atlas);
+								float texU2 = renderer.GetTexUAt(x + x_offsets.val1, x + x_offsets.val2, 0, 0, 1f, reg, atlas);
 								
 								// now have enough info to add vertices for all the collected wall segments
 								for(int i = 0; i < starts.size; i++)
 								{
-                                    selectedTesselator.addVertex(x + x_offsets.val1, ends.get(i).val1 , y + y_offsets.val1, reg.getU(), renderer.GetTexVAt(ends.get(i).val1) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, ends.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, reg.getU(), renderer.GetTexVAt(starts.get(i).val1) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, reg.getU2(), renderer.GetTexVAt(ends.get(i).val2) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, reg.getU2(), renderer.GetTexVAt(starts.get(i).val2) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
-                                    selectedTesselator.finishQuad();
+									selectedTesselator.addVertex(x + x_offsets.val1, ends.get(i).val1 , y + y_offsets.val1, texU1, renderer.GetTexVAt(ends.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, ends.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
+									selectedTesselator.addVertex(x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, texU1, renderer.GetTexVAt(starts.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
+									selectedTesselator.addVertex(x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, texU2, renderer.GetTexVAt(ends.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
+									selectedTesselator.addVertex(x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, texU2, renderer.GetTexVAt(starts.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
+									selectedTesselator.finishQuad();
 								}
 								
 								starts.clear();
@@ -595,36 +610,50 @@ public class Tesselator {
 						// check for walls to be drawn in each of the cardinal directions
 						for(TileEdges dir : TileEdges.values()) {
 							Tile checkDir = null;
-							if(dir == TileEdges.North) checkDir = s;
-							if(dir == TileEdges.South) checkDir = n;
-							if(dir == TileEdges.East) checkDir = w;
-							if(dir == TileEdges.West) checkDir = e;
-
 							if(dir == TileEdges.North) {
+								checkDir = s;
 								normal.set(0, -1, 0);
-							}
-							else if(dir == TileEdges.South) {
+							} else if(dir == TileEdges.South) {
+								checkDir = n;
 								normal.set(0, 1, 0);
-							}
-							else if(dir == TileEdges.West) {
+							} else if(dir == TileEdges.West) {
+								checkDir = e;
 								normal.set(-1, 0, 0);
-							}
-							else {
+							} else {
+								checkDir = w;
 								normal.set(0, 0, 1);
 							}
 							
 							TileEdges oppositeDir = Tile.opposite(dir);
 
+							// Caching the various tile checks here for performance and readability.
+							boolean showWall;
+							boolean isOtherSolid = checkDir.IsSolid();
+							boolean isOtherSky = checkDir.isSky();
+							boolean isOtherEdgeVisible = checkDir.isTileEdgeVisible(dir, c);
+							boolean isOtherFloorHigher = checkDir.IsHigher(dir, c);
+							boolean isOtherCeilLower = checkDir.IsCeilLower(dir, c);
+
+							// Determine if any portion of the wall of the tile in the current direction should be shown.
+							if (c.isSky() && isOtherSolid) {
+								// This makes the edge of an outdoor map transparent for sky tiles.
+								showWall = false;
+							} else if (isOtherSky && (isOtherFloorHigher && !isOtherSolid)) {
+								// Make sure we show the lower portion of a raised sky tile.
+								showWall = true;
+							} else {
+								// Look at the tile in the check direction to find walls (either fully solid, or partial segments)
+								showWall = (!isOtherSky && (isOtherEdgeVisible || (!isOtherSolid && (isOtherFloorHigher || isOtherCeilLower))));
+							}
+
 							// add wall floor and ceiling height pairs
-							// look at the tile in the check direction to find walls (either fully solid, or partial segments)
-							if((!checkDir.isSky() && ((checkDir.isTileEdgeVisible(dir, c) || (!checkDir.IsSolid() && (checkDir.IsHigher(dir, c) || checkDir.IsCeilLower(dir, c)))))))
-							{
+							if (showWall) {
 								Integer bottomWallIndex = null;
 
 								starts.clear();
 								ends.clear();
 								
-								if(checkDir.IsSolid() || checkDir.isTileEdgeVisible(dir, c))	{
+								if (isOtherSolid || isOtherEdgeVisible) {
 									// fully solid wall! make a wall from floor to ceiling
 									FloatTuple ceilPair = c.getCeilingPair(dir, tuplePool);
 									FloatTuple floorPair = c.getFloorPair(dir, tuplePool);
@@ -652,7 +681,8 @@ public class Tesselator {
 								}
 								else {
 									// add any partial segments that are exposed
-									if(checkDir.IsHigher(dir, c))	{
+									// Show the floor portion that is higher than this tile.
+									if (isOtherFloorHigher) {
 										bottomWallIndex = starts.size;
 										
 										FloatTuple ceilPair = checkDir.getFloorPair(oppositeDir, tuplePool).reverse();
@@ -678,7 +708,8 @@ public class Tesselator {
 											ends.add(floorPair);
 										}
 									}
-									if(checkDir.IsCeilLower(dir, c)) {
+									// Show the ceiling portion that is lower than this tile, but not if it is a sky tile.
+									if (isOtherCeilLower && !isOtherSky) {
 										
 										FloatTuple ceilPair = tuplePool.get(Math.max(checkDir.getCeilingPair(oppositeDir, tuplePool).val1, c.getCeilingPair(dir, tuplePool).val1), Math.max(checkDir.getCeilingPair(oppositeDir, tuplePool).val2, c.getCeilingPair(dir, tuplePool).val2));
 										FloatTuple floorPair = checkDir.getCeilingPair(oppositeDir, tuplePool).reverse();
@@ -735,7 +766,8 @@ public class Tesselator {
 
                                     selectedTesselator = tesselators.world.getTesselatorByAtlas(selectedAtlas);
 
-                                    reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(checkDir.getWallTex(dir));
+									atlas = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas);
+                                    reg = atlas.getSprite(checkDir.getWallTex(dir));
 					        		
 					        		// paint the bottom wall
 					        		if(bottomWallIndex != null && bottomWallIndex >= i) {
@@ -745,7 +777,8 @@ public class Tesselator {
                                             selectedAtlas = checkDir.floorTexAtlas;
                                             if(selectedAtlas == null) selectedAtlas = defaultTextureAtlas;
 
-						        			reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(TileManager.instance.getFlowTexture(checkDir));
+											atlas = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas);
+						        			reg = atlas.getSprite(TileManager.instance.getFlowTexture(checkDir));
                                             selectedTesselator = tesselators.waterfall.getTesselatorByAtlas(selectedAtlas);
 
                                             ends.get(i).val1 -= 0.1f;
@@ -757,14 +790,19 @@ public class Tesselator {
 
                                             selectedTesselator = tesselators.world.getTesselatorByAtlas(selectedAtlas);
 
-                                            reg = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas).getSprite(checkDir.getWallBottomTex(dir));
+											atlas = TextureAtlas.getRepeatingAtlasByIndex(selectedAtlas);
+                                            reg = atlas.getSprite(checkDir.getWallBottomTex(dir));
 					        			}
 					        		}
 
-                                    selectedTesselator.addVertex(x + x_offsets.val1, ends.get(i).val1 , y + y_offsets.val1, reg.getU(), renderer.GetTexVAt(ends.get(i).val1) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, ends.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, reg.getU(), renderer.GetTexVAt(starts.get(i).val1) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, reg.getU2(), renderer.GetTexVAt(ends.get(i).val2) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
-                                    selectedTesselator.addVertex(x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, reg.getU2(), renderer.GetTexVAt(starts.get(i).val2) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
+					        		float texU1 = renderer.GetTexUAt(x + x_offsets.val1, x + x_offsets.val2, y + y_offsets.val1, y + y_offsets.val2, 0f, reg, atlas);
+					        		float texU2 = renderer.GetTexUAt(x + x_offsets.val1, x + x_offsets.val2, y + y_offsets.val1, y + y_offsets.val2, 1f, reg, atlas);
+
+					        		// This is ugly!
+                                    selectedTesselator.addVertex(x + x_offsets.val1, ends.get(i).val1 , y + y_offsets.val1, texU1, renderer.GetTexVAt(ends.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, ends.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
+                                    selectedTesselator.addVertex(x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, texU1, renderer.GetTexVAt(starts.get(i).val1, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val1, starts.get(i).val1, y + y_offsets.val1, normal) : fullBrightColor);
+                                    selectedTesselator.addVertex(x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, texU2, renderer.GetTexVAt(ends.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, ends.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
+                                    selectedTesselator.addVertex(x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, texU2, renderer.GetTexVAt(starts.get(i).val2, atlas) + reg.getV(), showLights ? getLightColorAt(level,x + x_offsets.val2, starts.get(i).val2, y + y_offsets.val2, normal) : fullBrightColor);
                                     selectedTesselator.finishQuad();
 
 									tuplePool.freeAll();
@@ -994,5 +1032,104 @@ public class Tesselator {
 
 		tempColor.mul(tempColor.a);
 		return tempColor.toFloatBits();
+	}
+
+	private static void adjustFloorUvs(FloatTuple uv, TextureRegion region, float xLoc, float yLoc, int rot, TextureAtlas atlas) {
+    	if(atlas.scale == 1f && atlas.rowScale == 1) {
+    		// Nothing to do, skip this
+    		return;
+		}
+
+		int textureScale = (int)atlas.scale;
+		int y_textureScale = atlas.rowScale * textureScale;
+
+		float uMod = (uv.val1 - region.getU()) / (region.getU2() - region.getU());
+		float vMod = (uv.val2 - region.getV()) / (region.getV2() - region.getV());
+		if(uMod == 0f)      uMod = 0.00001f;
+		else if(uMod == 1f) uMod = 0.99999f;
+		if(vMod == 0f)      vMod = 0.00001f;
+		else if(vMod == 1f) vMod = 0.99999f;
+
+		float x;
+		float y;
+		if(rot == 1) {
+			y = (xLoc - vMod) + 1;
+			x = (yLoc + uMod);
+		}
+		else if(rot == 2) {
+			x = (xLoc - uMod) + 1;
+			y = (yLoc - vMod) + 1;
+		}
+		else if(rot == 3) {
+			y = (xLoc + vMod);
+			x = (yLoc - uMod) + 1;
+		}
+		else {
+			x = (xLoc + uMod);
+			y = (yLoc + vMod);
+		}
+
+		float um = (x % textureScale) / (float)textureScale;
+		float vm = (y % y_textureScale) / (float)y_textureScale;
+		if(rot == 1)
+			um = 1.0f - um;
+		if(rot == 2) {
+			um = 1.0f - um;
+			vm = 1.0f - vm;
+		}
+		if(rot == 3)
+			vm = 1.0f - vm;
+		uv.val1 = (region.getU2() - region.getU()) * um + region.getU();
+		uv.val2 = (region.getV2() - region.getV()) * vm + region.getV();
+	}
+
+	private static void adjustCeilingUvs(FloatTuple uv, TextureRegion region, float xLoc, float yLoc, int rot, TextureAtlas atlas) {
+		if(atlas.scale == 1f && atlas.rowScale == 1) {
+			// Nothing to do, skip this
+			return;
+		}
+
+		int textureScale = (int)atlas.scale;
+		int y_textureScale = atlas.rowScale * textureScale;
+
+		float uMod = (uv.val1 - region.getU()) / (region.getU2() - region.getU());
+		float vMod = (uv.val2 - region.getV()) / (region.getV2() - region.getV());
+		if(uMod == 0f)      uMod = 0.00001f;
+		else if(uMod == 1f) uMod = 0.99999f;
+		if(vMod == 0f)      vMod = 0.00001f;
+		else if(vMod == 1f) vMod = 0.99999f;
+
+		float x;
+		float y;
+		if(rot == 1) {
+			y = (xLoc + vMod);
+			x = (yLoc + uMod);
+		}
+		else if(rot == 2) {
+			x = (xLoc + uMod);
+			y = (yLoc - vMod) + 1;
+		}
+		else if(rot == 3) {
+			y = (xLoc - vMod) + 1;
+			x = (yLoc - uMod) + 1;
+		}
+		else {
+			x = (xLoc - uMod) + 1;
+			y = (yLoc + vMod);
+		}
+
+		float um = (x % textureScale) / (float)textureScale;
+		float vm = (y % y_textureScale) / (float)y_textureScale;
+		if(rot == 0)
+			vm = 1.0f - vm;
+		else if(rot == 2) {
+			um = 1.0f - um;
+		}
+		else if(rot == 3) {
+			vm = 1.0f - vm;
+			um = 1.0f - um;
+		}
+		uv.val1 = (region.getU2() - region.getU()) * um + region.getU();
+		uv.val2 = (region.getV2() - region.getV()) * vm + region.getV();
 	}
 }

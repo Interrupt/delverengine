@@ -1511,7 +1511,7 @@ public class Level {
 		Game.pathfinding.InitForLevel(this);
 	}
 
-	private void initEntities(Array<Entity> entityList, Source source) {
+	public void initEntities(Array<Entity> entityList, Source source) {
 		if(entityList == null)
 			return;
 
@@ -2117,7 +2117,7 @@ public class Level {
 		// sky lights get a bit of faked ambient occlusion
 		if(Options.instance.graphicsDetailLevel >= 2) {
 			Tile cur = getTile((int) x, (int) y);
-			if (cur.skyCeiling()) {
+			if (cur.skyCeiling() || Options.instance.graphicsDetailLevel >= 3) {
 				for (int xx = -1; xx <= 1; xx++) {
 					for (int yy = -1; yy <= 1; yy++) {
 						float worldX = x + xx * 0.75f;

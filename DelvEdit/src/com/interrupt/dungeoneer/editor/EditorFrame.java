@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.*;
@@ -51,11 +50,13 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
-import com.interrupt.dungeoneer.gfx.*;
+import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.SpriteGroupStrategy;
+import com.interrupt.dungeoneer.gfx.TextureAtlas;
+import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.interfaces.Directional;
-import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -65,10 +66,10 @@ import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.StringManager;
 import com.noise.PerlinNoise;
+import com.badlogic.gdx.math.MathUtils;
 
 import javax.swing.*;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 public class EditorFrame implements ApplicationListener {
 
@@ -108,10 +109,7 @@ public class EditorFrame implements ApplicationListener {
 
 	public boolean canDelete = true;
 
-    protected static TriangleSpatialHash triangleSpatialHash = new TriangleSpatialHash(1);
-    protected static Array<Triangle> staticMeshCollisionTriangles = new Array<Triangle>();
-
-    protected Array<Vector3> spatialWorkerList = new Array<Vector3>();
+	protected Array<Vector3> spatialWorkerList = new Array<Vector3>();
 
 	public enum TileSurface {Ceiling, Floor, UpperWall, LowerWall};
 
@@ -124,12 +122,7 @@ public class EditorFrame implements ApplicationListener {
 
 	public PickedSurface pickedSurface = new PickedSurface();
 
-    Matrix4 selectionTempMatrix = new Matrix4();
-	Matrix4 selectionTempMatrix2 = new Matrix4();
-	BoundingBox selectionTempBoundingBox = new BoundingBox();
-
 	Vector3 selectionTempVector1 = new Vector3();
-	Vector3 selectionTempVector2 = new Vector3();
 
 	FrameBuffer pickerFrameBuffer = null;
 	Pixmap pickerPixelBuffer = null;
@@ -208,8 +201,6 @@ public class EditorFrame implements ApplicationListener {
 		}
 	}
 
-	private JFrame window = null;
-
 	private GameInput input;
     public EditorInput editorInput;
     private InputMultiplexer inputMultiplexer;
@@ -218,8 +209,6 @@ public class EditorFrame implements ApplicationListener {
     private int curHeight;
 
 	private boolean rightClickWasDown = false;
-
-	public TesselatorGroups tesselators;
 
     public PerspectiveCamera camera = new PerspectiveCamera();
 
@@ -238,20 +227,19 @@ public class EditorFrame implements ApplicationListener {
 
     float camX = 7.5f;
     float camY = 8;
-    float camZ = 4.5f;
+    float camZ = 6.5f;
 
-    float rotX = 0;
-    float rotY = 20;
+    float rotX = 3.14159f;
+    float rotY = 1.4f;
     double rota = 0;
-    double rotya = 0;
+	double rotya = 0;
+	float rotYClamp = 1.571f;
 
-    double walkVel = 0.05;
 	double walkSpeed = 0.15;
 	double rotSpeed = 0.009;
 	double maxRot = 0.8;
 
-	boolean readFloorMove, readCeilMove, readRotate;
-	private int readFloorMoveCount, readCeilMoveCount;
+	boolean readRotate;
 
 	Mesh cubeMesh;
     Mesh gridMesh;
@@ -301,6 +289,7 @@ public class EditorFrame implements ApplicationListener {
 	private Player player = null;
 
     private boolean showLights = false;
+	private boolean lightsDirty = true;
 
 	private Entity hoveredEntity = null;
     private Entity pickedEntity = null;
@@ -332,10 +321,7 @@ public class EditorFrame implements ApplicationListener {
 	Color selectedColor = new Color(1f, 0.5f, 0.5f, 1f);
 
     Vector3 intersection = new Vector3();
-	Vector3 testPos = new Vector3();
 	Vector3 tempVector1 = new Vector3();
-
-	Color tempColor = new Color();
 
 	DrawableSprite unknownEntityMarker = new DrawableSprite();
 
@@ -359,15 +345,12 @@ public class EditorFrame implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
-	private boolean isOnWindows = System.getProperty("os.name").startsWith("Windows");
-
 	public Editor editor;
 
 	/**
 	 * @wbp.parser.entryPoint
 	 */
 	public EditorFrame(JFrame window, Editor editor) {
-		this.window = window;
 		this.editor = editor;
 	}
 
@@ -376,8 +359,7 @@ public class EditorFrame implements ApplicationListener {
 		Gdx.input.setInputProcessor( input );
 
         renderer.init();
-
-        tesselators = new TesselatorGroups();
+		renderer.enableLighting = showLights;
 
 		cubeMesh = genCube();
 		spriteBatch = new DecalBatch(new SpriteGroupStrategy(camera, null, GlRenderer.worldShaderInfo, 1));
@@ -463,15 +445,13 @@ public class EditorFrame implements ApplicationListener {
 				input.clear();
 
 				camX = Game.instance.player.x;
-				camZ = Game.instance.player.z + 0.5f;
+				camZ = Game.instance.player.z + Game.instance.player.eyeHeight;
 				camY = Game.instance.player.y;
 
 				rotX = Game.instance.player.rot + 3.14159265f;
-				rotY = -(Game.instance.player.yrot - 18.9f);
+				rotY = -Game.instance.player.yrot;
 
 				Audio.stopLoopingSounds();
-
-				tesselators.refresh();
 			}
 
 			return;
@@ -506,6 +486,11 @@ public class EditorFrame implements ApplicationListener {
 	Vector3 intersectNormal = new Vector3();
 	Vector3 intersectTemp = new Vector3();
 	Array<Entity> selectedEntities = new Array<Entity>();
+
+	// Track the starting point of the selection area.
+	int selStartX = 0;
+	int selStartY = 0;
+
 	public void draw() {
 		GL20 gl = renderer.getGL();
         GlRenderer.clearBoundTexture();
@@ -561,30 +546,13 @@ public class EditorFrame implements ApplicationListener {
 		gl.glClearColor(0.2235f, 0.2235f, 0.2235f, 1);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
 
-		Tesselate();
+		if(showLights && lightsDirty) {
+			lightsDirty = false;
+			level.updateLights(Source.EDITOR);
+		}
 
-        tesselators.world.render();
-
-        GlRenderer.waterShaderInfo.setScrollSpeed(0f);
-        tesselators.water.render();
-
-        GlRenderer.waterShaderInfo.setScrollSpeed(0.03f);
-        tesselators.waterfall.render();
-
-        gl.glDepthFunc(GL20.GL_LEQUAL);
-
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 1f);
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 1f);
-
-        Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
-        Gdx.gl.glPolygonOffset(-1f, -1f);
-
-        tesselators.waterEdges.render();
-
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 4f);
-        GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 0f);
-
-        tesselators.waterfallEdges.render();
+        renderer.Tesselate(level);
+        renderer.renderWorld(level);
 
 		gl.glDisable(GL20.GL_CULL_FACE);
 
@@ -632,46 +600,6 @@ public class EditorFrame implements ApplicationListener {
 
 		Gdx.gl.glEnable(GL20.GL_ALPHA);
         Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-		if(staticMeshBatch == null) {
-			staticMeshCollisionTriangles.clear();
-			EditorCachePools.freeAllCaches();
-
-			// sort the mesh entities into buckets, determined by their texture
-			HashMap<String, Array<Entity>> meshesByTexture = new HashMap<String, Array<Entity>>();
-			groupStaticMeshesByTexture(level.entities, meshesByTexture);
-
-			// make a static mesh from each entity bucket
-			staticMeshBatch = new HashMap<String, Array<Mesh>>();
-			for(String key : meshesByTexture.keySet()) {
-				staticMeshBatch.put(key, mergeStaticMeshes(level, meshesByTexture.get(key)));
-			}
-
-			// cleanup, don't need the mesh buckets anmyore
-			meshesByTexture.clear();
-
-			refreshTriangleSpatialHash();
-		}
-		if(staticMeshBatch != null) {
-			for(Entry<String, Array<Mesh>> meshBuckets : staticMeshBatch.entrySet()) {
-				Texture t = Art.cachedTextures.get(meshBuckets.getKey());
-				if(t != null) GlRenderer.bindTexture(t);
-				if(meshBuckets.getValue() != null) {
-					GlRenderer.worldShaderInfo.setAttributes(camera.combined,
-							0,
-							1000,
-							1000,
-							time,
-							Color.BLACK,
-							Color.BLACK);
-
-					GlRenderer.worldShaderInfo.begin();
-					for(Mesh m : meshBuckets.getValue()) {
-						m.render(GlRenderer.worldShaderInfo.shader, GL20.GL_TRIANGLES);
-					}
-					GlRenderer.worldShaderInfo.end();
-				}
-			}
-		}
 
 		renderer.renderDecals();
 		renderer.renderStencilPasses();
@@ -733,6 +661,11 @@ public class EditorFrame implements ApplicationListener {
 			shouldDrawBox = true;
 		}
 
+		// don't draw the box when freelooking
+		if(shouldDrawBox && !selected && Gdx.input.isCursorCatched()) {
+			shouldDrawBox = false;
+		}
+
 		if(pickedEntity == null && hoveredEntity == null || tileDragging) {
 			if(!selected || (!(pickedControlPoint != null || movingControlPoint) &&
                     editorInput.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.justTouched())) {
@@ -754,6 +687,9 @@ public class EditorFrame implements ApplicationListener {
 				if(selectionY >= level.height) selectionY = level.height - 1;
 
                 selectionWidth = selectionHeight = 1;
+				selStartX = selectionX;
+				selStartY = selectionY;
+				controlPoints.clear();
 			}
 			else if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
 				if(Gdx.input.isKeyPressed(Keys.ALT_LEFT)) {
@@ -777,17 +713,15 @@ public class EditorFrame implements ApplicationListener {
 						// don't modify selection area!
 						movingControlPoint = true;
 					} else {
+						// The user is dragging the selection area to set its size. Update the selection area based on their mouse position.
+						int newX = MathUtils.clamp((int) intpos.x, 0, level.width - 1);
+						int newY = MathUtils.clamp((int) intpos.z, 0, level.height - 1);
 
-						float selectXMod = 0.8f;
-						float selectYMod = 0.8f;
-						if (intpos.x < selectionX) selectXMod *= -1f;
-						if (intpos.z < selectionY) selectYMod *= -1f;
-
-						selectionWidth = ((int) (intpos.x + selectXMod) - selectionX);
-						selectionHeight = ((int) (intpos.z + selectYMod) - selectionY);
-
-						if (selectionWidth == 0) selectionWidth = 1;
-						if (selectionHeight == 0) selectionHeight = 1;
+						selectionWidth = Math.abs(selStartX - newX) + 1;
+						selectionHeight = Math.abs(selStartY - newY) + 1;
+						// Always make this the lowest corner so that the selection size, which is relative to this, is positive.
+						selectionX = Math.min(newX, selStartX);
+						selectionY = Math.min(newY, selStartY);
 
 						controlPoints.clear();
 					}
@@ -820,7 +754,9 @@ public class EditorFrame implements ApplicationListener {
 				if(!selected) selectionHeights.set(t.ceilHeight, selZ);
 			}
 			else {
-				if(!selected) selectionHeights.set(0.5f, -0.5f);
+				TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
+				float size = atlas.rowScale * atlas.scale;
+				if(!selected) selectionHeights.set(size - 0.5f, -0.5f);
 			}
 
 			if(slopePointMode || slopeEdgeMode)
@@ -913,17 +849,6 @@ public class EditorFrame implements ApplicationListener {
 			int selY = selectionY;
 			int selWidth = selectionWidth;
 			int selHeight = selectionHeight;
-
-			if(selWidth < 0) {
-				selX = selX + selWidth;
-				selWidth *= -1;
-				selX += 1;
-			}
-			if(selHeight < 0) {
-				selY = selY + selHeight;
-				selHeight *= -1;
-				selY += 1;
-			}
 
 			Tile startTile = level.getTile(selectionX, selectionY);
 
@@ -1082,17 +1007,6 @@ public class EditorFrame implements ApplicationListener {
 				int selY = selectionY;
 				int selWidth = selectionWidth;
 				int selHeight = selectionHeight;
-
-				if(selWidth < 0) {
-					selX = selX + selWidth;
-					selWidth *= -1;
-					selX += 1;
-				}
-				if(selHeight < 0) {
-					selY = selY + selHeight;
-					selHeight *= -1;
-					selY += 1;
-				}
 
 				for(int x = selX; x < selX + selWidth; x++) {
 					for(int y = selY; y < selY + selHeight; y++) {
@@ -1562,29 +1476,8 @@ public class EditorFrame implements ApplicationListener {
 		Gdx.gl.glCullFace(GL20.GL_BACK);
 		Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 
-		Tesselate();
-
-		// render world, keep depth buffer
-		tesselators.world.render();
-
-		GlRenderer.waterShaderInfo.setScrollSpeed(0f);
-		tesselators.water.render();
-
-		GlRenderer.waterShaderInfo.setScrollSpeed(0.03f);
-		tesselators.waterfall.render();
-
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 1f);
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 1f);
-
-		Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
-		Gdx.gl.glPolygonOffset(-1f, -1f);
-
-		tesselators.waterEdges.render();
-
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_noise_mod", 4f);
-		GlRenderer.waterEdgeShaderInfo.setAttribute("u_waveMod", 0f);
-
-		tesselators.waterfallEdges.render();
+		renderer.Tesselate(level);
+		renderer.renderWorld(level);
 
 		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -1597,28 +1490,24 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	private void refreshTriangleSpatialHash() {
-		GlRenderer.triangleSpatialHash = triangleSpatialHash;
-		triangleSpatialHash.Flush();
-
-		// add the collision triangles to the spatial hash
-		for(int i = 0; i < staticMeshCollisionTriangles.size; i++) {
-			triangleSpatialHash.AddTriangle(staticMeshCollisionTriangles.get(i));
-		}
-
-		tesselators.world.addCollisionTriangles(triangleSpatialHash);
-		tesselators.water.addCollisionTriangles(triangleSpatialHash);
-		tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
+		GlRenderer.triangleSpatialHash.Flush();
 	}
 
-	private void refreshEntity(Entity theEntity) {
+	protected void refreshEntity(Entity theEntity) {
 		if(theEntity instanceof Light && showLights) {
-			refreshLights();
+			markWorldAsDirty((int)theEntity.x, (int)theEntity.y, (int)((Light)theEntity).range + 1);
+			((Light)theEntity).clearCanSee();
+			lightsDirty = true;
 		}
 		else if(theEntity instanceof ProjectedDecal) {
 			((ProjectedDecal)theEntity).refresh();
 		}
 		else if(theEntity instanceof Model) {
-			if(!((Model)theEntity).isDynamic) staticMeshBatch = null;
+			Model m = (Model)theEntity;
+			if(!m.isDynamic) {
+				// Todo: Get range from the bounding box
+				markWorldAsDirty((int)theEntity.x, (int)theEntity.y, 5);
+			}
 		}
 		else if(theEntity instanceof Prefab) {
 			Array<Entity> contains = ((Prefab)theEntity).entities;
@@ -1852,17 +1741,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
@@ -2073,8 +1951,6 @@ public class EditorFrame implements ApplicationListener {
 		// get picked entity
 		Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
 
-		float worldHitDistance = 10000000f;
-
 		// get plane intersection
 		if(intpos != null) {
 			if (!Gdx.input.isTouched()) {
@@ -2086,10 +1962,9 @@ public class EditorFrame implements ApplicationListener {
 
 		// try world intersection
 		Intersector.intersectRayPlane(ray, p, intpos);
-		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, triangleSpatialHash.getAllTriangles(), intpos, intersectNormal)) {
+		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, GlRenderer.triangleSpatialHash.getAllTriangles(), intpos, intersectNormal)) {
 			intersectTemp.set(intpos).sub(camera.position).nor();
 			intpos.add(intersectTemp.x * -0.05f, 0.0001f, intersectTemp.z * -0.05f);
-			worldHitDistance = intersectTemp.set(intpos).sub(camera.position).len();
 		}
 
 		if(tileDragging) {
@@ -2143,10 +2018,15 @@ public class EditorFrame implements ApplicationListener {
 		}
 		if(pickedEntity == null) movingEntity = false;
 
-		boolean turnLeft = editorInput.isKeyPressed(Keys.LEFT) || (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnRight = editorInput.isKeyPressed(Keys.RIGHT) || (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnUp = editorInput.isKeyPressed(Keys.UP) || (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnDown = editorInput.isKeyPressed(Keys.DOWN) || (Gdx.input.getDeltaY() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnLeft = (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnRight = (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnUp = (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+		boolean turnDown = (Gdx.input.getDeltaY() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
+
+		turnLeft |= Gdx.input.isKeyPressed(Keys.LEFT) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
+		turnRight |= Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
+		turnUp |= Gdx.input.isKeyPressed(Keys.DOWN) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
+		turnDown |= Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
 
 		if(turnLeft) {
 			rota += rotSpeed;
@@ -2170,27 +2050,43 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		rotY += rotya;
+		
+		if (rotY < -rotYClamp) rotY = -rotYClamp;
+		if (rotY > rotYClamp) rotY = rotYClamp;
+
 		rotya *= 0.8;
 
-		float xm = 0;
-		float zm = 0;
-		if(editorInput.isKeyPressed(Keys.A))
-			xm = -0.8f;
-		if(editorInput.isKeyPressed(Keys.D))
-			xm = 0.8f;
+		float xm = 0f;
+		float zm = 0f;
 
-		if(editorInput.isKeyPressed(Keys.W))
-			zm = -0.8f;
-		if(editorInput.isKeyPressed(Keys.S))
-			zm = 0.8f;
+		if(editorInput.isKeyPressed(Keys.A)) {
+			xm = -1f;
+		}
+		if(editorInput.isKeyPressed(Keys.D)) {
+			xm = 1f;
+		}
 
-		if(editorInput.isKeyPressed(Keys.Q)) {
+		if(editorInput.isKeyPressed(Keys.W)) {
+			zm = -1f;
+		}
+		if(editorInput.isKeyPressed(Keys.S)) {
+			zm = 1f;
+		}
+
+		if(editorInput.isKeyPressed(Keys.Q) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
 			camZ -= 0.1f;
 		}
-		if(editorInput.isKeyPressed(Keys.E)) {
+		if(editorInput.isKeyPressed(Keys.E) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
 			camZ += 0.1f;
 		}
 
+		if (editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
+			xm *= 2.0f;
+			zm *= 2.0f;
+		}
+
+		camZ += (zm * Math.sin(rotY)) * walkSpeed;
+		zm *= Math.cos(rotY);
 		camX += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * walkSpeed;
 		camY += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * walkSpeed;
 
@@ -2200,22 +2096,6 @@ public class EditorFrame implements ApplicationListener {
 
 			player.xa += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
 			player.ya += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
-		}
-
-		int selX = selectionX;
-		int selY = selectionY;
-		int selWidth = selectionWidth;
-		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
 		}
 
 		// Tile editing mode?
@@ -2320,7 +2200,11 @@ public class EditorFrame implements ApplicationListener {
         }
         else {
             clearEntitySelection();
-        }
+		}
+		
+		if (editorUi.isShowingContextMenu()) {
+			editorUi.hideContextMenu();
+		}
 
         history.saveState(level);
     }
@@ -2359,9 +2243,9 @@ public class EditorFrame implements ApplicationListener {
 
 		Game.instance.player.x = camera.position.x;
 		Game.instance.player.y = camera.position.z;
-		Game.instance.player.z = camera.position.y - 0.4f;
+		Game.instance.player.z = camera.position.y - Game.instance.player.eyeHeight;
 		Game.instance.player.rot = rotX - 3.14159265f;
-		Game.instance.player.yrot = -rotY + 18.9f;
+		Game.instance.player.yrot = -rotY;
 		Game.isDebugMode = true;
 	}
 
@@ -2546,29 +2430,6 @@ public class EditorFrame implements ApplicationListener {
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-    public Tesselator tesselator = new Tesselator();
-    public void Tesselate()
-	{
-        if(!tesselators.world.needsTesselation()) return;
-
-        if(renderer.chunks != null)
-			renderer.chunks.clear();
-
-		int width = level.width;
-		int height = level.height;
-
-		int xOffset = 0;
-		int yOffset = 0;
-
-		boolean makeFloors = true;
-		boolean makeCeilings = true;
-		boolean makeWalls = true;
-
-		tesselator.Tesselate(level, renderer, null, xOffset, yOffset, width, height, tesselators, makeFloors, makeCeilings, makeWalls, showLights);
-
-        refreshTriangleSpatialHash();
-	}
-
 	public int GetNextPowerOf2(int v) {
 		v--;
 		v |= v >> 1;
@@ -2667,7 +2528,7 @@ public class EditorFrame implements ApplicationListener {
 			indices[i++] = (short)(i - 1);
         }
 
-		Mesh mesh = new Mesh(true, vertices.length, indices.length, new VertexAttribute(Usage.Position, 3, "a_position"), new VertexAttribute(Usage.ColorUnpacked, 4, "a_color"));
+		Mesh mesh = new Mesh(false, vertices.length, indices.length, new VertexAttribute(Usage.Position, 3, "a_position"), new VertexAttribute(Usage.ColorUnpacked, 4, "a_color"));
         mesh.setVertices(vertices);
         mesh.setIndices(indices);
 
@@ -2831,17 +2692,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 	   clearSelectedMarkers();
 
 	   if(selectedItem != Markers.none) {
@@ -2849,11 +2699,10 @@ public class EditorFrame implements ApplicationListener {
 				for(int y = selY; y < selY + selHeight; y++) {
 				   EditorMarker eM = new EditorMarker(selectedItem, x, y);
 				   level.editorMarkers.add(eM);
+				   markWorldAsDirty(x, y, 4);
 				}
 		   }
 	   }
-
-	   refreshLights();
 
        history.saveState(level);
    }
@@ -2864,17 +2713,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 	   for(EditorMarker marker : level.editorMarkers) {
 		   if(marker.x >= selX && marker.x < selX + selWidth && marker.y >= selY && marker.y < selY + selHeight) return true;
 	   }
@@ -2883,25 +2721,9 @@ public class EditorFrame implements ApplicationListener {
    }
 
    public void addEntity(Entity e) {
-	   if(selected) {
-		   int x = selectionX;
-		   int y = selectionY;
-
-		   String objCopy = Game.toJson(e);
-
-		   Entity copy = Game.fromJson(e.getClass(), objCopy);
-		   copy.x = x + 0.5f;
-		   copy.y = y + 0.5f;
-
-		   Tile at = level.getTileOrNull(x, y);
-		   if(at != null) copy.z = at.floorHeight + 0.5f;
-
-		   level.entities.add(copy);
-	   }
-
-       history.saveState(level);
-
-	   refreshLights();
+	   level.entities.add(e);
+	   e.init(level, Source.EDITOR);
+	   markWorldAsDirty((int)e.x, (int)e.y, 4);
    }
 
    public void clearSelectedMarkers() {
@@ -2909,17 +2731,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 	   for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
@@ -2931,14 +2742,16 @@ public class EditorFrame implements ApplicationListener {
 						if(m.x == x && m.y == y) toDelete.add(m);
 					}
 
+					if(toDelete.size > 0) {
+						markWorldAsDirty(x, y, 4);
+					}
+
 					for(EditorMarker m : toDelete) {
 						level.editorMarkers.removeValue(m, true);
 					}
 				}
 			}
 		}
-
-	   refreshLights();
    }
 
 	public void refresh() {
@@ -2950,8 +2763,31 @@ public class EditorFrame implements ApplicationListener {
 		refreshLights();
 	}
 
+	public void markWorldAsDirty(int xPos, int yPos, int radius) {
+		int startX = (xPos - radius) / 17;
+		int startY = (yPos - radius) / 17;
+		int endX = (xPos + radius) / 17;
+		int endY = (yPos + radius) / 17;
+
+		for(int x = startX; x <= endX; x++) {
+			for(int y = startY; y <= endY; y++) {
+				WorldChunk chunk = renderer.GetWorldChunkAt(x * 17, y * 17);
+
+				if(chunk == null) {
+					// No chunk here yet, so make one
+					chunk = new WorldChunk(renderer);
+					chunk.setOffset(x * 17, y * 17);
+					chunk.setSize(17, 17);
+					renderer.chunks.add(chunk);
+				}
+
+				chunk.hasBuilt = false;
+			}
+		}
+	}
+
 	public void refreshLights() {
-        tesselators.refresh();
+		level.isDirty = true;
 
 		if(showLights) {
 			level.cleanupLightCache();
@@ -2979,17 +2815,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		Tile selected = level.getTile(selectionX, selectionY);
 
 		for(int x = selX; x < selX + selWidth; x++) {
@@ -3005,10 +2830,12 @@ public class EditorFrame implements ApplicationListener {
 
                 t.eastTex = t.westTex = t.northTex = t.southTex = null;
                 t.bottomEastTex = t.bottomWestTex = t.bottomNorthTex = t.bottomSouthTex = null;
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
 
-        // Paint directional tiles
+        // Paint directional tiless
         if(paintAdjacent.isChecked()) {
             if (selY - 1 >= 0) {
                 for (int x = selX; x < selX + selWidth; x++) {
@@ -3082,8 +2909,6 @@ public class EditorFrame implements ApplicationListener {
                 }
             }
         }
-
-		refreshLights();
 	}
 
 	public void paintTile(Tile tocopy) {
@@ -3091,17 +2916,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
@@ -3139,6 +2953,8 @@ public class EditorFrame implements ApplicationListener {
                 t.bottomEastTexAtlas = t.bottomWestTexAtlas = t.bottomNorthTexAtlas = t.bottomSouthTexAtlas = null;
 
                 t.init(Source.EDITOR);
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
 
@@ -3215,8 +3031,6 @@ public class EditorFrame implements ApplicationListener {
                 }
             }
         }
-
-		refreshLights();
 	}
 
 	public void clearTiles() {
@@ -3224,17 +3038,6 @@ public class EditorFrame implements ApplicationListener {
 		int selY = selectionY;
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
-
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
 
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
@@ -3252,12 +3055,12 @@ public class EditorFrame implements ApplicationListener {
 					t.wallTexAtlas = pickedWallTextureAtlas;
 					level.setTile(x, y, t);
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
 
 		clearSelectedMarkers();
-
-		refreshLights();
 	}
 
 	public void rotateFloorTex(int value) {
@@ -3268,17 +3071,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
@@ -3286,10 +3078,10 @@ public class EditorFrame implements ApplicationListener {
 					t.floorTexRot += value;
 					t.floorTexRot %= 4;
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
     public Entity copyEntity(Entity entity) {
@@ -3325,17 +3117,6 @@ public class EditorFrame implements ApplicationListener {
         int selWidth = selectionWidth;
         int selHeight = selectionHeight;
 
-        if(selWidth < 0) {
-            selX = selX + selWidth;
-            selWidth *= -1;
-            selX += 1;
-        }
-        if(selHeight < 0) {
-            selY = selY + selHeight;
-            selHeight *= -1;
-            selY += 1;
-        }
-
         if(pickedEntity == null) {
             clipboard.tiles = new Tile[selWidth][selHeight];
             clipboard.selWidth = selWidth;
@@ -3361,17 +3142,6 @@ public class EditorFrame implements ApplicationListener {
         if(clipboard != null) {
             int selX = selectionX;
             int selY = selectionY;
-            int selWidth = selectionWidth;
-            int selHeight = selectionHeight;
-
-            if(selWidth < 0) {
-                selX = selX + selWidth;
-                selX += 1;
-            }
-            if(selHeight < 0) {
-                selY = selY + selHeight;
-                selY += 1;
-            }
 
             for(int x = 0; x < clipboard.selWidth; x++) {
                 for(int y = 0; y < clipboard.selHeight; y++) {
@@ -3382,6 +3152,8 @@ public class EditorFrame implements ApplicationListener {
                         Tile.copy(clipboard.tiles[x][y],t);
                         level.setTile(x + selX, y + selY, t);
                     }
+
+					markWorldAsDirty(x + selX, y + selY, 1);
                 }
             }
 
@@ -3395,14 +3167,12 @@ public class EditorFrame implements ApplicationListener {
                 	copy.z += copyAt.getFloorHeight(0.5f, 0.5f);
 				}
 
-                level.entities.add(copy);
+				addEntity(copy);
             }
 
             // save undo history
             history.saveState(level);
         }
-
-        refreshLights();
     }
 
 	public void rotateAngle() {
@@ -3413,17 +3183,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
@@ -3432,10 +3191,10 @@ public class EditorFrame implements ApplicationListener {
 					t.renderSolid = false;
 					t.tileSpaceType = TileSpaceType.values()[(t.tileSpaceType.ordinal() + 1) % TileSpaceType.values().length];
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void rotateCeilTex(int value) {
@@ -3446,17 +3205,6 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
@@ -3464,10 +3212,10 @@ public class EditorFrame implements ApplicationListener {
 					t.ceilTexRot += value;
 					t.ceilTexRot %= 4;
 				}
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void moveFloor(int value) {
@@ -3476,26 +3224,15 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
 				if(t != null)
 					t.floorHeight += (value * 0.0625f);
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void moveCeiling(int value) {
@@ -3504,26 +3241,15 @@ public class EditorFrame implements ApplicationListener {
 		int selWidth = selectionWidth;
 		int selHeight = selectionHeight;
 
-		if(selWidth < 0) {
-			selX = selX + selWidth;
-			selWidth *= -1;
-			selX += 1;
-		}
-		if(selHeight < 0) {
-			selY = selY + selHeight;
-			selHeight *= -1;
-			selY += 1;
-		}
-
 		for(int x = selX; x < selX + selWidth; x++) {
 			for(int y = selY; y < selY + selHeight; y++) {
 				Tile t = level.getTileOrNull(x,y);
 				if(t != null)
 					t.ceilHeight += (value * 0.0625f);
+
+				markWorldAsDirty(x, y, 1);
 			}
 		}
-
-		refreshLights();
 	}
 
 	public void doFloorMoveUp() {
@@ -3560,7 +3286,7 @@ public class EditorFrame implements ApplicationListener {
 
 	Vector3 t_pickerVector = new Vector3();
 	public void updatePickedSurface() {
-		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, triangleSpatialHash.getAllTriangles(), t_pickerVector, intersectNormal)) {
+		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, GlRenderer.triangleSpatialHash.getAllTriangles(), t_pickerVector, intersectNormal)) {
 			t_pickerVector.add(intersectTemp.x * 0.0001f, intersectTemp.y * 0.0001f, intersectTemp.z * 0.0001f);
 			pickedSurface.position.set(t_pickerVector);
 			pickedSurface.isPicked = true;
@@ -3793,7 +3519,7 @@ public class EditorFrame implements ApplicationListener {
 			t.init(Source.EDITOR);
 
 			history.saveState(level);
-			refreshLights();
+			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.z, 1);
 		}
 	}
 
@@ -3855,6 +3581,160 @@ public class EditorFrame implements ApplicationListener {
 		editorUi.showModal(picker);
 	}
 
+	public void fillSurfaceTexture() {
+		if(pickedSurface == null)
+			return;
+
+		int xPos = (int)pickedSurface.position.x;
+		int yPos = (int)pickedSurface.position.z;
+
+		Tile t = level.getTileOrNull(xPos, yPos);
+		if(t == null)
+			return;
+
+		history.saveState(level);
+
+		if(pickedSurface.tileSurface == TileSurface.Floor) {
+			floodFillFloorTexture(xPos, yPos, t.floorTex, t.floorTexAtlas, t.floorHeight);
+		}
+		else if (pickedSurface.tileSurface == TileSurface.Ceiling) {
+			floodFillCeilingTexture(xPos, yPos, t.ceilTex, t.ceilTexAtlas, t.ceilHeight);
+		}
+		else if (pickedSurface.tileSurface == TileSurface.UpperWall) {
+			floodFillWallTexture(xPos, yPos, t.getWallTex(pickedSurface.edge), t.getWallTexAtlas(pickedSurface.edge), null);
+		}
+		else if (pickedSurface.tileSurface == TileSurface.LowerWall) {
+			floodFillWallTexture(xPos, yPos, t.getWallBottomTex(pickedSurface.edge), t.getWallBottomTexAtlas(pickedSurface.edge), null);
+		}
+
+		history.saveState(level);
+		refreshLights();
+	}
+
+	public void floodFillFloorTexture(int x, int y, byte checkTex, String checkAtlas, float lastHeight) {
+		Tile t = level.getTileOrNull(x, y);
+		if(t != null) {
+			if(t.renderSolid) {
+				return;
+			}
+			if(t.floorTex == (byte)pickedFloorTexture && t.floorTexAtlas == pickedFloorTextureAtlas) {
+				return;
+			}
+			if(t.floorHeight != lastHeight || t.floorTex != checkTex || t.floorTexAtlas != checkAtlas) {
+				return;
+			}
+
+			t.floorTex = (byte)pickedFloorTexture;
+			t.floorTexAtlas = pickedFloorTextureAtlas;
+
+			floodFillFloorTexture(x + 1, y, checkTex, checkAtlas, t.floorHeight);
+			floodFillFloorTexture(x - 1, y, checkTex, checkAtlas, t.floorHeight);
+			floodFillFloorTexture(x, y + 1, checkTex, checkAtlas, t.floorHeight);
+			floodFillFloorTexture(x, y - 1, checkTex, checkAtlas, t.floorHeight);
+		}
+	}
+
+	public void floodFillCeilingTexture(int x, int y, byte checkTex, String checkAtlas, float lastHeight) {
+		Tile t = level.getTileOrNull(x, y);
+		if(t != null) {
+			if(t.renderSolid) {
+				return;
+			}
+			if(t.ceilTex == (byte)pickedCeilingTexture && t.ceilTexAtlas == pickedCeilingTextureAtlas) {
+				return;
+			}
+			if(t.ceilHeight != lastHeight || t.ceilTex != checkTex || t.ceilTexAtlas != checkAtlas) {
+				return;
+			}
+
+			t.ceilTex = (byte)pickedCeilingTexture;
+			t.ceilTexAtlas = pickedCeilingTextureAtlas;
+
+			floodFillCeilingTexture(x + 1, y, checkTex, checkAtlas, t.ceilHeight);
+			floodFillCeilingTexture(x - 1, y, checkTex, checkAtlas, t.ceilHeight);
+			floodFillCeilingTexture(x, y + 1, checkTex, checkAtlas, t.ceilHeight);
+			floodFillCeilingTexture(x, y - 1, checkTex, checkAtlas, t.ceilHeight);
+		}
+	}
+
+	public void floodFillWallTexture(int x, int y, byte checkTex, String checkAtlas, Tile last) {
+		Tile t = level.getTileOrNull(x, y);
+		if(t == null) {
+			return;
+		}
+
+		if(pickedSurface.tileSurface == TileSurface.UpperWall) {
+			if (t.getWallTex(pickedSurface.edge) == pickedWallTexture && t.getWallTexAtlas(pickedSurface.edge) == pickedWallTextureAtlas) {
+				return;
+			}
+			if (t.getWallTex(pickedSurface.edge) != checkTex || t.getWallTexAtlas(pickedSurface.edge) != checkAtlas) {
+				return;
+			}
+		}
+		else {
+			if (t.getWallBottomTex(pickedSurface.edge) == pickedWallBottomTexture && t.getWallBottomTexAtlas(pickedSurface.edge) == pickedWallBottomTextureAtlas) {
+				return;
+			}
+			if (t.getWallBottomTex(pickedSurface.edge) != checkTex || t.getWallBottomTexAtlas(pickedSurface.edge) != checkAtlas) {
+				return;
+			}
+		}
+
+		// Find the open tile we are facing
+		Tile adjacent = null;
+		if(pickedSurface.edge == TileEdges.North) {
+			adjacent = level.getTileOrNull(x, y - 1);
+		}
+		else if(pickedSurface.edge == TileEdges.South) {
+			adjacent = level.getTileOrNull(x, y + 1);
+		}
+		else if(pickedSurface.edge == TileEdges.East) {
+			adjacent = level.getTileOrNull(x - 1, y);
+		}
+		else if(pickedSurface.edge == TileEdges.West) {
+			adjacent = level.getTileOrNull(x + 1, y);
+		}
+		if(adjacent == null || adjacent.blockMotion) {
+			return;
+		}
+
+		// Make sure there's a connection
+		if(last != null) {
+			if (adjacent.ceilHeight <= last.floorHeight || adjacent.floorHeight >= last.ceilHeight) {
+				return;
+			}
+			if(adjacent.ceilHeight == t.ceilHeight && adjacent.floorHeight == t.floorHeight) {
+				return;
+			}
+			if(pickedSurface.tileSurface == TileSurface.LowerWall) {
+				// Is there actually even a lower wall?
+				if(adjacent.floorHeight >= t.floorHeight) {
+					return;
+				}
+			}
+		}
+
+		// Set texture, flood to the next
+		int nextXOffset = 0;
+		int nextYOffset = 0;
+
+		if(pickedSurface.edge == TileEdges.North || pickedSurface.edge == TileEdges.South) {
+			nextXOffset = 1;
+		}
+		else {
+			nextYOffset = 1;
+		}
+
+		if(pickedSurface.tileSurface == TileSurface.UpperWall)
+			t.setWallTexture(pickedSurface.edge, (byte)pickedWallTexture, pickedWallTextureAtlas);
+		else
+			t.setBottomWallTexture(pickedSurface.edge, (byte)pickedWallBottomTexture, pickedWallBottomTextureAtlas);
+
+		// Two dimensional, a bit easier than floors or ceilings
+		floodFillWallTexture(x + nextXOffset, y + nextYOffset, checkTex, checkAtlas, adjacent);
+		floodFillWallTexture(x - nextXOffset, y - nextYOffset, checkTex, checkAtlas, adjacent);
+	}
+
 	public TextureRegion[] loadAtlas(String texture, int spritesHorizontal, boolean filter) {
 		Texture spriteTextures = Art.loadTexture(texture);
 
@@ -3871,159 +3751,6 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		return region;
-	}
-
-	public Color GetLightmapAt(float posx, float posy, float posz) {
-		Color t = level.GetLightmapAt(posx, posz, posz);
-
-		if(t == null) {
-			return Color.BLACK;
-		}
-
-		return level.GetLightmapAt(posx, posy, posz);
-	}
-
-	Array<Vector3> t_collisionTriangles = new Array<Vector3>();
-	VertexAttributes t_staticMeshVertexAttributes = new VertexAttributes(new VertexAttribute(VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE),
-			new VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-			new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
-
-	public Array<Mesh> mergeStaticMeshes(Level level, Array<Entity> entities) {
-		short indexOffset = 0;
-		int vertexCount = 0;
-
-		ShortArray indices = new ShortArray(500);
-		FloatArray vertices = new FloatArray(500);
-
-		Array<Mesh> created = new Array<Mesh>();
-
-		for(Entity e : entities) {
-			if(e.drawable != null && e.drawable instanceof DrawableMesh) {
-				DrawableMesh drbl = (DrawableMesh)e.drawable;
-
-				if(drbl.loadedMesh != null && drbl.isStaticMesh) {
-
-					// may need to chunk up the meshes
-					if(drbl.loadedMesh.getNumIndices() + indexOffset >= 32000 && vertexCount > 0) {
-
-						Mesh m = EditorCachePools.getStaticMesh(t_staticMeshVertexAttributes, vertexCount, indices.size, true);
-
-						// pack the array
-						indices.shrink();
-						vertices.shrink();
-
-						m.setIndices(indices.toArray());
-						m.setVertices(vertices.toArray());
-
-						indices = new ShortArray(500);
-						vertices = new FloatArray(500);
-
-						vertexCount = 0;
-						indexOffset = 0;
-
-						created.add(m);
-					}
-
-					VertexAttributes attributes = drbl.loadedMesh.getVertexAttributes();
-
-					int positionOffset = 0;
-					int uvOffset = 0;
-					int attSize = 0;
-
-					for(int i = 0; i < attributes.size(); i++) {
-						VertexAttribute attrib = attributes.get(i);
-
-						if(attrib.usage == VertexAttribute.Position().usage) {
-							positionOffset = attSize;
-						}
-						else if(attrib.usage == VertexAttribute.TexCoords(0).usage) {
-							uvOffset = attSize;
-						}
-
-						attSize += attrib.numComponents;
-					}
-
-					short[] ind = new short[drbl.loadedMesh.getNumIndices()];
-					float[] verts = new float[drbl.loadedMesh.getNumVertices() * attSize];
-
-					if(ind.length > 0)
-						drbl.loadedMesh.getIndices(ind);
-					else {
-						ind = new short[drbl.loadedMesh.getNumVertices()];
-
-						for(int i = 0; i < drbl.loadedMesh.getNumVertices(); i++) {
-							ind[i] = (short)i;
-						}
-					}
-
-					drbl.loadedMesh.getVertices(verts);
-
-					Matrix4 matrix = new Matrix4().setToTranslation(e.x, e.z - 0.5f, e.y);
-					matrix.scale(drbl.scale, drbl.scale, drbl.scale);
-					matrix.mul(new Matrix4().setToRotation(Vector3.X, drbl.dir.y * -90f));
-
-					matrix.rotate(Vector3.Y, drbl.rotZ);
-					matrix.rotate(Vector3.X, drbl.rotX);
-					matrix.rotate(Vector3.Z, drbl.rotY);
-
-					// translate the vertices by the model matrix
-					Matrix4.mulVec(matrix.val, verts, 0, drbl.loadedMesh.getNumVertices(), attSize);
-
-					if(ind != null && verts != null) {
-						for(int i = 0; i < ind.length; i++) {
-							indices.add((short)(ind[i] + indexOffset));
-						}
-						indexOffset += ind.length;
-
-						for(int i = 0; i < drbl.loadedMesh.getNumVertices() * attSize; i+= attSize) {
-
-							vertices.add(verts[i + positionOffset]);
-							vertices.add(verts[i + positionOffset + 1]);
-							vertices.add(verts[i + positionOffset + 2]);
-
-							if (e.isSolid) {
-								t_collisionTriangles.add(EditorCachePools.getCollisionVector(verts[i + positionOffset], verts[i + positionOffset + 1], verts[i + positionOffset + 2]));
-							}
-
-							float c = Color.WHITE.toFloatBits();
-							if(!e.fullbrite && showLights) {
-								c = level.getLightColorAt(verts[i + positionOffset], verts[i + positionOffset + 2], verts[i + positionOffset + 1], null, new Color()).toFloatBits();
-							}
-
-							vertices.add(c);
-							vertices.add(verts[i + uvOffset]);
-							vertices.add(verts[i + uvOffset + 1]);
-
-							vertexCount++;
-						}
-					}
-				}
-			}
-		}
-
-		if(vertexCount == 0) return null;
-
-		for (int i = 0; i < t_collisionTriangles.size; i += 3) {
-			Triangle triangle = EditorCachePools.getTriangle();
-			triangle.v1.set(t_collisionTriangles.get(i + 2));
-			triangle.v2.set(t_collisionTriangles.get(i + 1));
-			triangle.v3.set(t_collisionTriangles.get(i));
-
-			staticMeshCollisionTriangles.add(triangle);
-		}
-		t_collisionTriangles.clear();
-
-		Mesh m = EditorCachePools.getStaticMesh(t_staticMeshVertexAttributes, vertexCount, indices.size, true);
-
-		// pack the array
-		indices.shrink();
-		vertices.shrink();
-
-		m.setIndices(indices.toArray());
-		m.setVertices(vertices.toArray());
-
-		created.add(m);
-		return created;
 	}
 
 	public void doCarve() {
@@ -4045,6 +3772,12 @@ public class EditorFrame implements ApplicationListener {
 		Tile selectedTile = level.getTile(selectionX, selectionY);
 		t.floorHeight = selectedTile.floorHeight;
 		t.ceilHeight = selectedTile.ceilHeight;
+
+		if(pickedSurface == null || !pickedSurface.isPicked) {
+			TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
+			float size = atlas.rowScale * atlas.scale;
+			t.ceilHeight = size - 0.5f;
+		}
 
 		t.floorHeight = selectionHeights.y;
 
@@ -4083,19 +3816,23 @@ public class EditorFrame implements ApplicationListener {
 	public void doDelete() {
         if(pickedEntity != null) {
             level.entities.removeValue(pickedEntity, true);
+			markWorldAsDirty((int)pickedEntity.x, (int)pickedEntity.y, 4);
 
             for(Entity selEntity : additionalSelected) {
                 level.entities.removeValue(selEntity, true);
+
+				markWorldAsDirty((int)selEntity.x, (int)selEntity.y, 4);
             }
 
             clearEntitySelection();
-            refreshLights();
 
             canDelete = false;
         }
         else {
             clearTiles();
         }
+
+		refreshLights();
 
         // save undo history
         history.saveState(level);
@@ -4125,9 +3862,10 @@ public class EditorFrame implements ApplicationListener {
                     t.floorHeight = matchFloorHeight;
                     t.slopeNE = t.slopeNW = t.slopeSE = t.slopeSW = 0;
                 }
+
+				markWorldAsDirty(x, y, 1);
             }
         }
-        refreshLights();
     }
 
     public void flattenCeiling() {
@@ -4144,9 +3882,10 @@ public class EditorFrame implements ApplicationListener {
                     t.ceilHeight = matchCeilHeight;
                     t.ceilSlopeNE = t.ceilSlopeNW = t.ceilSlopeSE = t.ceilSlopeSW = 0;
                 }
+
+				markWorldAsDirty(x, y, 1);
             }
         }
-        refreshLights();
     }
 
     public void toggleSimulation() {
@@ -4258,7 +3997,7 @@ public class EditorFrame implements ApplicationListener {
     }
 
     public Array<Triangle> GetCollisionTriangles() {
-        return triangleSpatialHash.getAllTriangles();
+        return GlRenderer.triangleSpatialHash.getAllTriangles();
     }
 
     public Array<Vector3> TriangleArrayToVectorList(Array<Triangle> triangles) {
@@ -4314,6 +4053,86 @@ public class EditorFrame implements ApplicationListener {
         usedDecals.add(sd);
         return sd;
     }
+
+	public void moveTiles(int moveX, int moveY, float moveZ) {
+		int selX = selectionX;
+		int selY = selectionY;
+		int selWidth = selectionWidth;
+		int selHeight = selectionHeight;
+
+		// Move Tiles
+		if(selected) {
+			Tile[] moving = new Tile[selWidth * selHeight];
+
+			for (int x = 0; x < selWidth; x++) {
+				for (int y = 0; y < selHeight; y++) {
+					int tileX = selX + x;
+					int tileY = selY + y;
+
+					Tile t = level.getTileOrNull(tileX, tileY);
+					moving[x + y * selectionWidth] = t;
+
+					level.setTile(tileX, tileY, null);
+					markWorldAsDirty(tileX, tileY, 1);
+				}
+			}
+
+			for (int x = 0; x < selWidth; x++) {
+				for (int y = 0; y < selHeight; y++) {
+					int tileX = selX + x + moveX;
+					int tileY = selY + y + moveY;
+
+					Tile t = moving[x + y * selectionWidth];
+
+					if(moveZ != 0 && t != null) {
+						t.floorHeight += moveZ;
+						t.ceilHeight += moveZ;
+					}
+
+					level.setTile(tileX, tileY, t);
+
+					markWorldAsDirty(tileX, tileY, 1);
+				}
+			}
+
+			// Move Markers
+			for(int x = selX; x < selX + selWidth; x++) {
+				for(int y = selY; y < selY + selHeight; y++) {
+					if(level.editorMarkers != null && level.editorMarkers.size > 0) {
+						for(int i = 0; i < level.editorMarkers.size; i++) {
+							EditorMarker m = level.editorMarkers.get(i);
+							if(m.x == x && m.y == y) {
+								m.x += moveX;
+								m.y += moveY;
+							}
+						}
+					}
+				}
+			}
+
+			selectionX += moveX;
+			selectionY += moveY;
+			selectionHeights.add(moveZ, moveZ);
+
+			controlPoints.clear();
+		}
+
+		// Move Entities
+		Array<Entity> allSelected = new Array<Entity>();
+		if(pickedEntity != null) {
+			allSelected.add(pickedEntity);
+		}
+		allSelected.addAll(additionalSelected);
+
+		for(Entity e : allSelected) {
+			e.x += moveX;
+			e.y += moveY;
+			e.z += moveZ;
+			markWorldAsDirty((int)e.x, (int)e.y, 1);
+		}
+
+		history.saveState(level);
+	}
 
 	private void vizualizePicking() {
 		if(pickViz == null)

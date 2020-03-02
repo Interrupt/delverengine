@@ -35,7 +35,6 @@ public class Tooltip {
 
         tooltipLabel = new Label("", UiSkin.getSkin().get(Label.LabelStyle.class));
         tooltipLabel.setWrap(true);
-        tooltipLabel.setFillParent(true);
 
         tooltipInnerTable = new Table();
         tooltipInnerTable.add(tooltipLabel).width(320f).row();

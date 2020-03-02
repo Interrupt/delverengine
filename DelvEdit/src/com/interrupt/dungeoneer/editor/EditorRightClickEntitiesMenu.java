@@ -162,7 +162,9 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 			// surface editing stuff
 			MenuItem surfacePaint = new MenuItem("Paint Surface", skin);
-			MenuItem surfacePickTexture = new MenuItem("Pick Texture", skin);
+			MenuItem floodPaintTexture = new MenuItem("Flood Fill Surface", skin);
+			MenuItem surfaceGrabTexture = new MenuItem("Grab Texture", skin);
+			MenuItem surfaceChangeTexture = new MenuItem("Change Texture", skin);
 
 			surfacePaint.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
@@ -170,14 +172,28 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 				}
 			});
 
-			surfacePickTexture.addActionListener(new ActionListener() {
+			surfaceGrabTexture.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
 					editor.pickTextureAtSurface();
 				}
 			});
 
+			surfaceChangeTexture.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent event) {
+					editor.pickNewSurfaceTexture();
+				}
+			});
+
+			floodPaintTexture.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent event) {
+					editor.fillSurfaceTexture();
+				}
+			});
+
 			surfaceMenu.addItem(surfacePaint);
-			surfaceMenu.addItem(surfacePickTexture);
+			surfaceMenu.addItem(floodPaintTexture);
+			surfaceMenu.addItem(surfaceGrabTexture);
+			surfaceMenu.addItem(surfaceChangeTexture);
 
 			addItem(surfaceMenu);
     	}
@@ -211,7 +227,8 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 			}
 		}
 
-		editor.level.entities.add(entity);
+		editor.addEntity(entity);
+
 		editor.refreshLights();
 		editor.history.saveState(editor.level);
 	}

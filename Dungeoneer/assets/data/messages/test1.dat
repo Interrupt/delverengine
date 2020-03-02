@@ -1,0 +1,7 @@
+{
+	"repeats": true,
+	"messages": [
+		["Welcome to the Delver Engine!","This is a message trigger, this text is in the data file messages/test1.dat"],
+		["Solid triggers that are set to useable can be interacted with."]
+	]
+}

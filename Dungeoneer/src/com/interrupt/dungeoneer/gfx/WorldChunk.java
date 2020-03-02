@@ -10,9 +10,11 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
+import com.badlogic.gdx.utils.Triangle;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.Group;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.OverworldChunk;
@@ -42,6 +44,7 @@ public class WorldChunk {
 	
 	public boolean visible = true;
 	public boolean hasBuilt = false;
+	public boolean needsRetessellation = false;
 	
 	public ArrayMap<String,Array<Mesh>> staticMeshBatch = null;
 	
@@ -127,10 +130,24 @@ public class WorldChunk {
 			staticMeshBatch.clear();
 		}
 	}
+
+	public void AddEntityForEditor(Entity e, Level level) {
+		// Needed for static meshes in groups in the editor
+		if(e instanceof Group) {
+			e.init(level, Level.Source.EDITOR);
+			for(Entity g : ((Group) e).entities) {
+				AddEntityForEditor(g, level);
+			}
+		} else {
+			entities.add(e);
+			e.updateLight(level);
+		}
+	}
 	
 	public void Tesselate(Level level, GlRenderer renderer)
 	{
 		tesselator.Tesselate(level, renderer, this, xOffset, yOffset, width, height, tesselators, makeFloors, makeCeilings, makeWalls, true);
+		needsRetessellation = false;
 
 		if(hasBuilt) return;
 		hasBuilt = true;
@@ -142,6 +159,15 @@ public class WorldChunk {
 			if(e.x >= xOffset && e.x < xOffset + width && e.y >= yOffset && e.y < yOffset + height) {
 				entities.add(e);
 				e.updateLight(level);
+			}
+		}
+
+		// renderer hasn't sorted entities into static_entities yet
+		if(renderer.editorIsRendering) {
+			for(Entity e : level.entities) {
+				if(e.x >= xOffset && e.x < xOffset + width && e.y >= yOffset && e.y < yOffset + height) {
+					AddEntityForEditor(e, level);
+				}
 			}
 		}
 		
@@ -243,5 +269,17 @@ public class WorldChunk {
 
 	public void setOverworldChunk(OverworldChunk overworldChunk) {
 		this.overworldChunk = overworldChunk;
+	}
+
+	public int getWorldX() {
+		return xOffset + (width / 2);
+	}
+
+	public int getWorldY() {
+		return yOffset + (height / 2);
+	}
+
+	public int getRadius() {
+		return width / 2;
 	}
 }

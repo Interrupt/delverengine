@@ -40,7 +40,6 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableProjectedDecal;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
-import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.gfx.shaders.WaterShaderInfo;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
@@ -51,6 +50,7 @@ import com.interrupt.dungeoneer.ui.EquipLoc;
 import com.interrupt.dungeoneer.ui.FontBounds;
 import com.interrupt.dungeoneer.ui.Hotbar;
 import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.helpers.FloatTuple;
 import com.interrupt.managers.ShaderManager;
 import com.interrupt.managers.TileManager;
 import com.noise.PerlinNoise;
@@ -451,7 +451,7 @@ public class GlRenderer {
 		// Update camera
 		xPos = game.player.x;
 		yPos = game.player.y;
-		zPos = game.player.z + game.player.getStepUpValue();
+		zPos = game.player.z + game.player.getStepUpValue() + game.player.eyeHeight;
 
 		if(Options.instance.headBobEnabled) {
 		    zPos += game.player.headbob;
@@ -464,7 +464,7 @@ public class GlRenderer {
 
 		if(!inCutscene) {
 			camera.position.x = xPos;
-			camera.position.y = zPos + 0.12f;
+			camera.position.y = zPos;
 			camera.position.z = yPos;
 			camera.direction.set(0, 0, -1);
 
@@ -930,12 +930,14 @@ public class GlRenderer {
 			chunks.sort(WorldChunk.sorter);
 
 			// draw static mesh batches
+			if(worldShaderInfo != null) worldShaderInfo.begin();
 			for(WorldChunk chunk : chunks) {
 				chunk.UpdateVisiblity(camera);
 				if(chunk.visible) {
 					chunk.renderStaticMeshBatch(worldShaderInfo);
 				}
 			}
+			if(worldShaderInfo != null) worldShaderInfo.end();
 
 			// draw walls / floors / ceilings
 			for(WorldChunk chunk : chunks) {
@@ -2510,19 +2512,37 @@ public class GlRenderer {
 		}
 	}
 
-	public void refreshChunksNear(float x, float y, float range) {
-		if(chunks != null) {
-			for (int i = 0; i < chunks.size; i++) {
-				WorldChunk c = chunks.get(i);
+	public void refreshChunksNear(float xPos, float yPos, float range) {
+		int startX = ((int)xPos - (int)range) / 17;
+		int startY = ((int)yPos - (int)range) / 17;
+		int endX = ((int)xPos + (int)range) / 17;
+		int endY = ((int)yPos + (int)range) / 17;
 
-				float distanceX = Math.abs(x - c.position.x);
-				float distanceY = Math.abs(y - c.position.z);
-
-				if(distanceX <= range && distanceY <= range) {
-					c.refresh();
+		for(int x = startX; x <= endX; x++) {
+			for(int y = startY; y <= endY; y++) {
+				WorldChunk chunk = GetWorldChunkAt(x * 17, y * 17);
+				if(chunk != null) {
+					chunk.refresh();
 				}
 			}
 		}
+	}
+
+	public WorldChunk GetWorldChunkAt(int x, int y) {
+		if(chunks == null)
+			return null;
+
+		for(int i = 0; i < chunks.size; i++) {
+			WorldChunk c = chunks.get(i);
+
+			if(x >= c.xOffset && x < c.xOffset + c.width) {
+				if(y >= c.yOffset && y < c.yOffset + c.height) {
+					return c;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public void Tesselate(Level level)
@@ -2569,8 +2589,10 @@ public class GlRenderer {
 			// Might need to update these chunks if lights have changed
 			for (int i = 0; i < chunks.size; i++) {
 				WorldChunk c = chunks.get(i);
-				if(c != null && !c.hasBuilt) {
+				if(c != null && (!c.hasBuilt || c.needsRetessellation)) {
+					triangleSpatialHash.dropWorldChunk(c);
 					c.Tesselate(loadedLevel, this);
+					c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
 				}
 			}
 		}
@@ -2612,9 +2634,47 @@ public class GlRenderer {
 		else return t;
 	}
 
-	public float GetTexVAt(float posy)
+	public float GetTexVAt(float posy, TextureAtlas atlas)
 	{
-		return -posy + 0.5f;
+		int scale = atlas.rowScale * (int)atlas.scale;
+		if(scale == 1) {
+			// Easy to figure out what the texture should be if the scale is 1
+			return -posy + 0.5f;
+		}
+
+		return (-posy + scale - 0.5f) / scale;
+	}
+
+	public float GetTexUAt(float posx_start, float posx_end, float posy_start, float posy_end, float uMod, TextureRegion region, TextureAtlas atlas) {
+		int textureScale = (int)atlas.scale;
+		if(textureScale == 1) {
+			// Can skip most of the work here if the scale is easy
+			return (region.getU2() - region.getU()) * uMod + region.getU();
+		}
+
+		// Need to spread this texture along multiple walls, time to do some work
+		if(uMod == 0f)      uMod = 0.00001f;
+		else if(uMod == 1f) uMod = 0.99999f;
+		float start;
+		float end;
+		if(posy_start == posy_end) {
+			start = posx_start;
+			end = posx_end;
+		}
+		else if(posx_start == posx_end) {
+			start = posy_start;
+			end = posy_end;
+		}
+		else {
+			start = posx_start - posy_start;
+			end = posx_end - posy_end;
+		}
+		float x = (end - start) * uMod + start;
+		float m = (x % textureScale) / (float)textureScale;
+		if(end < start) {
+			m = 1.0f - m;
+		}
+		return (region.getU2() - region.getU()) * m + region.getU();
 	}
 
 	public GL20 getGL() {

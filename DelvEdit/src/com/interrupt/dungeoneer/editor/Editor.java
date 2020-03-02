@@ -58,6 +58,13 @@ public class Editor {
     public ActionListener copyAction;
     public ActionListener pasteAction;
 
+    public ActionListener moveTileNorthAction;
+    public ActionListener moveTileSouthAction;
+    public ActionListener moveTileEastAction;
+    public ActionListener moveTileWestAction;
+    public ActionListener moveTileUpAction;
+    public ActionListener moveTileDownAction;
+
     public ActionListener raiseFloorAction;
     public ActionListener lowerFloorAction;
     public ActionListener raiseCeilingAction;
@@ -65,6 +72,7 @@ public class Editor {
     public ActionListener paintWallAction;
     public ActionListener pickWallAction;
     public ActionListener pickNewWallTexAction;
+    public ActionListener fillTextureAction;
 
     public ActionListener xDragMode;
     public ActionListener yDragMode;
@@ -456,6 +464,13 @@ public class Editor {
             }
         };
 
+        fillTextureAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.fillSurfaceTexture();
+            }
+        };
+
         rotateWallAngle = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -474,6 +489,48 @@ public class Editor {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 editorFrame.paste();
+            }
+        };
+
+        moveTileNorthAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, 1, 0);
+            }
+        };
+
+        moveTileSouthAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, -1, 0);
+            }
+        };
+
+        moveTileEastAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(1, 0, 0);
+            }
+        };
+
+        moveTileWestAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(-1, 0, 0);
+            }
+        };
+
+        moveTileUpAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, 0, 0.5f);
+            }
+        };
+
+        moveTileDownAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.moveTiles(0, 0, -0.5f);
             }
         };
 
