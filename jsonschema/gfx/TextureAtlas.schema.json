@@ -4,6 +4,10 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.TextureAtlas",
+            "description": "Fully-qualified Java class name."
+        },
         "columns": {
             "type": "integer",
             "default": 16,
@@ -48,7 +52,5 @@
     "required": [
         "filename",
         "name"
-    ],
-    "patternProperties": {},
-    "dependencies": {}
+    ]
 }

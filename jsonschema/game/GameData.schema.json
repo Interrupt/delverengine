@@ -4,8 +4,17 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.game.GameData",
+            "description": "Fully-qualified Java class name."
+        },
         "tutorialLevel": {
-            "$ref": "Level.schema.json"
+            "$ref": "Level.schema.json",
+            "description": "Tutorial level. Shown when starting a new save slot."
+        },
+        "endingLevel": {
+            "$ref": "Level.schema.json",
+            "description": "End level. Shown when the game is beaten."
         },
         "entityDataFiles": {
             "type": "array",
