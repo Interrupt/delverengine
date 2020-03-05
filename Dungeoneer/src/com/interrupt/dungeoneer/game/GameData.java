@@ -4,10 +4,20 @@ public class GameData {
     public GameData() { }
     public Level tutorialLevel = null;
     public Level endingLevel = null;
+
+    /** Filepaths of entity data. */
     public String[] entityDataFiles = {"entities.dat"};
+
+    /** Filepaths of monster data. */
     public String[] monsterDataFiles = {"monsters.dat"};
+
+    /** Filepaths of monster data. */
     public String[] itemDataFiles = {"items.dat"};
+
+    /** Filepath of player data. */
     public String playerDataFile = "player.dat";
+
+    /** Is player allowed to jump. */
     public boolean playerJumpEnabled = false;
 
     public void merge(GameData modData) {

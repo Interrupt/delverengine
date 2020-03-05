@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Level",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.game.Level"
+        },
+        "theme": {
+            "$ref": "#/definitions/DungeonTheme"
+        }
+    },
+    "required": [
+        "class",
+        "theme"
+    ],
+    "patternProperties": {},
+    "dependencies": {},
+    "definitions": {
+        "DungeonTheme": {
+            "type": "string",
+            "enum": [
+                "TEST",
+                "DUNGEON",
+                "CAVE",
+                "HIDEOUT",
+                "GOBLINS",
+                "DEMONS",
+                "UNDEAD"
+            ]
+        }
+    }
+}
