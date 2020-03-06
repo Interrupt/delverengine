@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Gen Theme",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.generator.GenTheme",
+            "description": "Fully-qualified Java class name."
+        },
+        "genInfos": {
+            "type": "array",
+            "description": "Array of GenInfos."
+        },
+        "doors": {
+            "type": "array",
+            "description": "Array of Doors."
+        },
+        "spawnLights": {
+            "type": "array",
+            "description": "Array of light Entities."
+        },
+        "decorations": {
+            "type": "array",
+            "description": "Array of decorations Entities."
+        },
+        "surprises": {
+            "type": "array",
+            "description": "Array of surprise Entities."
+        },
+        "chunkTiles": {
+            "type": "integer",
+            "description": "Size of a room.",
+            "default": 17
+        },
+        "mapChunks": {
+            "type": "integer",
+            "description": "Size of a map.",
+            "default": 4
+        },
+        "mapComplexity": {
+            "type": "integer",
+            "description": "Map complexity heuristic.",
+            "default": 4
+        },
+        "lakes": {
+            "type": "array",
+            "description": "Array of valid lake types to generate.",
+            "items": {
+                "type": "string",
+                "enum": ["WATER", "LAVA", "PIT"]
+            }
+        },
+        "painter": {
+            "$ref": "TexturePainter.schema.json"
+        },
+        "texturePainters": {
+            "type": "object",
+            "description": "Dictionary providing a mapping of TextureAtlas names to TexturePainters.",
+            "patternProperties": {
+                ".*": {
+                    "$ref": "TexturePainter.schema.json",
+                    "description": "Wall texture atlas name."
+                }
+            }
+        }
+    }
+}

@@ -1,108 +1,125 @@
 {
-	chunkTiles: 17,
-	mapChunks: 4,
-	mapComplexity: 5,
-	lakes: [],
-	spawnLights: [
-			{
-            	class: com.interrupt.dungeoneer.entities.Torch,
-            	texAnimStart: 32,
-            	texAnimEnd: 39,
-            	spriteAtlas: "sprites",
-            	torchAnimateMode: LOOP,
-            	fullbrite: true,
-            	yOffset:0.125,
-            	lightColor: { r: 1.0, g: 0.8, b: 0.2, a: 1.0 }
+    "chunkTiles": 17,
+    "mapChunks": 4,
+    "mapComplexity": 5,
+    "lakes": [],
+    "spawnLights": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.Torch",
+            "texAnimStart": 32,
+            "texAnimEnd": 39,
+            "spriteAtlas": "sprites",
+            "torchAnimateMode": "LOOP",
+            "fullbrite": true,
+            "yOffset": 0.125,
+            "lightColor": {
+                "r": 1.0,
+                "g": 0.8,
+                "b": 0.2,
+                "a": 1.0
             }
-	],
-	doors: [ ],
-	surprises:[ ],
-	decorations: [ ],
-	texturePainters: {
-		"t1": {
-			floor: { "2": [2, 2, 3]},
-		}
-	},
-	genInfos: [
-		{
-			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "rocks on grey",
-			floorTex: 2,
-			textureAtlas: "t1",
-			chance: 0.10,
-			clusterCount: 2,
-			clusterSpread: 0.4,
-			performanceControlledClustering: true,
-			spawns: [{
-				class:com.interrupt.dungeoneer.entities.Sprite,
-				tex: 0,
-				spriteAtlas: "sprites",
-				isDynamic: false
-			}]
-		},
-		{
-			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "grass on grey",
-			floorTex: 2,
-			textureAtlas: "t1",
-			chance: 0.08,
-			clusterCount: 3,
-			clusterSpread: 0.4,
-			performanceControlledClustering: true,
-			spawns: [{
-				class:com.interrupt.dungeoneer.entities.Foliage,
-				tex: 1,
-				spriteAtlas: "sprites",
-				isDynamic: false
-			}]
-		},
-		{
-            class:com.interrupt.dungeoneer.generator.GenInfo,
-            comment: "grass on green",
-            floorTex: 17,
-            textureAtlas: "t1",
-            chance: 0.35,
-            clusterCount: 2,
-            clusterSpread: 0.4,
-            performanceControlledClustering: true,
-            spawns: [{
-                class:com.interrupt.dungeoneer.entities.Foliage,
-                tex: 1,
-                spriteAtlas: "sprites",
-                isDynamic: false
-            }]
+        }
+    ],
+    "doors": [],
+    "surprises": [],
+    "decorations": [],
+    "texturePainters": {
+        "t1": {
+            "floor": {
+                "2": [2, 2, 3]
+            }
+        }
+    },
+    "genInfos": [
+        {
+            "class": "com.interrupt.dungeoneer.generator.GenInfo",
+            "comment": "rocks on grey",
+            "floorTex": 2,
+            "textureAtlas": "t1",
+            "chance": 0.10,
+            "clusterCount": 2,
+            "clusterSpread": 0.4,
+            "performanceControlledClustering": true,
+            "spawns": [
+                {
+                    "class": "com.interrupt.dungeoneer.entities.Sprite",
+                    "tex": 0,
+                    "spriteAtlas": "sprites",
+                    "isDynamic": false
+                }
+            ]
         },
-		{
-			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "rocks on orange",
-			floorTex: 10,
-			textureAtlas: "t1",
-			chance: 0.25,
-			clusterCount: 4,
-			clusterSpread: 0.4,
-			performanceControlledClustering: true,
-			spawns: [{
-				class:com.interrupt.dungeoneer.entities.Sprite,
-				tex: 0,
-				spriteAtlas: "sprites",
-				isDynamic: false
-			}]
-		},
-		{
-			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "grass on orange",
-			floorTex: 10,
-			textureAtlas: "t1",
-			chance: 0.025,
-			clusterCount: 3,
-			clusterSpread: 0.4,
-			performanceControlledClustering: true,
-			spawns: [{
-				class:com.interrupt.dungeoneer.entities.Foliage,
-				tex: 1,
-				spriteAtlas: "sprites",
-				isDynamic: false
-			}]
-		}
-	]
+        {
+            "class": "com.interrupt.dungeoneer.generator.GenInfo",
+            "comment": "grass on grey",
+            "floorTex": 2,
+            "textureAtlas": "t1",
+            "chance": 0.08,
+            "clusterCount": 3,
+            "clusterSpread": 0.4,
+            "performanceControlledClustering": true,
+            "spawns": [
+                {
+                    "class": "com.interrupt.dungeoneer.entities.Foliage",
+                    "tex": 1,
+                    "spriteAtlas": "sprites",
+                    "isDynamic": false
+                }
+            ]
+        },
+        {
+            "class": "com.interrupt.dungeoneer.generator.GenInfo",
+            "comment": "grass on green",
+            "floorTex": 17,
+            "textureAtlas": "t1",
+            "chance": 0.35,
+            "clusterCount": 2,
+            "clusterSpread": 0.4,
+            "performanceControlledClustering": true,
+            "spawns": [
+                {
+                    "class": "com.interrupt.dungeoneer.entities.Foliage",
+                    "tex": 1,
+                    "spriteAtlas": "sprites",
+                    "isDynamic": false
+                }
+            ]
+        },
+        {
+            "class": "com.interrupt.dungeoneer.generator.GenInfo",
+            "comment": "rocks on orange",
+            "floorTex": 10,
+            "textureAtlas": "t1",
+            "chance": 0.25,
+            "clusterCount": 4,
+            "clusterSpread": 0.4,
+            "performanceControlledClustering": true,
+            "spawns": [
+                {
+                    "class": "com.interrupt.dungeoneer.entities.Sprite",
+                    "tex": 0,
+                    "spriteAtlas": "sprites",
+                    "isDynamic": false
+                }
+            ]
+        },
+        {
+            "class": "com.interrupt.dungeoneer.generator.GenInfo",
+            "comment": "grass on orange",
+            "floorTex": 10,
+            "textureAtlas": "t1",
+            "chance": 0.025,
+            "clusterCount": 3,
+            "clusterSpread": 0.4,
+            "performanceControlledClustering": true,
+            "spawns": [
+                {
+                    "class": "com.interrupt.dungeoneer.entities.Foliage",
+                    "tex": 1,
+                    "spriteAtlas": "sprites",
+                    "isDynamic": false
+                }
+            ]
+        }
+    ]
 }

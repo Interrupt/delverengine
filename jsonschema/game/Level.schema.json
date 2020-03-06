@@ -84,15 +84,15 @@
             "default": 2
         },
         "wallPainter": {
-            "$ref": "#/definitions/TexturePainter",
+            "$ref": "../generator/TexturePainter.schema.json#/definitions/TextureIndexMapping",
             "description": "Wall Texture Painter"
         },
         "floorPainter": {
-            "$ref": "#/definitions/TexturePainter",
+            "$ref": "../generator/TexturePainter.schema.json#/definitions/TextureIndexMapping",
             "description": "Floor Texture Painter"
         },
         "ceilPainter": {
-            "$ref": "#/definitions/TexturePainter",
+            "$ref": "../generator/TexturePainter.schema.json#/definitions/TextureIndexMapping",
             "description": "Ceiling Texture Painter"
         },
         "levelFileName": {
@@ -165,20 +165,5 @@
         "fogStart": 10,
         "fogEnd": 20,
         "theme": "TEST"
-    },
-    "definitions": {
-        "TexturePainter": {
-            "type": "object",
-            "description": "Texture Painter",
-            "patternProperties": {
-                ".*": {
-                    "type": "array",
-                    "description": "Texture index remapping.",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        }
     }
 }
