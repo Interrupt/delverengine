@@ -21,111 +21,147 @@ public class ParticleEmitter extends Entity {
  	
 	@EditorProperty
 	public StartMode startMode = StartMode.IMMEDIATELY;
-	
+
+	/** Particle starting animation frame sprite index. */
 	@EditorProperty( group="Particle Appearance" )
 	public int particleStartTex = 0;
-	
+
+	/** Particle ending animation frame sprite index. */
 	@EditorProperty( group="Particle Appearance" )
 	public int particleEndTex = 0;
 
+	/** Particle art type. */
 	public ArtType particleArtType = ArtType.particle;
 
+	/** Particle TextureAtlas name. */
 	@EditorProperty( group="Particle Appearance" )
 	public String particleAtlas = "particle";
 
+	/** Do particles have shadows? */
 	@EditorProperty( group="Particle Appearance" )
 	public boolean particleShadows = false;
 
+	/** Do particles have halos? */
 	@Deprecated
 	public boolean particleHalos = false;
 
+	/** Particle halo mode. */
 	@EditorProperty( group="Particle Appearance" )
 	public HaloMode particleHalo = HaloMode.NONE;
-	
+
+	/** Particle lifetime in milliseconds. */
 	@EditorProperty( group="Particle Spawning" )
 	public float particleLifetime = 20f;
-	
+
+	/** Do particles collide? */
 	@EditorProperty( group="Particle Physics" )
 	public boolean particlesCollide = true;
-	
+
+	/** Size of volume where particles will be created. */
 	@EditorProperty( group="Particle Spawning" )
 	public Vector3 particleSpread = new Vector3(0.1f, 0.1f, 0.1f);
-	
+
+	/** Particle bounding box dimensions. */
 	@EditorProperty( group="Particle Physics" )
 	public Vector3 particleCollisionSize = new Vector3(0.05f, 0.05f, 0.05f);
-	
+
+	/** Particle initial velocity. */
 	@EditorProperty( group="Particle Spawning" )
 	public Vector3 particleVelocity = new Vector3();
 
+	/** Particle maximum speed. */
 	@EditorProperty( group="Particle Spawning" )
 	public float particleMaxVelocity = 10f;
 
+	/** Amount of velocity a particle preserves each tick. */
 	@EditorProperty( group="Particle Spawning" )
 	public float particleDampenAmount = 0.9f;
-	
+
+	/** Range for creating a random velocity vector. Will be added to initial velocity. */
 	@EditorProperty( group="Particle Variance" )
 	public Vector3 particleRandomVelocity = new Vector3(0.1f, 0.1f, 0.1f);
 
+	/** Maximum amount of additional particles to spawn. */
     @EditorProperty( group="Particle Variance" )
     public int particleRandomSpawnCount = 0;
 
+    /** Particle angular velocity variance. */
 	@EditorProperty( group="Particle Rotation" )
 	public float particlesRotateByVariance = 0;
 
+	/** Particle angular velocity determined by particle speed. */
 	@EditorProperty( group="Particle Rotation" )
 	public float particlesMovementRotateAmount = 0;
-	
+
+	/** Are particles effected by gravity? */
 	@EditorProperty( group="Particle Physics" )
 	public boolean particlesFloat = false;
 
+	/** Maximum amount of particle turbulence. */
 	@EditorProperty( group="Particle Physics" )
 	public float turbulenceAmount = 0;
 
+	/** Particle turbulence amount determined by particle speed. */
 	@EditorProperty( group="Particle Physics" )
 	public float turbulenceMoveModifier = 0;
-	
+
+	/** Starting scale of particle. */
 	@EditorProperty( group="Particle Appearance" )
 	public float particleStartScale = 1;
-	
+
+	/** Ending scale of particle. */
 	@EditorProperty( group="Particle Appearance" )
 	public float particleEndScale = 1;
-	
+
+	/** Draw particle without shading? */
 	@EditorProperty( group="Particle Appearance" )
 	public boolean particlesFullbrite = false;
 
+	/** Particle angular velocity. */
 	@EditorProperty( group="Particle Rotation" )
 	public float particlesRotateBy = 0f;
-	
+
+	/** Number of particles to spawn per emission. */
 	@EditorProperty( group="Particle Spawning" )
 	public int particleSpawnCount = 2;
-	
+
+	/** Amount of time between emissions in milliseconds. */
 	@EditorProperty( group="Particle Spawning" )
 	public float particleSpawnInterval = 15f;
-	
+
+	/** Maximum amount of additional random time added to spawn interval. */
 	@EditorProperty( group="Particle Variance" )
 	public float particleRandomSpawnInterval = 0f;
-	
+
+	/** Maximum amount of additional random time added to particle lifetime. */
 	@EditorProperty( group="Particle Variance" )
 	public float particleRandomLifetime = 0f;
-	
+
+	/** Does emitter continuously emit? */
 	@EditorProperty( group="Particle Spawning" )
 	public boolean particlesRepeat = true;
 
+	/** Do particles move relative to parent? */
 	@EditorProperty( group="Particle Spawning" )
 	public boolean particlesMoveRelativeToParent = true;
-	
+
+	/** Particle color tint. */
 	@EditorProperty( group="Particle Appearance" )
 	public Color particleColor = new Color(1, 1, 1, 1);
 
+	/** Particle ending color. Particle will not change color if omitted. */
 	@EditorProperty( group="Particle Appearance" )
 	public Color particleEndColor = null;
-	
+
+	/** Should this Entity be saved to the level file? */
 	@EditorProperty( group="Particle Spawning" )
 	public boolean particlesPersist = false;
-	
+
+	/** Only emit particles if player within this distance. */
 	@EditorProperty( group="Particle Spawning" )
 	public float spawnDistance = 40f;
 
+	/** Choose a random sprite between particleStartTex and particleEndTex for each particle? */
 	@EditorProperty( group="Particle Spawning" )
 	public boolean pickRandomSprite = false;
 	

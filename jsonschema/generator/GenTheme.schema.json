@@ -18,7 +18,13 @@
         },
         "spawnLights": {
             "type": "array",
-            "description": "Array of light Entities."
+            "description": "Array of light Entities.",
+            "items": {
+                "oneOf": [
+                    { "$ref": "../entities/Light.schema.json" },
+                    { "$ref": "../entities/Torch.schema.json" }
+                ]
+            }
         },
         "decorations": {
             "type": "array",
@@ -59,8 +65,7 @@
             "description": "Dictionary providing a mapping of TextureAtlas names to TexturePainters.",
             "patternProperties": {
                 ".*": {
-                    "$ref": "TexturePainter.schema.json",
-                    "description": "Wall texture atlas name."
+                    "$ref": "TexturePainter.schema.json"
                 }
             }
         }

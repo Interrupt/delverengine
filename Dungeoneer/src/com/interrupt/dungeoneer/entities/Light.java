@@ -9,38 +9,47 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
 
 public class Light extends Entity {
-	
+	/** Color of Light. */
 	@EditorProperty
 	public Color lightColor = new Color(Color.WHITE);
-	
+
+	/** Range of Light. */
 	@EditorProperty
 	public float range = 3.2f;
-	
+
+	/** Is Light infinitely tall? */
 	public boolean lightFullHeight = false;
-	
+
+	/** Is Light inverted? */
 	@EditorProperty
 	public boolean invertLight = false;
 
 	@EditorProperty
 	public boolean shadowTiles = true;
 
+	/** Has halo effect? */
 	@Deprecated
 	public boolean hasHalo = false;
 
+	/** Sprite to use for corona effect. */
 	@EditorProperty
 	public Material corona = null;
 
+	/** Halo vertical offset. */
 	public float haloOffset = 0.25f;
 
+	/** Scale of halo effect. */
 	@EditorProperty
 	public float haloSize = 0.5f;
 
+	/** Is halo animated? */
 	@EditorProperty
 	public boolean animateHalo = true;
 
 	@EditorProperty
 	public HaloMode haloMode = HaloMode.NONE;
 
+	/** Is Light on? */
 	@EditorProperty
 	public boolean on = true;
 	

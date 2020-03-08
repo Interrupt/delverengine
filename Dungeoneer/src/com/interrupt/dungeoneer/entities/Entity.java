@@ -26,32 +26,32 @@ import com.interrupt.dungeoneer.tiles.Tile;
 
 /** Base class for all entities in Delver Engine Levels. */
 public class Entity {
-	/** Id of the Entity. */
+	/** Id of Entity. */
 	@EditorProperty( group = "General" )
 	public String id;
 	
 	@EditorProperty( group = "Visual" )
 	public Drawable drawable;
 
-	/** X component of the position vector. */
+	/** Position x-component. */
 	public float x;
 
-	/** Y component of the position vector. */
+	/** Position y-component. */
 	public float y;
 
-	/** Z component of the position vector. */
+	/** Position z-component. */
 	public float z;
 
-	/** X component of the velocity vector. */
+	/** Velocity x-component. */
 	public float xa;
 
-	/** Y component of the velocity vector. */
+	/** Velocity y-component. */
 	public float ya;
 
-	/** Z component of the velocity vector. */
+	/** Velocity z-component. */
 	public float za;
 
-	/** The roll used when drawing the Entity. */
+	/** Roll used when drawing the Entity. */
 	public float roll;
 
 	/** Sprite index. */
@@ -64,11 +64,11 @@ public class Entity {
 	/** Z component of the Entity position last tick. */
 	protected float lastZ;
 
-	/** The vertical offset used when drawing the Entity. */
+	/** Vertical offset used when drawing the Entity. */
 	@EditorProperty( group = "Visual" )
 	public float yOffset = 0;
 
-	/** The shader used to draw the Entity. */
+	/** Shader name used to draw the Entity. */
 	@EditorProperty( group = "Visual" )
 	public String shader = null;
 
@@ -123,7 +123,7 @@ public class Entity {
 	
 	public ArtType artType;
 
-	/** Sprite Atlas name. */
+	/** Sprite TextureAtlas name. */
 	public String spriteAtlas = null;
 	
 	public EntityType type;
@@ -132,14 +132,14 @@ public class Entity {
 	@EditorProperty( group = "Physics" )
 	public boolean isSolid = false;
 
-	/** Dimensions of the Entity bounding box. */
+	/** Dimensions of Entity bounding box. */
 	@EditorProperty( group = "Physics" )
 	public Vector3 collision = new Vector3(0.125f, 0.125f, 0.25f);
 	
 	@EditorProperty( group = "Physics" )
 	public CollidesWith collidesWith = CollidesWith.all;
 
-	/** The scale used when drawing the Entity. */
+	/** Scale used when drawing the Entity. */
 	@EditorProperty( group = "Visual" )
 	public float scale = 1f;
 
@@ -163,46 +163,46 @@ public class Entity {
 	@EditorProperty( group = "General" )
 	public DrawDistance drawDistance = DrawDistance.FAR;
 
-	/** Is the Entity out of draw distance? */
+	/** Is Entity out of draw distance? */
 	public transient boolean outOfDrawDistance = false;
 
-	/** Can the Entity be stepped up on? */
+	/** Can Entity be stepped up on? */
 	public boolean canStepUpOn = true;
 
-	/** Is the Entity floating? */
+	/** Is Entity floating? */
 	@EditorProperty( group = "Physics" )
 	public boolean floating = false;
 
-	/** The mass of the Entity. */
+	/** Mass of Entity. */
 	@EditorProperty( group = "Physics" )
 	public float mass = 1f;
 
-	/** Sound to play when Entity hits the floor. */
+	/** Sound played when Entity hits the floor. */
 	public String dropSound = "drops/drop_soft.mp3";
 
 	@EditorProperty( group = "Visual" )
 	public ShadowType shadowType = ShadowType.NONE;
 
-	/** Does the Entity bounce? */
+	/** Does Entity bounce? */
 	public boolean bounces = true;
 
-	/** How high can the Entity step up? */
+	/** How high can Entity step up? */
 	public float stepHeight = 0.5f;
 	public float calcStepHeight = stepHeight;
 
-	/** Entity can be moved by being bumped. */
+	/** Can Entity be pushed. */
 	public boolean pushable = false;
 
 	/** Non-directional sprite. */
 	public boolean isStatic = false;
 
-	/** Is the Entity on the floor? */
+	/** Is Entity on the floor? */
 	public boolean isOnFloor = false;
 
-	/** Is the Entity on another Entity? */
+	/** Is Entity on another Entity? */
 	public boolean isOnEntity = false;
 
-	/** Is the Entity in water? */
+	/** Is Entity in water? */
 	public transient boolean inwater = false;
 
 	/** Ignore collision with the Player? */
@@ -233,10 +233,10 @@ public class Entity {
 	
 	public transient EditorState editorState = EditorState.none;
 
-	/** The position offset of the attached Entities. */
+	/** Position offset of attached Entities. */
 	protected Vector3 attachmentTransform = null;
 
-	/** An Array of attached Entities. */
+	/** Array of attached Entities. */
 	protected Array<Entity> attached = null;
 
 	/** The Entity this Entity is attached to. */
