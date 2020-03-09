@@ -9,11 +9,11 @@
             "description": "Fully-qualified Java class name."
         },
         "transform": {
-            "$ref": "../../../gdx/Vector3.schema.json",
+            "$ref": "../../../../gdx/Vector3.schema.json",
             "description": "Position."
         },
         "rotation": {
-            "$ref": "../../../gdx/Vector3.schema.json",
+            "$ref": "../../../../gdx/Vector3.schema.json",
             "description": "Rotation."
         },
         "length": {

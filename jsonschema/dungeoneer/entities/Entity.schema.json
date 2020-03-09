@@ -1,22 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Foliage",
+    "title": "Entity",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Foliage",
+            "const": "com.interrupt.dungeoneer.entities.Entity",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Foliage"
-        },
-        "foliagePosition": {
-            "$ref": "#/definitions/foliageAttachment",
-            "description": "Where to place foliage.",
-            "default": "FLOOR"
-        },
-        "swayAmount": {
-            "type": "number",
-            "description": "Ambient sway amount.",
-            "default": 4.5
+            "baseClass": "Entity"
         },
         "id": {
             "type": "string",
@@ -88,7 +78,7 @@
             "baseClass": "Entity"
         },
         "artType": {
-            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "$ref": "#/definitions/ArtType",
             "baseClass": "Entity"
         },
         "spriteAtlas": {
@@ -97,7 +87,7 @@
             "baseClass": "Entity"
         },
         "entityType": {
-            "$ref": "Entity.schema.json#/definitions/EntityType",
+            "$ref": "#/definitions/EntityType",
             "baseClass": "Entity"
         },
         "isSolid": {
@@ -107,12 +97,12 @@
             "default": false
         },
         "collision": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
         "collidesWith": {
-            "$ref": "Entity.schema.json#/definitions/CollidesWith",
+            "$ref": "#/definitions/CollidesWith",
             "baseClass": "Entity",
             "default": "all"
         },
@@ -143,13 +133,13 @@
             "maximum": 1.0
         },
         "detailLevel": {
-            "$ref": "Entity.schema.json#/definitions/DetailLevel",
+            "$ref": "#/definitions/DetailLevel",
             "description": "Detail level at which to be drawn",
             "baseClass": "Entity",
             "default": "LOW"
         },
         "drawDistance": {
-            "$ref": "Entity.schema.json#/definitions/DrawDistance",
+            "$ref": "#/definitions/DrawDistance",
             "description": "Distance at which to be drawn.",
             "baseClass": "Entity",
             "default": "FAR"
@@ -179,7 +169,7 @@
             "default": "drops/drop_soft.mp3"
         },
         "shadowType": {
-            "$ref": "Entity.schema.json#/definitions/ShadowType",
+            "$ref": "#/definitions/ShadowType",
             "description": "Type of drop shadow.",
             "baseClass": "Entity",
             "default": "NONE"
@@ -226,7 +216,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../gdx/Color.schema.json",
+            "$ref": "../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -242,7 +232,7 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },
@@ -252,20 +242,77 @@
             "baseClass": "Entity"
         }
     },
-    "required": [
-        "class"
-    ],
-    "default": {
-        "class": "com.interrupt.dungeoneer.entities.Foliage",
-        "isStatic": true
-    },
     "definitions": {
-        "foliageAttachment": {
+        "ArtType": {
             "type": "string",
             "enum": [
-                "FLOOR",
-                "CEILING",
-                "CENTER"
+                "entity",
+                "sprite",
+                "weapon",
+                "door",
+                "hidden",
+                "item",
+                "texture",
+                "particle"
+            ]
+        },
+        "EntityType": {
+            "type": "string",
+            "enum": [
+                "generic",
+                "monster",
+                "item"
+            ]
+        },
+        "CollidesWith": {
+            "type": "string",
+            "enum": [
+                "staticOnly",
+                "all",
+                "actorsOnly",
+                "nonActors"
+            ]
+        },
+        "DetailLevel": {
+            "type": "string",
+            "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "ULTRA"
+            ]
+        },
+        "ShadowType": {
+            "type": "string",
+            "enum": [
+                "NONE",
+                "BLOB",
+                "RECTANGLE"
+            ]
+        },
+        "DrawDistance": {
+            "type": "string",
+            "enum": [
+                "NEAR",
+                "MEDIUM",
+                "FAR"
+            ]
+        },
+        "BlendMode": {
+            "type": "string",
+            "enum": [
+                "OPAQUE",
+                "ALPHA",
+                "ADD"
+            ]
+        },
+        "HaloMode": {
+            "type": "string",
+            "enum": [
+                "NONE",
+                "BOTH",
+                "STENCIL_ONLY",
+                "CORONA_ONLY"
             ]
         }
     }

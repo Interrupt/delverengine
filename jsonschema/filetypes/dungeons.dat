@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Texture Atlas Array",
+    "title": "Level",
     "type": "array",
     "items": {
-        "$ref": "gfx/TextureAtlas.schema.json"
+        "$ref": "../dungeoneer/game/Level.schema.json"
     }
 }

@@ -4,19 +4,19 @@
     "definitions": {
         "EntityLike": {
             "oneOf": [
-                { "$ref": "entities/Door.schema.json" },
-                { "$ref": "entities/Foliage.schema.json" },
-                { "$ref": "entities/Entity.schema.json" },
-                { "$ref": "entities/Light.schema.json" },
-                { "$ref": "entities/ParticleEmitter.schema.json" },
-                { "$ref": "entities/Sprite.schema.json" },
-                { "$ref": "entities/Torch.schema.json" }
+                { "$ref": "dungeoneer/entities/Door.schema.json"},
+                { "$ref": "dungeoneer/entities/Foliage.schema.json"},
+                { "$ref": "dungeoneer/entities/Entity.schema.json"},
+                { "$ref": "dungeoneer/entities/Light.schema.json"},
+                { "$ref": "dungeoneer/entities/ParticleEmitter.schema.json"},
+                { "$ref": "dungeoneer/entities/Sprite.schema.json"},
+                { "$ref": "dungeoneer/entities/Torch.schema.json"}
             ]
         },
         "LightLike":{
             "oneOf": [
-                { "$ref": "entities/Light.schema.json" },
-                { "$ref": "entities/Torch.schema.json" }
+                { "$ref": "dungeoneer/entities/Light.schema.json"},
+                { "$ref": "dungeoneer/entities/Torch.schema.json"}
             ]
         }
     }

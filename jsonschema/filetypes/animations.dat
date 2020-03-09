@@ -9,7 +9,7 @@
             "description": "Dictionary providing a mapping of animation names to animations.",
             "patternProperties": {
                 ".*": {
-                    "$ref": "gfx/animation/lerp3d/LerpedAnimation.schema.json"
+                    "$ref": "../dungeoneer/gfx/animation/lerp3d/LerpedAnimation.schema.json"
                 }
             }
         }

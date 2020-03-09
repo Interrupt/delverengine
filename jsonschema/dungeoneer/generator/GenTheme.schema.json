@@ -26,21 +26,21 @@
             "type": "array",
             "description": "Array of light Entities.",
             "items": {
-                "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
             }
         },
         "decorations": {
             "type": "array",
             "description": "Array of decorations Entities.",
             "items": {
-                "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
             }
         },
         "surprises": {
             "type": "array",
             "description": "Array of surprise Entities.",
             "items": {
-                "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
             }
         },
         "defaultTextureAtlas": {

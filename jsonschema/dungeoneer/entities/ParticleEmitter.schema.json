@@ -69,7 +69,7 @@
             "default": true
         },
         "particleSpread": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Size of volume where particles will be created.",
             "baseClass": "ParticleEmitter",
             "default": {
@@ -79,7 +79,7 @@
             }
         },
         "particleCollisionSize": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Particle bounding box dimensions.",
             "baseClass": "ParticleEmitter",
             "default": {
@@ -89,7 +89,7 @@
             }
         },
         "particleVelocity": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Particle initial velocity.",
             "baseClass": "ParticleEmitter",
             "default": {
@@ -111,7 +111,7 @@
             "default": 0.9
         },
         "particleRandomVelocity": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Range for creating a random velocity vector. Will be added to initial velocity.",
             "baseClass": "ParticleEmitter",
             "default": {
@@ -217,7 +217,7 @@
             "default": true
         },
         "particleColor": {
-            "$ref": "../gdx/Color.schema.json",
+            "$ref": "../../gdx/Color.schema.json",
             "description": "Particle color tint.",
             "baseClass": "ParticleEmitter",
             "default": {
@@ -228,7 +228,7 @@
             }
         },
         "particleEndColor": {
-            "$ref": "../gdx/Color.schema.json",
+            "$ref": "../../gdx/Color.schema.json",
             "description": "Particle ending color. Particle will not change color if omitted.",
             "baseClass": "ParticleEmitter"
         },
@@ -339,7 +339,7 @@
             "default": false
         },
         "collision": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
@@ -458,7 +458,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../gdx/Color.schema.json",
+            "$ref": "../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -474,7 +474,7 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },

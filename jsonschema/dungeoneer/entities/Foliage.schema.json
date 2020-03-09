@@ -1,135 +1,22 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Torch",
+    "title": "Foliage",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Torch",
+            "const": "com.interrupt.dungeoneer.entities.Foliage",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Torch"
+            "baseClass": "Foliage"
         },
-        "texAnimStart": {
-            "type": "integer",
-            "description": "Starting animation frame sprite index.",
-            "baseClass": "Torch",
-            "default": 4
+        "foliagePosition": {
+            "$ref": "#/definitions/foliageAttachment",
+            "description": "Where to place foliage.",
+            "default": "FLOOR"
         },
-        "texAnimEnd": {
-            "type": "integer",
-            "description": "Ending animation frame sprite index.",
-            "baseClass": "Torch",
-            "default": 5
-        },
-        "torchAnimateMode": {
-            "$ref": "#/definitions/TorchAnimateModes",
-            "description": "Torch animation mode.",
-            "baseClass": "Torch",
-            "default": "RANDOM"
-        },
-        "animSpeed": {
+        "swayAmount": {
             "type": "number",
-            "description": "Animation speed.",
-            "baseClass": "Torch",
-            "default": 30
-        },
-        "animation": {
-            "$ref": "../gfx/animation/SpriteAnimation.schema.json",
-            "baseClass": "Torch"
-        },
-        "emitter": {
-            "$ref": "ParticleEmitter.schema.json",
-            "baseClass": "Torch"
-        },
-        "audio": {
-            "type": "string",
-            "description": "Looping ambient sound.",
-            "baseClass": "Torch",
-            "default": "torch.mp3"
-        },
-        "makeFlies": {
-            "type": "boolean",
-            "description": "Make flies?",
-            "baseClass": "Torch",
-            "default": false
-        },
-        "makeEmitter": {
-            "type": "boolean",
-            "description": "Make ParticleEmitter?",
-            "baseClass": "Torch",
-            "default": true
-        },
-        "lightColor": {
-            "$ref": "../gdx/Color.schema.json",
-            "description": "Color of light.",
-            "baseClass": "Light",
-            "default": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0
-            }
-        },
-        "range": {
-            "type": "number",
-            "description": "Range of light.",
-            "baseClass": "Light",
-            "default": 3.2
-        },
-        "lightFullHeight": {
-            "type": "boolean",
-            "description": "Is Light infinitely tall?",
-            "baseClass": "Light",
-            "default": false
-        },
-        "inverted": {
-            "type": "boolean",
-            "description": "Is Light inverted?",
-            "baseClass": "Light",
-            "default": false
-        },
-        "shadowTiles": {
-            "type": "boolean",
-            "baseClass": "Light",
-            "default": true
-        },
-        "hasHalo": {
-            "type": "boolean",
-            "description": "Has halo effect?",
-            "baseClass": "Light",
-            "default": false
-        },
-        "corona": {
-            "$ref": "../gfx/Material.schema.json",
-            "description": "Sprite to use for corona effect.",
-            "baseClass": "Light"
-        },
-        "haloOffset": {
-            "type": "number",
-            "description": "Halo vertical offset.",
-            "baseClass": "Light",
-            "default": 0.25
-        },
-        "haloSize": {
-            "type": "number",
-            "description": "Scale of halo effect.",
-            "baseClass": "Light",
-            "default": 0.5
-        },
-        "animateHalo": {
-            "type": "boolean",
-            "description": "Is halo animated?",
-            "baseClass": "Light",
-            "default": true
-        },
-        "haloMode": {
-            "$ref": "../entities/Entity.schema.json#/definitions/HaloMode",
-            "baseClass": "Light",
-            "default": "NONE"
-        },
-        "on": {
-            "type": "boolean",
-            "description": "Is Light on?",
-            "baseClass": "Light",
-            "default": true
+            "description": "Ambient sway amount.",
+            "default": 4.5
         },
         "id": {
             "type": "string",
@@ -220,7 +107,7 @@
             "default": false
         },
         "collision": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
@@ -339,7 +226,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../gdx/Color.schema.json",
+            "$ref": "../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -355,7 +242,7 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },
@@ -369,24 +256,16 @@
         "class"
     ],
     "default": {
-        "class": "com.interrupt.dungeoneer.entities.Torch",
-        "hidden": false,
-        "spriteAtlas": "sprite",
-        "collision": {
-            "x": 0.05,
-            "y": 0.05,
-            "z": 0.2
-        },
-        "fullbrite": true,
-        "haloMode": "BOTH",
-        "haloOffset": 0.8
+        "class": "com.interrupt.dungeoneer.entities.Foliage",
+        "isStatic": true
     },
     "definitions": {
-        "TorchAnimateModes": {
+        "foliageAttachment": {
             "type": "string",
             "enum": [
-                "RANDOM",
-                "LOOP"
+                "FLOOR",
+                "CEILING",
+                "CENTER"
             ]
         }
     }

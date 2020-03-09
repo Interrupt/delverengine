@@ -26,11 +26,11 @@
             }
         },
         "startTransform": {
-            "$ref": "../../../gdx/Vector3.schema.json",
+            "$ref": "../../../../gdx/Vector3.schema.json",
             "description": "Animation initial position."
         },
         "startRotation": {
-            "$ref": "../../../gdx/Vector3.schema.json",
+            "$ref": "../../../../gdx/Vector3.schema.json",
             "description": "Animation initial rotation."
         },
         "startTexOffset": {

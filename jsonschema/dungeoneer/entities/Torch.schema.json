@@ -1,15 +1,65 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Light",
+    "title": "Torch",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Light",
+            "const": "com.interrupt.dungeoneer.entities.Torch",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Light"
+            "baseClass": "Torch"
+        },
+        "texAnimStart": {
+            "type": "integer",
+            "description": "Starting animation frame sprite index.",
+            "baseClass": "Torch",
+            "default": 4
+        },
+        "texAnimEnd": {
+            "type": "integer",
+            "description": "Ending animation frame sprite index.",
+            "baseClass": "Torch",
+            "default": 5
+        },
+        "torchAnimateMode": {
+            "$ref": "#/definitions/TorchAnimateModes",
+            "description": "Torch animation mode.",
+            "baseClass": "Torch",
+            "default": "RANDOM"
+        },
+        "animSpeed": {
+            "type": "number",
+            "description": "Animation speed.",
+            "baseClass": "Torch",
+            "default": 30
+        },
+        "animation": {
+            "$ref": "../gfx/animation/SpriteAnimation.schema.json",
+            "baseClass": "Torch"
+        },
+        "emitter": {
+            "$ref": "ParticleEmitter.schema.json",
+            "baseClass": "Torch"
+        },
+        "audio": {
+            "type": "string",
+            "description": "Looping ambient sound.",
+            "baseClass": "Torch",
+            "default": "torch.mp3"
+        },
+        "makeFlies": {
+            "type": "boolean",
+            "description": "Make flies?",
+            "baseClass": "Torch",
+            "default": false
+        },
+        "makeEmitter": {
+            "type": "boolean",
+            "description": "Make ParticleEmitter?",
+            "baseClass": "Torch",
+            "default": true
         },
         "lightColor": {
-            "$ref": "../gdx/Color.schema.json",
+            "$ref": "../../gdx/Color.schema.json",
             "description": "Color of light.",
             "baseClass": "Light",
             "default": {
@@ -71,7 +121,7 @@
             "default": true
         },
         "haloMode": {
-            "$ref": "../entities/Entity.schema.json#/definitions/HaloMode",
+            "$ref": "Entity.schema.json#/definitions/HaloMode",
             "baseClass": "Light",
             "default": "NONE"
         },
@@ -170,7 +220,7 @@
             "default": false
         },
         "collision": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
@@ -289,7 +339,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../gdx/Color.schema.json",
+            "$ref": "../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -305,7 +355,7 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../gdx/Vector3.schema.json",
+            "$ref": "../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },
@@ -319,10 +369,25 @@
         "class"
     ],
     "default": {
-        "class": "com.interrupt.dungeoneer.entities.Light",
-        "hidden": true,
-        "spriteAtlas": "editor",
-        "tex": 12,
-        "isSolid": false
+        "class": "com.interrupt.dungeoneer.entities.Torch",
+        "hidden": false,
+        "spriteAtlas": "sprite",
+        "collision": {
+            "x": 0.05,
+            "y": 0.05,
+            "z": 0.2
+        },
+        "fullbrite": true,
+        "haloMode": "BOTH",
+        "haloOffset": 0.8
+    },
+    "definitions": {
+        "TorchAnimateModes": {
+            "type": "string",
+            "enum": [
+                "RANDOM",
+                "LOOP"
+            ]
+        }
     }
 }

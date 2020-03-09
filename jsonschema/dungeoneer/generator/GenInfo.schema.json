@@ -38,7 +38,7 @@
             "type": "array",
             "description": "Array of Entities to create at this tile.",
             "items": {
-                "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
             }
         },
         "clusterCount" : {
