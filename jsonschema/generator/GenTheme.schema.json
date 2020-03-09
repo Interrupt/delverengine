@@ -14,25 +14,31 @@
         },
         "doors": {
             "type": "array",
-            "description": "Array of Doors."
+            "description": "Array of Doors.",
+            "items": {
+                "$ref": "../entities/Door.schema.json"
+            }
         },
         "spawnLights": {
             "type": "array",
             "description": "Array of light Entities.",
             "items": {
-                "oneOf": [
-                    { "$ref": "../entities/Light.schema.json" },
-                    { "$ref": "../entities/Torch.schema.json" }
-                ]
+                "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
             }
         },
         "decorations": {
             "type": "array",
-            "description": "Array of decorations Entities."
+            "description": "Array of decorations Entities.",
+            "items": {
+                "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
+            }
         },
         "surprises": {
             "type": "array",
-            "description": "Array of surprise Entities."
+            "description": "Array of surprise Entities.",
+            "items": {
+                "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
+            }
         },
         "chunkTiles": {
             "type": "integer",

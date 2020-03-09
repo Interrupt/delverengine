@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Delver Interfaces",
+    "definitions": {
+        "EntityLike": {
+            "oneOf": [
+                { "$ref": "entities/Entity.schema.json" },
+                { "$ref": "entities/Door.schema.json" },
+                { "$ref": "entities/Light.schema.json" },
+                { "$ref": "entities/ParticleEmitter.schema.json" },
+                { "$ref": "entities/Torch.schema.json" }
+            ]
+        },
+        "LightLike":{
+            "oneOf": [
+                { "$ref": "entities/Light.schema.json" },
+                { "$ref": "entities/Torch.schema.json" }
+            ]
+        }
+    }
+}
