@@ -25,7 +25,7 @@ public class GenTheme {
     /** Array of decoration Entities. */
     public Array<Entity> decorations = null;
 
-    /** Array of surprise Entities. Unused. */
+    /** Array of surprise Entities. */
 	public Array<Entity> surprises = null;
 
 	/** Name of default TextureAtlas. */

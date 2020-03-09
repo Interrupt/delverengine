@@ -10,7 +10,10 @@
         },
         "genInfos": {
             "type": "array",
-            "description": "Array of GenInfos."
+            "description": "Array of GenInfos.",
+            "items": {
+                "$ref": "GenInfo.schema.json"
+            }
         },
         "doors": {
             "type": "array",
