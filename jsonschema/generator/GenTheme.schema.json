@@ -40,6 +40,10 @@
                 "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
             }
         },
+        "defaultTextureAtlas": {
+            "type": "string",
+            "description": "Name of default TextureAtlas."
+        },
         "chunkTiles": {
             "type": "integer",
             "description": "Size of a room.",
@@ -64,7 +68,8 @@
             }
         },
         "painter": {
-            "$ref": "TexturePainter.schema.json"
+            "$ref": "TexturePainter.schema.json",
+            "description": "TexturePainter for theme. Deprecated."
         },
         "texturePainters": {
             "type": "object",

@@ -28,6 +28,7 @@ public class GenTheme {
     /** Array of surprise Entities. Unused. */
 	public Array<Entity> surprises = null;
 
+	/** Name of default TextureAtlas. */
     public String defaultTextureAtlas = null;
 
     /** Size of a room.  */
@@ -42,9 +43,11 @@ public class GenTheme {
     /** Array of valid lake types to generate. */
     public RoomGeneratorTheme.LakeType[] lakes = null;
 
+    /** TexturePainter for theme. Deprecated. */
     @Deprecated
 	public TexturePainter painter = null;
 
+    /** Dictionary providing a mapping of TextureAtlas names to TexturePainters. */
     public HashMap<String, TexturePainter> texturePainters = null;
 
     public Byte getWallTexture(Byte originalTexture, String atlas) {
