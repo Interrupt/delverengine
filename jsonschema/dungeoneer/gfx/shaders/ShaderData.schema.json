@@ -5,8 +5,7 @@
     "properties": {
         "class": {
             "const": "com.interrupt.dungeoneer.gfx.shaders.ShaderData",
-            "description": "Fully-qualified Java class name.",
-            "baseClass": "Light"
+            "description": "Fully-qualified Java class name."
         },
         "name": {
             "type": "string",
