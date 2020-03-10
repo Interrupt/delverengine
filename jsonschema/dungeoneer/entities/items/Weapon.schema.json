@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Weapon",
+    "type": "object",
+    "definitions": {
+        "DamageType": {
+            "type": "string",
+            "enum": [
+                "PHYSICAL",
+                "MAGIC",
+                "FIRE",
+                "ICE",
+                "LIGHTNING",
+                "POISON",
+                "HEALING",
+                "PARALYZE",
+                "VAMPIRE"
+            ]
+        }
+    }
+}
