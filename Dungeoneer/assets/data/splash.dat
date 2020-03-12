@@ -2,5 +2,6 @@
 	"backgroundLevel": "levels/splash.bin",
 	"backgroundImage": "splash/Delver-Menu-BG.png",
 	"logoImage": "splash/Delver-Logo.png",
+	"logoFilter": true,
 	"music": "title.mp3"
 }
