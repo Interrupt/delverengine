@@ -10,7 +10,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '1.0'
+    version = '1.2.0'
     ext {
         appName = "delver"
         gdxVersion = '1.9.9'
