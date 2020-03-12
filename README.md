@@ -1,4 +1,6 @@
-# Delver Open Source
+# [![delverengine](.media/logo.svg?sanitize=true)](https://github.com/interrupt/delverengine)
+
+# Delver Engine Open Source
 Delver engine and editor source code release
 
 This source release does not contain or cover the game data from Delver, the game data remains subject to the original copyright and applicable law.
