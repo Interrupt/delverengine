@@ -21,6 +21,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Timer;
@@ -38,6 +39,8 @@ public class Editor {
     public ActionListener saveAction;
     public ActionListener saveAsAction;
     public ActionListener openAction;
+    public ActionListener exitAction;
+
     public ActionListener rotateLeftAction;
     public ActionListener rotateRightAction;
     public ActionListener playAction;
@@ -89,7 +92,7 @@ public class Editor {
 	public Editor() {
 
 		frame = new JFrame("DelvEdit");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE | JFrame.EXIT_ON_CLOSE);
 
         Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 		
@@ -299,6 +302,12 @@ public class Editor {
 
                 editor.editorFrame.editorUi.showingModal = picker;
                 editorFrame.editorInput.resetKeys();
+            }
+        };
+
+        exitAction = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
             }
         };
 

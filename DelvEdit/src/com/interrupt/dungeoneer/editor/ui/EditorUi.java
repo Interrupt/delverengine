@@ -216,10 +216,13 @@ public class EditorUi {
         // make the menu bar
         menuBar = new Scene2dMenuBar(smallSkin);
         menuBar.addItem(new MenuItem("File", smallSkin)
-            .addItem(new MenuItem("Save", smallSkin, editor.saveAction).setAccelerator(new MenuAccelerator(Keys.S, true, false)))
-            .addItem(new MenuItem("Save As...", smallSkin, editor.saveAsAction).setAccelerator(new MenuAccelerator(Keys.S, true, true)))
             .addItem(new MenuItem("New", smallSkin, newWindowAction).setAccelerator(new MenuAccelerator(Keys.N, true, false)))
             .addItem(new MenuItem("Open", smallSkin, editor.openAction).setAccelerator(new MenuAccelerator(Keys.O, true, false)))
+            .addSeparator()
+            .addItem(new MenuItem("Save", smallSkin, editor.saveAction).setAccelerator(new MenuAccelerator(Keys.S, true, false)))
+            .addItem(new MenuItem("Save As...", smallSkin, editor.saveAsAction).setAccelerator(new MenuAccelerator(Keys.S, true, true)))
+            .addSeparator()
+            .addItem(new MenuItem("Exit", smallSkin, editor.exitAction))
         );
 
         menuBar.addItem(new MenuItem("Edit", smallSkin)
