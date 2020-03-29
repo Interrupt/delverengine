@@ -234,6 +234,7 @@ public class EditorUi {
                         .addItem(new MenuItem("Carve Tiles", smallSkin, editor.carveAction).setAccelerator(new MenuAccelerator(Keys.ENTER, false, false)))
                         .addItem(new MenuItem("Paint Tiles", smallSkin, editor.paintAction).setAccelerator(new MenuAccelerator(Keys.ENTER, false, true)))
                         .addItem(new MenuItem("Delete", smallSkin, editor.deleteAction).setAccelerator(new MenuAccelerator(Keys.DEL, false, false)))
+                        .addItem(new MenuItem("Delete", smallSkin, editor.deleteAction).setAccelerator(new MenuAccelerator(Keys.FORWARD_DEL, false, false)))
                         .addItem(new MenuItem("Pick Textures", smallSkin, pickAction).setAccelerator(new MenuAccelerator(Keys.G, false, false)))
                         .addItem(new MenuItem("Reset Selection", smallSkin, editor.escapeAction).setAccelerator(new MenuAccelerator(Keys.ESCAPE, false, false)))
                         .addSeparator()
