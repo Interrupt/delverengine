@@ -1,12 +1,104 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Entity",
+    "title": "Trigger",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Entity",
+            "const": "com.interrupt.dungeoneer.entities.trigger.Trigger",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Entity"
+            "baseClass": "Trigger"
+        },
+        "isSecret": {
+            "type": "boolean",
+            "description": "Does this count as a secret?",
+            "baseClass": "Trigger",
+            "default": false
+        },
+        "triggerType": {
+            "$ref": "#/definitions/TriggerType",
+            "description": "Kind of acton that activates trigger.",
+            "baseClass": "Trigger",
+            "default": "USE"
+        },
+        "triggersId": {
+            "type": "string",
+            "description": "Entity to send trigger event when triggered.",
+            "baseClass": "Trigger"
+        },
+        "triggerResets": {
+            "type": "boolean",
+            "description": "Reset after being triggered?",
+            "baseClass": "Trigger",
+            "default": true
+        },
+        "onlyTriggerById": {
+            "type": "string",
+            "description": "Only allow trigger events from Entities with specified id.",
+            "baseClass": "Trigger"
+        },
+        "triggerDelay": {
+            "type": "number",
+            "description": "Time to wait before performing trigger action after receiving trigger event.",
+            "baseClass": "Trigger",
+            "default": 0
+        },
+        "triggerResetTime": {
+            "type": "number",
+            "description": "Time to wait to reset after performing trigger action.",
+            "baseClass": "Trigger",
+            "default": 0
+        },
+        "triggerValue": {
+            "type": "string",
+            "description": "triggerValue",
+            "baseClass": "Trigger"
+        },
+        "triggerPropogates": {
+            "type": "string",
+            "description": "Pass trigger event value to targeted trigger?",
+            "baseClass": "Trigger",
+            "default": true
+        },
+        "useVerb": {
+            "type": "string",
+            "description": "Text to show for interaction prompt.",
+            "baseClass": "Trigger",
+            "default": "entities.Trigger.defaultUseVerb"
+        },
+        "message": {
+            "type": "string",
+            "description": "Message to display when triggered.",
+            "baseClass": "Trigger",
+            "default": ""
+        },
+        "messageTime": {
+            "type": "number",
+            "description": "Duration to display message in seconds.",
+            "baseClass": "Trigger",
+            "default": 5
+        },
+        "messageSize": {
+            "type": "number",
+            "description": "Size of displayed message.",
+            "baseClass": "Trigger",
+            "default": 1
+        },
+        "triggerSound": {
+            "type": "string",
+            "description": "Filepath of sound to play when triggered.",
+            "baseClass": "Trigger"
+        },
+        "triggersDuring": {
+            "$ref": "#/definitions/GameTime",
+            "description": "Which phase of the game to permit triggering.",
+            "baseClass": "Trigger",
+            "default": "WHENEVER"
+        },
+        "appearsDuringEndgame": {
+            "type": "boolean",
+            "description": "Does this appear during end game?",
+            "baseClass": "Trigger",
+            "default": true
         },
         "id": {
             "type": "string",
@@ -78,7 +170,7 @@
             "baseClass": "Entity"
         },
         "artType": {
-            "$ref": "#/definitions/ArtType",
+            "$ref": "../Entity.schema.json#/definitions/ArtType",
             "baseClass": "Entity"
         },
         "spriteAtlas": {
@@ -87,7 +179,7 @@
             "baseClass": "Entity"
         },
         "entityType": {
-            "$ref": "#/definitions/EntityType",
+            "$ref": "../Entity.schema.json#/definitions/EntityType",
             "baseClass": "Entity"
         },
         "isSolid": {
@@ -97,12 +189,12 @@
             "default": false
         },
         "collision": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
         "collidesWith": {
-            "$ref": "#/definitions/CollidesWith",
+            "$ref": "../Entity.schema.json#/definitions/CollidesWith",
             "baseClass": "Entity",
             "default": "all"
         },
@@ -133,13 +225,13 @@
             "maximum": 1.0
         },
         "detailLevel": {
-            "$ref": "#/definitions/DetailLevel",
+            "$ref": "../Entity.schema.json#/definitions/DetailLevel",
             "description": "Detail level at which to be drawn",
             "baseClass": "Entity",
             "default": "LOW"
         },
         "drawDistance": {
-            "$ref": "#/definitions/DrawDistance",
+            "$ref": "../Entity.schema.json#/definitions/DrawDistance",
             "description": "Distance at which to be drawn.",
             "baseClass": "Entity",
             "default": "FAR"
@@ -169,7 +261,7 @@
             "default": "drops/drop_soft.mp3"
         },
         "shadowType": {
-            "$ref": "#/definitions/ShadowType",
+            "$ref": "../Entity.schema.json#/definitions/ShadowType",
             "description": "Type of drop shadow.",
             "baseClass": "Entity",
             "default": "NONE"
@@ -216,7 +308,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../../gdx/Color.schema.json",
+            "$ref": "../../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -232,90 +324,41 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },
         "attached": {
             "type": "array",
             "description": "Array of attached Entities.",
-            "baseClass": "Entity",
-            "items": {
-                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
-            }
+            "baseClass": "Entity"
         }
     },
     "definitions": {
-        "ArtType": {
+        "TriggerStatus":{
             "type": "string",
             "enum": [
-                "entity",
-                "sprite",
-                "weapon",
-                "door",
-                "hidden",
-                "item",
-                "texture",
-                "particle"
+                "WAITING",
+                "TRIGGERED",
+                "RESETTING",
+                "DESTROYED"
             ]
         },
-        "EntityType": {
+        "TriggerType":{
             "type": "string",
             "enum": [
-                "generic",
-                "monster",
-                "item"
+                "USE",
+                "PLAYER_TOUCHED",
+                "ACTOR_TOUCHED",
+                "ANY_TOUCHED"
             ]
         },
-        "CollidesWith": {
+        "GameTime":{
             "type": "string",
             "enum": [
-                "staticOnly",
-                "all",
-                "actorsOnly",
-                "nonActors"
-            ]
-        },
-        "DetailLevel": {
-            "type": "string",
-            "enum": [
-                "LOW",
-                "MEDIUM",
-                "HIGH",
-                "ULTRA"
-            ]
-        },
-        "ShadowType": {
-            "type": "string",
-            "enum": [
-                "NONE",
-                "BLOB",
-                "RECTANGLE"
-            ]
-        },
-        "DrawDistance": {
-            "type": "string",
-            "enum": [
-                "NEAR",
-                "MEDIUM",
-                "FAR"
-            ]
-        },
-        "BlendMode": {
-            "type": "string",
-            "enum": [
-                "OPAQUE",
-                "ALPHA",
-                "ADD"
-            ]
-        },
-        "HaloMode": {
-            "type": "string",
-            "enum": [
-                "NONE",
-                "BOTH",
-                "STENCIL_ONLY",
-                "CORONA_ONLY"
+                "WHENEVER",
+                "DESCENT",
+                "ESCAPE"
             ]
         }
     }

@@ -1,12 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Entity",
+    "title": "Item",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Entity",
+            "const": "com.interrupt.dungeoneer.entities.Item",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Entity"
+            "baseClass": "Item"
         },
         "id": {
             "type": "string",
@@ -78,7 +78,7 @@
             "baseClass": "Entity"
         },
         "artType": {
-            "$ref": "#/definitions/ArtType",
+            "$ref": "Entity.schema.json#/definitions/ArtType",
             "baseClass": "Entity"
         },
         "spriteAtlas": {
@@ -87,7 +87,7 @@
             "baseClass": "Entity"
         },
         "entityType": {
-            "$ref": "#/definitions/EntityType",
+            "$ref": "Entity.schema.json#/definitions/EntityType",
             "baseClass": "Entity"
         },
         "isSolid": {
@@ -102,7 +102,7 @@
             "baseClass": "Entity"
         },
         "collidesWith": {
-            "$ref": "#/definitions/CollidesWith",
+            "$ref": "Entity.schema.json#/definitions/CollidesWith",
             "baseClass": "Entity",
             "default": "all"
         },
@@ -133,13 +133,13 @@
             "maximum": 1.0
         },
         "detailLevel": {
-            "$ref": "#/definitions/DetailLevel",
+            "$ref": "Entity.schema.json#/definitions/DetailLevel",
             "description": "Detail level at which to be drawn",
             "baseClass": "Entity",
             "default": "LOW"
         },
         "drawDistance": {
-            "$ref": "#/definitions/DrawDistance",
+            "$ref": "Entity.schema.json#/definitions/DrawDistance",
             "description": "Distance at which to be drawn.",
             "baseClass": "Entity",
             "default": "FAR"
@@ -169,7 +169,7 @@
             "default": "drops/drop_soft.mp3"
         },
         "shadowType": {
-            "$ref": "#/definitions/ShadowType",
+            "$ref": "Entity.schema.json#/definitions/ShadowType",
             "description": "Type of drop shadow.",
             "baseClass": "Entity",
             "default": "NONE"
@@ -246,77 +246,5 @@
         }
     },
     "definitions": {
-        "ArtType": {
-            "type": "string",
-            "enum": [
-                "entity",
-                "sprite",
-                "weapon",
-                "door",
-                "hidden",
-                "item",
-                "texture",
-                "particle"
-            ]
-        },
-        "EntityType": {
-            "type": "string",
-            "enum": [
-                "generic",
-                "monster",
-                "item"
-            ]
-        },
-        "CollidesWith": {
-            "type": "string",
-            "enum": [
-                "staticOnly",
-                "all",
-                "actorsOnly",
-                "nonActors"
-            ]
-        },
-        "DetailLevel": {
-            "type": "string",
-            "enum": [
-                "LOW",
-                "MEDIUM",
-                "HIGH",
-                "ULTRA"
-            ]
-        },
-        "ShadowType": {
-            "type": "string",
-            "enum": [
-                "NONE",
-                "BLOB",
-                "RECTANGLE"
-            ]
-        },
-        "DrawDistance": {
-            "type": "string",
-            "enum": [
-                "NEAR",
-                "MEDIUM",
-                "FAR"
-            ]
-        },
-        "BlendMode": {
-            "type": "string",
-            "enum": [
-                "OPAQUE",
-                "ALPHA",
-                "ADD"
-            ]
-        },
-        "HaloMode": {
-            "type": "string",
-            "enum": [
-                "NONE",
-                "BOTH",
-                "STENCIL_ONLY",
-                "CORONA_ONLY"
-            ]
-        }
     }
 }

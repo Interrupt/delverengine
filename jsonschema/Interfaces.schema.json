@@ -4,19 +4,35 @@
     "definitions": {
         "EntityLike": {
             "oneOf": [
-                { "$ref": "dungeoneer/entities/Door.schema.json"},
-                { "$ref": "dungeoneer/entities/Foliage.schema.json"},
-                { "$ref": "dungeoneer/entities/Entity.schema.json"},
-                { "$ref": "dungeoneer/entities/Light.schema.json"},
-                { "$ref": "dungeoneer/entities/ParticleEmitter.schema.json"},
-                { "$ref": "dungeoneer/entities/Sprite.schema.json"},
-                { "$ref": "dungeoneer/entities/Torch.schema.json"}
+                { "$ref": "dungeoneer/entities/Door.schema.json" },
+                { "$ref": "dungeoneer/entities/Foliage.schema.json" },
+                { "$ref": "dungeoneer/entities/Entity.schema.json" },
+                { "$ref": "dungeoneer/entities/Light.schema.json" },
+                { "$ref": "dungeoneer/entities/ParticleEmitter.schema.json" },
+                { "$ref": "dungeoneer/entities/Sprite.schema.json" },
+                { "$ref": "dungeoneer/entities/Torch.schema.json" },
+                { "$ref": "dungeoneer/entities/triggers/Trigger.schema.json" }
             ]
         },
-        "LightLike":{
+        "ItemLike": {
             "oneOf": [
-                { "$ref": "dungeoneer/entities/Light.schema.json"},
-                { "$ref": "dungeoneer/entities/Torch.schema.json"}
+                { "$ref":  "dungeoneer/entities/Item.schema.json" }
+            ]
+        },
+        "LightLike": {
+            "oneOf": [
+                { "$ref": "dungeoneer/entities/Light.schema.json" },
+                { "$ref": "dungeoneer/entities/Torch.schema.json" }
+            ]
+        },
+        "StatusEffectLike": {
+            "oneOf": [
+                { "$ref": "" }
+            ]
+        },
+        "TriggerLike": {
+            "oneOf": [
+                { "$ref": "dungeoneer/entities/triggers/Trigger.schema.json" }
             ]
         }
     }

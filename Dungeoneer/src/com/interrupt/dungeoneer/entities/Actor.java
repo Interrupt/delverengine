@@ -30,7 +30,7 @@ public class Actor extends Entity {
 		/** Insect blood. */
 		Insect,
 
-		/** Bone blood. */
+		/** Bone blood. Don't think too hard about it. */
 		Bone;
 	};
 
@@ -79,16 +79,17 @@ public class Actor extends Entity {
 	@EditorProperty
 	public int INT = 10;
 
-	/** Type of blood. */
+	/** Type of blood particles to emit. */
 	@EditorProperty
 	public BloodType bloodType = BloodType.Red;
-	
+
+	/** Actor stats. */
 	public Stats stats = new Stats();
 
 	/** Is invisibility effect active? */
 	public boolean invisible = false;
 
-	// useful for things like dialogue!
+	/** Useful for things like dialogue! */
 	protected Trigger useTrigger = null;
 
 	/** Array of current status effects. */
