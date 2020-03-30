@@ -35,6 +35,8 @@ public class MenuItem extends TextButton implements Comparable {
 
     private Vector2 tempVec2 = new Vector2();
 
+    private float leftPadding = 45f;
+
     public MenuItem(CharSequence text, Skin skin) {
         super(text.toString(), skin);
         this.skin = skin;
@@ -177,29 +179,47 @@ public class MenuItem extends TextButton implements Comparable {
         addListener(clickListener);
         add(getLabel()).expand().fill();
 
+        boolean isMacOS = System.getProperty("os.name").toUpperCase().contains("MAC");
+
+        String text = "";
+
+        if (acceleratorLabel != null) {
+            text = acceleratorLabel.getText().toString();
+        }
+
         boolean madePadding = false;
         if(menuAccelerator != null) {
             if(menuAccelerator.getShiftRequired()) {
-                Image commandIcon = new Image(skin, "menu-shift-icon");
-                commandIcon.setScaling(Scaling.none);
-                add(commandIcon).align(Align.right).fill().padLeft(20f);
-                madePadding = true;
+                if (isMacOS) {
+                    Image commandIcon = new Image(skin, "menu-shift-icon");
+                    commandIcon.setScaling(Scaling.none);
+                    add(commandIcon).align(Align.right).fill().padLeft(leftPadding);
+                    madePadding = true;
+                }
+                else {
+                    text = "Shift+" + text;
+                }
             }
             if(menuAccelerator.getControlRequired()) {
-                Image commandIcon = new Image(skin, "menu-command-icon");
-                commandIcon.setScaling(Scaling.none);
-                add(commandIcon).align(Align.right).fill().padLeft(madePadding ? 3f : 20f);
-                madePadding = true;
+                if (isMacOS) {
+                    Image commandIcon = new Image(skin, "menu-command-icon");
+                    commandIcon.setScaling(Scaling.none);
+                    add(commandIcon).align(Align.right).fill().padLeft(madePadding ? 3f : leftPadding);
+                    madePadding = true;
+                }
+                else {
+                    text = "Ctrl+" + text;
+                }
             }
         }
 
         if(acceleratorLabel != null) {
-            add(acceleratorLabel).align(Align.right).fill().padLeft(madePadding ? 3f : 20f);
+            add(new Label(text, acceleratorLabel.getStyle())).align(Align.right).fill().padLeft(madePadding ? 3f : leftPadding);
         }
         else if(subMenu != null && showExpandArrow) {
             Image arrowImage = new Image(skin, "menu-arrow");
             arrowImage.setScaling(Scaling.none);
-            add(arrowImage).align(Align.right).fill().padLeft(20f);
+            add(arrowImage).align(Align.right).fill().padLeft(leftPadding);
         }
 
         pack();
@@ -207,8 +227,9 @@ public class MenuItem extends TextButton implements Comparable {
 
     public MenuItem setAccelerator(MenuAccelerator accelerator) {
         this.menuAccelerator = accelerator;
-
-        acceleratorLabel = new Label(accelerator.toString(), getLabel().getStyle());
+        String text = accelerator.toString();
+        text = text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+        acceleratorLabel = new Label(text, getLabel().getStyle());
         refresh();
 
         if(!acceleratorItems.contains(this, true))
