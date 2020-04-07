@@ -167,6 +167,9 @@ public class EditorUi {
                 };
 
                 newLevelDialog.show(stage);
+
+                // Dialog captures input, reset to a good state.
+                editorFrame.editorInput.resetKeys();
             }
         };
 
