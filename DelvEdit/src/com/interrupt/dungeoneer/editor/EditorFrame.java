@@ -69,6 +69,7 @@ import com.noise.PerlinNoise;
 import com.badlogic.gdx.math.MathUtils;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
 public class EditorFrame implements ApplicationListener {
@@ -345,12 +346,14 @@ public class EditorFrame implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
+	public JFrame frame;
 	public Editor editor;
 
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public EditorFrame(JFrame window, Editor editor) {
+	public EditorFrame(JFrame frame, Editor editor) {
+		this.frame = frame;
 		this.editor = editor;
 	}
 
@@ -383,7 +386,11 @@ public class EditorFrame implements ApplicationListener {
 
 	@Override
 	public void dispose() {
-		if(gameApp != null) gameApp.dispose();
+		if(gameApp != null) {
+			gameApp.dispose();
+		}
+
+		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
 	@Override

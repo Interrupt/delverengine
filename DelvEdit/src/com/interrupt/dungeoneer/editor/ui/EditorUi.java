@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.editor.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -19,6 +20,8 @@ import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorFrame;
 import com.interrupt.dungeoneer.editor.EditorRightClickEntitiesMenu;
 import com.interrupt.dungeoneer.editor.EditorRightClickMenu;
+import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
+import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
@@ -213,11 +216,78 @@ public class EditorUi {
             }
         };
 
+        MenuItem openRecent = new DynamicMenuItem("Open Recent", smallSkin, new DynamicMenuItemAction() {
+            private String mostRecentFile = null;
+
+            @Override
+            public boolean isDirty() {
+                String first = "";
+
+                if (editor.editorOptions.recentlyOpenedFiles.size > 0) {
+                    first = editor.editorOptions.recentlyOpenedFiles.first();
+                }
+
+                return !first.equals(mostRecentFile);
+            }
+
+            @Override
+            public void updateMenuItem(MenuItem item) {
+                // Update most recent file. Used for isDirty check.
+                if (editor.editorOptions.recentlyOpenedFiles.size > 0) {
+                    mostRecentFile = editor.editorOptions.recentlyOpenedFiles.first();
+                }
+                else {
+                    mostRecentFile = "";
+                }
+
+                // Clear existing items for a clean rebuild.
+                if (item.subMenu != null) {
+                    item.subMenu.items.clear();
+                }
+
+                // Build sequence of recent level menu items.
+                int recentFilesAdded = 0;
+                for (final String recentFile : editor.editorOptions.recentlyOpenedFiles) {
+                    item.addItem(
+                        new MenuItem(recentFile, smallSkin, new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                FileHandle fh = Gdx.files.absolute(recentFile);
+                                editor.openLevel(fh);
+                            }
+                        })
+                    );
+
+                    recentFilesAdded++;
+
+                    int maximumFilesToShow = 10;
+                    if (recentFilesAdded >= maximumFilesToShow) {
+                        break;
+                    }
+                }
+
+                if (recentFilesAdded == 0) {
+                    MenuItem mi = new MenuItem("No Recent Files", smallSkin);
+                    mi.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
+                    item.addItem(mi);
+                }
+
+                item.addSeparator();
+                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        editor.editorOptions.recentlyOpenedFiles.clear();
+                    }
+                }));
+            }
+        });
+
         // make the menu bar
         menuBar = new Scene2dMenuBar(smallSkin);
         menuBar.addItem(new MenuItem("File", smallSkin)
             .addItem(new MenuItem("New", smallSkin, newWindowAction).setAccelerator(new MenuAccelerator(Keys.N, true, false)))
             .addItem(new MenuItem("Open", smallSkin, editor.openAction).setAccelerator(new MenuAccelerator(Keys.O, true, false)))
+            .addItem(openRecent)
             .addSeparator()
             .addItem(new MenuItem("Save", smallSkin, editor.saveAction).setAccelerator(new MenuAccelerator(Keys.S, true, false)))
             .addItem(new MenuItem("Save As...", smallSkin, editor.saveAsAction).setAccelerator(new MenuAccelerator(Keys.S, true, true)))

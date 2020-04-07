@@ -8,6 +8,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.files.FileHandle;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
+import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.FilePicker;
 import com.interrupt.dungeoneer.editor.ui.FilePicker.ResultListener;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenuBar;
@@ -15,12 +16,12 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
-import com.interrupt.dungeoneer.tiles.Tile;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileFilter;
@@ -87,12 +88,21 @@ public class Editor {
 
     public ActionListener toggleSimulation;
 
+    public EditorOptions editorOptions;
+
     private Timer saveMessageTimer = new Timer();
 	
 	public Editor() {
 
 		frame = new JFrame("DelvEdit");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE | JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+                super.windowClosing(e);
+            }
+        });
 
         Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 		
@@ -113,6 +123,7 @@ public class Editor {
 		editorFrame = new EditorFrame(frame, this);
 		new LwjglApplication(editorFrame, config);
 
+		editorOptions = EditorOptions.fromLocalFiles();
 		initActions();
 	}
 
@@ -165,7 +176,7 @@ public class Editor {
                     currentDirectory = currentDirectory.substring(0, currentDirectory.length() - 2);
                 }
 
-                FilePicker picker = FilePicker.createSaveDialog("Save Level", editorFrame.editorUi.getSmallSkin(), new FileHandle(currentDirectory));
+                FilePicker picker = FilePicker.createSaveDialog("Save Level", EditorUi.getSmallSkin(), new FileHandle(currentDirectory));
                 picker.setFileNameEnabled(true);
                 picker.setNewFolderEnabled(false);
                 picker.setFilter(wsFilter);
@@ -212,7 +223,7 @@ public class Editor {
                         String name = path.getName();
                         return (name.endsWith(".dat") || name.endsWith(".png") || name.endsWith(".bin"));
                     }
-                };
+                }
                 FileFilter wsFilter = new WSFilter();
 
                 if(currentDirectory == null) {
@@ -220,7 +231,7 @@ public class Editor {
                     currentDirectory = currentDirectory.substring(0, currentDirectory.length() - 2);
                 }
 
-                FilePicker picker = FilePicker.createLoadDialog("Open Level", editorFrame.editorUi.getSmallSkin(), new FileHandle(currentDirectory));
+                FilePicker picker = FilePicker.createLoadDialog("Open Level", EditorUi.getSmallSkin(), new FileHandle(currentDirectory));
                 picker.setFileNameEnabled(true);
                 picker.setNewFolderEnabled(false);
                 if(currentFileName != null) picker.setFileName(currentFileName);
@@ -230,68 +241,7 @@ public class Editor {
                     @Override
                     public boolean result(boolean success, FileHandle result) {
                         if(success) {
-                            try {
-                                currentDirectory = result.file().getParent() + "/";
-                                currentFileName = result.name();
-                                saveMessageTimer.cancel();
-
-                                String file = currentFileName;
-                                String dir = currentDirectory;
-
-                                FileHandle level = Gdx.files.getFileHandle(result.file().getAbsolutePath(), FileType.Absolute);
-                                if(level.exists()) {
-                                    editorFrame.curFileName = level.path();
-
-                                    Scene2dMenuBar.setTitleLabel(currentFileName);
-
-                                    if(file.endsWith(".png")) {
-                                        String heightFile = dir + file.replace(".png", "-height.png");
-                                        if(!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
-                                            heightFile = dir + file.replace(".png", "_height.png");
-                                            if(!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
-                                                heightFile = null;
-                                            }
-                                        }
-
-                                        Level openLevel = new Level();
-                                        openLevel.loadForEditor(dir + file, heightFile);
-                                        editorFrame.level = openLevel;
-                                        editorFrame.refresh();
-
-                                        editorFrame.camX = openLevel.width / 2;
-                                        editorFrame.camZ = 4.5f;
-                                        editorFrame.camY = openLevel.height / 2;
-                                    }
-                                    else if(file.endsWith(".bin")) {
-                                        Level openLevel = KryoSerializer.loadLevel(level);
-
-                                        openLevel.init(Source.EDITOR);
-
-                                        editorFrame.level = openLevel;
-                                        editorFrame.refresh();
-
-                                        editorFrame.camX = openLevel.width / 2;
-                                        editorFrame.camZ = 4.5f;
-                                        editorFrame.camY = openLevel.height / 2;
-                                    }
-                                    else {
-                                        Level openLevel = Game.fromJson(Level.class, level);
-                                        openLevel.init(Source.EDITOR);
-
-                                        editorFrame.level = openLevel;
-                                        editorFrame.refresh();
-
-                                        editorFrame.camX = openLevel.width / 2;
-                                        editorFrame.camZ = 4.5f;
-                                        editorFrame.camY = openLevel.height / 2;
-                                    }
-
-                                    editorFrame.history = new EditorHistory();
-                                }
-                            }
-                            catch(Exception ex) {
-                                Gdx.app.error("DelvEdit", ex.getMessage());
-                            }
+                            openLevel(result);
                         }
 
                         return true;
@@ -576,5 +526,76 @@ public class Editor {
 	    currentDirectory = null;
 	    currentFileName = null;
 	    Scene2dMenuBar.setTitleLabel("New Level");
+    }
+
+    public void openLevel(FileHandle fileHandle) {
+	    try {
+            currentDirectory = fileHandle.file().getParent() + "/";
+            currentFileName = fileHandle.name();
+            saveMessageTimer.cancel();
+
+            String file = currentFileName;
+            String dir = currentDirectory;
+
+            FileHandle level = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), FileType.Absolute);
+            if(level.exists()) {
+                editorFrame.curFileName = level.path();
+
+                Scene2dMenuBar.setTitleLabel(currentFileName);
+
+                if(file.endsWith(".png")) {
+                    String heightFile = dir + file.replace(".png", "-height.png");
+                    if(!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
+                        heightFile = dir + file.replace(".png", "_height.png");
+                        if(!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
+                            heightFile = null;
+                        }
+                    }
+
+                    Level openLevel = new Level();
+                    openLevel.loadForEditor(dir + file, heightFile);
+                    editorFrame.level = openLevel;
+                    editorFrame.refresh();
+
+                    editorFrame.camX = openLevel.width / 2f;
+                    editorFrame.camZ = 4.5f;
+                    editorFrame.camY = openLevel.height / 2f;
+                }
+                else if(file.endsWith(".bin")) {
+                    Level openLevel = KryoSerializer.loadLevel(level);
+
+                    openLevel.init(Source.EDITOR);
+
+                    editorFrame.level = openLevel;
+                    editorFrame.refresh();
+
+                    editorFrame.camX = openLevel.width / 2f;
+                    editorFrame.camZ = 4.5f;
+                    editorFrame.camY = openLevel.height / 2f;
+                }
+                else {
+                    Level openLevel = Game.fromJson(Level.class, level);
+                    openLevel.init(Source.EDITOR);
+
+                    editorFrame.level = openLevel;
+                    editorFrame.refresh();
+
+                    editorFrame.camX = openLevel.width / 2f;
+                    editorFrame.camZ = 4.5f;
+                    editorFrame.camY = openLevel.height / 2f;
+                }
+
+                editorFrame.history = new EditorHistory();
+                editorOptions.recentlyOpenedFiles.removeValue(level.path(), false);
+                editorOptions.recentlyOpenedFiles.insert(0, level.path());
+            }
+        }
+        catch(Exception ex) {
+            Gdx.app.error("DelvEdit", ex.getMessage());
+        }
+    }
+
+    public void dispose() {
+	    EditorOptions.toLocalFiles(editorOptions);
     }
 }
