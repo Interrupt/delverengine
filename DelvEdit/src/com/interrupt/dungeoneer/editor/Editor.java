@@ -125,6 +125,8 @@ public class Editor {
 
 		editorOptions = EditorOptions.fromLocalFiles();
 		initActions();
+
+		setTitle("New Level");
 	}
 
     private void initActions() {
@@ -197,7 +199,7 @@ public class Editor {
                                 currentDirectory = result.file().getParent() + "/";
                                 currentFileName = result.name();
 
-                                Scene2dMenuBar.setTitleLabel(currentFileName);
+                                setTitle(currentFileName);
                             }
                             catch(Exception ex) {
                                 Gdx.app.error("DelvEdit", ex.getMessage());
@@ -525,7 +527,7 @@ public class Editor {
     public void createdNewLevel() {
 	    currentDirectory = null;
 	    currentFileName = null;
-	    Scene2dMenuBar.setTitleLabel("New Level");
+	    setTitle("New Level");
     }
 
     public void openLevel(FileHandle fileHandle) {
@@ -534,6 +536,8 @@ public class Editor {
             currentFileName = fileHandle.name();
             saveMessageTimer.cancel();
 
+            setTitle(currentFileName);
+
             String file = currentFileName;
             String dir = currentDirectory;
 
@@ -541,7 +545,7 @@ public class Editor {
             if(level.exists()) {
                 editorFrame.curFileName = level.path();
 
-                Scene2dMenuBar.setTitleLabel(currentFileName);
+                setTitle(currentFileName);
 
                 if(file.endsWith(".png")) {
                     String heightFile = dir + file.replace(".png", "-height.png");
@@ -597,5 +601,9 @@ public class Editor {
 
     public void dispose() {
 	    EditorOptions.toLocalFiles(editorOptions);
+    }
+
+    public void setTitle(String title) {
+        Gdx.graphics.setTitle(title + " — DelvEdit");
     }
 }

@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
@@ -409,6 +410,15 @@ public class EditorUi {
 
         menuBar.pack();
 
+        menuBar.playButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getType().name().equals("touchUp")) {
+                    editorFrame.testLevel();
+                }
+            };
+        });
+
         mainTable.setZIndex(1000);
         mainTable.add(menuBar);
 
@@ -512,6 +522,8 @@ public class EditorUi {
     public void resize(float width, float height) {
         viewport.setWorldSize(width, height);
         viewport.update((int)width, (int)height, true);
+
+        menuBar.refresh();
 
         mainTable.pack();
 

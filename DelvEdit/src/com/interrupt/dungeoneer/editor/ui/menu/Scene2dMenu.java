@@ -109,6 +109,10 @@ public class Scene2dMenu extends Group {
         }
     }
 
+    public void refresh() {
+        refreshDrawables();
+    }
+
     protected void refreshDrawables() {
         clearChildren();
 
