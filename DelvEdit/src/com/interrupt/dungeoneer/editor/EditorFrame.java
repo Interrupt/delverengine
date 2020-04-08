@@ -3143,9 +3143,20 @@ public class EditorFrame implements ApplicationListener {
             clipboard.selWidth = 0;
             clipboard.selHeight = 0;
         }
+
+        Clipboard systemClipboard = Gdx.app.getClipboard();
+        String contents = new Json().toJson(clipboard);
+        systemClipboard.setContents(contents);
     }
 
     public void paste() {
+        try {
+            Clipboard systemClipboard = Gdx.app.getClipboard();
+            Json json = new Json();
+            clipboard = json.fromJson(EditorClipboard.class, systemClipboard.getContents());
+        }
+        catch (Exception ignored) {}
+
         if(clipboard != null) {
             int selX = selectionX;
             int selY = selectionY;
