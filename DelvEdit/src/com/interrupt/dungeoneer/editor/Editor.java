@@ -153,7 +153,7 @@ public class Editor {
                 }
                 else {
                     editorFrame.save(currentDirectory + currentFileName);
-                    frame.setTitle("DelvEdit - " + currentFileName);
+                    setTitle(currentFileName);
                 }
             }
         };
