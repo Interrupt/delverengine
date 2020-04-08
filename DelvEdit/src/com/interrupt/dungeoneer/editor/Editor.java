@@ -107,7 +107,7 @@ public class Editor {
         Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 		
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "DelvEdit";
+		config.title = "New Level - DelvEdit";
         config.fullscreen = false;
         config.width = defaultMode.width;
         config.height = defaultMode.height;
@@ -125,8 +125,6 @@ public class Editor {
 
 		editorOptions = EditorOptions.fromLocalFiles();
 		initActions();
-
-		setTitle("New Level");
 	}
 
     private void initActions() {
@@ -604,6 +602,6 @@ public class Editor {
     }
 
     public void setTitle(String title) {
-        Gdx.graphics.setTitle(title + " — DelvEdit");
+        Gdx.graphics.setTitle(title + " - DelvEdit");
     }
 }
