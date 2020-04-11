@@ -331,10 +331,6 @@ public class EditorFrame implements ApplicationListener {
 	ControlPoint pickedControlPoint = null;
 	public boolean movingControlPoint = false;
 
-	Color colorDarkRed = new Color(0.8f,0,0,0.3f);
-	Color colorDarkBlue = new Color(0,0,0.8f,0.3f);
-	Color colorDarkGreen = new Color(0,0.8f,0,0.3f);
-
 	Vector3 xGridStart = new Vector3();
 	Vector3 xGridEnd = new Vector3();
 	Vector3 yGridStart = new Vector3();
@@ -1326,13 +1322,13 @@ public class EditorFrame implements ApplicationListener {
 			// Draw rotation circles
 			if(moveMode == MoveMode.ROTATE) {
 				if(dragMode == DragMode.X) {
-					drawXCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, Color.GREEN);
+					drawXCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.X_AXIS);
 				}
 				else if(dragMode == DragMode.Y) {
-					drawYCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, Color.RED);
+					drawYCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.Y_AXIS);
 				}
 				else {
-					drawZCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, Color.BLUE);
+					drawZCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.Z_AXIS);
 				}
 
 				if(pickedEntity instanceof Directional) {
@@ -1356,26 +1352,26 @@ public class EditorFrame implements ApplicationListener {
 					if(dragMode == DragMode.Z) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 10f, pickedEntity.y);
 						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z + 10f, pickedEntity.y);
-						this.drawLine(startLine, endLine, 2, Color.BLUE);
+						this.drawLine(startLine, endLine, 2, EditorColors.Z_AXIS);
 					}
 					else if(dragMode == DragMode.X) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y - 10f);
 						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y + 10f);
-						this.drawLine(startLine, endLine, 2, Color.GREEN);
+						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 					}
 					else if(dragMode == DragMode.Y) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x - 10f, pickedEntity.z - 0.5f, pickedEntity.y);
 						Vector3 endLine = tempVec4.set(pickedEntity.x + 10f, pickedEntity.z - 0.5f, pickedEntity.y);
-						this.drawLine(startLine, endLine, 2, Color.RED);
+						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 					else if(dragMode == DragMode.XY || (!movingEntity && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y - 10f);
 						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y + 10f);
-						this.drawLine(startLine, endLine, 2, Color.GREEN);
+						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 
 						startLine = tempVec3.set(pickedEntity.x - 10f, pickedEntity.z - 0.5f, pickedEntity.y);
 						endLine = tempVec4.set(pickedEntity.x + 10f, pickedEntity.z - 0.5f, pickedEntity.y);
-						this.drawLine(startLine, endLine, 2, Color.RED);
+						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 				}
 			}
@@ -1421,8 +1417,8 @@ public class EditorFrame implements ApplicationListener {
 
 		if(player == null) {
 			lineRenderer.begin(ShapeType.Line);
-			drawLine(xGridStart, xGridEnd, 2f, colorDarkRed);
-			drawLine(yGridStart, yGridEnd, 2f, colorDarkGreen);
+			drawLine(xGridStart, xGridEnd, 2f, EditorColors.Y_AXIS_DARK);
+			drawLine(yGridStart, yGridEnd, 2f, EditorColors.X_AXIS_DARK);
 			lineRenderer.end();
 		}
 
