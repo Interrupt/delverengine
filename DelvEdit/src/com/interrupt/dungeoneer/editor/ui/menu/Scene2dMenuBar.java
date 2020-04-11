@@ -63,7 +63,7 @@ public class Scene2dMenuBar extends Scene2dMenu {
         }
 
         menuTable.add().width(getParent().getWidth() - 40 - r);
-        menuTable.add(playButton).width(30).height(30).align(Align.right).padTop(3).padRight(10).fill();
+        menuTable.add(playButton).width(30).height(30).align(Align.right).padTop(2).padRight(10).fill();
 
         menuTable.setBackground("menu_default_normal");
 

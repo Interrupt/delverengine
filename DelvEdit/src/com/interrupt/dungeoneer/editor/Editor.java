@@ -11,7 +11,6 @@ import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.FilePicker;
 import com.interrupt.dungeoneer.editor.ui.FilePicker.ResultListener;
-import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenuBar;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
@@ -53,7 +52,7 @@ public class Editor {
     public ActionListener vertexToggleAction;
     public ActionListener undoAction;
     public ActionListener redoAction;
-    public ActionListener toggleCollisionBoxesAction;
+    public ActionListener toggleGizmosAction;
     public ActionListener toggleLightsAction;
     public ActionListener escapeAction;
     public ActionListener rotateCeilTexAction;
@@ -339,10 +338,10 @@ public class Editor {
             }
         };
 
-        toggleCollisionBoxesAction = new ActionListener() {
+        toggleGizmosAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                editorFrame.toggleCollisionBoxes();
+                editorFrame.toggleGizmos();
             }
         };
 

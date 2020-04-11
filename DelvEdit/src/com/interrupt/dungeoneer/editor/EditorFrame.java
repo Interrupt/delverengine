@@ -20,7 +20,6 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -34,6 +33,8 @@ import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
+import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
+import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
@@ -211,7 +212,7 @@ public class EditorFrame implements ApplicationListener {
 
 	private boolean rightClickWasDown = false;
 
-    public PerspectiveCamera camera = new PerspectiveCamera();
+    public static PerspectiveCamera camera = new PerspectiveCamera();
 
     protected Pixmap wallPixmap;
     protected Texture selectionTex;
@@ -316,7 +317,7 @@ public class EditorFrame implements ApplicationListener {
     private ShapeRenderer pointRenderer;
     private ShapeRenderer boxRenderer;
 
-    private boolean showCollisionBoxes = false;
+    private boolean showGizmos = false;
 
 	Color hoveredColor = new Color(0.5f, 1f, 0.5f, 1f);
 	Color selectedColor = new Color(1f, 0.5f, 0.5f, 1f);
@@ -1426,8 +1427,43 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		Gdx.gl.glDisable(GL20.GL_BLEND);
-		renderCollisionBoxes();
+		//renderCollisionBoxes();
 		renderTriggerLines();
+
+		if (showGizmos) {
+			drawAllGizmos();
+		}
+		else {
+			drawPickedGizmos();
+		}
+	}
+
+	private void drawPickedGizmos() {
+		if (pickedEntity != null) {
+			Gizmo gizmo = GizmoProvider.getGizmo(pickedEntity.getClass());
+
+			if (gizmo != null) {
+				gizmo.draw(pickedEntity);
+			}
+		}
+
+		for (Entity selected : additionalSelected) {
+			Gizmo gizmo = GizmoProvider.getGizmo(selected.getClass());
+
+			if (gizmo != null) {
+				gizmo.draw(selected);
+			}
+		}
+	}
+
+	private void drawAllGizmos() {
+		for (Entity entity : level.entities) {
+			Gizmo gizmo = GizmoProvider.getGizmo(entity.getClass());
+
+			if (gizmo != null) {
+				gizmo.draw(entity);
+			}
+		}
 	}
 
 	private void GlPickEntity() {
@@ -1571,30 +1607,6 @@ public class EditorFrame implements ApplicationListener {
 				}
 			}
 		}
-	}
-
-	public void renderCollisionBoxes() {
-		lineRenderer.begin(ShapeType.Line);
-
-		if(showCollisionBoxes) {
-			for(Entity e : level.entities) {
-				if(e.isSolid || e instanceof Area) {
-					renderCollisionBox(e);
-				}
-			}
-		} else {
-			if(pickedEntity != null) renderCollisionBox(pickedEntity);
-			for(Entity selected : additionalSelected) {
-				renderCollisionBox(selected);
-			}
-		}
-
-		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glLineWidth(1f);
-		lineRenderer.setColor(Color.WHITE);
-		lineRenderer.end();
-		Gdx.gl.glLineWidth(1f);
-		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 	}
 
 	public void renderCollisionBox(Entity e) {
@@ -2196,8 +2208,8 @@ public class EditorFrame implements ApplicationListener {
 		}
     }
 
-    public void toggleCollisionBoxes() {
-        showCollisionBoxes = !showCollisionBoxes;
+    public void toggleGizmos() {
+        showGizmos = !showGizmos;
     }
 
     public void clearSelection() {
@@ -2555,45 +2567,54 @@ public class EditorFrame implements ApplicationListener {
 	public void drawZCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
-		int segments = 30;
+		float tau = (float)Math.PI * 2;
+		int segments = 48;
+		float step = tau / segments;
+
 		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin((float)i / (float)segments * 7f);
-			float cos = (float)Math.cos((float)i / (float)segments * 7f);
+			float sin = (float)Math.sin(i * step) * radius;
+			float cos = (float)Math.cos(i * step) * radius;
 
-			float nextsin = (float)Math.sin((float)(i + 1) / (float)segments * 7f);
-			float nextcos = (float)Math.cos((float)(i + 1) / (float)segments * 7f);
+			float nextsin = (float)Math.sin((i + 1) * step) * radius;
+			float nextcos = (float)Math.cos((i + 1) * step) * radius;
 
-			lineRenderer.line(startX + sin * radius, startY, startZ + cos * radius, startX + nextsin * radius, startY, startZ + nextcos * radius);
+			lineRenderer.line(startX + sin, startY, startZ + cos, startX + nextsin, startY, startZ + nextcos);
 		}
 	}
 
 	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
-		int segments = 30;
+		float tau = (float)Math.PI * 2;
+		int segments = 48;
+		float step = tau / segments;
+
 		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin((float)i / (float)segments * 7f);
-			float cos = (float)Math.cos((float)i / (float)segments * 7f);
+			float sin = (float)Math.sin(i * step) * radius;
+			float cos = (float)Math.cos(i * step) * radius;
 
-			float nextsin = (float)Math.sin((float)(i + 1) / (float)segments * 7f);
-			float nextcos = (float)Math.cos((float)(i + 1) / (float)segments * 7f);
+			float nextsin = (float)Math.sin((i + 1) * step) * radius;
+			float nextcos = (float)Math.cos((i + 1) * step) * radius;
 
-			lineRenderer.line(startX, startY + cos * radius, startZ + sin * radius, startX, startY + nextcos * radius, startZ + nextsin * radius);
+			lineRenderer.line(startX, startY + cos, startZ + sin, startX, startY + nextcos, startZ + nextsin);
 		}
 	}
 
 	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
-		int segments = 30;
+		float tau = (float)Math.PI * 2;
+		int segments = 48;
+		float step = tau / segments;
+
 		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin((float)i / (float)segments * 7f);
-			float cos = (float)Math.cos((float)i / (float)segments * 7f);
+			float sin = (float)Math.sin(i * step) * radius;
+			float cos = (float)Math.cos(i * step) * radius;
 
-			float nextsin = (float)Math.sin((float)(i + 1) / (float)segments * 7f);
-			float nextcos = (float)Math.cos((float)(i + 1) / (float)segments * 7f);
+			float nextsin = (float)Math.sin((i + 1) * step) * radius;
+			float nextcos = (float)Math.cos((i + 1) * step) * radius;
 
-			lineRenderer.line(startX + sin * radius, startY + cos * radius, startZ, startX + nextsin * radius, startY + nextcos * radius, startZ);
+			lineRenderer.line(startX + sin, startY + cos, startZ, startX + nextsin, startY + nextcos, startZ);
 		}
 	}
 
