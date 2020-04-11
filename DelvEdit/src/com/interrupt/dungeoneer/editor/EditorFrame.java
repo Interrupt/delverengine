@@ -2578,7 +2578,7 @@ public class EditorFrame implements ApplicationListener {
 		}
 	}
 
-	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
+	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
 		float tau = (float)Math.PI * 2;
@@ -2596,7 +2596,7 @@ public class EditorFrame implements ApplicationListener {
 		}
 	}
 
-	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
+	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
 		float tau = (float)Math.PI * 2;
