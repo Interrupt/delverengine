@@ -1456,9 +1456,7 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		Gizmo gizmo = GizmoProvider.getGizmo(entity.getClass());
-		if (gizmo != null) {
-			gizmo.draw(entity);
-		}
+		gizmo.draw(entity);
 	}
 
 	private void GlPickEntity() {
