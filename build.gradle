@@ -16,6 +16,7 @@ allprojects {
         gdxVersion = '1.9.9'
         roboVMVersion = '2.1.0'
         kryoVersion = '2.23.0'
+        reflectionsVersion = '0.9.12'
     }
 
     repositories {
@@ -45,6 +46,7 @@ project(":DelvEdit") {
         compile project(":Dungeoneer")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "org.reflections:reflections:$reflectionsVersion"
     }
 }
 

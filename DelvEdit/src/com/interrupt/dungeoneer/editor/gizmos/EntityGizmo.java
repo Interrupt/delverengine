@@ -6,6 +6,7 @@ import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.ui.Handles;
 import com.interrupt.dungeoneer.entities.Entity;
 
+@GizmoFor(target = Entity.class)
 public class EntityGizmo implements Gizmo {
     @Override
     public void draw(Entity entity) {

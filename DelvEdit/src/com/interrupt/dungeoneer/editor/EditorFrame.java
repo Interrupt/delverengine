@@ -1423,7 +1423,6 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		Gdx.gl.glDisable(GL20.GL_BLEND);
-		//renderCollisionBoxes();
 		renderTriggerLines();
 
 		if (showGizmos) {
@@ -1434,31 +1433,31 @@ public class EditorFrame implements ApplicationListener {
 		}
 	}
 
+	/** Draw Gizmos for the picked Entity and selected Entities. */
 	private void drawPickedGizmos() {
-		if (pickedEntity != null) {
-			Gizmo gizmo = GizmoProvider.getGizmo(pickedEntity.getClass());
-
-			if (gizmo != null) {
-				gizmo.draw(pickedEntity);
-			}
-		}
+		drawGizmo(pickedEntity);
 
 		for (Entity selected : additionalSelected) {
-			Gizmo gizmo = GizmoProvider.getGizmo(selected.getClass());
-
-			if (gizmo != null) {
-				gizmo.draw(selected);
-			}
+			drawGizmo(selected);
 		}
 	}
 
+	/** Draw Gizmos for all Entities in the level. */
 	private void drawAllGizmos() {
 		for (Entity entity : level.entities) {
-			Gizmo gizmo = GizmoProvider.getGizmo(entity.getClass());
+			drawGizmo(entity);
+		}
+	}
 
-			if (gizmo != null) {
-				gizmo.draw(entity);
-			}
+	/** Draw Gizmo for the given entity. */
+	private void drawGizmo(Entity entity) {
+		if (entity == null) {
+			return;
+		}
+
+		Gizmo gizmo = GizmoProvider.getGizmo(entity.getClass());
+		if (gizmo != null) {
+			gizmo.draw(entity);
 		}
 	}
 

@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.editor.ui.Handles;
 import com.interrupt.dungeoneer.entities.AmbientSound;
 import com.interrupt.dungeoneer.entities.Entity;
 
+@GizmoFor(target = AmbientSound.class)
 public class AmbientSoundGizmo extends EntityGizmo {
     @Override
     public void draw(Entity entity) {

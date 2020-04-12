@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.editor.ui.Handles;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Light;
 
+@GizmoFor(target = Light.class)
 public class LightGizmo extends EntityGizmo {
     @Override
     public void draw(Entity entity) {

@@ -1,24 +1,30 @@
 package com.interrupt.dungeoneer.editor.gizmos;
 
-import com.interrupt.dungeoneer.entities.AmbientSound;
-import com.interrupt.dungeoneer.entities.DynamicLight;
-import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Light;
-import com.interrupt.dungeoneer.entities.areas.Area;
+import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class provides Gizmo objects for rendering Entity visualizations in editor.
+ */
 public class GizmoProvider {
     private static final Map<Class<?>, Class<?>> registeredClasses = new HashMap<Class<?>, Class<?>>();
     static {
-        registeredClasses.put(Entity.class, EntityGizmo.class);
-        registeredClasses.put(Light.class, LightGizmo.class);
-        registeredClasses.put(DynamicLight.class, DynamicLightGizmo.class);
-        registeredClasses.put(AmbientSound.class, AmbientSoundGizmo.class);
-        registeredClasses.put(Area.class, AreaGizmo.class);
+        // Find and register all available Gizmos.
+        Reflections ref = new Reflections("com.interrupt.dungeoneer");
+        for (Class<?> gizmoClass : ref.getTypesAnnotatedWith(GizmoFor.class)) {
+            GizmoFor annotation = gizmoClass.getAnnotation(GizmoFor.class);
+            Class<?> entityClass = annotation.target();
+            registeredClasses.put(entityClass, gizmoClass);
+        }
     }
 
+    /**
+     * Gets a Gizmo object for drawing Entity visualization.
+     * @param entityClass Class of Entity.
+     * @return A Gizmo object.
+     */
     public static Gizmo getGizmo(Class<?> entityClass) {
         try {
             Class<?> gizmoClass = registeredClasses.get(entityClass);
@@ -45,6 +51,6 @@ public class GizmoProvider {
         }
         catch (Exception ignored) {}
 
-        return null;
+        return new EntityGizmo();
     }
 }
