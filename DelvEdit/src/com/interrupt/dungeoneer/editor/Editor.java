@@ -86,6 +86,7 @@ public class Editor {
     public ActionListener flattenCeiling;
 
     public ActionListener toggleSimulation;
+    public ActionListener viewSelectedAction;
 
     public EditorOptions editorOptions;
 
@@ -499,6 +500,13 @@ public class Editor {
             }
         };
 
+        viewSelectedAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editorFrame.viewSelected();
+            }
+        };
+
         xDragMode = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) { editorFrame.setDragMode(EditorFrame.DragMode.X);
@@ -525,6 +533,7 @@ public class Editor {
 	    currentDirectory = null;
 	    currentFileName = null;
 	    setTitle("New Level");
+	    editorFrame.viewSelected();
     }
 
     public void openLevel(FileHandle fileHandle) {
@@ -589,6 +598,7 @@ public class Editor {
                 editorFrame.history = new EditorHistory();
                 editorOptions.recentlyOpenedFiles.removeValue(level.path(), false);
                 editorOptions.recentlyOpenedFiles.insert(0, level.path());
+                editorFrame.viewSelected();
             }
         }
         catch(Exception ex) {

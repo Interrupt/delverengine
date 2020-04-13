@@ -373,6 +373,8 @@ public class EditorUi {
                 .addItem(new MenuItem("Toggle Simulation", smallSkin, editor.toggleSimulation).setAccelerator(new MenuAccelerator(Keys.B, false, false)))
                 .addItem(new MenuItem("Toggle Gizmos", smallSkin, editor.toggleGizmosAction))
                 .addItem(new MenuItem("Toggle Lights", smallSkin, editor.toggleLightsAction).setAccelerator(new MenuAccelerator(Keys.L, false, false)))
+                .addSeparator()
+                .addItem(new MenuItem("View Selected", smallSkin, editor.viewSelectedAction).setAccelerator(new MenuAccelerator(Keys.SPACE, false, false)))
         );
 
         menuBar.addItem(

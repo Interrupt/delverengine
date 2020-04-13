@@ -3938,6 +3938,37 @@ public class EditorFrame implements ApplicationListener {
         }
     }
 
+    public void viewSelected() {
+		float minDistance = 3.0f;
+
+		// Default to framing up level grid.
+		Vector3 selectedPosition = new Vector3(level.width / 2f, level.height / 2f, 0);
+		float offsetDistance = selectedPosition.len();
+
+		if (pickedEntity != null) {
+			offsetDistance = getEntityBoundingSphereRadius(pickedEntity) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
+			offsetDistance = Math.max(minDistance, offsetDistance);
+			selectedPosition.set(pickedEntity.x, pickedEntity.y, pickedEntity.z);
+		}
+
+		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(offsetDistance);
+		Vector3 finalPosition = new Vector3(selectedPosition).sub(cameraOffset);
+		camX = finalPosition.x;
+		camY = finalPosition.y;
+		camZ = finalPosition.z;
+	}
+
+	private float getEntityBoundingSphereRadius(Entity entity) {
+		if (entity instanceof Light) {
+			return ((Light)entity).range;
+		}
+		else if (entity instanceof DynamicLight) {
+			return ((DynamicLight)entity).range;
+		}
+
+		return new Vector3(entity.collision.x, entity.collision.z / 2, entity.collision.y).len();
+	}
+
     public void createNewLevel(int width, int height) {
         level = new Level(width,height);
         refresh();
