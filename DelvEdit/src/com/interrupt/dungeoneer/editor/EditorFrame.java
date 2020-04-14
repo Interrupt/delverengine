@@ -3945,10 +3945,22 @@ public class EditorFrame implements ApplicationListener {
 		Vector3 selectedPosition = new Vector3(level.width / 2f, level.height / 2f, 0);
 		float offsetDistance = selectedPosition.len();
 
+		// Focus on picked entity
 		if (pickedEntity != null) {
 			offsetDistance = getEntityBoundingSphereRadius(pickedEntity) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
 			offsetDistance = Math.max(minDistance, offsetDistance);
 			selectedPosition.set(pickedEntity.x, pickedEntity.y, pickedEntity.z);
+		}
+		// Focus on tile selection
+		else if (selected) {
+			float ceiling = selectionHeights.x;
+			float floor = selectionHeights.y;
+			float tileHeight = ceiling - floor;
+
+			Vector3 size = new Vector3(selectionWidth, tileHeight, selectionHeight);
+			offsetDistance = size.len();
+
+			selectedPosition.set(selectionX + (selectionWidth / 2f), selectionY + (selectionWidth / 2f), floor + tileHeight / 2f);
 		}
 
 		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(offsetDistance);
