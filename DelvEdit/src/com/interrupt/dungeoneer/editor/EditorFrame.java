@@ -231,6 +231,8 @@ public class EditorFrame implements ApplicationListener {
     float camY = 8;
     float camZ = 6.5f;
 
+    float orbitDistance = 4.0f;
+
     float rotX = 3.14159f;
     float rotY = 1.4f;
     double rota = 0;
@@ -2110,6 +2112,25 @@ public class EditorFrame implements ApplicationListener {
 			player.ya += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
 		}
 
+		if (Gdx.input.isKeyPressed(Keys.ALT_LEFT) && (editorInput.isButtonPressed(Buttons.RIGHT) || turnLeft || turnRight || turnUp || turnDown)) {
+			// Calculate the next camera direction vector;
+			Vector3 cameraNewDirection = new Vector3(0, 0, 1);
+			cameraNewDirection.rotate(rotY * 57.2957795f, 1f, 0, 0);
+			cameraNewDirection.rotate((float)(rotX + 3.14) * 57.2957795f, 0, 1f, 0);
+			cameraNewDirection.nor();
+
+			// Calculate the orbit pivot.
+			Vector3 pivotPosition = new Vector3(camera.direction).scl(orbitDistance).add(camera.position);
+
+			// Calculate new camera position.
+			cameraNewDirection.scl(-orbitDistance);
+			cameraNewDirection.add(pivotPosition);
+
+			camX = cameraNewDirection.x;
+			camY = cameraNewDirection.z;
+			camZ = cameraNewDirection.y;
+		}
+
 		// Tile editing mode?
 		if(pickedEntity == null) {
 			if(Gdx.input.isKeyPressed(Keys.NUM_1)) {
@@ -3943,12 +3964,12 @@ public class EditorFrame implements ApplicationListener {
 
 		// Default to framing up level grid.
 		Vector3 selectedPosition = new Vector3(level.width / 2f, level.height / 2f, 0);
-		float offsetDistance = selectedPosition.len();
+		orbitDistance = selectedPosition.len();
 
 		// Focus on picked entity
 		if (pickedEntity != null) {
-			offsetDistance = getEntityBoundingSphereRadius(pickedEntity) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
-			offsetDistance = Math.max(minDistance, offsetDistance);
+			orbitDistance = getEntityBoundingSphereRadius(pickedEntity) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
+			orbitDistance = Math.max(minDistance, orbitDistance);
 			selectedPosition.set(pickedEntity.x, pickedEntity.y, pickedEntity.z);
 		}
 		// Focus on tile selection
@@ -3958,12 +3979,12 @@ public class EditorFrame implements ApplicationListener {
 			float tileHeight = ceiling - floor;
 
 			Vector3 size = new Vector3(selectionWidth, tileHeight, selectionHeight);
-			offsetDistance = size.len();
+			orbitDistance = size.len();
 
 			selectedPosition.set(selectionX + (selectionWidth / 2f), selectionY + (selectionWidth / 2f), floor + tileHeight / 2f);
 		}
 
-		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(offsetDistance);
+		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(orbitDistance);
 		Vector3 finalPosition = new Vector3(selectedPosition).sub(cameraOffset);
 		camX = finalPosition.x;
 		camY = finalPosition.y;
