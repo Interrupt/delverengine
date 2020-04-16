@@ -2080,10 +2080,10 @@ public class EditorFrame implements ApplicationListener {
 			xm = 1f;
 		}
 
-		if(editorInput.isKeyPressed(Keys.W)) {
+		if(editorInput.isKeyPressed(Keys.W) || editorInput.scrollAmount > 0) {
 			zm = -1f;
 		}
-		if(editorInput.isKeyPressed(Keys.S)) {
+		if(editorInput.isKeyPressed(Keys.S) || editorInput.scrollAmount < 0) {
 			zm = 1f;
 		}
 
@@ -2098,6 +2098,8 @@ public class EditorFrame implements ApplicationListener {
 			xm *= 2.0f;
 			zm *= 2.0f;
 		}
+
+		orbitDistance += zm * walkSpeed;
 
 		camZ += (zm * Math.sin(rotY)) * walkSpeed;
 		zm *= Math.cos(rotY);
@@ -2120,6 +2122,9 @@ public class EditorFrame implements ApplicationListener {
 			cameraNewDirection.nor();
 
 			// Calculate the orbit pivot.
+			if (orbitDistance < 0) {
+				orbitDistance = 3.0f;
+			}
 			Vector3 pivotPosition = new Vector3(camera.direction).scl(orbitDistance).add(camera.position);
 
 			// Calculate new camera position.

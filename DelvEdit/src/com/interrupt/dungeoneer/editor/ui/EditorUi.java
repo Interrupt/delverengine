@@ -6,10 +6,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -502,6 +499,32 @@ public class EditorUi {
                 propertiesCell = sidebarTable.add(entityPropertiesPane);
 
                 stage.addActor(sidebarTable);
+
+                // Only listen to events when mouse is hovering over ScrollPane.
+                entityPropertiesPane.addListener(new EventListener() {
+                    @Override
+                    public boolean handle(Event event) {
+                        if(event instanceof InputEvent) {
+                            if (((InputEvent) event).getType() == InputEvent.Type.enter) {
+                                event.getStage().setScrollFocus(entityPropertiesPane);
+                            }
+                        }
+                        return false;
+                    }
+                });
+
+                // Stop listening to events when mouse leaves ScrollPane.
+                entityPropertiesPane.addListener(new EventListener() {
+                    @Override
+                    public boolean handle(Event event) {
+                        if(event instanceof InputEvent) {
+                            if (((InputEvent) event).getType() == InputEvent.Type.exit) {
+                                event.getStage().setScrollFocus(null);
+                            }
+                        }
+                        return false;
+                    }
+                });
             }
             else {
                 entityPropertiesPane.setWidget(propertiesMenu);
@@ -513,7 +536,6 @@ public class EditorUi {
             resize(stage.getWidth(), stage.getHeight());
 
             sidebarTable.setVisible(true);
-            stage.setScrollFocus(entityPropertiesPane);
         }
         else if(entityPropertiesPane != null) {
             sidebarTable.setVisible(false);

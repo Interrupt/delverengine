@@ -20,6 +20,8 @@ public class EditorInput implements InputProcessor {
 
     public boolean ignoreRightClick = false;
 
+    public float scrollAmount = 0f;
+
     EditorFrame editor;
     public EditorInput(EditorFrame editor) {
         this.editor = editor;
@@ -126,7 +128,11 @@ public class EditorInput implements InputProcessor {
     }
 
     @Override
-    public boolean scrolled(int i) { return false; }
+    public boolean scrolled(int amount) {
+        scrollAmount = amount;
+
+        return false;
+    }
 
     public boolean isKeyPressed(int i) {
         return keysDown[i];
@@ -138,5 +144,6 @@ public class EditorInput implements InputProcessor {
 
     public void tick() {
         buttonEvents.clear();
+        scrollAmount = 0f;
     }
 }
