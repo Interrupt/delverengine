@@ -205,6 +205,7 @@ public class EditorFrame implements ApplicationListener {
 
 	private GameInput input;
     public EditorInput editorInput;
+    public EditorCameraInputProcessor cameraInputProcessor;
     private InputMultiplexer inputMultiplexer;
 
 	private int curWidth;
@@ -227,14 +228,14 @@ public class EditorFrame implements ApplicationListener {
 
     Level level = null;
 
-    float camX = 7.5f;
-    float camY = 8;
-    float camZ = 6.5f;
+    //float camX = 7.5f;
+    //float camY = 8;
+    //float camZ = 6.5f;
 
     float orbitDistance = 4.0f;
 
-    float rotX = 3.14159f;
-    float rotY = 1.4f;
+    //float rotX = 3.14159f;
+    //float rotY = 1.4f;
     double rota = 0;
 	double rotya = 0;
 	float rotYClamp = 1.571f;
@@ -450,12 +451,14 @@ public class EditorFrame implements ApplicationListener {
 				Gdx.input.setInputProcessor( inputMultiplexer );
 				input.clear();
 
+				/*
 				camX = Game.instance.player.x;
 				camZ = Game.instance.player.z + Game.instance.player.eyeHeight;
 				camY = Game.instance.player.y;
 
 				rotX = Game.instance.player.rot + 3.14159265f;
 				rotY = -Game.instance.player.yrot;
+				*/
 
 				Audio.stopLoopingSounds();
 			}
@@ -519,11 +522,14 @@ public class EditorFrame implements ApplicationListener {
 		GlRenderer.fogEnd = level.fogEnd;
 		GlRenderer.viewDistance = level.viewDistance;
 
+		/*
 		camera.direction.set(0, 0, 1);
 		camera.up.set(0, 1, 0);
 		camera.rotate(rotY * 57.2957795f, 1f, 0, 0);
 		camera.rotate((float)(rotX + 3.14) * 57.2957795f, 0, 1f, 0);
 		camera.update();
+		*/
+		cameraInputProcessor.tick();
 
 		renderer.updateDynamicLights(camera);
 		renderer.updateShaderAttributes();
@@ -2032,6 +2038,8 @@ public class EditorFrame implements ApplicationListener {
 		}
 		if(pickedEntity == null) movingEntity = false;
 
+		// CAMERA
+		/*
 		boolean turnLeft = (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
 		boolean turnRight = (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
 		boolean turnUp = (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
@@ -2130,6 +2138,7 @@ public class EditorFrame implements ApplicationListener {
 			camY = cameraNewDirection.z;
 			camZ = cameraNewDirection.y;
 		}
+		*/
 
 		// Tile editing mode?
 		if(pickedEntity == null) {
@@ -2161,9 +2170,12 @@ public class EditorFrame implements ApplicationListener {
 			level.editorTick(player, 0);
 		}
 
+		// CAMERA
+		/*
 		camera.position.x = camX;
 		camera.position.y = camZ;
 		camera.position.z = camY;
+		*/
 
 		if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
 			readLeftClick = true;
@@ -2181,6 +2193,7 @@ public class EditorFrame implements ApplicationListener {
 
 		input.tick();
         editorInput.tick();
+        //cameraInputProcessor.tick();
 
 		CachePools.clearOnTick();
 	}
@@ -2277,8 +2290,8 @@ public class EditorFrame implements ApplicationListener {
 		Game.instance.player.x = camera.position.x;
 		Game.instance.player.y = camera.position.z;
 		Game.instance.player.z = camera.position.y - Game.instance.player.eyeHeight;
-		Game.instance.player.rot = rotX - 3.14159265f;
-		Game.instance.player.yrot = -rotY;
+		//Game.instance.player.rot = rotX - 3.14159265f;
+		//Game.instance.player.yrot = -rotY;
 		Game.isDebugMode = true;
 	}
 
@@ -2450,10 +2463,12 @@ public class EditorFrame implements ApplicationListener {
         editorUi.initUi();
 
         editorInput = new EditorInput(this);
+        cameraInputProcessor = new EditorCameraInputProcessor(camera);
         inputMultiplexer = new InputMultiplexer();
 
         inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(editorInput);
+        //inputMultiplexer.addProcessor(editorInput);
+        inputMultiplexer.addProcessor(cameraInputProcessor);
         inputMultiplexer.addProcessor(input);
 
         setInputProcessor();
@@ -3944,11 +3959,13 @@ public class EditorFrame implements ApplicationListener {
     public void toggleSimulation() {
         if(player == null) {
             player = new Player();
+            /*
             player.x = camX - 0.5f;
             player.y = camY - 0.5f;
             player.z = camZ;
             player.rot = rotX - 3.14159265f;
             player.yrot = rotY;
+            */
 
             for(Entity e : level.entities) { e.editorStartPreview(level); }
         } else {
@@ -3986,9 +4003,12 @@ public class EditorFrame implements ApplicationListener {
 
 		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(orbitDistance);
 		Vector3 finalPosition = new Vector3(selectedPosition).sub(cameraOffset);
+
+		/*
 		camX = finalPosition.x;
 		camY = finalPosition.y;
 		camZ = finalPosition.z;
+		*/
 	}
 
 	private float getEntityBoundingSphereRadius(Entity entity) {
@@ -4006,9 +4026,11 @@ public class EditorFrame implements ApplicationListener {
         level = new Level(width,height);
         refresh();
 
+        /*
         camX = level.width / 2;
         camZ = 4.5f;
         camY = level.height / 2;
+        */
     }
 
     public void resizeLevel(int levelWidth, int levelHeight) {

@@ -567,9 +567,11 @@ public class Editor {
                     editorFrame.level = openLevel;
                     editorFrame.refresh();
 
+                    /*
                     editorFrame.camX = openLevel.width / 2f;
                     editorFrame.camZ = 4.5f;
                     editorFrame.camY = openLevel.height / 2f;
+                    */
                 }
                 else if(file.endsWith(".bin")) {
                     Level openLevel = KryoSerializer.loadLevel(level);
@@ -579,9 +581,11 @@ public class Editor {
                     editorFrame.level = openLevel;
                     editorFrame.refresh();
 
+                    /*
                     editorFrame.camX = openLevel.width / 2f;
                     editorFrame.camZ = 4.5f;
                     editorFrame.camY = openLevel.height / 2f;
+                    */
                 }
                 else {
                     Level openLevel = Game.fromJson(Level.class, level);
@@ -590,9 +594,11 @@ public class Editor {
                     editorFrame.level = openLevel;
                     editorFrame.refresh();
 
+                    /*
                     editorFrame.camX = openLevel.width / 2f;
                     editorFrame.camZ = 4.5f;
                     editorFrame.camY = openLevel.height / 2f;
+                    */
                 }
 
                 editorFrame.history = new EditorHistory();

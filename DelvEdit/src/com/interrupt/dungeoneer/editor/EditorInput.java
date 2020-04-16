@@ -99,6 +99,7 @@ public class EditorInput implements InputProcessor {
     @Override
     public boolean touchDragged(int x, int y, int pointer) {
 
+        /*
         if(buttonsDown[Input.Buttons.RIGHT]) {
             ignoreRightClick = true;
 
@@ -116,6 +117,7 @@ public class EditorInput implements InputProcessor {
         }
 
         lastMouseLocation.set(x, y);
+        */
 
         return false;
     }
