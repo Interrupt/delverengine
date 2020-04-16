@@ -239,6 +239,9 @@ public class EditorFrame implements ApplicationListener {
 	double rotya = 0;
 	float rotYClamp = 1.571f;
 
+	float scrollSpeed = 0.4f;
+	float za = 0f;
+
 	double walkSpeed = 0.15;
 	double rotSpeed = 0.009;
 	double maxRot = 0.8;
@@ -2080,12 +2083,23 @@ public class EditorFrame implements ApplicationListener {
 			xm = 1f;
 		}
 
-		if(editorInput.isKeyPressed(Keys.W) || editorInput.scrollAmount > 0) {
+		if(editorInput.isKeyPressed(Keys.W) || editorInput.scrollAmount < 0) {
 			zm = -1f;
 		}
-		if(editorInput.isKeyPressed(Keys.S) || editorInput.scrollAmount < 0) {
+		if(editorInput.isKeyPressed(Keys.S) || editorInput.scrollAmount > 0) {
 			zm = 1f;
 		}
+
+		if (editorInput.scrollAmount < 0) {
+			za -= scrollSpeed;
+		}
+		else if (editorInput.scrollAmount > 0) {
+			za += scrollSpeed;
+		}
+
+		zm += za;
+
+		za *= 0.8f;
 
 		if(editorInput.isKeyPressed(Keys.Q) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
 			camZ -= 0.1f;
