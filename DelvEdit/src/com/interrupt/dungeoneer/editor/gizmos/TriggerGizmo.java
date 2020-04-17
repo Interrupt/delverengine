@@ -1,7 +1,7 @@
 package com.interrupt.dungeoneer.editor.gizmos;
 
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.editor.Selectable;
+import com.interrupt.dungeoneer.editor.SelectionState;
 import com.interrupt.dungeoneer.editor.ui.Handles;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
@@ -9,8 +9,8 @@ import com.interrupt.dungeoneer.entities.triggers.Trigger;
 @GizmoFor(target = Trigger.class)
 public class TriggerGizmo extends EntityGizmo {
     @Override
-    public void draw(Entity entity, Selectable selectable) {
-        super.draw(entity, selectable);
+    public void draw(Entity entity, SelectionState selectionState) {
+        super.draw(entity, selectionState);
 
         Trigger trigger = (Trigger) entity;
         Vector3 boundingBoxCenter = new Vector3(trigger.x, trigger.z - 0.5f + (trigger.collision.z / 2), trigger.y);

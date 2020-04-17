@@ -1440,38 +1440,38 @@ public class EditorFrame implements ApplicationListener {
 
 	/** Draw Gizmos for the picked Entity and selected Entities. */
 	private void drawPickedGizmos() {
-		drawGizmo(pickedEntity, Selectable.PICKED);
+		drawGizmo(pickedEntity, SelectionState.PICKED);
 
 		for (Entity selected : additionalSelected) {
-			drawGizmo(selected, Selectable.SELECTED);
+			drawGizmo(selected, SelectionState.SELECTED);
 		}
 	}
 
 	/** Draw Gizmos for all Entities in the level. */
 	private void drawAllGizmos() {
 		for (Entity entity : level.entities) {
-			Selectable selectable = Selectable.NONE;
+			SelectionState selectionState = SelectionState.NONE;
 
 			if (entity == pickedEntity) {
-				selectable = Selectable.PICKED;
+				selectionState = SelectionState.PICKED;
 			}
 
 			if (additionalSelected != null && additionalSelected.contains(entity, true)) {
-				selectable = Selectable.SELECTED;
+				selectionState = SelectionState.SELECTED;
 			}
 
-			drawGizmo(entity, selectable);
+			drawGizmo(entity, selectionState);
 		}
 	}
 
 	/** Draw Gizmo for the given entity. */
-	private void drawGizmo(Entity entity, Selectable selectable) {
+	private void drawGizmo(Entity entity, SelectionState selectionState) {
 		if (entity == null) {
 			return;
 		}
 
 		Gizmo gizmo = GizmoProvider.getGizmo(entity.getClass());
-		gizmo.draw(entity, selectable);
+		gizmo.draw(entity, selectionState);
 	}
 
 	private void GlPickEntity() {
