@@ -56,6 +56,19 @@ public class PropertiesMenu extends Table {
         classes.removeAll(nonCommon, true);
 
         try {
+            // Show entity name as pane header.
+            String[] nameParts = entity.getClass().getName().split("\\.");
+
+            String entityName = "Unknown";
+            if (nameParts.length > 0) {
+                entityName = nameParts[nameParts.length - 1];
+            }
+
+            add(new Label(entityName, EditorUi.mediumSkin))
+                    .align(Align.left)
+                    .padLeft(-12f);
+            row();
+
             // gather all of the fields into groups
             for (Class oClass : classes) {
                 Field[] fields = oClass.getDeclaredFields();
