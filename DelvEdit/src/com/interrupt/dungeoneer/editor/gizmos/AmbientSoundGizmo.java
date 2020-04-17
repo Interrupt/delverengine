@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.editor.gizmos;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.EditorColors;
+import com.interrupt.dungeoneer.editor.Selectable;
 import com.interrupt.dungeoneer.editor.ui.Handles;
 import com.interrupt.dungeoneer.entities.AmbientSound;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -10,8 +11,8 @@ import com.interrupt.dungeoneer.entities.Entity;
 @GizmoFor(target = AmbientSound.class)
 public class AmbientSoundGizmo extends EntityGizmo {
     @Override
-    public void draw(Entity entity) {
-        super.draw(entity);
+    public void draw(Entity entity, Selectable selectable) {
+        super.draw(entity,selectable);
 
         AmbientSound sound = (AmbientSound)entity;
         Handles.setColor(EditorColors.AUDIO_GIZMO);
