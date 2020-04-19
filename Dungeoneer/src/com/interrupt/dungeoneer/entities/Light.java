@@ -15,6 +15,9 @@ public class Light extends Entity {
 	
 	@EditorProperty
 	public float range = 3.2f;
+
+	@EditorProperty
+	public float intensity = 1.0f;
 	
 	public boolean lightFullHeight = false;
 	

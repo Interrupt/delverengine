@@ -2016,10 +2016,14 @@ public class Level {
 				Light t = (Light)e;
 				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
-						if(t.invertLight)
-							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-						else
-							c.add(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+						if(t.invertLight) {
+							//c.sub(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+							c.sub(attenuateLightColor(pos, t));
+						}
+						else {
+							//c.add(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+							c.add(attenuateLightColor(pos, t));
+						}
 					}
 				}
 			}
@@ -2035,10 +2039,14 @@ public class Level {
 				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
 					
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
-						if(t.invertLight)
-							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-						else
-							c.add(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+						if(t.invertLight) {
+							//c.sub(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+							c.sub(attenuateLightColor(pos, t));
+						}
+						else {
+							//c.add(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+							c.sub(attenuateLightColor(pos, t));
+						}
 					}
 				}
 			}
@@ -2054,10 +2062,14 @@ public class Level {
 				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
 					
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
-						if(t.invertLight)
-							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-						else
-							c.add(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+						if(t.invertLight) {
+							//c.sub(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+							c.sub(attenuateLightColor(pos, t));
+						}
+						else {
+							//c.add(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
+							c.add(attenuateLightColor(pos, t));
+						}
 					}
 				}
 			}
@@ -2180,7 +2192,9 @@ public class Level {
 
 							//l.cacheLightColor(x, y, z, lightColor);
 						} else {
-							Color lightColor = attenuateLightColor(x, y, z, l.x, l.y, l.z, l.range, l.getColor()).mul(shadowMul);
+							//Color lightColor = attenuateLightColor(x, y, z, l.x, l.y, l.z, l.range, l.getColor()).mul(shadowMul);
+							Color lightColor = attenuateLightColor(new Vector3(x, y, z), l);
+
 							if (l.invertLight)
 								c.sub(lightColor);
 							else
@@ -2254,6 +2268,30 @@ public class Level {
 			c.set(b * lcolor.r, b * lcolor.g, b * lcolor.b, b * lcolor.a);
 		}
 		
+		return c;
+	}
+
+	private static final Vector3 workVector = new Vector3();
+	public Color attenuateLightColor(Vector3 position, Light light) {
+		Color c = t_attenuateLightCalcColor.set(0, 0, 0, 0);
+		float distance = workVector.set(light.x, light.y, light.z).sub(position).len();
+
+		if(distance < light.range)
+		{
+			short lum = (short)(255 - (distance / light.range) * 255);
+			float lmod = lum / 255.0f;
+			if(lmod > 1) lmod = 1;
+
+			// light falloff (n^2)
+			lum *= lmod;
+			lum *= 2f * light.intensity;	// brighten things up
+
+			if(lum > 255) lum = 255;
+
+			float b = lum / 255.0f;
+			c.set(light.lightColor).mul(b);
+		}
+
 		return c;
 	}
 
