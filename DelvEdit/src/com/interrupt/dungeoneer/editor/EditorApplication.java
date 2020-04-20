@@ -3,6 +3,8 @@ package com.interrupt.dungeoneer.editor;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.*;
@@ -69,6 +71,7 @@ import com.noise.PerlinNoise;
 import com.badlogic.gdx.math.MathUtils;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
@@ -349,11 +352,33 @@ public class EditorApplication implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
-	public EditorApplication(JFrame frame) {
-		this.frame = frame;
+	public EditorApplication() {
+		frame = new JFrame("DelvEdit");
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Editor.dispose();
+			}
+		});
+
+		Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
+
+		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.title = "New Level - DelvEdit";
+		config.fullscreen = false;
+		config.width = defaultMode.width;
+		config.height = defaultMode.height;
+		config.vSyncEnabled = true;
+		config.foregroundFPS = 120;
+		config.backgroundFPS = 30;
+		config.stencil = 8;
+
+		config.addIcon("icon-128.png", Files.FileType.Internal); // 128x128 icon (mac OS)
+		config.addIcon("icon-32.png", Files.FileType.Internal);  // 32x32 icon (Windows + Linux)
+		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
+
+		new LwjglApplication(this, config);
 	}
 
 	public void init(){
