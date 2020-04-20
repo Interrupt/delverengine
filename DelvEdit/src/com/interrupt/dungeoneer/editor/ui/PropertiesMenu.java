@@ -378,7 +378,10 @@ public class PropertiesMenu extends Table {
                                     Gdx.input.setCursorCatched(false);
                                 }
 
-                                Gdx.input.setCursorPosition((int) firstX, Gdx.graphics.getHeight() - 1 - (int) firstY);
+                                Gdx.input.setCursorPosition((int) firstX, (int) firstY);
+                                if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
+                                    Gdx.input.setCursorPosition((int) firstX, Gdx.graphics.getHeight() - 1 - (int) firstY);
+                                }
                             }
 
                             @Override
