@@ -1,28 +1,23 @@
 package com.interrupt.dungeoneer.editor.ui;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.editor.EditorArt;
-import com.interrupt.dungeoneer.editor.EditorFrame;
+import com.interrupt.dungeoneer.editor.EditorApplication;
 import com.interrupt.dungeoneer.entities.*;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
-import org.lwjgl.LWJGLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -31,16 +26,16 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 
 public class PropertiesMenu extends Table {
-    private final EditorFrame editorFrame;
+    private final EditorApplication editorApplication;
     public ArrayMap<String, Array<Field>> arrayMap = new ArrayMap<String, Array<Field>>();
     private HashMap<Field, Actor> fieldMap = new HashMap<Field, Actor>();
 
     private final Array<Entity> selectedEntities;
     private final Array<Class> classes;
 
-    public PropertiesMenu(Skin skin, final EditorFrame editorFrame, final Array<Entity> entities) {
+    public PropertiesMenu(Skin skin, final EditorApplication editorApplication, final Array<Entity> entities) {
         super(skin);
-        this.editorFrame = editorFrame;
+        this.editorApplication = editorApplication;
         this.selectedEntities = entities;
         final Entity entity = entities.get(0);
 
@@ -149,7 +144,7 @@ public class PropertiesMenu extends Table {
                                     }
                                 }.setFileNameEnabled(false);
 
-                                editorFrame.editorUi.getStage().addActor(picker);
+                                editorApplication.ui.getStage().addActor(picker);
                                 picker.show(getStage());
                             }
                         });
@@ -219,11 +214,11 @@ public class PropertiesMenu extends Table {
                                             applyChanges(field, new Material(atlas, (byte)v));
                                         }
 
-                                        editorFrame.editorUi.showEntityPropertiesMenu(editorFrame, false);
+                                        editorApplication.ui.showEntityPropertiesMenu(editorApplication, false);
                                     }
                                 };
-                                editorFrame.editorUi.getStage().addActor(picker);
-                                picker.show(editorFrame.editorUi.getStage());
+                                editorApplication.ui.getStage().addActor(picker);
+                                picker.show(editorApplication.ui.getStage());
                             }
                         });
 
@@ -281,11 +276,11 @@ public class PropertiesMenu extends Table {
                                         }
 
                                         applyChanges(field, value.toString());
-                                        editorFrame.editorUi.showEntityPropertiesMenu(editorFrame, false);
+                                        editorApplication.ui.showEntityPropertiesMenu(editorApplication, false);
                                     }
                                };
-                               editorFrame.editorUi.getStage().addActor(picker);
-                               picker.show(editorFrame.editorUi.getStage());
+                               editorApplication.ui.getStage().addActor(picker);
+                               picker.show(editorApplication.ui.getStage());
                            }
                        });
 
@@ -568,7 +563,7 @@ public class PropertiesMenu extends Table {
         return new ChangeListener() {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 applyChanges(currentField);
-                editorFrame.editorUi.showEntityPropertiesMenu(editorFrame, false);
+                editorApplication.ui.showEntityPropertiesMenu(editorApplication, false);
             }
         };
     }
@@ -706,7 +701,7 @@ public class PropertiesMenu extends Table {
                 }
             }
 
-            editorFrame.refreshLights();
+            editorApplication.refreshLights();
 
             for(Entity entity : selectedEntities) {
                 if (entity.drawable != null) entity.drawable.refresh();

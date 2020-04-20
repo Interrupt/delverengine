@@ -1,11 +1,9 @@
 package com.interrupt.dungeoneer.editor;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -31,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.*;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
@@ -73,7 +72,8 @@ import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
-public class EditorFrame implements ApplicationListener {
+public class EditorApplication implements ApplicationListener {
+	public JFrame frame;
 
     private EditorClipboard clipboard = null;
 
@@ -227,6 +227,9 @@ public class EditorFrame implements ApplicationListener {
 
     Level level = null;
 
+	public String currentFileName;
+	public String currentDirectory;
+
     float camX = 7.5f;
     float camY = 8;
     float camZ = 6.5f;
@@ -269,12 +272,10 @@ public class EditorFrame implements ApplicationListener {
 
     public float time = 0;
 
-    public String curFileName = "";
-
 	protected DecalBatch spriteBatch;
     protected DecalBatch pointBatch;
 
-    public EditorUi editorUi = null;
+    public EditorUi ui = null;
 
     Image wallPickerButton = null;
     Image bottomWallPickerButton = null;
@@ -348,15 +349,11 @@ public class EditorFrame implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
-	public JFrame frame;
-	public Editor editor;
-
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public EditorFrame(JFrame frame, Editor editor) {
+	public EditorApplication(JFrame frame) {
 		this.frame = frame;
-		this.editor = editor;
 	}
 
 	public void init(){
@@ -472,15 +469,15 @@ public class EditorFrame implements ApplicationListener {
 		renderer.clearLights();
 		renderer.clearDecals();
 
-		if(!editorUi.isShowingMenuOrModal() && pickedControlPoint == null && hoveredEntity == null && pickedEntity == null) {
+		if(!ui.isShowingMenuOrModal() && pickedControlPoint == null && hoveredEntity == null && pickedEntity == null) {
 			updatePickedSurface();
 		}
 
-		if((!Gdx.input.isButtonPressed(Buttons.LEFT) || editorUi.isShowingMenuOrModal()) && pickedControlPoint == null && hoveredEntity == null && pickedEntity == null) {
+		if((!Gdx.input.isButtonPressed(Buttons.LEFT) || ui.isShowingMenuOrModal()) && pickedControlPoint == null && hoveredEntity == null && pickedEntity == null) {
 			renderPickedSurface();
 		}
 
-        Stage stage = editorUi.getStage();
+        Stage stage = ui.getStage();
         if(stage != null) {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
@@ -666,7 +663,7 @@ public class EditorFrame implements ApplicationListener {
 
 
 		boolean shouldDrawBox = !pickedSurface.isPicked;
-		if(pickedSurface.isPicked && editorInput.isButtonPressed(Input.Buttons.LEFT) && !editorUi.isShowingMenuOrModal()) {
+		if(pickedSurface.isPicked && editorInput.isButtonPressed(Input.Buttons.LEFT) && !ui.isShowingMenuOrModal()) {
 			shouldDrawBox = true;
 		}
 
@@ -940,7 +937,7 @@ public class EditorFrame implements ApplicationListener {
 			Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
 			if(!movingControlPoint) pickedControlPoint = null;
 			for(ControlPoint point : controlPoints) {
-				if(!editorUi.isShowingContextMenu()) {
+				if(!ui.isShowingContextMenu()) {
 					if (pickedControlPoint == null && Intersector.intersectRaySphere(ray, point.point, 0.12f, intersection)) {
 						pickedControlPoint = point;
 					}
@@ -1201,7 +1198,7 @@ public class EditorFrame implements ApplicationListener {
 
 						additionalSelected.clear();
 						additionalSelected.addAll(copies);
-                        editorUi.showEntityPropertiesMenu(this);
+                        ui.showEntityPropertiesMenu(this);
 					}
 
 					if(dragMode == DragMode.Y) {
@@ -1834,7 +1831,7 @@ public class EditorFrame implements ApplicationListener {
 	public void resize(int width, int height) {
 
 		if(gameApp != null) gameApp.resize(width, height);
-        if(editorUi != null) editorUi.resize(width, height);
+        if(ui != null) ui.resize(width, height);
 
 		Gdx.gl.glViewport(0, 0, width, height);
 
@@ -1898,6 +1895,7 @@ public class EditorFrame implements ApplicationListener {
 		gridMesh = genGrid(level.width,level.height);
 	}
 
+	/** Save level. */
 	public void save(String filename) {
 
 		level.preSaveCleanup();
@@ -1943,7 +1941,65 @@ public class EditorFrame implements ApplicationListener {
 		}
 	}
 
-    public boolean isSelected() {
+	/** Open level. */
+	public void open(FileHandle fileHandle) {
+		try {
+			currentDirectory = fileHandle.file().getParent() + "/";
+			currentFileName = fileHandle.name();
+
+			setTitle(currentFileName);
+
+			String file = currentFileName;
+			String dir = currentDirectory;
+
+			FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
+			if(levelFileHandle.exists()) {
+				currentFileName = levelFileHandle.path();
+				setTitle(currentFileName);
+
+				Level openLevel;
+
+				if(file.endsWith(".png")) {
+					String heightFile = dir + file.replace(".png", "-height.png");
+					if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+						heightFile = dir + file.replace(".png", "_height.png");
+						if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+							heightFile = null;
+						}
+					}
+
+					openLevel = new Level();
+					openLevel.loadForEditor(dir + file, heightFile);
+				}
+				else if(file.endsWith(".bin")) {
+					openLevel = KryoSerializer.loadLevel(levelFileHandle);
+					openLevel.init(Source.EDITOR);
+				}
+				else {
+					openLevel = Game.fromJson(Level.class, levelFileHandle);
+					openLevel.init(Source.EDITOR);
+				}
+
+				level = openLevel;
+				refresh();
+
+				camX = openLevel.width / 2f;
+				camZ = 4.5f;
+				camY = openLevel.height / 2f;
+
+				history = new EditorHistory();
+				Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
+				Editor.options.recentlyOpenedFiles.insert(0, levelFileHandle.path());
+
+				viewSelected();
+			}
+		}
+		catch(Exception ex) {
+			Gdx.app.error("DelvEdit", ex.getMessage());
+		}
+	}
+
+	public boolean isSelected() {
         return selected;
     }
 
@@ -1962,7 +2018,7 @@ public class EditorFrame implements ApplicationListener {
 				rightClickWasDown = false;
 		}
 
-		if(editorUi.isShowingMenuOrModal())
+		if(ui.isShowingMenuOrModal())
 			return;
 
 		// get picked entity
@@ -2254,8 +2310,8 @@ public class EditorFrame implements ApplicationListener {
             clearEntitySelection();
 		}
 		
-		if (editorUi.isShowingContextMenu()) {
-			editorUi.hideContextMenu();
+		if (ui.isShowingContextMenu()) {
+			ui.hideContextMenu();
 		}
 
         history.saveState(level);
@@ -2352,7 +2408,7 @@ public class EditorFrame implements ApplicationListener {
 
     private void setupHud(TextureRegion[] wallTextures) {
 
-        editorUi = new EditorUi(editor, this);
+        ui = new EditorUi();
 
         wallPickerButton = new Image(new TextureRegionDrawable(wallTextures[0]));
         wallPickerButton.setScaling(Scaling.stretch);
@@ -2366,15 +2422,15 @@ public class EditorFrame implements ApplicationListener {
         floorPickerButton = new Image(new TextureRegionDrawable(wallTextures[2]));
         floorPickerButton.setScaling(Scaling.stretch);
 
-        Stage stage = editorUi.getStage();
+        Stage stage = ui.getStage();
         Table wallPickerLayoutTable = new Table();
         wallPickerLayoutTable.setFillParent(true);
         wallPickerLayoutTable.align(Align.left | Align.top).pad(6f).padTop(150f);
 
-        Label wallLabel = new Label("Upper Wall", editorUi.getSmallSkin());
-        Label wallBottomLabel = new Label("Lower Wall", editorUi.getSmallSkin());
-        Label ceilingLabel = new Label("Ceiling", editorUi.getSmallSkin());
-        Label floorLabel = new Label("Floor", editorUi.getSmallSkin());
+        Label wallLabel = new Label("Upper Wall", ui.getSmallSkin());
+        Label wallBottomLabel = new Label("Lower Wall", ui.getSmallSkin());
+        Label ceilingLabel = new Label("Ceiling", ui.getSmallSkin());
+        Label floorLabel = new Label("Floor", ui.getSmallSkin());
 
         wallPickerLayoutTable.add(wallPickerButton).width(50f).height(50f).align(Align.left).padBottom(6f);
         wallPickerLayoutTable.add(wallLabel).align(Align.left);
@@ -2389,7 +2445,7 @@ public class EditorFrame implements ApplicationListener {
         wallPickerLayoutTable.add(floorLabel).align(Align.left);
         wallPickerLayoutTable.row();
 
-        paintAdjacent = new CheckBox("Paint adjacent", editorUi.getSmallSkin());
+        paintAdjacent = new CheckBox("Paint adjacent", ui.getSmallSkin());
         paintAdjacent.setChecked(true);
         wallPickerLayoutTable.add(paintAdjacent).colspan(2).padLeft(-10f);
 
@@ -2406,7 +2462,7 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-				editorUi.showModal(picker);
+				ui.showModal(picker);
                 event.handle();
             }
         });
@@ -2424,7 +2480,7 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-				editorUi.showModal(picker);
+				ui.showModal(picker);
                 event.handle();
             }
         });
@@ -2442,7 +2498,7 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-                editorUi.showModal(picker);
+                ui.showModal(picker);
                 event.handle();
             }
         });
@@ -2460,13 +2516,13 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-				editorUi.showModal(picker);
+				ui.showModal(picker);
 				event.handle();
             }
         });
 
         stage.addActor(wallPickerLayoutTable);
-        editorUi.initUi();
+        ui.initUi();
 
         editorInput = new EditorInput(this);
         inputMultiplexer = new InputMultiplexer();
@@ -3650,7 +3706,7 @@ public class EditorFrame implements ApplicationListener {
 			}
 		};
 
-		editorUi.showModal(picker);
+		ui.showModal(picker);
 	}
 
 	public void fillSurfaceTexture() {
@@ -4030,6 +4086,13 @@ public class EditorFrame implements ApplicationListener {
         camY = level.height / 2;
     }
 
+	public void createdNewLevel() {
+		currentDirectory = null;
+		currentFileName = null;
+		setTitle("New Level");
+		viewSelected();
+	}
+
     public void resizeLevel(int levelWidth, int levelHeight) {
         Level oldLevel = level;
         level = new Level(levelWidth,levelHeight);
@@ -4061,17 +4124,17 @@ public class EditorFrame implements ApplicationListener {
 
         history.saveState(level);
 
-        editorUi.showEntityPropertiesMenu(this);
+        ui.showEntityPropertiesMenu(this);
 	}
 
     public void pickEntity(Entity entity) {
         pickedEntity = entity;
-        editorUi.showEntityPropertiesMenu(this);
+        ui.showEntityPropertiesMenu(this);
     }
 
     public void pickAdditionalEntity(Entity entity) {
         additionalSelected.add(entity);
-        editorUi.showEntityPropertiesMenu(this);
+        ui.showEntityPropertiesMenu(this);
     }
 
     public Level getLevel() { return level; }
@@ -4256,5 +4319,9 @@ public class EditorFrame implements ApplicationListener {
 		pickViz.begin();
 		pickViz.draw(pickerFrameBuffer.getColorBufferTexture(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1, 1);
 		pickViz.end();
+	}
+
+	public void setTitle(String title) {
+		Gdx.graphics.setTitle(title + " - DelvEdit");
 	}
 }

@@ -19,13 +19,13 @@ import com.interrupt.dungeoneer.game.Level;
 
 public class EditorRightClickMenu extends Scene2dMenu {
     
-    public EditorRightClickMenu(Entity e, final EditorFrame editor, final JFrame wdw, Level level) {
+    public EditorRightClickMenu(Entity e, final EditorApplication editor, final JFrame wdw, Level level) {
         super(EditorUi.getSmallSkin());
         Skin skin = EditorUi.getSmallSkin();
     	
     	final Entity entity = e;
         final Level lvl = level;
-        final EditorFrame editorFrame = editor;
+        final EditorApplication editorApplication = editor;
 
     	MenuItem remove = new MenuItem("Remove Entity", skin);
     	MenuItem toJson = new MenuItem("To JSON", skin);
@@ -63,7 +63,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
         remove.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent event) {
 				lvl.entities.removeValue(entity, true);
-				editorFrame.refreshLights();
+				editorApplication.refreshLights();
 			}
 		});
         
@@ -72,7 +72,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
         	public void actionPerformed(ActionEvent event) {
     			JDialog dialog = new JDialog(wdw, Dialog.ModalityType.MODELESS);
 				
-				JsonViewer jsonViewer = new JsonViewer(entity, editorFrame);
+				JsonViewer jsonViewer = new JsonViewer(entity, editorApplication);
 				dialog.setTitle("JSON for Entity");
 			    dialog.add(jsonViewer);
 			    dialog.pack();
@@ -108,7 +108,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 		});		
     }
     
-    public EditorRightClickMenu(final Entity main, final Array<Entity> additionalSelected, final EditorFrame editor, final JFrame window, final Level level) {
+    public EditorRightClickMenu(final Entity main, final Array<Entity> additionalSelected, final EditorApplication editor, final JFrame window, final Level level) {
 
         super(EditorUi.getSmallSkin());
         Skin skin = EditorUi.getSmallSkin();

@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 
 public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
-    public EditorRightClickEntitiesMenu(Skin skin, final float xPos, final float yPos, final float zPos, final EditorFrame editor, final Level level){
+    public EditorRightClickEntitiesMenu(Skin skin, final float xPos, final float yPos, final float zPos, final EditorApplication editor, final Level level){
         super(skin);
 
     	if(editor.entityManager != null) {
@@ -244,7 +244,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     	}
     }
 
-    public void placeEntity(Entity entity, float x, float y, float z, EditorFrame.PickedSurface surface, EditorFrame editor) {
+    public void placeEntity(Entity entity, float x, float y, float z, EditorApplication.PickedSurface surface, EditorApplication editor) {
 		entity.x = x;
 		entity.y = y;
 		entity.z = z + 0.5f;
@@ -254,10 +254,10 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 			((Prefab) entity).updateCollision();
 		}
 
-		if(surface.tileSurface == EditorFrame.TileSurface.Ceiling) {
+		if(surface.tileSurface == EditorApplication.TileSurface.Ceiling) {
 			entity.z -= entity.collision.z;
 		}
-		else if(surface.tileSurface == EditorFrame.TileSurface.UpperWall || surface.tileSurface == EditorFrame.TileSurface.LowerWall) {
+		else if(surface.tileSurface == EditorApplication.TileSurface.UpperWall || surface.tileSurface == EditorApplication.TileSurface.LowerWall) {
 			if(surface.edge == TileEdges.East) {
 				entity.x -= entity.collision.x;
 			}

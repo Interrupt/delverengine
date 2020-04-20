@@ -22,8 +22,8 @@ public class EditorInput implements InputProcessor {
 
     public float scrollAmount = 0f;
 
-    EditorFrame editor;
-    public EditorInput(EditorFrame editor) {
+    EditorApplication editor;
+    public EditorInput(EditorApplication editor) {
         this.editor = editor;
     }
 
@@ -91,7 +91,7 @@ public class EditorInput implements InputProcessor {
             Gdx.input.setCursorCatched(false);
         }
 
-        editor.editorUi.touchUp(x, y, pointer, button);
+        editor.ui.touchUp(x, y, pointer, button);
 
         return false;
     }
