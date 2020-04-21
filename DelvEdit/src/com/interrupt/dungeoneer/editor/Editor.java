@@ -2,12 +2,13 @@ package com.interrupt.dungeoneer.editor;
 
 import com.interrupt.dungeoneer.editor.selection.EditorSelection;
 
+/** Main API entry point providing references to subsystems. */
 public class Editor {
     public static EditorApplication app;
     public static EditorOptions options;
-    public static EditorActions actions;
     public static EditorSelection selection;
 
+    /** Initialize subsystems. */
 	public static void init() {
 	    if (Editor.app != null) {
 	        return;
@@ -15,7 +16,6 @@ public class Editor {
 
         Editor.app = new EditorApplication();
         Editor.options = EditorOptions.fromLocalFiles();
-        Editor.actions = new EditorActions();
         Editor.selection = new EditorSelection();
     }
 
