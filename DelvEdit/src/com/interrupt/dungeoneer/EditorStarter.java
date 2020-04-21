@@ -9,7 +9,7 @@ import com.interrupt.dungeoneer.scripting.ScriptLoader;
 public class EditorStarter {
 	public static void main(String[] args) {
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "DelvEdit");
-        new Editor();
+        Editor.init();
 
         // Start the null steam API
         SteamApi.api = new NullSteamApi();

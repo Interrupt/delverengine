@@ -3,7 +3,6 @@ package com.interrupt.dungeoneer.editor.ui;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.editor.EditorFrame;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 

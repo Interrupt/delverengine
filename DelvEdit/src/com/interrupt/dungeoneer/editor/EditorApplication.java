@@ -1,11 +1,11 @@
 package com.interrupt.dungeoneer.editor;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.*;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
@@ -70,10 +71,12 @@ import com.noise.PerlinNoise;
 import com.badlogic.gdx.math.MathUtils;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
-public class EditorFrame implements ApplicationListener {
+public class EditorApplication implements ApplicationListener {
+	public JFrame frame;
 
     private EditorClipboard clipboard = null;
 
@@ -146,7 +149,7 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	private class ControlPoint {
-		public Vector3 point = null;
+		public Vector3 point;
 		public ControlPointType controlPointType;
 
 		public Array<ControlPointVertex> vertices = new Array<ControlPointVertex>();
@@ -212,7 +215,7 @@ public class EditorFrame implements ApplicationListener {
 
 	private boolean rightClickWasDown = false;
 
-    public static PerspectiveCamera camera = new PerspectiveCamera();
+    public PerspectiveCamera camera = new PerspectiveCamera();
 
     protected Pixmap wallPixmap;
     protected Texture selectionTex;
@@ -226,6 +229,9 @@ public class EditorFrame implements ApplicationListener {
     protected EntityManager entityManager;
 
     Level level = null;
+
+	public String currentFileName;
+	public String currentDirectory;
 
     float camX = 7.5f;
     float camY = 8;
@@ -269,12 +275,10 @@ public class EditorFrame implements ApplicationListener {
 
     public float time = 0;
 
-    public String curFileName = "";
-
 	protected DecalBatch spriteBatch;
     protected DecalBatch pointBatch;
 
-    public EditorUi editorUi = null;
+    public EditorUi ui = null;
 
     Image wallPickerButton = null;
     Image bottomWallPickerButton = null;
@@ -298,8 +302,6 @@ public class EditorFrame implements ApplicationListener {
     private boolean showLights = false;
 	private boolean lightsDirty = true;
 
-	private Entity hoveredEntity = null;
-    private Entity pickedEntity = null;
     private boolean movingEntity = false;
 	private DragMode dragMode = DragMode.NONE;
     private MoveMode moveMode = MoveMode.DRAG;
@@ -307,8 +309,6 @@ public class EditorFrame implements ApplicationListener {
 
     private Vector3 rotateStart = null;
     private Vector3 rotateStartIntersection = null;
-
-    private Array<Entity> additionalSelected = new Array<Entity>();
 
     private boolean readLeftClick = false;
     private boolean readRightClick = false;
@@ -348,15 +348,33 @@ public class EditorFrame implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
-	public JFrame frame;
-	public Editor editor;
+	public EditorApplication() {
+		frame = new JFrame("DelvEdit");
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Editor.dispose();
+			}
+		});
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
-	public EditorFrame(JFrame frame, Editor editor) {
-		this.frame = frame;
-		this.editor = editor;
+		Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
+
+		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.title = "New Level - DelvEdit";
+		config.fullscreen = false;
+		config.width = defaultMode.width;
+		config.height = defaultMode.height;
+		config.vSyncEnabled = true;
+		config.foregroundFPS = 120;
+		config.backgroundFPS = 30;
+		config.stencil = 8;
+
+		config.addIcon("icon-128.png", Files.FileType.Internal); // 128x128 icon (mac OS)
+		config.addIcon("icon-32.png", Files.FileType.Internal);  // 32x32 icon (Windows + Linux)
+		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
+
+		new LwjglApplication(this, config);
 	}
 
 	public void init(){
@@ -472,15 +490,15 @@ public class EditorFrame implements ApplicationListener {
 		renderer.clearLights();
 		renderer.clearDecals();
 
-		if(!editorUi.isShowingMenuOrModal() && pickedControlPoint == null && hoveredEntity == null && pickedEntity == null) {
+		if(!ui.isShowingMenuOrModal() && pickedControlPoint == null && Editor.selection.hovered == null && Editor.selection.picked == null) {
 			updatePickedSurface();
 		}
 
-		if((!Gdx.input.isButtonPressed(Buttons.LEFT) || editorUi.isShowingMenuOrModal()) && pickedControlPoint == null && hoveredEntity == null && pickedEntity == null) {
+		if((!Gdx.input.isButtonPressed(Buttons.LEFT) || ui.isShowingMenuOrModal()) && pickedControlPoint == null && Editor.selection.hovered == null && Editor.selection.picked == null) {
 			renderPickedSurface();
 		}
 
-        Stage stage = editorUi.getStage();
+        Stage stage = ui.getStage();
         if(stage != null) {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
@@ -579,10 +597,18 @@ public class EditorFrame implements ApplicationListener {
 		// set selection data
 		for(int i = 0; i < level.entities.size; i++) {
 			Entity e = level.entities.get(i);
-			if(e == pickedEntity) e.editorState = EditorState.picked;
-			else if(additionalSelected.contains(e, true)) e.editorState = EditorState.picked;
-			else if(e == hoveredEntity) e.editorState = EditorState.hovered;
-			else e.editorState = EditorState.none;
+			if(e == Editor.selection.picked) {
+				e.editorState = EditorState.picked;
+			}
+			else if(Editor.selection.isSelected(e)) {
+				e.editorState = EditorState.picked;
+			}
+			else if(e == Editor.selection.hovered) {
+				e.editorState = EditorState.hovered;
+			}
+			else {
+				e.editorState = EditorState.none;
+			}
 
 			if(e.editorState != EditorState.none) {
 				selectedEntities.add(e);
@@ -591,9 +617,15 @@ public class EditorFrame implements ApplicationListener {
 
 		for(int i = 0; i < level.non_collidable_entities.size; i++) {
 			Entity e = level.non_collidable_entities.get(i);
-			if(e == pickedEntity) e.editorState = EditorState.picked;
-			else if(e == hoveredEntity) e.editorState = EditorState.hovered;
-			else e.editorState = EditorState.none;
+			if(e == Editor.selection.picked) {
+				e.editorState = EditorState.picked;
+			}
+			else if(e == Editor.selection.hovered) {
+				e.editorState = EditorState.hovered;
+			}
+			else {
+				e.editorState = EditorState.none;
+			}
 
 			if(e.editorState != EditorState.none) {
 				selectedEntities.add(e);
@@ -666,7 +698,7 @@ public class EditorFrame implements ApplicationListener {
 
 
 		boolean shouldDrawBox = !pickedSurface.isPicked;
-		if(pickedSurface.isPicked && editorInput.isButtonPressed(Input.Buttons.LEFT) && !editorUi.isShowingMenuOrModal()) {
+		if(pickedSurface.isPicked && editorInput.isButtonPressed(Input.Buttons.LEFT) && !ui.isShowingMenuOrModal()) {
 			shouldDrawBox = true;
 		}
 
@@ -675,7 +707,7 @@ public class EditorFrame implements ApplicationListener {
 			shouldDrawBox = false;
 		}
 
-		if(pickedEntity == null && hoveredEntity == null || tileDragging) {
+		if(Editor.selection.picked == null && Editor.selection.hovered == null || tileDragging) {
 			if(!selected || (!(pickedControlPoint != null || movingControlPoint) &&
                     editorInput.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.justTouched())) {
 
@@ -790,17 +822,25 @@ public class EditorFrame implements ApplicationListener {
 
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
-		if(pickedEntity instanceof ProjectedDecal) renderProjection(((ProjectedDecal)pickedEntity).perspective);
-		else if(pickedEntity instanceof Mover) renderMoverVizualization((Mover)pickedEntity);
-		for(Entity picked : additionalSelected) {
-			if(picked instanceof ProjectedDecal) renderProjection(((ProjectedDecal)picked).perspective);
-			else if(picked instanceof Mover) renderMoverVizualization((Mover)picked);
+		if(Editor.selection.picked instanceof ProjectedDecal) {
+			renderProjection(((ProjectedDecal) Editor.selection.picked).perspective);
+		}
+		else if(Editor.selection.picked instanceof Mover) {
+			renderMoverVizualization((Mover) Editor.selection.picked);
+		}
+		for(Entity selectedEntity : Editor.selection.selected) {
+			if(selectedEntity instanceof ProjectedDecal) {
+				renderProjection(((ProjectedDecal)selectedEntity).perspective);
+			}
+			else if(selectedEntity instanceof Mover) {
+				renderMoverVizualization((Mover)selectedEntity);
+			}
 		}
 
 		// ROTATE
-		if(moveMode == MoveMode.ROTATE && pickedEntity instanceof Directional) {
-			Directional pickedDirectional = (Directional) pickedEntity;
-			dragPlane = new Plane(new Vector3(0,-1,0), pickedEntity.z);
+		if(moveMode == MoveMode.ROTATE && Editor.selection.picked instanceof Directional) {
+			Directional pickedDirectional = (Directional) Editor.selection.picked;
+			dragPlane = new Plane(new Vector3(0,-1,0), Editor.selection.picked.z);
 
 			if(Intersector.intersectRayPlane(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, intpos)) {
 
@@ -810,14 +850,14 @@ public class EditorFrame implements ApplicationListener {
 				}
 
 				Vector3 rotateDirection = new Vector3(
-						pickedEntity.x - intpos.x,
-						pickedEntity.y - intpos.z,
-						pickedEntity.z - intpos.y).nor();
+						Editor.selection.picked.x - intpos.x,
+						Editor.selection.picked.y - intpos.z,
+						Editor.selection.picked.z - intpos.y).nor();
 
 				Vector3 rotateStartDirection = new Vector3(
-						pickedEntity.x - rotateStartIntersection.x,
-						pickedEntity.y - rotateStartIntersection.z,
-						pickedEntity.z - rotateStartIntersection.y).nor();
+						Editor.selection.picked.x - rotateStartIntersection.x,
+						Editor.selection.picked.y - rotateStartIntersection.z,
+						Editor.selection.picked.z - rotateStartIntersection.y).nor();
 
 				float yaw = (float)Math.atan2(rotateDirection.x, rotateDirection.y);
 				float startYaw = (float)Math.atan2(rotateStartDirection.x, rotateStartDirection.y);
@@ -848,7 +888,7 @@ public class EditorFrame implements ApplicationListener {
 						pickedDirectional.setRotation(rx, ry, (int)(Math.floor(pickedDirectional.getRotation().z) * 0.04444444444444) / 0.04444444444444f);
 				}
 
-				refreshEntity(pickedEntity);
+				refreshEntity(Editor.selection.picked);
 			}
 		}
 
@@ -940,7 +980,7 @@ public class EditorFrame implements ApplicationListener {
 			Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
 			if(!movingControlPoint) pickedControlPoint = null;
 			for(ControlPoint point : controlPoints) {
-				if(!editorUi.isShowingContextMenu()) {
+				if(!ui.isShowingContextMenu()) {
 					if (pickedControlPoint == null && Intersector.intersectRaySphere(ray, point.point, 0.12f, intersection)) {
 						pickedControlPoint = point;
 					}
@@ -1182,26 +1222,26 @@ public class EditorFrame implements ApplicationListener {
 		}
 		else {
 			// Drag entities around
-			if(movingEntity == true && pickedEntity != null) {
+			if(movingEntity && Editor.selection.picked != null) {
 				if(dragPlane == null) {
 
 					if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
 						// Make a copy
-						Entity copy = Game.fromJson(pickedEntity.getClass(), Game.toJson(pickedEntity));
+						Entity copy = Game.fromJson(Editor.selection.picked.getClass(), Game.toJson(Editor.selection.picked));
 						level.entities.add(copy);
 
                         pickEntity(copy);
 
 						Array<Entity> copies = new Array<Entity>();
-						for(Entity selected : additionalSelected) {
+						for(Entity selected : Editor.selection.selected) {
 							Entity newCopy = Game.fromJson(selected.getClass(), Game.toJson(selected));
 							level.entities.add(newCopy);
 							copies.add(newCopy);
 						}
 
-						additionalSelected.clear();
-						additionalSelected.addAll(copies);
-                        editorUi.showEntityPropertiesMenu(this);
+						Editor.selection.selected.clear();
+						Editor.selection.selected.addAll(copies);
+                        ui.showEntityPropertiesMenu(true);
 					}
 
 					if(dragMode == DragMode.Y) {
@@ -1210,7 +1250,7 @@ public class EditorFrame implements ApplicationListener {
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0f);
 						Plane vert = t_dragPlane;
 
-						float len = vert.distance(t_dragVector2.set(pickedEntity.x, pickedEntity.z, pickedEntity.y));
+						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
 						dragPlane = t_dragPlane;
 					}
@@ -1221,7 +1261,7 @@ public class EditorFrame implements ApplicationListener {
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
 						Plane vert = t_dragPlane;
 
-						float len = vert.distance(t_dragVector2.set(pickedEntity.x, pickedEntity.z, pickedEntity.y));
+						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
 						dragPlane = t_dragPlane;
 					}
@@ -1231,7 +1271,7 @@ public class EditorFrame implements ApplicationListener {
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
 						Plane vert = t_dragPlane;
 
-						float len = vert.distance(t_dragVector2.set(pickedEntity.x, pickedEntity.z, pickedEntity.y));
+						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
 						dragPlane = t_dragPlane;
 					}
@@ -1241,7 +1281,7 @@ public class EditorFrame implements ApplicationListener {
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
 						Plane vert = t_dragPlane;
 
-						float len = vert.distance(t_dragVector2.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y));
+						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y));
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
 
 						dragPlane = t_dragPlane;
@@ -1253,61 +1293,61 @@ public class EditorFrame implements ApplicationListener {
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
 						Plane vert = t_dragPlane;
 
-						float len = vert.distance(t_dragVector2.set(pickedEntity.x, pickedEntity.z, pickedEntity.y));
+						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
 						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
 						dragPlane = t_dragPlane;
 					}
 				}
 
 				if(dragStart == null)
-					dragStart = new Vector3(pickedEntity.x, pickedEntity.y, pickedEntity.z);
+					dragStart = new Vector3(Editor.selection.picked.x, Editor.selection.picked.y, Editor.selection.picked.z);
 
 				if(moveMode == MoveMode.DRAG && Intersector.intersectRayPlane(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, intpos)) {
 					if(dragOffset == null) {
-						dragOffset = t_dragOffset.set(pickedEntity.x - intpos.x, pickedEntity.y - intpos.z, pickedEntity.z - intpos.y);
+						dragOffset = t_dragOffset.set(Editor.selection.picked.x - intpos.x, Editor.selection.picked.y - intpos.z, Editor.selection.picked.z - intpos.y);
 					}
 
-					float startX = pickedEntity.x;
-					float startY = pickedEntity.y;
-					float startZ = pickedEntity.z;
+					float startX = Editor.selection.picked.x;
+					float startY = Editor.selection.picked.y;
+					float startZ = Editor.selection.picked.z;
 
-					pickedEntity.x = intpos.x + dragOffset.x;
-					pickedEntity.y = intpos.z + dragOffset.y;
-					pickedEntity.z = intpos.y + dragOffset.z;
+					Editor.selection.picked.x = intpos.x + dragOffset.x;
+					Editor.selection.picked.y = intpos.z + dragOffset.y;
+					Editor.selection.picked.z = intpos.y + dragOffset.z;
 
 					if(dragMode == DragMode.XY) {
-						pickedEntity.z = dragStart.z;
+						Editor.selection.picked.z = dragStart.z;
 					}
 					if(dragMode == DragMode.Y) {
-						pickedEntity.z = dragStart.z;
-						pickedEntity.y = dragStart.y;
+						Editor.selection.picked.z = dragStart.z;
+						Editor.selection.picked.y = dragStart.y;
 					}
 					else if(dragMode == DragMode.Z) {
-						pickedEntity.x = dragStart.x;
-						pickedEntity.y = dragStart.y;
+						Editor.selection.picked.x = dragStart.x;
+						Editor.selection.picked.y = dragStart.y;
 					}
 					else if(dragMode == DragMode.X) {
-						pickedEntity.x = dragStart.x;
+						Editor.selection.picked.x = dragStart.x;
 					}
 
 					if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
-						pickedEntity.x = (int)(pickedEntity.x * 8) / 8f;
-						pickedEntity.y = (int)(pickedEntity.y * 8) / 8f;
-						pickedEntity.z = (int)(pickedEntity.z * 8) / 8f;
+						Editor.selection.picked.x = (int)(Editor.selection.picked.x * 8) / 8f;
+						Editor.selection.picked.y = (int)(Editor.selection.picked.y * 8) / 8f;
+						Editor.selection.picked.z = (int)(Editor.selection.picked.z * 8) / 8f;
 					}
 
-					float movedX = startX - pickedEntity.x;
-					float movedY = startY - pickedEntity.y;
-					float movedZ = startZ - pickedEntity.z;
+					float movedX = startX - Editor.selection.picked.x;
+					float movedY = startY - Editor.selection.picked.y;
+					float movedZ = startZ - Editor.selection.picked.z;
 
-					for(Entity selected : additionalSelected) {
+					for(Entity selected : Editor.selection.selected) {
 						selected.x -= movedX;
 						selected.y -= movedY;
 						selected.z -= movedZ;
 					}
 
-                    refreshEntity(pickedEntity);
-                    for(Entity selected : additionalSelected) {
+                    refreshEntity(Editor.selection.picked);
+                    for(Entity selected : Editor.selection.selected) {
                         refreshEntity(selected);
                     }
 				}
@@ -1318,7 +1358,7 @@ public class EditorFrame implements ApplicationListener {
 				dragPlane = null;
 			}
 
-			if(pickedEntity == null) {
+			if(Editor.selection.picked == null) {
 				dragPlane = null;
 				dragMode = DragMode.NONE;
 				moveMode = MoveMode.DRAG;
@@ -1327,55 +1367,55 @@ public class EditorFrame implements ApplicationListener {
 			// Draw rotation circles
 			if(moveMode == MoveMode.ROTATE) {
 				if(dragMode == DragMode.X) {
-					drawXCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.X_AXIS);
+					drawXCircle(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y, 2f, EditorColors.X_AXIS);
 				}
 				else if(dragMode == DragMode.Y) {
-					drawYCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.Y_AXIS);
+					drawYCircle(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y, 2f, EditorColors.Y_AXIS);
 				}
 				else {
-					drawZCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.Z_AXIS);
+					drawZCircle(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y, 2f, EditorColors.Z_AXIS);
 				}
 
-				if(pickedEntity instanceof Directional) {
-					Directional dirEntity = (Directional)pickedEntity;
+				if(Editor.selection.picked instanceof Directional) {
+					Directional dirEntity = (Directional) Editor.selection.picked;
 
 					Vector3 dirEnd = dirEntity.getDirection();
-					dirEnd.x += pickedEntity.x;
-					dirEnd.y += pickedEntity.y;
-					dirEnd.z += pickedEntity.z;
+					dirEnd.x += Editor.selection.picked.x;
+					dirEnd.y += Editor.selection.picked.y;
+					dirEnd.z += Editor.selection.picked.z;
 
-					drawLine(new Vector3(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y), new Vector3(dirEnd.x, dirEnd.z - 0.49f,dirEnd.y), 2f, Color.WHITE);
+					drawLine(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y), new Vector3(dirEnd.x, dirEnd.z - 0.49f,dirEnd.y), 2f, Color.WHITE);
 				}
 			}
 
-			if(pickedEntity != null && ((hoveredEntity == null || additionalSelected.contains(hoveredEntity, true)) || hoveredEntity == pickedEntity || movingEntity)) {
+			if(Editor.selection.picked != null && ((Editor.selection.hovered == null || Editor.selection.isSelected(Editor.selection.hovered)) || Editor.selection.hovered == Editor.selection.picked || movingEntity)) {
 				Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 				Gdx.gl.glEnable(GL20.GL_ALPHA);
 				Gdx.gl.glEnable(GL20.GL_BLEND);
 
 				if(moveMode == MoveMode.DRAG) {
 					if(dragMode == DragMode.Z) {
-						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 10f, pickedEntity.y);
-						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z + 10f, pickedEntity.y);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 10f, Editor.selection.picked.y);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z + 10f, Editor.selection.picked.y);
 						this.drawLine(startLine, endLine, 2, EditorColors.Z_AXIS);
 					}
 					else if(dragMode == DragMode.X) {
-						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y - 10f);
-						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y + 10f);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y - 10f);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
 						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 					}
 					else if(dragMode == DragMode.Y) {
-						Vector3 startLine = tempVec3.set(pickedEntity.x - 10f, pickedEntity.z - 0.5f, pickedEntity.y);
-						Vector3 endLine = tempVec4.set(pickedEntity.x + 10f, pickedEntity.z - 0.5f, pickedEntity.y);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
 						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 					else if(dragMode == DragMode.XY || (!movingEntity && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))) {
-						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y - 10f);
-						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y + 10f);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y - 10f);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
 						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 
-						startLine = tempVec3.set(pickedEntity.x - 10f, pickedEntity.z - 0.5f, pickedEntity.y);
-						endLine = tempVec4.set(pickedEntity.x + 10f, pickedEntity.z - 0.5f, pickedEntity.y);
+						startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
+						endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
 						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 				}
@@ -1440,9 +1480,9 @@ public class EditorFrame implements ApplicationListener {
 
 	/** Draw Gizmos for the picked Entity and selected Entities. */
 	private void drawPickedGizmos() {
-		drawGizmo(pickedEntity);
+		drawGizmo(Editor.selection.picked);
 
-		for (Entity selected : additionalSelected) {
+		for (Entity selected : Editor.selection.selected) {
 			drawGizmo(selected);
 		}
 	}
@@ -1486,7 +1526,7 @@ public class EditorFrame implements ApplicationListener {
 				int b = (int)(pickedPixelBufferColor.b * 255);
 				int index = (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
 
-				hoveredEntity = renderer.entitiesForPicking.get(index);
+				Editor.selection.hovered = renderer.entitiesForPicking.get(index);
 				//Gdx.app.log("Picking", pickedPixelBufferColor.toString());
 			}
 			catch (Exception ex) {
@@ -1708,7 +1748,7 @@ public class EditorFrame implements ApplicationListener {
 			Trigger t = (Trigger)e;
 			Array<Entity> matches = level.getEntitiesById(t.triggersId);
 			if(matches.size > 0) {
-				if(e == pickedEntity)
+				if(e == Editor.selection.picked)
 					lineRenderer.setColor(Color.WHITE);
 				else
 					lineRenderer.setColor(Color.MAGENTA);
@@ -1722,7 +1762,7 @@ public class EditorFrame implements ApplicationListener {
 			BasicTrigger t = (BasicTrigger)e;
 			Array<Entity> matches = level.getEntitiesById(t.triggersId);
 			if(matches.size > 0) {
-				if(e == pickedEntity)
+				if(e == Editor.selection.picked)
 					lineRenderer.setColor(Color.WHITE);
 				else
 					lineRenderer.setColor(Color.MAGENTA);
@@ -1737,7 +1777,7 @@ public class EditorFrame implements ApplicationListener {
 			ButtonModel t = (ButtonModel)e;
 			Array<Entity> matches = level.getEntitiesById(t.triggersId);
 			if(matches.size > 0) {
-				if(e == pickedEntity)
+				if(e == Editor.selection.picked)
 					lineRenderer.setColor(Color.WHITE);
 				else
 					lineRenderer.setColor(Color.MAGENTA);
@@ -1834,7 +1874,7 @@ public class EditorFrame implements ApplicationListener {
 	public void resize(int width, int height) {
 
 		if(gameApp != null) gameApp.resize(width, height);
-        if(editorUi != null) editorUi.resize(width, height);
+        if(ui != null) ui.resize(width, height);
 
 		Gdx.gl.glViewport(0, 0, width, height);
 
@@ -1898,6 +1938,7 @@ public class EditorFrame implements ApplicationListener {
 		gridMesh = genGrid(level.width,level.height);
 	}
 
+	/** Save level. */
 	public void save(String filename) {
 
 		level.preSaveCleanup();
@@ -1943,7 +1984,65 @@ public class EditorFrame implements ApplicationListener {
 		}
 	}
 
-    public boolean isSelected() {
+	/** Open level. */
+	public void open(FileHandle fileHandle) {
+		try {
+			currentDirectory = fileHandle.file().getParent() + "/";
+			currentFileName = fileHandle.name();
+
+			setTitle(currentFileName);
+
+			String file = currentFileName;
+			String dir = currentDirectory;
+
+			FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
+			if(levelFileHandle.exists()) {
+				currentFileName = levelFileHandle.path();
+				setTitle(currentFileName);
+
+				Level openLevel;
+
+				if(file.endsWith(".png")) {
+					String heightFile = dir + file.replace(".png", "-height.png");
+					if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+						heightFile = dir + file.replace(".png", "_height.png");
+						if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+							heightFile = null;
+						}
+					}
+
+					openLevel = new Level();
+					openLevel.loadForEditor(dir + file, heightFile);
+				}
+				else if(file.endsWith(".bin")) {
+					openLevel = KryoSerializer.loadLevel(levelFileHandle);
+					openLevel.init(Source.EDITOR);
+				}
+				else {
+					openLevel = Game.fromJson(Level.class, levelFileHandle);
+					openLevel.init(Source.EDITOR);
+				}
+
+				level = openLevel;
+				refresh();
+
+				camX = openLevel.width / 2f;
+				camZ = 4.5f;
+				camY = openLevel.height / 2f;
+
+				history = new EditorHistory();
+				Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
+				Editor.options.recentlyOpenedFiles.insert(0, levelFileHandle.path());
+
+				viewSelected();
+			}
+		}
+		catch(Exception ex) {
+			Gdx.app.error("DelvEdit", ex.getMessage());
+		}
+	}
+
+	public boolean isSelected() {
         return selected;
     }
 
@@ -1962,7 +2061,7 @@ public class EditorFrame implements ApplicationListener {
 				rightClickWasDown = false;
 		}
 
-		if(editorUi.isShowingMenuOrModal())
+		if(ui.isShowingMenuOrModal())
 			return;
 
 		// get picked entity
@@ -1989,8 +2088,8 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		if(Gdx.input.isKeyJustPressed(Keys.TAB)) {
-			pickedEntity = null;
-			hoveredEntity = null;
+			Editor.selection.picked = null;
+			Editor.selection.hovered = null;
 		}
 
 		// Try to pick an entity
@@ -2007,20 +2106,20 @@ public class EditorFrame implements ApplicationListener {
 			if(movingControlPoint || pickedControlPoint != null) {
 				// don't select entities
 			}
-			else if(hoveredEntity == null && pickedEntity == null) {
+			else if(Editor.selection.hovered == null && Editor.selection.picked == null) {
 				selected = true;
 			}
 			else {
 				if(!readLeftClick) {
-					if(pickedEntity != null && hoveredEntity != null && hoveredEntity != pickedEntity && !additionalSelected.contains(hoveredEntity, true) && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))) {
-                        pickAdditionalEntity(hoveredEntity);
+					if(Editor.selection.picked != null && Editor.selection.hovered != null && Editor.selection.hovered != Editor.selection.picked && !Editor.selection.isSelected(Editor.selection.hovered) && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))) {
+                        pickAdditionalEntity(Editor.selection.hovered);
 					}
-					else if(pickedEntity != null && pickedEntity == hoveredEntity || additionalSelected.contains(hoveredEntity, true)) {
+					else if(Editor.selection.picked != null && Editor.selection.picked == Editor.selection.hovered || Editor.selection.isSelected(Editor.selection.hovered)) {
 						movingEntity = true;
 					}
 					else {
 						clearEntitySelection();
-                        pickEntity(hoveredEntity);
+                        pickEntity(Editor.selection.hovered);
 					}
 				}
 			}
@@ -2033,7 +2132,7 @@ public class EditorFrame implements ApplicationListener {
 			movingEntity = false;
 			movingControlPoint = false;
 		}
-		if(pickedEntity == null) movingEntity = false;
+		if(Editor.selection.picked == null) movingEntity = false;
 
 		boolean turnLeft = (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
 		boolean turnRight = (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
@@ -2151,7 +2250,7 @@ public class EditorFrame implements ApplicationListener {
 		}
 
 		// Tile editing mode?
-		if(pickedEntity == null) {
+		if(Editor.selection.picked == null) {
 			if(Gdx.input.isKeyPressed(Keys.NUM_1)) {
 				paintSurfaceAtCursor();
 			}
@@ -2164,9 +2263,11 @@ public class EditorFrame implements ApplicationListener {
 			if(Gdx.input.isKeyPressed(Keys.T)) {
 				if(!readRotate) {
 					readRotate = true;
-					pickedEntity.rotate90();
-					for(Entity e : additionalSelected) { e.rotate90(); }
-					refreshEntity(pickedEntity);
+					Editor.selection.picked.rotate90();
+					for(Entity e : Editor.selection.selected) {
+						e.rotate90();
+					}
+					refreshEntity(Editor.selection.picked);
 				}
 			}
 			else readRotate = false;
@@ -2213,8 +2314,8 @@ public class EditorFrame implements ApplicationListener {
 				controlPoints.clear();
 
 				selected = false;
-				pickedEntity = null;
-				additionalSelected.clear();
+				Editor.selection.picked = null;
+				Editor.selection.selected.clear();
 
 				refresh();
 			}
@@ -2231,8 +2332,8 @@ public class EditorFrame implements ApplicationListener {
 			controlPoints.clear();
 
 			selected = false;
-			pickedEntity = null;
-			additionalSelected.clear();
+			Editor.selection.picked = null;
+			Editor.selection.selected.clear();
 
 			refresh();
 		}
@@ -2254,8 +2355,8 @@ public class EditorFrame implements ApplicationListener {
             clearEntitySelection();
 		}
 		
-		if (editorUi.isShowingContextMenu()) {
-			editorUi.hideContextMenu();
+		if (ui.isShowingContextMenu()) {
+			ui.hideContextMenu();
 		}
 
         history.saveState(level);
@@ -2352,7 +2453,7 @@ public class EditorFrame implements ApplicationListener {
 
     private void setupHud(TextureRegion[] wallTextures) {
 
-        editorUi = new EditorUi(editor, this);
+        ui = new EditorUi();
 
         wallPickerButton = new Image(new TextureRegionDrawable(wallTextures[0]));
         wallPickerButton.setScaling(Scaling.stretch);
@@ -2366,15 +2467,15 @@ public class EditorFrame implements ApplicationListener {
         floorPickerButton = new Image(new TextureRegionDrawable(wallTextures[2]));
         floorPickerButton.setScaling(Scaling.stretch);
 
-        Stage stage = editorUi.getStage();
+        Stage stage = ui.getStage();
         Table wallPickerLayoutTable = new Table();
         wallPickerLayoutTable.setFillParent(true);
         wallPickerLayoutTable.align(Align.left | Align.top).pad(6f).padTop(150f);
 
-        Label wallLabel = new Label("Upper Wall", editorUi.getSmallSkin());
-        Label wallBottomLabel = new Label("Lower Wall", editorUi.getSmallSkin());
-        Label ceilingLabel = new Label("Ceiling", editorUi.getSmallSkin());
-        Label floorLabel = new Label("Floor", editorUi.getSmallSkin());
+        Label wallLabel = new Label("Upper Wall", ui.getSmallSkin());
+        Label wallBottomLabel = new Label("Lower Wall", ui.getSmallSkin());
+        Label ceilingLabel = new Label("Ceiling", ui.getSmallSkin());
+        Label floorLabel = new Label("Floor", ui.getSmallSkin());
 
         wallPickerLayoutTable.add(wallPickerButton).width(50f).height(50f).align(Align.left).padBottom(6f);
         wallPickerLayoutTable.add(wallLabel).align(Align.left);
@@ -2389,7 +2490,7 @@ public class EditorFrame implements ApplicationListener {
         wallPickerLayoutTable.add(floorLabel).align(Align.left);
         wallPickerLayoutTable.row();
 
-        paintAdjacent = new CheckBox("Paint adjacent", editorUi.getSmallSkin());
+        paintAdjacent = new CheckBox("Paint adjacent", ui.getSmallSkin());
         paintAdjacent.setChecked(true);
         wallPickerLayoutTable.add(paintAdjacent).colspan(2).padLeft(-10f);
 
@@ -2406,7 +2507,7 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-				editorUi.showModal(picker);
+				ui.showModal(picker);
                 event.handle();
             }
         });
@@ -2424,7 +2525,7 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-				editorUi.showModal(picker);
+				ui.showModal(picker);
                 event.handle();
             }
         });
@@ -2442,7 +2543,7 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-                editorUi.showModal(picker);
+                ui.showModal(picker);
                 event.handle();
             }
         });
@@ -2460,15 +2561,15 @@ public class EditorFrame implements ApplicationListener {
                         	doPaint();
                     }
                 };
-				editorUi.showModal(picker);
+				ui.showModal(picker);
 				event.handle();
             }
         });
 
         stage.addActor(wallPickerLayoutTable);
-        editorUi.initUi();
+        ui.initUi();
 
-        editorInput = new EditorInput(this);
+        editorInput = new EditorInput();
         inputMultiplexer = new InputMultiplexer();
 
         inputMultiplexer.addProcessor(stage);
@@ -3125,7 +3226,7 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	public void rotateFloorTex(int value) {
-    	if(pickedEntity != null) return;
+    	if(Editor.selection.picked != null) return;
 
 		int selX = selectionX;
 		int selY = selectionY;
@@ -3152,22 +3253,22 @@ public class EditorFrame implements ApplicationListener {
     public void copy() {
         clipboard = new EditorClipboard();
 
-        if(pickedEntity != null) {
-            Entity copy = copyEntity(pickedEntity);
-            clipboard.offset = new Vector3(pickedEntity.x, pickedEntity.y, 0);
-            copy.x -= (int)pickedEntity.x + 1;
-            copy.y -= (int)pickedEntity.y + 1;
-            float heightOffset = copy.z - level.getTile((int)pickedEntity.x, (int)pickedEntity.y).getFloorHeight(0.5f, 0.5f);
+        if(Editor.selection.picked != null) {
+            Entity copy = copyEntity(Editor.selection.picked);
+            clipboard.offset = new Vector3(Editor.selection.picked.x, Editor.selection.picked.y, 0);
+            copy.x -= (int) Editor.selection.picked.x + 1;
+            copy.y -= (int) Editor.selection.picked.y + 1;
+            float heightOffset = copy.z - level.getTile((int) Editor.selection.picked.x, (int) Editor.selection.picked.y).getFloorHeight(0.5f, 0.5f);
             copy.z = heightOffset;
 
             clipboard.entities.add(copy);
 
-            if(additionalSelected != null) {
-                for(Entity e : additionalSelected) {
+            if(Editor.selection.selected != null) {
+                for(Entity e : Editor.selection.selected) {
                     Entity aCopy = copyEntity(e);
-                    aCopy.x -= (int)pickedEntity.x + 1;
-                    aCopy.y -= (int)pickedEntity.y + 1;
-                    aCopy.z = heightOffset + (aCopy.z - pickedEntity.z);
+                    aCopy.x -= (int) Editor.selection.picked.x + 1;
+                    aCopy.y -= (int) Editor.selection.picked.y + 1;
+                    aCopy.z = heightOffset + (aCopy.z - Editor.selection.picked.z);
                     clipboard.entities.add(aCopy);
                 }
             }
@@ -3178,7 +3279,7 @@ public class EditorFrame implements ApplicationListener {
         int selWidth = selectionWidth;
         int selHeight = selectionHeight;
 
-        if(pickedEntity == null) {
+        if(Editor.selection.picked == null) {
             clipboard.tiles = new Tile[selWidth][selHeight];
             clipboard.selWidth = selWidth;
             clipboard.selHeight = selHeight;
@@ -3248,7 +3349,7 @@ public class EditorFrame implements ApplicationListener {
     }
 
 	public void rotateAngle() {
-        if(pickedEntity != null) return;
+        if(Editor.selection.picked != null) return;
 
 		int selX = selectionX;
 		int selY = selectionY;
@@ -3270,7 +3371,7 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	public void rotateCeilTex(int value) {
-		if(pickedEntity != null) return;
+		if(Editor.selection.picked != null) return;
 
 		int selX = selectionX;
 		int selY = selectionY;
@@ -3650,7 +3751,7 @@ public class EditorFrame implements ApplicationListener {
 			}
 		};
 
-		editorUi.showModal(picker);
+		ui.showModal(picker);
 	}
 
 	public void fillSurfaceTexture() {
@@ -3826,7 +3927,7 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	public void doCarve() {
-        if(pickedEntity != null) return;
+        if(Editor.selection.picked != null) return;
 
 		Tile t = new Tile();
 		t.wallTex = (byte)pickedWallTexture;
@@ -3860,7 +3961,7 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	public void doPaint() {
-        if(pickedEntity != null) return;
+        if(Editor.selection.picked != null) return;
 
 		Tile t = new Tile();
 		t.wallTex = (byte)pickedWallTexture;
@@ -3886,11 +3987,11 @@ public class EditorFrame implements ApplicationListener {
 	}
 
 	public void doDelete() {
-        if(pickedEntity != null) {
-            level.entities.removeValue(pickedEntity, true);
-			markWorldAsDirty((int)pickedEntity.x, (int)pickedEntity.y, 4);
+        if(Editor.selection.picked != null) {
+            level.entities.removeValue(Editor.selection.picked, true);
+			markWorldAsDirty((int) Editor.selection.picked.x, (int) Editor.selection.picked.y, 4);
 
-            for(Entity selEntity : additionalSelected) {
+            for(Entity selEntity : Editor.selection.selected) {
                 level.entities.removeValue(selEntity, true);
 
 				markWorldAsDirty((int)selEntity.x, (int)selEntity.y, 4);
@@ -3986,10 +4087,10 @@ public class EditorFrame implements ApplicationListener {
 		orbitDistance = selectedPosition.len();
 
 		// Focus on picked entity
-		if (pickedEntity != null) {
-			orbitDistance = getEntityBoundingSphereRadius(pickedEntity) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
+		if (Editor.selection.picked != null) {
+			orbitDistance = getEntityBoundingSphereRadius(Editor.selection.picked) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
 			orbitDistance = Math.max(minDistance, orbitDistance);
-			selectedPosition.set(pickedEntity.x, pickedEntity.y, pickedEntity.z);
+			selectedPosition.set(Editor.selection.picked.x, Editor.selection.picked.y, Editor.selection.picked.z);
 		}
 		// Focus on tile selection
 		else if (selected) {
@@ -4030,6 +4131,13 @@ public class EditorFrame implements ApplicationListener {
         camY = level.height / 2;
     }
 
+	public void createdNewLevel() {
+		currentDirectory = null;
+		currentFileName = null;
+		setTitle("New Level");
+		viewSelected();
+	}
+
     public void resizeLevel(int levelWidth, int levelHeight) {
         Level oldLevel = level;
         level = new Level(levelWidth,levelHeight);
@@ -4052,26 +4160,24 @@ public class EditorFrame implements ApplicationListener {
 		selectionHeight = 1;
 		selectionWidth = 1;
 
-		pickedEntity = null;
-		additionalSelected.clear();
+		Editor.selection.picked = null;
+		Editor.selection.selected.clear();
 		controlPoints.clear();
 		pickedControlPoint = null;
 
-		additionalSelected.clear();
-
         history.saveState(level);
 
-        editorUi.showEntityPropertiesMenu(this);
+        ui.showEntityPropertiesMenu(true);
 	}
 
     public void pickEntity(Entity entity) {
-        pickedEntity = entity;
-        editorUi.showEntityPropertiesMenu(this);
+        Editor.selection.picked = entity;
+        ui.showEntityPropertiesMenu(true);
     }
 
     public void pickAdditionalEntity(Entity entity) {
-        additionalSelected.add(entity);
-        editorUi.showEntityPropertiesMenu(this);
+        Editor.selection.selected.add(entity);
+        ui.showEntityPropertiesMenu(true);
     }
 
     public Level getLevel() { return level; }
@@ -4091,21 +4197,6 @@ public class EditorFrame implements ApplicationListener {
 		float floorPos = level.getTile(selectionX, selectionY).floorHeight;
 		return new Vector3(getSelectionX(), floorPos, getSelectionY());
 	}
-
-    public Entity getPickedEntity() { return pickedEntity; }
-
-    public Entity getPickedOrHoveredEntity() {
-        if(pickedEntity != null) return pickedEntity;
-        return hoveredEntity;
-    }
-
-    public Entity getHoveredEntity() {
-        return hoveredEntity;
-    }
-
-    public Array<Entity> getAdditionalSelectedEntities() {
-        return additionalSelected;
-    }
 
     public MoveMode getMoveMode() {
         return moveMode;
@@ -4128,19 +4219,19 @@ public class EditorFrame implements ApplicationListener {
     }
 
     public void setDragMode(DragMode dragMode) {
-        if(pickedEntity == null) return;
+        if(Editor.selection.picked == null) return;
         this.dragMode = dragMode;
 
         if(dragMode == DragMode.Y) {
             Vector3 vertDir = new Vector3(Vector3.Y);
             Plane vert = new Plane(vertDir, 0);
-            float len = vert.distance(new Vector3(pickedEntity.x, pickedEntity.z, pickedEntity.y));
+            float len = vert.distance(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
             dragPlane = new Plane(vertDir, -len);
         }
         if(dragMode == DragMode.X) {
             Vector3 vertDir = new Vector3(Vector3.Y);
             Plane vert = new Plane(vertDir, 0);
-            float len = vert.distance(new Vector3(pickedEntity.x, pickedEntity.z, pickedEntity.y));
+            float len = vert.distance(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
             dragPlane = new Plane(vertDir, -len);
         }
         if(dragMode == DragMode.Z) {
@@ -4148,7 +4239,7 @@ public class EditorFrame implements ApplicationListener {
             vertDir.y = 0;
 
             Plane vert = new Plane(vertDir, 0);
-            float len = vert.distance(new Vector3(pickedEntity.x, pickedEntity.z, pickedEntity.y));
+            float len = vert.distance(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
             dragPlane = new Plane(vertDir, -len);
         }
     }
@@ -4234,10 +4325,10 @@ public class EditorFrame implements ApplicationListener {
 
 		// Move Entities
 		Array<Entity> allSelected = new Array<Entity>();
-		if(pickedEntity != null) {
-			allSelected.add(pickedEntity);
+		if(Editor.selection.picked != null) {
+			allSelected.add(Editor.selection.picked);
 		}
-		allSelected.addAll(additionalSelected);
+		allSelected.addAll(Editor.selection.selected);
 
 		for(Entity e : allSelected) {
 			e.x += moveX;
@@ -4256,5 +4347,9 @@ public class EditorFrame implements ApplicationListener {
 		pickViz.begin();
 		pickViz.draw(pickerFrameBuffer.getColorBufferTexture(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1, 1);
 		pickViz.end();
+	}
+
+	public void setTitle(String title) {
+		Gdx.graphics.setTitle(title + " - DelvEdit");
 	}
 }

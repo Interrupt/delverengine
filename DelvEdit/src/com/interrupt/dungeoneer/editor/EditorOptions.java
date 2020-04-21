@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
+/** Editor options container class. */
 public class EditorOptions {
     public Array<String> recentlyOpenedFiles;
 
@@ -29,5 +30,13 @@ public class EditorOptions {
         Json json = new Json();
         FileHandle file = Gdx.files.local(path);
         file.writeString(json.toJson(instance), false);
+    }
+
+    public void save() {
+        EditorOptions.toLocalFiles(this);
+    }
+
+    public void dispose() {
+        Editor.options.save();
     }
 }

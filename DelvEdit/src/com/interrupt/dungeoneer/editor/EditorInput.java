@@ -22,10 +22,7 @@ public class EditorInput implements InputProcessor {
 
     public float scrollAmount = 0f;
 
-    EditorFrame editor;
-    public EditorInput(EditorFrame editor) {
-        this.editor = editor;
-    }
+    public EditorInput() {}
 
     @Override
     public boolean keyDown(int i) {
@@ -91,7 +88,7 @@ public class EditorInput implements InputProcessor {
             Gdx.input.setCursorCatched(false);
         }
 
-        editor.editorUi.touchUp(x, y, pointer, button);
+        Editor.app.ui.touchUp(x, y, pointer, button);
 
         return false;
     }
@@ -113,8 +110,8 @@ public class EditorInput implements InputProcessor {
                 }
             }
 
-            editor.rotX += moveX * 0.005f;
-            editor.rotY -= moveY * 0.005f;
+            Editor.app.rotX += moveX * 0.005f;
+            Editor.app.rotY -= moveY * 0.005f;
         }
 
         lastMouseLocation.set(x, y);
