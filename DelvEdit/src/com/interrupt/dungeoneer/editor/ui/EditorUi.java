@@ -429,7 +429,7 @@ public class EditorUi {
 
                 // must have touched the stage, should we show an entity properties menu?
                 if(button == Input.Buttons.LEFT && touched == mainTable) {
-                    if(entityPropertiesPane != null && Editor.app.getHoveredEntity() == null) {
+                    if(entityPropertiesPane != null && Editor.selection.hovered == null) {
                         sidebarTable.setVisible(false);
                     }
                 }
@@ -615,9 +615,9 @@ public class EditorUi {
             float currentTime = Editor.app.time;
             if (currentTime - rightClickTime > 0.5) return;
 
-            if (Editor.selection.picked != null || Editor.app.getHoveredEntity() != null) {
+            if (Editor.selection.picked != null || Editor.selection.hovered != null) {
                 Entity sel = Editor.selection.picked;
-                if (sel == null) sel = Editor.app.getHoveredEntity();
+                if (sel == null) sel = Editor.selection.hovered;
 
                 if (Editor.app.getMoveMode() == EditorApplication.MoveMode.ROTATE) {
                     Editor.app.clearEntitySelection();

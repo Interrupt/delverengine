@@ -302,7 +302,6 @@ public class EditorApplication implements ApplicationListener {
     private boolean showLights = false;
 	private boolean lightsDirty = true;
 
-	private Entity hoveredEntity = null;
     private boolean movingEntity = false;
 	private DragMode dragMode = DragMode.NONE;
     private MoveMode moveMode = MoveMode.DRAG;
@@ -491,11 +490,11 @@ public class EditorApplication implements ApplicationListener {
 		renderer.clearLights();
 		renderer.clearDecals();
 
-		if(!ui.isShowingMenuOrModal() && pickedControlPoint == null && hoveredEntity == null && Editor.selection.picked == null) {
+		if(!ui.isShowingMenuOrModal() && pickedControlPoint == null && Editor.selection.hovered == null && Editor.selection.picked == null) {
 			updatePickedSurface();
 		}
 
-		if((!Gdx.input.isButtonPressed(Buttons.LEFT) || ui.isShowingMenuOrModal()) && pickedControlPoint == null && hoveredEntity == null && Editor.selection.picked == null) {
+		if((!Gdx.input.isButtonPressed(Buttons.LEFT) || ui.isShowingMenuOrModal()) && pickedControlPoint == null && Editor.selection.hovered == null && Editor.selection.picked == null) {
 			renderPickedSurface();
 		}
 
@@ -604,7 +603,7 @@ public class EditorApplication implements ApplicationListener {
 			else if(Editor.selection.isSelected(e)) {
 				e.editorState = EditorState.picked;
 			}
-			else if(e == hoveredEntity) {
+			else if(e == Editor.selection.hovered) {
 				e.editorState = EditorState.hovered;
 			}
 			else {
@@ -621,7 +620,7 @@ public class EditorApplication implements ApplicationListener {
 			if(e == Editor.selection.picked) {
 				e.editorState = EditorState.picked;
 			}
-			else if(e == hoveredEntity) {
+			else if(e == Editor.selection.hovered) {
 				e.editorState = EditorState.hovered;
 			}
 			else {
@@ -708,7 +707,7 @@ public class EditorApplication implements ApplicationListener {
 			shouldDrawBox = false;
 		}
 
-		if(Editor.selection.picked == null && hoveredEntity == null || tileDragging) {
+		if(Editor.selection.picked == null && Editor.selection.hovered == null || tileDragging) {
 			if(!selected || (!(pickedControlPoint != null || movingControlPoint) &&
                     editorInput.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.justTouched())) {
 
@@ -1389,7 +1388,7 @@ public class EditorApplication implements ApplicationListener {
 				}
 			}
 
-			if(Editor.selection.picked != null && ((hoveredEntity == null || Editor.selection.isSelected(hoveredEntity)) || hoveredEntity == Editor.selection.picked || movingEntity)) {
+			if(Editor.selection.picked != null && ((Editor.selection.hovered == null || Editor.selection.isSelected(Editor.selection.hovered)) || Editor.selection.hovered == Editor.selection.picked || movingEntity)) {
 				Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 				Gdx.gl.glEnable(GL20.GL_ALPHA);
 				Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -1527,7 +1526,7 @@ public class EditorApplication implements ApplicationListener {
 				int b = (int)(pickedPixelBufferColor.b * 255);
 				int index = (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
 
-				hoveredEntity = renderer.entitiesForPicking.get(index);
+				Editor.selection.hovered = renderer.entitiesForPicking.get(index);
 				//Gdx.app.log("Picking", pickedPixelBufferColor.toString());
 			}
 			catch (Exception ex) {
@@ -2090,7 +2089,7 @@ public class EditorApplication implements ApplicationListener {
 
 		if(Gdx.input.isKeyJustPressed(Keys.TAB)) {
 			Editor.selection.picked = null;
-			hoveredEntity = null;
+			Editor.selection.hovered = null;
 		}
 
 		// Try to pick an entity
@@ -2107,20 +2106,20 @@ public class EditorApplication implements ApplicationListener {
 			if(movingControlPoint || pickedControlPoint != null) {
 				// don't select entities
 			}
-			else if(hoveredEntity == null && Editor.selection.picked == null) {
+			else if(Editor.selection.hovered == null && Editor.selection.picked == null) {
 				selected = true;
 			}
 			else {
 				if(!readLeftClick) {
-					if(Editor.selection.picked != null && hoveredEntity != null && hoveredEntity != Editor.selection.picked && !Editor.selection.isSelected(hoveredEntity) && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))) {
-                        pickAdditionalEntity(hoveredEntity);
+					if(Editor.selection.picked != null && Editor.selection.hovered != null && Editor.selection.hovered != Editor.selection.picked && !Editor.selection.isSelected(Editor.selection.hovered) && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))) {
+                        pickAdditionalEntity(Editor.selection.hovered);
 					}
-					else if(Editor.selection.picked != null && Editor.selection.picked == hoveredEntity || Editor.selection.isSelected(hoveredEntity)) {
+					else if(Editor.selection.picked != null && Editor.selection.picked == Editor.selection.hovered || Editor.selection.isSelected(Editor.selection.hovered)) {
 						movingEntity = true;
 					}
 					else {
 						clearEntitySelection();
-                        pickEntity(hoveredEntity);
+                        pickEntity(Editor.selection.hovered);
 					}
 				}
 			}
@@ -4198,15 +4197,6 @@ public class EditorApplication implements ApplicationListener {
 		float floorPos = level.getTile(selectionX, selectionY).floorHeight;
 		return new Vector3(getSelectionX(), floorPos, getSelectionY());
 	}
-
-    public Entity getPickedOrHoveredEntity() {
-        if(Editor.selection.picked != null) return Editor.selection.picked;
-        return hoveredEntity;
-    }
-
-    public Entity getHoveredEntity() {
-        return hoveredEntity;
-    }
 
     public MoveMode getMoveMode() {
         return moveMode;
