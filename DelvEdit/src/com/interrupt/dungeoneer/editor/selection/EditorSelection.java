@@ -3,17 +3,18 @@ package com.interrupt.dungeoneer.editor.selection;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.entities.Entity;
 
+/** Editor selection subsystem. */
 public class EditorSelection {
     public Entity hovered;
     public Entity picked;
     public Array<Entity> selected;
-    public TileSelection tiles;
+    //public TileSelection tiles;
 
     public EditorSelection() {
         hovered = null;
         picked = null;
         selected = new Array<Entity>();
-        tiles = new TileSelection();
+        //tiles = new TileSelection();
     }
 
     public void clear() {
