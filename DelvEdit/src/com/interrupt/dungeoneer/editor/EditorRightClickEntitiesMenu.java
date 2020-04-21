@@ -21,10 +21,10 @@ import java.util.Map.Entry;
 
 public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
-    public EditorRightClickEntitiesMenu(Skin skin, final float xPos, final float yPos, final float zPos, final EditorApplication editor, final Level level){
+    public EditorRightClickEntitiesMenu(Skin skin, final float xPos, final float yPos, final float zPos, final Level level){
         super(skin);
 
-    	if(editor.entityManager != null) {
+    	if(Editor.app.entityManager != null) {
 
     		MenuItem baseEntityMenu = new MenuItem("Basic", skin);
             MenuItem entityMenu = new MenuItem("Place Entity", skin);
@@ -39,7 +39,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
                 MenuItem menuItem = new MenuItem(basic.getClass().getSimpleName(), skin);
     			menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed (ActionEvent event) {
-						placeEntity(basic, xPos, yPos, zPos, editor.pickedSurface, editor);
+						placeEntity(basic, xPos, yPos, zPos, Editor.app.pickedSurface);
 					}
     			});
     			baseEntityMenu.addItem(menuItem);
@@ -49,7 +49,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 			HashMap<String, MenuItem> prefabCategoryMap = new HashMap<String, MenuItem>();
 			HashMap<String, MenuItem> entityCategoryMap = new HashMap<String, MenuItem>();
 
-			for(final Entry<String, OrderedMap<String, Entity>> categoryEntry : editor.entityManager.entities.entrySet()) {
+			for(final Entry<String, OrderedMap<String, Entity>> categoryEntry : Editor.app.entityManager.entities.entrySet()) {
 				MenuItem prefabCategoryMenu = prefabCategoryMap.get(categoryEntry.getKey());
 				MenuItem categoryMenu = entityCategoryMap.get(categoryEntry.getKey());
 
@@ -70,7 +70,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 							currentPath.append(part);
 						}
 						else {
-							currentPath.append("/" + part);
+							currentPath.append("/").append(part);
 						}
 
 						// Grab cached version if they exist.
@@ -106,12 +106,12 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
                     MenuItem menuItem = new MenuItem(entry.key, skin);
     		    	categoryMenu.addItem(menuItem);
 
-    		    	final Entity entity = editor.entityManager.Copy(entry.value);
+    		    	final Entity entity = Editor.app.entityManager.Copy(entry.value);
 
     		    	menuItem.addActionListener(new ActionListener() {
     					public void actionPerformed (ActionEvent event) {
     						if(entity != null) {
-								placeEntity(entity, xPos, yPos, zPos, editor.pickedSurface, editor);
+								placeEntity(entity, xPos, yPos, zPos, Editor.app.pickedSurface);
     						}
     					}
     				});
@@ -122,7 +122,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     		    	prefabMenuItem.addActionListener(new ActionListener() {
     		    		public void actionPerformed (ActionEvent event) {
     		    			Prefab prefab = new Prefab(categoryEntry.getKey(), prefabMenuItem.getText().toString());
-							placeEntity(prefab, xPos, yPos, zPos, editor.pickedSurface, editor);
+							placeEntity(prefab, xPos, yPos, zPos, Editor.app.pickedSurface);
     		    		}
     		    	});
         		}
@@ -139,7 +139,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 	    			markerItem.addActionListener(new ActionListener() {
 	    				public void actionPerformed(ActionEvent event) {
-	    					editor.addEntityMarker(marker);
+							Editor.app.addEntityMarker(marker);
 	    				}
 	    			});
     			}
@@ -156,14 +156,14 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     		addItem(prefabMenu);
     		addItem(markersMenu);
 
-    		if(editor.selectionHasEntityMarker()) {
+    		if(Editor.app.selectionHasEntityMarker()) {
     			MenuItem clearMarkers = new MenuItem("Remove Marker", skin);
     			addItem(clearMarkers);
 
     			clearMarkers.addActionListener(new ActionListener() {
     				public void actionPerformed(ActionEvent event) {
-    					editor.clearSelectedMarkers();
-                        editor.history.saveState(level);
+						Editor.app.clearSelectedMarkers();
+						Editor.app.history.saveState(level);
     				}
     			});
     		}
@@ -176,25 +176,25 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
     		carveTiles.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.doCarve();
+					Editor.app.doCarve();
 				}
     		});
 
     		paintTiles.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.doPaint();
+					Editor.app.doPaint();
 				}
     		});
 
     		pickTiles.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.doPick();
+					Editor.app.doPick();
 				}
     		});
 
     		deleteTiles.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.doDelete();
+					Editor.app.doDelete();
 				}
     		});
 
@@ -213,25 +213,25 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 			surfacePaint.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.paintSurfaceAtCursor();
+					Editor.app.paintSurfaceAtCursor();
 				}
 			});
 
 			surfaceGrabTexture.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.pickTextureAtSurface();
+					Editor.app.pickTextureAtSurface();
 				}
 			});
 
 			surfaceChangeTexture.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.pickNewSurfaceTexture();
+					Editor.app.pickNewSurfaceTexture();
 				}
 			});
 
 			floodPaintTexture.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent event) {
-					editor.fillSurfaceTexture();
+					Editor.app.fillSurfaceTexture();
 				}
 			});
 
@@ -244,7 +244,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     	}
     }
 
-    public void placeEntity(Entity entity, float x, float y, float z, EditorApplication.PickedSurface surface, EditorApplication editor) {
+    public void placeEntity(Entity entity, float x, float y, float z, EditorApplication.PickedSurface surface) {
 		entity.x = x;
 		entity.y = y;
 		entity.z = z + 0.5f;
@@ -272,10 +272,10 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 			}
 		}
 
-		editor.addEntity(entity);
+		Editor.app.addEntity(entity);
 
-		editor.refreshLights();
-		editor.history.saveState(editor.level);
+		Editor.app.refreshLights();
+		Editor.app.history.saveState(Editor.app.level);
 	}
 
     public Array<Entity> baseEntities() {

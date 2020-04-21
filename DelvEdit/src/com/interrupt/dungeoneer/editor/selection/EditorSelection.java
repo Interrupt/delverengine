@@ -1,0 +1,25 @@
+package com.interrupt.dungeoneer.editor.selection;
+
+import com.badlogic.gdx.utils.Array;
+import com.interrupt.dungeoneer.entities.Entity;
+
+public class EditorSelection {
+    public Entity picked;
+    public Array<Entity> selected;
+    public TileSelection tiles;
+
+    public EditorSelection() {
+        picked = null;
+        selected = new Array<Entity>();
+        tiles = new TileSelection();
+    }
+
+    public void clear() {
+        picked = null;
+        selected.clear();
+    }
+
+    public boolean isSelected(Entity e) {
+        return selected.contains(e, true);
+    }
+}

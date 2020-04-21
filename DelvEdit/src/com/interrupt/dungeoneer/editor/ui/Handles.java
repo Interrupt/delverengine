@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.editor.EditorApplication;
+import com.interrupt.dungeoneer.editor.Editor;
 
 public class Handles {
     public static ShapeRenderer renderer = new ShapeRenderer();
@@ -39,7 +39,7 @@ public class Handles {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glLineWidth(1f);
 
-        camera = EditorApplication.camera;
+        camera = Editor.app.camera;
 
         renderer.setProjectionMatrix(camera.combined);
         renderer.begin(ShapeRenderer.ShapeType.Line);

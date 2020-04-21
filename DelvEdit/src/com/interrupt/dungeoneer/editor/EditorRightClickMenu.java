@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
@@ -19,13 +18,12 @@ import com.interrupt.dungeoneer.game.Level;
 
 public class EditorRightClickMenu extends Scene2dMenu {
     
-    public EditorRightClickMenu(Entity e, final EditorApplication editor, final JFrame wdw, Level level) {
+    public EditorRightClickMenu(Entity e, Level level) {
         super(EditorUi.getSmallSkin());
         Skin skin = EditorUi.getSmallSkin();
     	
     	final Entity entity = e;
         final Level lvl = level;
-        final EditorApplication editorApplication = editor;
 
     	MenuItem remove = new MenuItem("Remove Entity", skin);
     	MenuItem toJson = new MenuItem("To JSON", skin);
@@ -63,16 +61,16 @@ public class EditorRightClickMenu extends Scene2dMenu {
         remove.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent event) {
 				lvl.entities.removeValue(entity, true);
-				editorApplication.refreshLights();
+				Editor.app.refreshLights();
 			}
 		});
         
         addItem(toJson);
         toJson.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
-    			JDialog dialog = new JDialog(wdw, Dialog.ModalityType.MODELESS);
+    			JDialog dialog = new JDialog(Editor.app.frame, Dialog.ModalityType.MODELESS);
 				
-				JsonViewer jsonViewer = new JsonViewer(entity, editorApplication);
+				JsonViewer jsonViewer = new JsonViewer(entity);
 				dialog.setTitle("JSON for Entity");
 			    dialog.add(jsonViewer);
 			    dialog.pack();
@@ -85,7 +83,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 			public void actionPerformed(ActionEvent event) {
 				float floorHeight = lvl.getTile((int)entity.x, (int)entity.y).getFloorHeight(entity.x, entity.y);
 				entity.z = floorHeight + 0.5f;
-				editor.refreshEntity(entity);
+				Editor.app.refreshEntity(entity);
 			}
 		});
 
@@ -94,7 +92,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 			public void actionPerformed(ActionEvent event) {
 				float ceilHeight = lvl.getTile((int)entity.x, (int)entity.y).getCeilHeight(entity.x, entity.y);
 				entity.z = ceilHeight - entity.collision.z + 0.5f;
-				editor.refreshEntity(entity);
+				Editor.app.refreshEntity(entity);
 			}
 		});
 
@@ -103,12 +101,12 @@ public class EditorRightClickMenu extends Scene2dMenu {
 			public void actionPerformed(ActionEvent event) {
 				entity.x = (int)entity.x + 0.5f;
 				entity.y = (int)entity.y + 0.5f;
-				editor.refreshEntity(entity);
+				Editor.app.refreshEntity(entity);
 			}
 		});		
     }
     
-    public EditorRightClickMenu(final Entity main, final Array<Entity> additionalSelected, final EditorApplication editor, final JFrame window, final Level level) {
+    public EditorRightClickMenu(final Entity main, final Array<Entity> additionalSelected, final Level level) {
 
         super(EditorUi.getSmallSkin());
         Skin skin = EditorUi.getSmallSkin();
@@ -129,7 +127,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 					selected.z = selected.z - main.z;
 					newGroup.entities.add(selected);
 
-					editor.markWorldAsDirty((int)selected.x, (int)selected.y, 4);
+					Editor.app.markWorldAsDirty((int)selected.x, (int)selected.y, 4);
 					
 					level.entities.removeValue(selected, true);
 				}
@@ -140,21 +138,21 @@ public class EditorRightClickMenu extends Scene2dMenu {
 				newGroup.entities.add(main);
 				
 				level.entities.removeValue(main, true);
-				editor.addEntity(newGroup);
+				Editor.app.addEntity(newGroup);
 			}
     	});
     	
     	remove.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent event) {
 				level.entities.removeValue(main, true);
-				editor.markWorldAsDirty((int)main.x, (int)main.y, 4);
+				Editor.app.markWorldAsDirty((int)main.x, (int)main.y, 4);
 				
 				for(Entity selected : additionalSelected) {
 					level.entities.removeValue(selected, true);
-					editor.markWorldAsDirty((int)selected.x, (int)selected.y, 4);
+					Editor.app.markWorldAsDirty((int)selected.x, (int)selected.y, 4);
 				}
-				
-				editor.refreshLights();
+
+				Editor.app.refreshLights();
 			}
 		});
 
@@ -175,7 +173,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 				for(Entity entity : allSelected) {
 					float floorHeight = level.getTile((int) entity.x, (int) entity.y).getFloorHeight(entity.x, entity.y);
 					entity.z = floorHeight + 0.5f;
-					editor.refreshEntity(entity);
+					Editor.app.refreshEntity(entity);
 				}
 			}
 		});
@@ -190,7 +188,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 				for(Entity entity : allSelected) {
 					float ceilHeight = level.getTile((int) entity.x, (int) entity.y).getCeilHeight(entity.x, entity.y);
 					entity.z = ceilHeight - entity.collision.z + 0.5f;
-					editor.refreshEntity(entity);
+					Editor.app.refreshEntity(entity);
 				}
 			}
 		});
@@ -205,7 +203,7 @@ public class EditorRightClickMenu extends Scene2dMenu {
 				for(Entity entity : allSelected) {
 					entity.x = (int)entity.x + 0.5f;
 					entity.y = (int)entity.y + 0.5f;
-					editor.refreshEntity(entity);
+					Editor.app.refreshEntity(entity);
 				}
 			}
 		});

@@ -13,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorArt;
-import com.interrupt.dungeoneer.editor.EditorApplication;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
@@ -26,17 +26,13 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 
 public class PropertiesMenu extends Table {
-    private final EditorApplication editorApplication;
     public ArrayMap<String, Array<Field>> arrayMap = new ArrayMap<String, Array<Field>>();
     private HashMap<Field, Actor> fieldMap = new HashMap<Field, Actor>();
 
-    private final Array<Entity> selectedEntities;
     private final Array<Class> classes;
 
-    public PropertiesMenu(Skin skin, final EditorApplication editorApplication, final Array<Entity> entities) {
+    public PropertiesMenu(Skin skin, final Array<Entity> entities) {
         super(skin);
-        this.editorApplication = editorApplication;
-        this.selectedEntities = entities;
         final Entity entity = entities.get(0);
 
         // add all of the classes from the first entity
@@ -144,7 +140,7 @@ public class PropertiesMenu extends Table {
                                     }
                                 }.setFileNameEnabled(false);
 
-                                editorApplication.ui.getStage().addActor(picker);
+                                Editor.app.ui.getStage().addActor(picker);
                                 picker.show(getStage());
                             }
                         });
@@ -214,11 +210,11 @@ public class PropertiesMenu extends Table {
                                             applyChanges(field, new Material(atlas, (byte)v));
                                         }
 
-                                        editorApplication.ui.showEntityPropertiesMenu(editorApplication, false);
+                                        Editor.app.ui.showEntityPropertiesMenu(false);
                                     }
                                 };
-                                editorApplication.ui.getStage().addActor(picker);
-                                picker.show(editorApplication.ui.getStage());
+                                Editor.app.ui.getStage().addActor(picker);
+                                picker.show(Editor.app.ui.getStage());
                             }
                         });
 
@@ -276,11 +272,11 @@ public class PropertiesMenu extends Table {
                                         }
 
                                         applyChanges(field, value.toString());
-                                        editorApplication.ui.showEntityPropertiesMenu(editorApplication, false);
+                                        Editor.app.ui.showEntityPropertiesMenu(false);
                                     }
                                };
-                               editorApplication.ui.getStage().addActor(picker);
-                               picker.show(editorApplication.ui.getStage());
+                               Editor.app.ui.getStage().addActor(picker);
+                               picker.show(Editor.app.ui.getStage());
                            }
                        });
 
@@ -563,7 +559,7 @@ public class PropertiesMenu extends Table {
         return new ChangeListener() {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 applyChanges(currentField);
-                editorApplication.ui.showEntityPropertiesMenu(editorApplication, false);
+                Editor.app.ui.showEntityPropertiesMenu(false);
             }
         };
     }
@@ -572,7 +568,7 @@ public class PropertiesMenu extends Table {
         try {
             if (currentField.getType() == int.class) {
                 if (val.equals("")) val = "0";
-                for (Entity entity : selectedEntities) {
+                for (Entity entity : Editor.selection.selected) {
                     currentField.set(entity, Integer.parseInt(val));
                 }
             }
@@ -585,7 +581,7 @@ public class PropertiesMenu extends Table {
     public void applyChanges(final Field currentField, Material val) {
         try {
             if (currentField.getType() == Material.class && val != null) {
-                for (Entity entity : selectedEntities) {
+                for (Entity entity : Editor.selection.selected) {
                     currentField.set(entity, new Material(val.texAtlas, val.tex));
                 }
             }
@@ -599,7 +595,7 @@ public class PropertiesMenu extends Table {
         try {
             Gdx.app.debug("DelvEdit", "Applying change for " + currentField.getName());
 
-            if(selectedEntities != null && fieldMap.containsKey(currentField)) {
+            if(Editor.selection.selected != null && fieldMap.containsKey(currentField)) {
                 Actor actor = fieldMap.get(currentField);
 
                 // apply based on the type of input
@@ -608,30 +604,30 @@ public class PropertiesMenu extends Table {
 
                     if(currentField.getType() == int.class) {
                         if(val.equals("")) val = "0";
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, Integer.parseInt(val));
                         }
                     }
                     else if(currentField.getType() == Integer.class) {
                         if(val.equals("")) val = null;
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, Integer.parseInt(val));
                         }
                     }
                     else if(currentField.getType() == float.class) {
                         if(val.equals("")) val = "0";
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, Float.parseFloat(val));
                         }
                     }
                     else if(currentField.getType() == double.class) {
                         if(val.equals("")) val = "0";
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, Double.parseDouble(val));
                         }
                     }
                     else if(currentField.getType() == String.class) {
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, val);
                         }
                     }
@@ -639,7 +635,7 @@ public class PropertiesMenu extends Table {
                 else if(actor instanceof TextButton) {
                     String val = ((TextButton)actor).getText().toString();
                     if(currentField.getType() == String.class) {
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, val);
                         }
                     }
@@ -647,17 +643,17 @@ public class PropertiesMenu extends Table {
                 else if(actor instanceof SelectBox) {
                     String val = ((SelectBox)actor).getSelected().toString();
                     if(currentField.getType() == boolean.class) {
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, Boolean.parseBoolean(val));
                         }
                     }
                     else if(currentField.getType().isEnum()) {
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, Enum.valueOf((Class<Enum>) currentField.getType(), val));
                         }
                     }
                     else if(currentField.getType() == String.class) {
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, val);
                         }
                     }
@@ -665,7 +661,7 @@ public class PropertiesMenu extends Table {
                 else if(actor instanceof EditorColorPicker) {
                     EditorColorPicker picker = (EditorColorPicker)actor;
 
-                    for(Entity entity : selectedEntities) {
+                    for(Entity entity : Editor.selection.selected) {
                         currentField.set(entity, new Color(picker.getValue()));
                     }
                 }
@@ -681,7 +677,7 @@ public class PropertiesMenu extends Table {
                         if(y.equals("")) y = "0";
                         if(z.equals("")) z = "0";
 
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, new Vector3(Float.parseFloat(x), Float.parseFloat(y), Float.parseFloat(z)));
                         }
                     }
@@ -694,16 +690,16 @@ public class PropertiesMenu extends Table {
                         if(g.equals("")) g = "0";
                         if(b.equals("")) b = "0";
 
-                        for(Entity entity : selectedEntities) {
+                        for(Entity entity : Editor.selection.selected) {
                             currentField.set(entity, new Color(Float.parseFloat(r) / 255f, Float.parseFloat(g) / 255f, Float.parseFloat(b) / 255f, 1f));
                         }
                     }
                 }
             }
 
-            editorApplication.refreshLights();
+            Editor.app.refreshLights();
 
-            for(Entity entity : selectedEntities) {
+            for(Entity entity : Editor.selection.selected) {
                 if (entity.drawable != null) entity.drawable.refresh();
 
                 if (entity instanceof ProjectedDecal) {

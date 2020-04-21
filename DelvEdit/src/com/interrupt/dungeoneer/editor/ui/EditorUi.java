@@ -465,17 +465,13 @@ public class EditorUi {
         });
     }
 
-    public void showEntityPropertiesMenu(EditorApplication editorApplication) {
-        showEntityPropertiesMenu(editorApplication, true);
-    }
-
-    public void showEntityPropertiesMenu(EditorApplication editorApplication, boolean resetScroll) {
-        if(editorApplication.getPickedEntity() != null) {
+    public void showEntityPropertiesMenu(boolean resetScroll) {
+        if(Editor.selection.picked != null) {
             Array<Entity> selected = new Array<Entity>();
-            selected.add(editorApplication.getPickedEntity());
-            selected.addAll(editorApplication.getAdditionalSelectedEntities());
+            selected.add(Editor.selection.picked);
+            selected.addAll(Editor.selection.selected);
 
-            propertiesMenu = new PropertiesMenu(smallSkin, editorApplication, selected);
+            propertiesMenu = new PropertiesMenu(smallSkin, selected);
 
             if(entityPropertiesPane == null) {
 
@@ -619,17 +615,17 @@ public class EditorUi {
             float currentTime = Editor.app.time;
             if (currentTime - rightClickTime > 0.5) return;
 
-            if (Editor.app.getPickedEntity() != null || Editor.app.getHoveredEntity() != null) {
-                Entity sel = Editor.app.getPickedEntity();
+            if (Editor.selection.picked != null || Editor.app.getHoveredEntity() != null) {
+                Entity sel = Editor.selection.picked;
                 if (sel == null) sel = Editor.app.getHoveredEntity();
 
                 if (Editor.app.getMoveMode() == EditorApplication.MoveMode.ROTATE) {
                     Editor.app.clearEntitySelection();
-                } else if (Editor.app.getAdditionalSelectedEntities().size == 0) {
-                    EditorRightClickMenu menu = new EditorRightClickMenu(sel, Editor.app, null, Editor.app.getLevel());
+                } else if (Editor.selection.selected.size == 0) {
+                    EditorRightClickMenu menu = new EditorRightClickMenu(sel, Editor.app.getLevel());
                     showContextMenu(x, y, menu);
                 } else {
-                    EditorRightClickMenu menu = new EditorRightClickMenu(sel, Editor.app.getAdditionalSelectedEntities(), Editor.app, null, Editor.app.getLevel());
+                    EditorRightClickMenu menu = new EditorRightClickMenu(sel, Editor.selection.selected, Editor.app.getLevel());
                     showContextMenu(x, y, menu);
                 }
             } else {
@@ -638,7 +634,7 @@ public class EditorUi {
                         Editor.app.getIntersection().x,
                         Editor.app.getIntersection().z,
                         Editor.app.getIntersection().y,
-                        Editor.app, Editor.app.getLevel()));
+                        Editor.app.getLevel()));
             }
         }
     }
