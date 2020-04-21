@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.editor.ui;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
@@ -21,6 +22,7 @@ import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
+import org.lwjgl.LWJGLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -56,6 +58,19 @@ public class PropertiesMenu extends Table {
         classes.removeAll(nonCommon, true);
 
         try {
+            // Show entity name as pane header.
+            String[] nameParts = entity.getClass().getName().split("\\.");
+
+            String entityName = "Unknown";
+            if (nameParts.length > 0) {
+                entityName = nameParts[nameParts.length - 1];
+            }
+
+            add(new Label(entityName, EditorUi.mediumSkin))
+                    .align(Align.left)
+                    .padLeft(-12f);
+            row();
+
             // gather all of the fields into groups
             for (Class oClass : classes) {
                 Field[] fields = oClass.getDeclaredFields();
@@ -334,6 +349,55 @@ public class PropertiesMenu extends Table {
                                     tf.setTextFieldFilter(new DecimalsFilter());
                                 }
                                 return false;
+                            }
+                        });
+
+                        // Allow drag on label to scrub value.
+                        label.addListener(new InputListener() {
+                            private final DecimalFormat format = new DecimalFormat("##.##");
+                            private float firstX;
+                            private float firstY;
+                            private float lastX;
+
+                            @Override
+                            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                                firstX = Gdx.input.getX();
+                                firstY = Gdx.input.getY();
+                                lastX = x;
+
+                                if (!Gdx.input.isCursorCatched()) {
+                                    Gdx.input.setCursorCatched(true);
+                                }
+
+                                return true;
+                            }
+
+                            @Override
+                            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                                if (Gdx.input.isCursorCatched()) {
+                                    Gdx.input.setCursorCatched(false);
+                                }
+
+                                Gdx.input.setCursorPosition((int) firstX, (int) firstY);
+                                if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
+                                    Gdx.input.setCursorPosition((int) firstX, Gdx.graphics.getHeight() - 1 - (int) firstY);
+                                }
+                            }
+
+                            @Override
+                            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                                float dx = x - lastX;
+
+                                double dval = 0;
+                                if(!tf.getText().equals("")) dval = Double.parseDouble(tf.getText());
+                                dval += 0.1 * dx / 10;
+                                tf.setTextFieldFilter(null);
+                                tf.setText(format.format(dval));
+                                tf.setTextFieldFilter(new DecimalsFilter());
+
+                                applyChanges(field);
+
+                                lastX = x;
                             }
                         });
 

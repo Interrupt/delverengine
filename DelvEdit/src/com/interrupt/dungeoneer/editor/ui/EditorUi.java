@@ -3,13 +3,12 @@ package com.interrupt.dungeoneer.editor.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
@@ -19,6 +18,8 @@ import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorFrame;
 import com.interrupt.dungeoneer.editor.EditorRightClickEntitiesMenu;
 import com.interrupt.dungeoneer.editor.EditorRightClickMenu;
+import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
+import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
@@ -164,6 +165,9 @@ public class EditorUi {
                 };
 
                 newLevelDialog.show(stage);
+
+                // Dialog captures input, reset to a good state.
+                editorFrame.editorInput.resetKeys();
             }
         };
 
@@ -213,97 +217,187 @@ public class EditorUi {
             }
         };
 
+        MenuItem openRecent = new DynamicMenuItem("Open Recent", smallSkin, new DynamicMenuItemAction() {
+            private String mostRecentFile = null;
+
+            @Override
+            public boolean isDirty() {
+                String first = "";
+
+                if (editor.editorOptions.recentlyOpenedFiles.size > 0) {
+                    first = editor.editorOptions.recentlyOpenedFiles.first();
+                }
+
+                return !first.equals(mostRecentFile);
+            }
+
+            @Override
+            public void updateMenuItem(MenuItem item) {
+                // Update most recent file. Used for isDirty check.
+                if (editor.editorOptions.recentlyOpenedFiles.size > 0) {
+                    mostRecentFile = editor.editorOptions.recentlyOpenedFiles.first();
+                }
+                else {
+                    mostRecentFile = "";
+                }
+
+                // Clear existing items for a clean rebuild.
+                if (item.subMenu != null) {
+                    item.subMenu.items.clear();
+                }
+
+                // Build sequence of recent level menu items.
+                int recentFilesAdded = 0;
+                for (final String recentFile : editor.editorOptions.recentlyOpenedFiles) {
+                    item.addItem(
+                        new MenuItem(recentFile, smallSkin, new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                FileHandle fh = Gdx.files.absolute(recentFile);
+                                editor.openLevel(fh);
+                            }
+                        })
+                    );
+
+                    recentFilesAdded++;
+
+                    int maximumFilesToShow = 10;
+                    if (recentFilesAdded >= maximumFilesToShow) {
+                        break;
+                    }
+                }
+
+                if (recentFilesAdded == 0) {
+                    MenuItem mi = new MenuItem("No Recent Files", smallSkin);
+                    mi.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
+                    item.addItem(mi);
+                }
+
+                item.addSeparator();
+                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        editor.editorOptions.recentlyOpenedFiles.clear();
+                    }
+                }));
+            }
+        });
+
         // make the menu bar
         menuBar = new Scene2dMenuBar(smallSkin);
         menuBar.addItem(new MenuItem("File", smallSkin)
-            .addItem(new MenuItem("Save", smallSkin, editor.saveAction).setAccelerator(new MenuAccelerator(Keys.S, true, false)))
-            .addItem(new MenuItem("Save As...", smallSkin, editor.saveAsAction).setAccelerator(new MenuAccelerator(Keys.S, true, true)))
             .addItem(new MenuItem("New", smallSkin, newWindowAction).setAccelerator(new MenuAccelerator(Keys.N, true, false)))
             .addItem(new MenuItem("Open", smallSkin, editor.openAction).setAccelerator(new MenuAccelerator(Keys.O, true, false)))
+            .addItem(openRecent)
+            .addSeparator()
+            .addItem(new MenuItem("Save", smallSkin, editor.saveAction).setAccelerator(new MenuAccelerator(Keys.S, true, false)))
+            .addItem(new MenuItem("Save As...", smallSkin, editor.saveAsAction).setAccelerator(new MenuAccelerator(Keys.S, true, true)))
+            .addSeparator()
+            .addItem(new MenuItem("Exit", smallSkin, editor.exitAction))
         );
 
+        MenuItem.acceleratorItems.add(new MenuItem("Delete", smallSkin, editor.deleteAction).setAccelerator(new MenuAccelerator(Keys.FORWARD_DEL, false, false)));
+
         menuBar.addItem(new MenuItem("Edit", smallSkin)
-                        .addItem(new MenuItem("Undo", smallSkin, editor.undoAction).setAccelerator(new MenuAccelerator(Keys.Z, true, false)))
-                        .addItem(new MenuItem("Redo", smallSkin, editor.redoAction).setAccelerator(new MenuAccelerator(Keys.Y, true, false)))
-                        .addItem(new MenuItem("Copy", smallSkin, editor.copyAction).setAccelerator(new MenuAccelerator(Keys.C, true, false)))
-                        .addItem(new MenuItem("Paste", smallSkin, editor.pasteAction).setAccelerator(new MenuAccelerator(Keys.V, true, false)))
-                        .addSeparator()
-                        .addItem(new MenuItem("Carve Tiles", smallSkin, editor.carveAction).setAccelerator(new MenuAccelerator(Keys.ENTER, false, false)))
-                        .addItem(new MenuItem("Paint Tiles", smallSkin, editor.paintAction).setAccelerator(new MenuAccelerator(Keys.ENTER, false, true)))
-                        .addItem(new MenuItem("Delete", smallSkin, editor.deleteAction).setAccelerator(new MenuAccelerator(Keys.DEL, false, false)))
-                        .addItem(new MenuItem("Pick Textures", smallSkin, pickAction).setAccelerator(new MenuAccelerator(Keys.G, false, false)))
-                        .addItem(new MenuItem("Reset Selection", smallSkin, editor.escapeAction).setAccelerator(new MenuAccelerator(Keys.ESCAPE, false, false)))
-                        .addSeparator()
-                        .addItem(new MenuItem("Height Edit Mode", smallSkin)
-                                        .addItem(new MenuItem("Plane", smallSkin, editor.planeHeightAction))
-                                        .addItem(new MenuItem("Vertex", smallSkin, editor.vertexHeightAction))
-                                        .addItem(new MenuItem("Toggle", smallSkin, editor.vertexToggleAction).setAccelerator(new MenuAccelerator(Keys.V, false, false)))
-                        )
-                        .addItem(new MenuItem("Rotate Texture", smallSkin)
-                                        .addItem(new MenuItem("Floor", smallSkin, editor.rotateFloorTexAction).setAccelerator(new MenuAccelerator(Keys.T, false, false)))
-                                        .addItem(new MenuItem("Ceiling", smallSkin, editor.rotateCeilTexAction).setAccelerator(new MenuAccelerator(Keys.T, false, true)))
-                        )
-                        .addItem(new MenuItem("Surface", smallSkin)
-                                .addItem(new MenuItem("Paint Surface Texture", smallSkin, editor.paintWallAction).setAccelerator(new MenuAccelerator(Keys.NUM_1, false, false)))
-                                .addItem(new MenuItem("Grab Surface Texture", smallSkin, editor.pickWallAction).setAccelerator(new MenuAccelerator(Keys.NUM_2, false, false)))
-                                .addItem(new MenuItem("Pick Surface Texture", smallSkin, editor.pickNewWallTexAction).setAccelerator(new MenuAccelerator(Keys.NUM_2, false, true)))
-                                .addItem(new MenuItem("Flood Fill Surface Texture", smallSkin, editor.fillTextureAction).setAccelerator(new MenuAccelerator(Keys.NUM_1, false, true)))
-                        )
-                        .addItem(new MenuItem("Tiles", smallSkin)
-                                .addItem(new MenuItem("Raise Floor", smallSkin, editor.raiseFloorAction).setAccelerator(new MenuAccelerator(Keys.NUM_3, false, false)))
-                                .addItem(new MenuItem("Lower Floor", smallSkin, editor.lowerFloorAction).setAccelerator(new MenuAccelerator(Keys.NUM_3, false, true)))
-                                .addItem(new MenuItem("Raise Ceiling", smallSkin, editor.raiseCeilingAction).setAccelerator(new MenuAccelerator(Keys.NUM_4, false, false)))
-                                .addItem(new MenuItem("Lower Ceiling", smallSkin, editor.lowerCeilingAction).setAccelerator(new MenuAccelerator(Keys.NUM_4, false, true)))
-                                .addSeparator()
-                                .addItem(new MenuItem("Move North", smallSkin, editor.moveTileNorthAction).setAccelerator(new MenuAccelerator(Keys.UP, false, true)))
-                                .addItem(new MenuItem("Move South", smallSkin, editor.moveTileSouthAction).setAccelerator(new MenuAccelerator(Keys.DOWN, false, true)))
-                                .addItem(new MenuItem("Move East", smallSkin, editor.moveTileEastAction).setAccelerator(new MenuAccelerator(Keys.LEFT, false, true)))
-                                .addItem(new MenuItem("Move West", smallSkin, editor.moveTileWestAction).setAccelerator(new MenuAccelerator(Keys.RIGHT, false, true)))
-                                .addItem(new MenuItem("Move Up", smallSkin, editor.moveTileUpAction).setAccelerator(new MenuAccelerator(Keys.E, false, true)))
-                                .addItem(new MenuItem("Move Down", smallSkin, editor.moveTileDownAction).setAccelerator(new MenuAccelerator(Keys.Q, false, true)))
-                        )
-                        .addItem(new MenuItem("Rotate Wall Angle", smallSkin, editor.rotateWallAngle).setAccelerator(new MenuAccelerator(Keys.U, false, false)))
-                        .addItem(new MenuItem("Flatten", smallSkin)
-                                .addItem(new MenuItem("Floor", smallSkin, editor.flattenFloor).setAccelerator(new MenuAccelerator(Keys.F, false, false)))
-                                .addItem(new MenuItem("Ceiling", smallSkin, editor.flattenCeiling).setAccelerator(new MenuAccelerator(Keys.F, false, true))))
-                        .addSeparator()
-                        .addItem(new MenuItem("Rotate Level", smallSkin)
-                                        .addItem(new MenuItem("Clockwise", smallSkin, editor.rotateLeftAction))
-                                        .addItem(new MenuItem("Counter-Clockwise", smallSkin, editor.rotateRightAction)))
-                        .addItem(new MenuItem("Move Mode", smallSkin)
-                                        .addItem(new MenuItem("Clamp X", smallSkin, editor.xDragMode).setAccelerator(new MenuAccelerator(Keys.X, false, false)))
-                                        .addItem(new MenuItem("Clamp Y", smallSkin, editor.yDragMode).setAccelerator(new MenuAccelerator(Keys.Y, false, false)))
-                                        .addItem(new MenuItem("Clamp Z", smallSkin, editor.zDragMode).setAccelerator(new MenuAccelerator(Keys.Z, false, false)))
-                                        .addItem(new MenuItem("Rotate", smallSkin, editor.rotateMode).setAccelerator(new MenuAccelerator(Keys.R, false, false)))
-                        )
-                        .addItem(new MenuItem("Generate Room", smallSkin, makeAnotherRoomGeneratorAction(editorFrame)).setAccelerator(new MenuAccelerator(Keys.G, false, true))
-                                        .addItem(new MenuItem("Dungeon Room", smallSkin, makeRoomGeneratorAction("DUNGEON_ROOMS", editorFrame)))
-                                        .addItem(new MenuItem("Cave Room", smallSkin, makeRoomGeneratorAction("CAVE_ROOMS", editorFrame)))
-                                        .addItem(new MenuItem("Sewer Room", smallSkin, makeRoomGeneratorAction("SEWER_ROOMS", editorFrame)))
-                                        .addItem(new MenuItem("Temple Room", smallSkin, makeRoomGeneratorAction("TEMPLE_ROOMS", editorFrame)))
-                        )
-                        .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction(editorFrame))
-                            .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS", editorFrame)))
-                            .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS", editorFrame)))
-                            .addItem(new MenuItem("Sewer", smallSkin, makeLevelGeneratorAction("SEWER", "SEWER_ROOMS", editorFrame)))
-                            .addItem(new MenuItem("Temple", smallSkin, makeLevelGeneratorAction("UNDEAD", "TEMPLE_ROOMS", editorFrame)))
+            .addItem(new MenuItem("Undo", smallSkin, editor.undoAction).setAccelerator(new MenuAccelerator(Keys.Z, true, false)))
+            .addItem(new MenuItem("Redo", smallSkin, editor.redoAction).setAccelerator(new MenuAccelerator(Keys.Y, true, false)))
+            .addSeparator()
+            .addItem(new MenuItem("Copy", smallSkin, editor.copyAction).setAccelerator(new MenuAccelerator(Keys.C, true, false)))
+            .addItem(new MenuItem("Paste", smallSkin, editor.pasteAction).setAccelerator(new MenuAccelerator(Keys.V, true, false)))
+        );
+
+        menuBar.addItem(
+            new MenuItem("Tile", smallSkin)
+                .addItem(new MenuItem("Carve", smallSkin, editor.carveAction).setAccelerator(new MenuAccelerator(Keys.ENTER, false, false)))
+                .addItem(new MenuItem("Paint", smallSkin, editor.paintAction).setAccelerator(new MenuAccelerator(Keys.ENTER, false, true)))
+                .addItem(new MenuItem("Delete", smallSkin, editor.deleteAction).setAccelerator(new MenuAccelerator(Keys.DEL, false, false)))
+                .addItem(new MenuItem("Deselect", smallSkin, editor.escapeAction).setAccelerator(new MenuAccelerator(Keys.ESCAPE, false, false)))
+                .addSeparator()
+                .addItem(new MenuItem("Height Edit Mode", smallSkin)
+                    .addItem(new MenuItem("Plane", smallSkin, editor.planeHeightAction))
+                    .addItem(new MenuItem("Vertex", smallSkin, editor.vertexHeightAction))
+                    .addItem(new MenuItem("Toggle", smallSkin, editor.vertexToggleAction).setAccelerator(new MenuAccelerator(Keys.V, false, false)))
                 )
+                .addItem(new MenuItem("Raise/Lower", smallSkin)
+                    .addItem(new MenuItem("Raise Floor", smallSkin, editor.raiseFloorAction).setAccelerator(new MenuAccelerator(Keys.NUM_3, false, false)))
+                    .addItem(new MenuItem("Lower Floor", smallSkin, editor.lowerFloorAction).setAccelerator(new MenuAccelerator(Keys.NUM_3, false, true)))
+                    .addItem(new MenuItem("Raise Ceiling", smallSkin, editor.raiseCeilingAction).setAccelerator(new MenuAccelerator(Keys.NUM_4, false, false)))
+                    .addItem(new MenuItem("Lower Ceiling", smallSkin, editor.lowerCeilingAction).setAccelerator(new MenuAccelerator(Keys.NUM_4, false, true)))
+                )
+                .addItem(new MenuItem("Move", smallSkin)
+                    .addItem(new MenuItem("Move North", smallSkin, editor.moveTileNorthAction).setAccelerator(new MenuAccelerator(Keys.UP, false, true)))
+                    .addItem(new MenuItem("Move South", smallSkin, editor.moveTileSouthAction).setAccelerator(new MenuAccelerator(Keys.DOWN, false, true)))
+                    .addItem(new MenuItem("Move East", smallSkin, editor.moveTileEastAction).setAccelerator(new MenuAccelerator(Keys.LEFT, false, true)))
+                    .addItem(new MenuItem("Move West", smallSkin, editor.moveTileWestAction).setAccelerator(new MenuAccelerator(Keys.RIGHT, false, true)))
+                    .addSeparator()
+                    .addItem(new MenuItem("Move Up", smallSkin, editor.moveTileUpAction).setAccelerator(new MenuAccelerator(Keys.E, false, true)))
+                    .addItem(new MenuItem("Move Down", smallSkin, editor.moveTileDownAction).setAccelerator(new MenuAccelerator(Keys.Q, false, true)))
+                )
+                .addItem(new MenuItem("Rotate Wall Angle", smallSkin, editor.rotateWallAngle).setAccelerator(new MenuAccelerator(Keys.U, false, false)))
+                .addItem(new MenuItem("Flatten", smallSkin)
+                    .addItem(new MenuItem("Floor", smallSkin, editor.flattenFloor).setAccelerator(new MenuAccelerator(Keys.F, false, false)))
+                    .addItem(new MenuItem("Ceiling", smallSkin, editor.flattenCeiling).setAccelerator(new MenuAccelerator(Keys.F, false, true)))
+                )
+                .addSeparator()
+                .addItem(new MenuItem("Pick Textures", smallSkin, pickAction).setAccelerator(new MenuAccelerator(Keys.G, false, false)))
+                .addItem(new MenuItem("Rotate Texture", smallSkin)
+                    .addItem(new MenuItem("Floor", smallSkin, editor.rotateFloorTexAction).setAccelerator(new MenuAccelerator(Keys.T, false, false)))
+                    .addItem(new MenuItem("Ceiling", smallSkin, editor.rotateCeilTexAction).setAccelerator(new MenuAccelerator(Keys.T, false, true)))
+                )
+                .addItem(new MenuItem("Surface", smallSkin)
+                    .addItem(new MenuItem("Paint Surface Texture", smallSkin, editor.paintWallAction).setAccelerator(new MenuAccelerator(Keys.NUM_1, false, false)))
+                    .addItem(new MenuItem("Grab Surface Texture", smallSkin, editor.pickWallAction).setAccelerator(new MenuAccelerator(Keys.NUM_2, false, false)))
+                    .addItem(new MenuItem("Pick Surface Texture", smallSkin, editor.pickNewWallTexAction).setAccelerator(new MenuAccelerator(Keys.NUM_2, false, true)))
+                    .addItem(new MenuItem("Flood Fill Surface Texture", smallSkin, editor.fillTextureAction).setAccelerator(new MenuAccelerator(Keys.NUM_1, false, true)))
+                )
+        );
+
+        menuBar.addItem(
+            new MenuItem("Entity", smallSkin)
+                .addItem(new MenuItem("Delete", smallSkin, editor.deleteAction).setAccelerator(new MenuAccelerator(Keys.DEL, false, false)))
+                .addItem(new MenuItem("Deselect", smallSkin, editor.escapeAction).setAccelerator(new MenuAccelerator(Keys.ESCAPE, false, false)))
+                .addSeparator()
+                .addItem(new MenuItem("Move", smallSkin)
+                    .addItem(new MenuItem("Constrain to X-axis", smallSkin, editor.xDragMode).setAccelerator(new MenuAccelerator(Keys.X, false, false)))
+                    .addItem(new MenuItem("Constrain to Y-axis", smallSkin, editor.yDragMode).setAccelerator(new MenuAccelerator(Keys.Y, false, false)))
+                    .addItem(new MenuItem("Constrain to Z-axis", smallSkin, editor.zDragMode).setAccelerator(new MenuAccelerator(Keys.Z, false, false)))
+                )
+                .addItem(new MenuItem("Rotate", smallSkin, editor.rotateMode).setAccelerator(new MenuAccelerator(Keys.R, false, false)))
         );
 
         menuBar.addItem(
             new MenuItem("View", smallSkin)
                 .addItem(new MenuItem("Toggle Simulation", smallSkin, editor.toggleSimulation).setAccelerator(new MenuAccelerator(Keys.B, false, false)))
-                .addItem(new MenuItem("Toggle Collision Boxes", smallSkin, editor.toggleCollisionBoxesAction))
+                .addItem(new MenuItem("Toggle Gizmos", smallSkin, editor.toggleGizmosAction))
                 .addItem(new MenuItem("Toggle Lights", smallSkin, editor.toggleLightsAction).setAccelerator(new MenuAccelerator(Keys.L, false, false)))
+                .addSeparator()
+                .addItem(new MenuItem("View Selected", smallSkin, editor.viewSelectedAction).setAccelerator(new MenuAccelerator(Keys.SPACE, false, false)))
         );
 
         menuBar.addItem(
-                new MenuItem("Level", smallSkin)
-                        .addItem(new MenuItem("Test Level", smallSkin, editor.playAction).setAccelerator(new MenuAccelerator(Keys.P, false, false)))
-                        .addSeparator()
-                        .addItem(new MenuItem("Resize Level", smallSkin, resizeWindowAction))
-                        .addItem(new MenuItem("Set Theme", smallSkin, setThemeAction))
-                        .addItem(new MenuItem("Set Fog Settings", smallSkin, setFogSettingsAction))
+            new MenuItem("Level", smallSkin)
+                .addItem(new MenuItem("Test Level", smallSkin, editor.playAction).setAccelerator(new MenuAccelerator(Keys.P, false, false)))
+                .addSeparator()
+                .addItem(new MenuItem("Rotate Level", smallSkin)
+                    .addItem(new MenuItem("Clockwise", smallSkin, editor.rotateLeftAction))
+                    .addItem(new MenuItem("Counter-Clockwise", smallSkin, editor.rotateRightAction)))
+                .addItem(new MenuItem("Resize Level", smallSkin, resizeWindowAction))
+                .addSeparator()
+                .addItem(new MenuItem("Set Theme", smallSkin, setThemeAction))
+                .addItem(new MenuItem("Set Fog Settings", smallSkin, setFogSettingsAction))
+                .addSeparator()
+                .addItem(new MenuItem("Generate Room", smallSkin, makeAnotherRoomGeneratorAction(editorFrame)).setAccelerator(new MenuAccelerator(Keys.G, false, true))
+                    .addItem(new MenuItem("Dungeon Room", smallSkin, makeRoomGeneratorAction("DUNGEON_ROOMS", editorFrame)))
+                    .addItem(new MenuItem("Cave Room", smallSkin, makeRoomGeneratorAction("CAVE_ROOMS", editorFrame)))
+                    .addItem(new MenuItem("Sewer Room", smallSkin, makeRoomGeneratorAction("SEWER_ROOMS", editorFrame)))
+                    .addItem(new MenuItem("Temple Room", smallSkin, makeRoomGeneratorAction("TEMPLE_ROOMS", editorFrame)))
+                )
+                .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction(editorFrame))
+                    .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS", editorFrame)))
+                    .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS", editorFrame)))
+                    .addItem(new MenuItem("Sewer", smallSkin, makeLevelGeneratorAction("SEWER", "SEWER_ROOMS", editorFrame)))
+                    .addItem(new MenuItem("Temple", smallSkin, makeLevelGeneratorAction("UNDEAD", "TEMPLE_ROOMS", editorFrame)))
+                )
         );
 
         if(SteamApi.api.isAvailable()) {
@@ -314,6 +408,15 @@ public class EditorUi {
         }
 
         menuBar.pack();
+
+        menuBar.playButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getType().name().equals("touchUp")) {
+                    editorFrame.testLevel();
+                }
+            };
+        });
 
         mainTable.setZIndex(1000);
         mainTable.add(menuBar);
@@ -396,6 +499,32 @@ public class EditorUi {
                 propertiesCell = sidebarTable.add(entityPropertiesPane);
 
                 stage.addActor(sidebarTable);
+
+                // Only listen to events when mouse is hovering over ScrollPane.
+                entityPropertiesPane.addListener(new EventListener() {
+                    @Override
+                    public boolean handle(Event event) {
+                        if(event instanceof InputEvent) {
+                            if (((InputEvent) event).getType() == InputEvent.Type.enter) {
+                                event.getStage().setScrollFocus(entityPropertiesPane);
+                            }
+                        }
+                        return false;
+                    }
+                });
+
+                // Stop listening to events when mouse leaves ScrollPane.
+                entityPropertiesPane.addListener(new EventListener() {
+                    @Override
+                    public boolean handle(Event event) {
+                        if(event instanceof InputEvent) {
+                            if (((InputEvent) event).getType() == InputEvent.Type.exit) {
+                                event.getStage().setScrollFocus(null);
+                            }
+                        }
+                        return false;
+                    }
+                });
             }
             else {
                 entityPropertiesPane.setWidget(propertiesMenu);
@@ -407,7 +536,6 @@ public class EditorUi {
             resize(stage.getWidth(), stage.getHeight());
 
             sidebarTable.setVisible(true);
-            stage.setScrollFocus(entityPropertiesPane);
         }
         else if(entityPropertiesPane != null) {
             sidebarTable.setVisible(false);
@@ -418,6 +546,8 @@ public class EditorUi {
     public void resize(float width, float height) {
         viewport.setWorldSize(width, height);
         viewport.update((int)width, (int)height, true);
+
+        menuBar.refresh();
 
         mainTable.pack();
 

@@ -20,7 +20,6 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -34,6 +33,8 @@ import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
+import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
+import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
@@ -69,6 +70,7 @@ import com.noise.PerlinNoise;
 import com.badlogic.gdx.math.MathUtils;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
 public class EditorFrame implements ApplicationListener {
@@ -210,7 +212,7 @@ public class EditorFrame implements ApplicationListener {
 
 	private boolean rightClickWasDown = false;
 
-    public PerspectiveCamera camera = new PerspectiveCamera();
+    public static PerspectiveCamera camera = new PerspectiveCamera();
 
     protected Pixmap wallPixmap;
     protected Texture selectionTex;
@@ -229,11 +231,16 @@ public class EditorFrame implements ApplicationListener {
     float camY = 8;
     float camZ = 6.5f;
 
+    float orbitDistance = 4.0f;
+
     float rotX = 3.14159f;
     float rotY = 1.4f;
     double rota = 0;
 	double rotya = 0;
 	float rotYClamp = 1.571f;
+
+	float scrollSpeed = 0.4f;
+	float za = 0f;
 
 	double walkSpeed = 0.15;
 	double rotSpeed = 0.009;
@@ -315,7 +322,7 @@ public class EditorFrame implements ApplicationListener {
     private ShapeRenderer pointRenderer;
     private ShapeRenderer boxRenderer;
 
-    private boolean showCollisionBoxes = false;
+    private boolean showGizmos = false;
 
 	Color hoveredColor = new Color(0.5f, 1f, 0.5f, 1f);
 	Color selectedColor = new Color(1f, 0.5f, 0.5f, 1f);
@@ -329,10 +336,6 @@ public class EditorFrame implements ApplicationListener {
 	ControlPoint pickedControlPoint = null;
 	public boolean movingControlPoint = false;
 
-	Color colorDarkRed = new Color(0.8f,0,0,0.3f);
-	Color colorDarkBlue = new Color(0,0,0.8f,0.3f);
-	Color colorDarkGreen = new Color(0,0.8f,0,0.3f);
-
 	Vector3 xGridStart = new Vector3();
 	Vector3 xGridEnd = new Vector3();
 	Vector3 yGridStart = new Vector3();
@@ -345,12 +348,14 @@ public class EditorFrame implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
+	public JFrame frame;
 	public Editor editor;
 
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public EditorFrame(JFrame window, Editor editor) {
+	public EditorFrame(JFrame frame, Editor editor) {
+		this.frame = frame;
 		this.editor = editor;
 	}
 
@@ -383,7 +388,11 @@ public class EditorFrame implements ApplicationListener {
 
 	@Override
 	public void dispose() {
-		if(gameApp != null) gameApp.dispose();
+		if(gameApp != null) {
+			gameApp.dispose();
+		}
+
+		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
 	@Override
@@ -1318,13 +1327,13 @@ public class EditorFrame implements ApplicationListener {
 			// Draw rotation circles
 			if(moveMode == MoveMode.ROTATE) {
 				if(dragMode == DragMode.X) {
-					drawXCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, Color.GREEN);
+					drawXCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.X_AXIS);
 				}
 				else if(dragMode == DragMode.Y) {
-					drawYCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, Color.RED);
+					drawYCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.Y_AXIS);
 				}
 				else {
-					drawZCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, Color.BLUE);
+					drawZCircle(pickedEntity.x, pickedEntity.z - 0.49f, pickedEntity.y, 2f, EditorColors.Z_AXIS);
 				}
 
 				if(pickedEntity instanceof Directional) {
@@ -1348,26 +1357,26 @@ public class EditorFrame implements ApplicationListener {
 					if(dragMode == DragMode.Z) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 10f, pickedEntity.y);
 						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z + 10f, pickedEntity.y);
-						this.drawLine(startLine, endLine, 2, Color.BLUE);
+						this.drawLine(startLine, endLine, 2, EditorColors.Z_AXIS);
 					}
 					else if(dragMode == DragMode.X) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y - 10f);
 						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y + 10f);
-						this.drawLine(startLine, endLine, 2, Color.GREEN);
+						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 					}
 					else if(dragMode == DragMode.Y) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x - 10f, pickedEntity.z - 0.5f, pickedEntity.y);
 						Vector3 endLine = tempVec4.set(pickedEntity.x + 10f, pickedEntity.z - 0.5f, pickedEntity.y);
-						this.drawLine(startLine, endLine, 2, Color.RED);
+						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 					else if(dragMode == DragMode.XY || (!movingEntity && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))) {
 						Vector3 startLine = tempVec3.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y - 10f);
 						Vector3 endLine = tempVec4.set(pickedEntity.x, pickedEntity.z - 0.5f, pickedEntity.y + 10f);
-						this.drawLine(startLine, endLine, 2, Color.GREEN);
+						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 
 						startLine = tempVec3.set(pickedEntity.x - 10f, pickedEntity.z - 0.5f, pickedEntity.y);
 						endLine = tempVec4.set(pickedEntity.x + 10f, pickedEntity.z - 0.5f, pickedEntity.y);
-						this.drawLine(startLine, endLine, 2, Color.RED);
+						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 				}
 			}
@@ -1413,14 +1422,46 @@ public class EditorFrame implements ApplicationListener {
 
 		if(player == null) {
 			lineRenderer.begin(ShapeType.Line);
-			drawLine(xGridStart, xGridEnd, 2f, colorDarkRed);
-			drawLine(yGridStart, yGridEnd, 2f, colorDarkGreen);
+			drawLine(xGridStart, xGridEnd, 2f, EditorColors.Y_AXIS_DARK);
+			drawLine(yGridStart, yGridEnd, 2f, EditorColors.X_AXIS_DARK);
 			lineRenderer.end();
 		}
 
 		Gdx.gl.glDisable(GL20.GL_BLEND);
-		renderCollisionBoxes();
 		renderTriggerLines();
+
+		if (showGizmos) {
+			drawAllGizmos();
+		}
+		else {
+			drawPickedGizmos();
+		}
+	}
+
+	/** Draw Gizmos for the picked Entity and selected Entities. */
+	private void drawPickedGizmos() {
+		drawGizmo(pickedEntity);
+
+		for (Entity selected : additionalSelected) {
+			drawGizmo(selected);
+		}
+	}
+
+	/** Draw Gizmos for all Entities in the level. */
+	private void drawAllGizmos() {
+		for (Entity entity : level.entities) {
+			drawGizmo(entity);
+		}
+	}
+
+	/** Draw Gizmo for the given entity. */
+	private void drawGizmo(Entity entity) {
+		if (entity == null) {
+			return;
+		}
+
+		Gizmo gizmo = GizmoProvider.getGizmo(entity.getClass());
+		gizmo.draw(entity);
 	}
 
 	private void GlPickEntity() {
@@ -1564,30 +1605,6 @@ public class EditorFrame implements ApplicationListener {
 				}
 			}
 		}
-	}
-
-	public void renderCollisionBoxes() {
-		lineRenderer.begin(ShapeType.Line);
-
-		if(showCollisionBoxes) {
-			for(Entity e : level.entities) {
-				if(e.isSolid || e instanceof Area) {
-					renderCollisionBox(e);
-				}
-			}
-		} else {
-			if(pickedEntity != null) renderCollisionBox(pickedEntity);
-			for(Entity selected : additionalSelected) {
-				renderCollisionBox(selected);
-			}
-		}
-
-		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glLineWidth(1f);
-		lineRenderer.setColor(Color.WHITE);
-		lineRenderer.end();
-		Gdx.gl.glLineWidth(1f);
-		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 	}
 
 	public void renderCollisionBox(Entity e) {
@@ -2066,12 +2083,23 @@ public class EditorFrame implements ApplicationListener {
 			xm = 1f;
 		}
 
-		if(editorInput.isKeyPressed(Keys.W)) {
+		if(editorInput.isKeyPressed(Keys.W) || editorInput.scrollAmount < 0) {
 			zm = -1f;
 		}
-		if(editorInput.isKeyPressed(Keys.S)) {
+		if(editorInput.isKeyPressed(Keys.S) || editorInput.scrollAmount > 0) {
 			zm = 1f;
 		}
+
+		if (editorInput.scrollAmount < 0) {
+			za -= scrollSpeed;
+		}
+		else if (editorInput.scrollAmount > 0) {
+			za += scrollSpeed;
+		}
+
+		zm += za;
+
+		za *= 0.8f;
 
 		if(editorInput.isKeyPressed(Keys.Q) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
 			camZ -= 0.1f;
@@ -2085,6 +2113,8 @@ public class EditorFrame implements ApplicationListener {
 			zm *= 2.0f;
 		}
 
+		orbitDistance += zm * walkSpeed;
+
 		camZ += (zm * Math.sin(rotY)) * walkSpeed;
 		zm *= Math.cos(rotY);
 		camX += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * walkSpeed;
@@ -2096,6 +2126,28 @@ public class EditorFrame implements ApplicationListener {
 
 			player.xa += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
 			player.ya += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
+		}
+
+		if (Gdx.input.isKeyPressed(Keys.ALT_LEFT) && (editorInput.isButtonPressed(Buttons.RIGHT) || turnLeft || turnRight || turnUp || turnDown)) {
+			// Calculate the next camera direction vector;
+			Vector3 cameraNewDirection = new Vector3(0, 0, 1);
+			cameraNewDirection.rotate(rotY * 57.2957795f, 1f, 0, 0);
+			cameraNewDirection.rotate((float)(rotX + 3.14) * 57.2957795f, 0, 1f, 0);
+			cameraNewDirection.nor();
+
+			// Calculate the orbit pivot.
+			if (orbitDistance < 0) {
+				orbitDistance = 3.0f;
+			}
+			Vector3 pivotPosition = new Vector3(camera.direction).scl(orbitDistance).add(camera.position);
+
+			// Calculate new camera position.
+			cameraNewDirection.scl(-orbitDistance);
+			cameraNewDirection.add(pivotPosition);
+
+			camX = cameraNewDirection.x;
+			camY = cameraNewDirection.z;
+			camZ = cameraNewDirection.y;
 		}
 
 		// Tile editing mode?
@@ -2189,8 +2241,8 @@ public class EditorFrame implements ApplicationListener {
 		}
     }
 
-    public void toggleCollisionBoxes() {
-        showCollisionBoxes = !showCollisionBoxes;
+    public void toggleGizmos() {
+        showGizmos = !showGizmos;
     }
 
     public void clearSelection() {
@@ -2548,45 +2600,54 @@ public class EditorFrame implements ApplicationListener {
 	public void drawZCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
-		int segments = 30;
+		float tau = (float)Math.PI * 2;
+		int segments = 48;
+		float step = tau / segments;
+
 		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin((float)i / (float)segments * 7f);
-			float cos = (float)Math.cos((float)i / (float)segments * 7f);
+			float sin = (float)Math.sin(i * step) * radius;
+			float cos = (float)Math.cos(i * step) * radius;
 
-			float nextsin = (float)Math.sin((float)(i + 1) / (float)segments * 7f);
-			float nextcos = (float)Math.cos((float)(i + 1) / (float)segments * 7f);
+			float nextsin = (float)Math.sin((i + 1) * step) * radius;
+			float nextcos = (float)Math.cos((i + 1) * step) * radius;
 
-			lineRenderer.line(startX + sin * radius, startY, startZ + cos * radius, startX + nextsin * radius, startY, startZ + nextcos * radius);
-		}
-	}
-
-	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
-		lineRenderer.setColor(color);
-
-		int segments = 30;
-		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin((float)i / (float)segments * 7f);
-			float cos = (float)Math.cos((float)i / (float)segments * 7f);
-
-			float nextsin = (float)Math.sin((float)(i + 1) / (float)segments * 7f);
-			float nextcos = (float)Math.cos((float)(i + 1) / (float)segments * 7f);
-
-			lineRenderer.line(startX, startY + cos * radius, startZ + sin * radius, startX, startY + nextcos * radius, startZ + nextsin * radius);
+			lineRenderer.line(startX + sin, startY, startZ + cos, startX + nextsin, startY, startZ + nextcos);
 		}
 	}
 
 	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
-		int segments = 30;
+		float tau = (float)Math.PI * 2;
+		int segments = 48;
+		float step = tau / segments;
+
 		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin((float)i / (float)segments * 7f);
-			float cos = (float)Math.cos((float)i / (float)segments * 7f);
+			float sin = (float)Math.sin(i * step) * radius;
+			float cos = (float)Math.cos(i * step) * radius;
 
-			float nextsin = (float)Math.sin((float)(i + 1) / (float)segments * 7f);
-			float nextcos = (float)Math.cos((float)(i + 1) / (float)segments * 7f);
+			float nextsin = (float)Math.sin((i + 1) * step) * radius;
+			float nextcos = (float)Math.cos((i + 1) * step) * radius;
 
-			lineRenderer.line(startX + sin * radius, startY + cos * radius, startZ, startX + nextsin * radius, startY + nextcos * radius, startZ);
+			lineRenderer.line(startX, startY + cos, startZ + sin, startX, startY + nextcos, startZ + nextsin);
+		}
+	}
+
+	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
+		lineRenderer.setColor(color);
+
+		float tau = (float)Math.PI * 2;
+		int segments = 48;
+		float step = tau / segments;
+
+		for(int i = 0; i < segments; i++) {
+			float sin = (float)Math.sin(i * step) * radius;
+			float cos = (float)Math.cos(i * step) * radius;
+
+			float nextsin = (float)Math.sin((i + 1) * step) * radius;
+			float nextcos = (float)Math.cos((i + 1) * step) * radius;
+
+			lineRenderer.line(startX + sin, startY + cos, startZ, startX + nextsin, startY + nextcos, startZ);
 		}
 	}
 
@@ -3136,9 +3197,20 @@ public class EditorFrame implements ApplicationListener {
             clipboard.selWidth = 0;
             clipboard.selHeight = 0;
         }
+
+        Clipboard systemClipboard = Gdx.app.getClipboard();
+        String contents = new Json().toJson(clipboard);
+        systemClipboard.setContents(contents);
     }
 
     public void paste() {
+        try {
+            Clipboard systemClipboard = Gdx.app.getClipboard();
+            Json json = new Json();
+            clipboard = json.fromJson(EditorClipboard.class, systemClipboard.getContents());
+        }
+        catch (Exception ignored) {}
+
         if(clipboard != null) {
             int selX = selectionX;
             int selY = selectionY;
@@ -3905,6 +3977,49 @@ public class EditorFrame implements ApplicationListener {
 			Audio.stopLoopingSounds();
         }
     }
+
+    public void viewSelected() {
+		float minDistance = 3.0f;
+
+		// Default to framing up level grid.
+		Vector3 selectedPosition = new Vector3(level.width / 2f, level.height / 2f, 0);
+		orbitDistance = selectedPosition.len();
+
+		// Focus on picked entity
+		if (pickedEntity != null) {
+			orbitDistance = getEntityBoundingSphereRadius(pickedEntity) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
+			orbitDistance = Math.max(minDistance, orbitDistance);
+			selectedPosition.set(pickedEntity.x, pickedEntity.y, pickedEntity.z);
+		}
+		// Focus on tile selection
+		else if (selected) {
+			float ceiling = selectionHeights.x;
+			float floor = selectionHeights.y;
+			float tileHeight = ceiling - floor;
+
+			Vector3 size = new Vector3(selectionWidth, tileHeight, selectionHeight);
+			orbitDistance = size.len();
+
+			selectedPosition.set(selectionX + (selectionWidth / 2f), selectionY + (selectionWidth / 2f), floor + tileHeight / 2f);
+		}
+
+		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(orbitDistance);
+		Vector3 finalPosition = new Vector3(selectedPosition).sub(cameraOffset);
+		camX = finalPosition.x;
+		camY = finalPosition.y;
+		camZ = finalPosition.z;
+	}
+
+	private float getEntityBoundingSphereRadius(Entity entity) {
+		if (entity instanceof Light) {
+			return ((Light)entity).range;
+		}
+		else if (entity instanceof DynamicLight) {
+			return ((DynamicLight)entity).range;
+		}
+
+		return new Vector3(entity.collision.x, entity.collision.z / 2, entity.collision.y).len();
+	}
 
     public void createNewLevel(int width, int height) {
         level = new Level(width,height);
