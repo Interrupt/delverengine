@@ -270,6 +270,7 @@ public class EditorUi {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Editor.options.recentlyOpenedFiles.clear();
+                        Editor.options.save();
                     }
                 }));
             }

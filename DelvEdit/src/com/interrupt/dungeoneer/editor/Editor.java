@@ -20,6 +20,6 @@ public class Editor {
     }
 
     public static void dispose() {
-	    EditorOptions.toLocalFiles(options);
+	    Editor.options.dispose();
     }
 }
