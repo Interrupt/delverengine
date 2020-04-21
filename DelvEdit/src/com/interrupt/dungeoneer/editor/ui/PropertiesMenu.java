@@ -18,6 +18,7 @@ import com.interrupt.dungeoneer.editor.EditorArt;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
+import org.lwjgl.LWJGLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -29,11 +30,13 @@ public class PropertiesMenu extends Table {
     public ArrayMap<String, Array<Field>> arrayMap = new ArrayMap<String, Array<Field>>();
     private HashMap<Field, Actor> fieldMap = new HashMap<Field, Actor>();
 
+    private final Array<Entity> selectedEntities;
     private final Array<Class> classes;
 
     public PropertiesMenu(Skin skin, final Array<Entity> entities) {
         super(skin);
         final Entity entity = entities.get(0);
+        selectedEntities = entities;
 
         // add all of the classes from the first entity
         classes = getClassesForEntity(entity);
@@ -571,7 +574,7 @@ public class PropertiesMenu extends Table {
         try {
             if (currentField.getType() == int.class) {
                 if (val.equals("")) val = "0";
-                for (Entity entity : Editor.selection.selected) {
+                for (Entity entity : selectedEntities) {
                     currentField.set(entity, Integer.parseInt(val));
                 }
             }
@@ -584,7 +587,7 @@ public class PropertiesMenu extends Table {
     public void applyChanges(final Field currentField, Material val) {
         try {
             if (currentField.getType() == Material.class && val != null) {
-                for (Entity entity : Editor.selection.selected) {
+                for (Entity entity : selectedEntities) {
                     currentField.set(entity, new Material(val.texAtlas, val.tex));
                 }
             }
@@ -598,7 +601,7 @@ public class PropertiesMenu extends Table {
         try {
             Gdx.app.debug("DelvEdit", "Applying change for " + currentField.getName());
 
-            if(Editor.selection.selected != null && fieldMap.containsKey(currentField)) {
+            if(selectedEntities != null && fieldMap.containsKey(currentField)) {
                 Actor actor = fieldMap.get(currentField);
 
                 // apply based on the type of input
@@ -607,30 +610,30 @@ public class PropertiesMenu extends Table {
 
                     if(currentField.getType() == int.class) {
                         if(val.equals("")) val = "0";
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, Integer.parseInt(val));
                         }
                     }
                     else if(currentField.getType() == Integer.class) {
                         if(val.equals("")) val = null;
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, Integer.parseInt(val));
                         }
                     }
                     else if(currentField.getType() == float.class) {
                         if(val.equals("")) val = "0";
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, Float.parseFloat(val));
                         }
                     }
                     else if(currentField.getType() == double.class) {
                         if(val.equals("")) val = "0";
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, Double.parseDouble(val));
                         }
                     }
                     else if(currentField.getType() == String.class) {
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, val);
                         }
                     }
@@ -638,7 +641,7 @@ public class PropertiesMenu extends Table {
                 else if(actor instanceof TextButton) {
                     String val = ((TextButton)actor).getText().toString();
                     if(currentField.getType() == String.class) {
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, val);
                         }
                     }
@@ -646,17 +649,17 @@ public class PropertiesMenu extends Table {
                 else if(actor instanceof SelectBox) {
                     String val = ((SelectBox)actor).getSelected().toString();
                     if(currentField.getType() == boolean.class) {
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, Boolean.parseBoolean(val));
                         }
                     }
                     else if(currentField.getType().isEnum()) {
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, Enum.valueOf((Class<Enum>) currentField.getType(), val));
                         }
                     }
                     else if(currentField.getType() == String.class) {
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, val);
                         }
                     }
@@ -664,7 +667,7 @@ public class PropertiesMenu extends Table {
                 else if(actor instanceof EditorColorPicker) {
                     EditorColorPicker picker = (EditorColorPicker)actor;
 
-                    for(Entity entity : Editor.selection.selected) {
+                    for(Entity entity : selectedEntities) {
                         currentField.set(entity, new Color(picker.getValue()));
                     }
                 }
@@ -680,7 +683,7 @@ public class PropertiesMenu extends Table {
                         if(y.equals("")) y = "0";
                         if(z.equals("")) z = "0";
 
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, new Vector3(Float.parseFloat(x), Float.parseFloat(y), Float.parseFloat(z)));
                         }
                     }
@@ -693,7 +696,7 @@ public class PropertiesMenu extends Table {
                         if(g.equals("")) g = "0";
                         if(b.equals("")) b = "0";
 
-                        for(Entity entity : Editor.selection.selected) {
+                        for(Entity entity : selectedEntities) {
                             currentField.set(entity, new Color(Float.parseFloat(r) / 255f, Float.parseFloat(g) / 255f, Float.parseFloat(b) / 255f, 1f));
                         }
                     }
@@ -702,7 +705,7 @@ public class PropertiesMenu extends Table {
 
             Editor.app.refreshLights();
 
-            for(Entity entity : Editor.selection.selected) {
+            for(Entity entity : selectedEntities) {
                 if (entity.drawable != null) entity.drawable.refresh();
 
                 if (entity instanceof ProjectedDecal) {
