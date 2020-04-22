@@ -17,6 +17,7 @@ allprojects {
         roboVMVersion = '2.1.0'
         kryoVersion = '2.23.0'
         reflectionsVersion = '0.9.12'
+        inkVersion = '0.7.3'
     }
 
     repositories {
@@ -57,6 +58,7 @@ project(":Dungeoneer") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.esotericsoftware.kryo:kryo:$kryoVersion"
+        compile "com.bladecoder.ink:blade-ink:$inkVersion"
     }
 }
 
