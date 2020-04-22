@@ -22,6 +22,7 @@ import com.bladecoder.ink.runtime.Choice;
 import com.bladecoder.ink.runtime.Story;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.input.Actions;
 
@@ -136,11 +137,6 @@ public class DialogueOverlay extends MessageOverlay {
                     public void clicked(InputEvent event, float x, float y) {
                         try {
                             story.chooseChoiceIndex(internalChoiceIndex);
-
-                            // Skip this. Why does it just echo back the chosen text?
-                            finishedShowingText = true;
-                            next();
-
                             finishedShowingText = false;
                             next();
                         } catch (Exception ex) {
@@ -182,6 +178,49 @@ public class DialogueOverlay extends MessageOverlay {
         }
     }
 
+    public void bindExternalFunctions(Story story) {
+        try {
+            // Test out binding some functions
+            story.bindExternalFunction("killPlayer", new Story.ExternalFunction() {
+                @Override
+                public Object call(Object[] args) throws Exception {
+                    Gdx.app.log("Ink Function", "killPlayer");
+                    Game.instance.player.hp = 0;
+                    return null;
+                }
+            });
+
+            story.bindExternalFunction("showGameOverScreen", new Story.ExternalFunction() {
+                @Override
+                public Object call(Object[] args) throws Exception {
+                    Gdx.app.log("Ink Function", "showGameOverScreen");
+
+                    Boolean wonGame = false;
+                    if(args.length > 0) {
+                        wonGame = (Integer)args[0] == 1;
+                    }
+
+                    GameApplication.ShowGameOverScreen(wonGame);
+                    return wonGame;
+                }
+            });
+
+            story.bindExternalFunction("fireTrigger", new Story.ExternalFunction() {
+                @Override
+                public Object call(Object[] args) throws Exception {
+                    Gdx.app.log("Ink Function", "fireTrigger");
+
+                    String triggerName = (String)args[0];
+                    Game.GetLevel().trigger(Game.instance.player, triggerName, "");
+
+                    return null;
+                }
+            });
+        } catch(Exception ex) {
+            Gdx.app.log("DialogueOverlayFunctions", ex.getMessage());
+        }
+    }
+
     @Override
     public void onShow() {
         try {
@@ -197,6 +236,7 @@ public class DialogueOverlay extends MessageOverlay {
             fileJson = fileJson.replace('\uFEFF', ' ');
 
             story = new Story(fileJson);
+            bindExternalFunctions(story);
             processStory();
         } catch(Exception ex) {
             Gdx.app.log("DialogueOverlay", ex.getMessage());
