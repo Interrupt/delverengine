@@ -1997,7 +1997,6 @@ public class EditorApplication implements ApplicationListener {
 
 			FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
 			if(levelFileHandle.exists()) {
-				currentFileName = levelFileHandle.path();
 				setTitle(currentFileName);
 
 				Level openLevel;
