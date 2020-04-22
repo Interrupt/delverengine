@@ -24,7 +24,6 @@ import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.input.Actions;
 
 public class DialogueOverlay extends MessageOverlay {
 
@@ -233,7 +232,8 @@ public class DialogueOverlay extends MessageOverlay {
             String fileJson = file.readString();
 
             // Fixup some characters for Ink, will explode otherwise (https://github.com/bladecoder/blade-ink/issues/8)
-            fileJson = fileJson.replace('\uFEFF', ' ');
+            String BOM = new String("\uFEFF".getBytes("UTF-8"));
+            fileJson = fileJson.replace(BOM, "");
 
             story = new Story(fileJson);
             bindExternalFunctions(story);
