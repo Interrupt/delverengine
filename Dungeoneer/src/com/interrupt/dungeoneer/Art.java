@@ -16,9 +16,12 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.Bitmap;
+import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.Tesselator;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.ui.UiSkin;
 
@@ -204,5 +207,46 @@ public class Art {
 
 		// Might have some pooled meshes to clear
 		CachePools.clearMeshPool();
+	}
+
+	public static void refresh() {
+		try {
+			Art.KillCache();
+
+			Game.instance.loadManagers();
+			GameManager.renderer.initTextures();
+			GameManager.renderer.initShaders();
+
+			GlRenderer.staticMeshPool.resetAndDisposeAllMeshes();
+			Tesselator.tesselatorMeshPool.resetAndDisposeAllMeshes();
+
+			// reset all drawables now that we've reset stuff
+			for (Entity e : Game.GetLevel().entities) {
+				if(e.drawable != null) {
+					e.drawable.refresh();
+					e.drawable.update(e);
+				}
+			}
+			for (Entity e : Game.GetLevel().static_entities) {
+				if(e.drawable != null) {
+					e.drawable.refresh();
+					e.drawable.update(e);
+				}
+			}
+			for (Entity e : Game.GetLevel().non_collidable_entities) {
+				if(e.drawable != null) {
+					e.drawable.refresh();
+					e.drawable.update(e);
+				}
+			}
+
+			GameManager.renderer.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			Game.GetLevel().isDirty = true;
+
+			UiSkin.loadSkin();
+		}
+		catch(Exception ex) {
+			Gdx.app.log("Delver", "Could not refresh: " + ex.getMessage());
+		}
 	}
 }
