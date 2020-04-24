@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -73,7 +74,10 @@ import com.badlogic.gdx.math.MathUtils;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.file.*;
 import java.util.HashMap;
+
+import static java.nio.file.StandardWatchEventKinds.*;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
@@ -348,6 +352,8 @@ public class EditorApplication implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
+	private Thread fileWatcher;
+
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -375,6 +381,8 @@ public class EditorApplication implements ApplicationListener {
 		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
 
 		new LwjglApplication(this, config);
+
+		startFileWatcher();
 	}
 
 	public void init(){
@@ -409,6 +417,11 @@ public class EditorApplication implements ApplicationListener {
 		if(gameApp != null) {
 			gameApp.dispose();
 		}
+
+		try {
+			fileWatcher.interrupt();
+		}
+		catch (Exception ignore) {}
 
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
@@ -4350,5 +4363,45 @@ public class EditorApplication implements ApplicationListener {
 
 	public void setTitle(String title) {
 		Gdx.graphics.setTitle(title + " - DelvEdit");
+	}
+
+	private void startFileWatcher() {
+		// Super basic file watcher that refreshes the assets when any file changes.
+		fileWatcher = new Thread() {
+			public void run() {
+				try {
+					WatchService watchService = FileSystems.getDefault().newWatchService();
+					java.nio.file.Path path = Paths.get(Gdx.files.getLocalStoragePath());
+					path.register(watchService, ENTRY_CREATE, ENTRY_MODIFY);
+
+					boolean running = true;
+					while(running) {
+						WatchKey key = watchService.take();
+						for (WatchEvent<?> ignored : key.pollEvents()) {
+							refreshAssets();
+							break;
+						}
+
+						running = key.reset();
+					}
+				}
+				catch (Exception ignore) {}
+			}
+		};
+		fileWatcher.setPriority(Thread.MIN_PRIORITY);
+		fileWatcher.start();
+	}
+
+	private void refreshAssets() {
+		try {
+			// Give the asset a chance to finish writing.
+			Thread.sleep(125);
+
+			Art.refresh();
+			for (Entity e : level.entities) {
+				e.drawable.refresh();
+			}
+		}
+		catch (Exception ignored) {}
 	}
 }

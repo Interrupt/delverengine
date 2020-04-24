@@ -2,7 +2,6 @@ package com.interrupt.dungeoneer.overlays;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -15,16 +14,12 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Art;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Monster;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
-import com.interrupt.dungeoneer.gfx.Tesselator;
-import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.ItemManager;
 
 public class DebugOverlay extends WindowOverlay {
@@ -357,7 +352,7 @@ public class DebugOverlay extends WindowOverlay {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				OverlayManager.instance.remove(thisOverlay);
-				refreshData();
+				Art.refresh();
 			}
 
 			@Override
@@ -764,47 +759,5 @@ public class DebugOverlay extends WindowOverlay {
 	    buttonOrder.add(doneBtn);
 
 	    return contentTable;
-	}
-
-	// Re-load all the key assets
-	public void refreshData() {
-		try {
-			Art.KillCache();
-
-			Game.instance.loadManagers();
-			GameManager.renderer.initTextures();
-			GameManager.renderer.initShaders();
-
-			GlRenderer.staticMeshPool.resetAndDisposeAllMeshes();
-			Tesselator.tesselatorMeshPool.resetAndDisposeAllMeshes();
-
-			// reset all drawables now that we've reset stuff
-			for (Entity e : Game.GetLevel().entities) {
-				if(e.drawable != null) {
-					e.drawable.refresh();
-					e.drawable.update(e);
-				}
-			}
-			for (Entity e : Game.GetLevel().static_entities) {
-				if(e.drawable != null) {
-					e.drawable.refresh();
-					e.drawable.update(e);
-				}
-			}
-			for (Entity e : Game.GetLevel().non_collidable_entities) {
-				if(e.drawable != null) {
-					e.drawable.refresh();
-					e.drawable.update(e);
-				}
-			}
-
-			GameManager.renderer.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-			Game.GetLevel().isDirty = true;
-
-			UiSkin.loadSkin();
-		}
-		catch(Exception ex) {
-			Gdx.app.log("Delver", "Could not refresh: " + ex.getMessage());
-		}
 	}
 }
