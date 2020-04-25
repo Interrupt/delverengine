@@ -40,7 +40,7 @@ import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
-import com.interrupt.dungeoneer.editor.utils.FileWatcher;
+import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.entities.Entity.EditorState;
@@ -351,7 +351,7 @@ public class EditorApplication implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
-	private FileWatcher watcher;
+	private LiveReload liveReload;
 	public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
 
 	public EditorApplication() {
@@ -396,8 +396,8 @@ public class EditorApplication implements ApplicationListener {
 		unknownEntityMarker.tex = 1000;
 		unknownEntityMarker.artType = ArtType.hidden;
 
-		watcher = new FileWatcher();
-		watcher.init();
+		liveReload = new LiveReload();
+		liveReload.init();
 
 		StringManager.init();
 		Game.init();
@@ -418,7 +418,7 @@ public class EditorApplication implements ApplicationListener {
 			gameApp.dispose();
 		}
 
-		watcher.dispose();
+		liveReload.dispose();
 
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}

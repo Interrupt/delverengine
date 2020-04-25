@@ -11,7 +11,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 /** Subsystem for live reloading art assets. */
-public class FileWatcher {
+public class LiveReload {
     private final Thread watcher;
     private static final boolean created = false;
 
@@ -20,8 +20,8 @@ public class FileWatcher {
 
     private final List<String> watchedExtensions = Arrays.asList("dat", "obj", "png", "frag", "vert");
 
-    public FileWatcher() {
-    	if (FileWatcher.created) {
+    public LiveReload() {
+    	if (LiveReload.created) {
     		throw new RuntimeException("FileWatcher instance already exists.");
 		}
 
