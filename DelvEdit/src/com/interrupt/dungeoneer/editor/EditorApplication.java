@@ -40,6 +40,7 @@ import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
+import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.entities.Entity.EditorState;
@@ -74,10 +75,8 @@ import com.badlogic.gdx.math.MathUtils;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.nio.file.*;
 import java.util.HashMap;
-
-import static java.nio.file.StandardWatchEventKinds.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
@@ -352,7 +351,8 @@ public class EditorApplication implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
-	private Thread fileWatcher;
+	private LiveReload liveReload;
+	public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
 
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
@@ -381,8 +381,6 @@ public class EditorApplication implements ApplicationListener {
 		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
 
 		new LwjglApplication(this, config);
-
-		startFileWatcher();
 	}
 
 	public void init(){
@@ -398,8 +396,10 @@ public class EditorApplication implements ApplicationListener {
 		unknownEntityMarker.tex = 1000;
 		unknownEntityMarker.artType = ArtType.hidden;
 
-		StringManager.init();
+		liveReload = new LiveReload();
+		liveReload.init();
 
+		StringManager.init();
 		Game.init();
 
 		// load the entity templates
@@ -418,10 +418,7 @@ public class EditorApplication implements ApplicationListener {
 			gameApp.dispose();
 		}
 
-		try {
-			fileWatcher.interrupt();
-		}
-		catch (Exception ignore) {}
+		liveReload.dispose();
 
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
@@ -2315,6 +2312,10 @@ public class EditorApplication implements ApplicationListener {
         editorInput.tick();
 
 		CachePools.clearOnTick();
+
+		if (needToReloadAssets.compareAndSet(true, false)) {
+			EditorArt.refresh();
+		}
 	}
 
     public void undo() {
@@ -4363,45 +4364,5 @@ public class EditorApplication implements ApplicationListener {
 
 	public void setTitle(String title) {
 		Gdx.graphics.setTitle(title + " - DelvEdit");
-	}
-
-	private void startFileWatcher() {
-		// Super basic file watcher that refreshes the assets when any file changes.
-		fileWatcher = new Thread() {
-			public void run() {
-				try {
-					WatchService watchService = FileSystems.getDefault().newWatchService();
-					java.nio.file.Path path = Paths.get(Gdx.files.getLocalStoragePath());
-					path.register(watchService, ENTRY_CREATE, ENTRY_MODIFY);
-
-					boolean running = true;
-					while(running) {
-						WatchKey key = watchService.take();
-						for (WatchEvent<?> ignored : key.pollEvents()) {
-							refreshAssets();
-							break;
-						}
-
-						running = key.reset();
-					}
-				}
-				catch (Exception ignore) {}
-			}
-		};
-		fileWatcher.setPriority(Thread.MIN_PRIORITY);
-		fileWatcher.start();
-	}
-
-	private void refreshAssets() {
-		try {
-			// Give the asset a chance to finish writing.
-			Thread.sleep(125);
-
-			Art.refresh();
-			for (Entity e : level.entities) {
-				e.drawable.refresh();
-			}
-		}
-		catch (Exception ignored) {}
 	}
 }

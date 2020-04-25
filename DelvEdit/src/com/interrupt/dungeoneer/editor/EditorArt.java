@@ -1,9 +1,16 @@
 package com.interrupt.dungeoneer.editor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Json;
+import com.interrupt.dungeoneer.Art;
+import com.interrupt.dungeoneer.GameManager;
+import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.Tesselator;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
+import com.interrupt.dungeoneer.ui.UiSkin;
 
 public class EditorArt {
 	
@@ -42,5 +49,53 @@ public class EditorArt {
 		}
 		
 		return atlasList;
+	}
+
+	/**
+	 * Reload all art assets.
+	 *
+	 * @apiNote This must be called from the same thread where OpenGL was initialized.
+	 */
+	public static void refresh() {
+		try {
+			Art.KillCache();
+
+			GameManager.renderer.initTextures();
+			GameManager.renderer.initShaders();
+
+			GlRenderer.staticMeshPool.resetAndDisposeAllMeshes();
+			Tesselator.tesselatorMeshPool.resetAndDisposeAllMeshes();
+
+			Level level = Editor.app.getLevel();
+
+			// reset all drawables now that we've reset stuff
+			for (Entity e : level.entities) {
+				if(e.drawable != null) {
+					e.drawable.refresh();
+					e.drawable.update(e);
+				}
+			}
+			for (Entity e : level.static_entities) {
+				if(e.drawable != null) {
+					e.drawable.refresh();
+					e.drawable.update(e);
+				}
+			}
+			for (Entity e : level.non_collidable_entities) {
+				if(e.drawable != null) {
+					e.drawable.refresh();
+					e.drawable.update(e);
+				}
+			}
+
+			GameManager.renderer.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			level.isDirty = true;
+
+			UiSkin.loadSkin();
+		}
+
+		catch(Exception ex) {
+			Gdx.app.log("Editor", "Could not refresh: " + ex.getMessage());
+		}
 	}
 }
