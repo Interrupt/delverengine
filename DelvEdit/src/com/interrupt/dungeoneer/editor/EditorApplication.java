@@ -76,6 +76,7 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
@@ -351,6 +352,7 @@ public class EditorApplication implements ApplicationListener {
 	Vector3 rayOutVector = new Vector3();
 
 	private FileWatcher watcher;
+	public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
 
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
@@ -2310,6 +2312,10 @@ public class EditorApplication implements ApplicationListener {
         editorInput.tick();
 
 		CachePools.clearOnTick();
+
+		if (needToReloadAssets.compareAndSet(true, false)) {
+			EditorArt.refresh();
+		}
 	}
 
     public void undo() {

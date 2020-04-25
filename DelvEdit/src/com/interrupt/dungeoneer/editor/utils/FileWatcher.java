@@ -1,9 +1,7 @@
 package com.interrupt.dungeoneer.editor.utils;
 
 import com.badlogic.gdx.Gdx;
-import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.editor.Editor;
-import com.interrupt.dungeoneer.entities.Entity;
 
 import java.nio.file.*;
 import java.util.Arrays;
@@ -15,13 +13,16 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 /** Subsystem for live reloading art assets. */
 public class FileWatcher {
     private final Thread watcher;
-    private static final boolean initialized = false;
+    private static final boolean created = false;
+
+    private long lastTimeCalled = 0;
+    private final long MIN_TIME_BETWEEN_CALLS = 100;
 
     private final List<String> watchedExtensions = Arrays.asList("dat", "obj", "png", "frag", "vert");
 
     public FileWatcher() {
-    	if (FileWatcher.initialized) {
-    		throw new RuntimeException("FileWatcher already initialized.");
+    	if (FileWatcher.created) {
+    		throw new RuntimeException("FileWatcher instance already exists.");
 		}
 
         watcher = new Thread() {
@@ -40,11 +41,14 @@ public class FileWatcher {
 							String filename = watchEvent.context().toString();
 							String extension = getFileExtension(filename).toLowerCase();
 
-							if (watchedExtensions.contains(extension)) {
-								Art.refresh();
-								for (Entity entity : Editor.app.getLevel().entities) {
-									entity.drawable.refresh();
-								}
+							long now = System.currentTimeMillis();
+
+							if (watchedExtensions.contains(extension) && now - lastTimeCalled > MIN_TIME_BETWEEN_CALLS) {
+								Gdx.app.log("Editor", "Live loading assets");
+								lastTimeCalled = now;
+
+								// Reload must happen on main render thread.
+								Editor.app.needToReloadAssets.set(true);
 								break;
 							}
 						}
@@ -58,6 +62,10 @@ public class FileWatcher {
     }
 
     public void init() {
+    	if (watcher.isAlive()) {
+    		return;
+		}
+
     	watcher.setPriority(Thread.MIN_PRIORITY);
 		watcher.start();
 	}
