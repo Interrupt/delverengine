@@ -76,7 +76,6 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
@@ -352,7 +351,6 @@ public class EditorApplication implements ApplicationListener {
 	Vector3 rayOutVector = new Vector3();
 
 	private LiveReload liveReload;
-	public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
 
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
@@ -1935,6 +1933,7 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.input.setCursorCatched(false);
 
 		initTextures();
+        setupHud(wallTextures);
 
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
                 TextureAtlas.cachedRepeatingAtlases.firstKey();
@@ -2308,14 +2307,12 @@ public class EditorApplication implements ApplicationListener {
 			readRightClick = false;
 		}
 
+		// Tick subsystems.
 		input.tick();
         editorInput.tick();
+        liveReload.tick();
 
 		CachePools.clearOnTick();
-
-		if (needToReloadAssets.compareAndSet(true, false)) {
-			EditorArt.refresh();
-		}
 	}
 
     public void undo() {
@@ -2460,8 +2457,6 @@ public class EditorApplication implements ApplicationListener {
 		spriteAtlases.put(Entity.ArtType.door, loadAtlas("textures.png", 4, false));
 		spriteAtlases.put(Entity.ArtType.texture, loadAtlas("textures.png", 4, false));
 		spriteAtlases.put(Entity.ArtType.particle, loadAtlas("particles.png", 8, false));
-
-        setupHud(wallTextures);
 	}
 
     private void setupHud(TextureRegion[] wallTextures) {
