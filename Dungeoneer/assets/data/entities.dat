@@ -60,6 +60,7 @@
 			"Teleport": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredTeleportPlayer, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"Shop": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredShop, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"Message": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredMessage, floating: true, triggerType: "PLAYER_TOUCHED" },
+			"DialogueTree": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredDialogue, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"GameOver": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredGameOver, floating: true, triggerType: "PLAYER_TOUCHED" },
 			"Button": {
 				"class": "com.interrupt.dungeoneer.entities.triggers.ButtonModel",

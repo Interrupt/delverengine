@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -41,6 +42,7 @@ import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
+import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.entities.Entity.EditorState;
@@ -76,6 +78,7 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
@@ -347,6 +350,9 @@ public class EditorApplication implements ApplicationListener {
 
 	Vector3 rayOutVector = new Vector3();
 
+	private LiveReload liveReload;
+	public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
+
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -389,8 +395,10 @@ public class EditorApplication implements ApplicationListener {
 		unknownEntityMarker.tex = 1000;
 		unknownEntityMarker.artType = ArtType.hidden;
 
-		StringManager.init();
+		liveReload = new LiveReload();
+		liveReload.init();
 
+		StringManager.init();
 		Game.init();
 
 		// load the entity templates
@@ -408,6 +416,8 @@ public class EditorApplication implements ApplicationListener {
 		if(gameApp != null) {
 			gameApp.dispose();
 		}
+
+		liveReload.dispose();
 
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
@@ -1992,7 +2002,6 @@ public class EditorApplication implements ApplicationListener {
 
 			FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
 			if(levelFileHandle.exists()) {
-				currentFileName = levelFileHandle.path();
 				setTitle(currentFileName);
 
 				Level openLevel;
@@ -2297,6 +2306,10 @@ public class EditorApplication implements ApplicationListener {
         editorInput.tick();
 
 		CachePools.clearOnTick();
+
+		if (needToReloadAssets.compareAndSet(true, false)) {
+			EditorArt.refresh();
+		}
 	}
 
     public void undo() {
