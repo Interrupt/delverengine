@@ -4026,20 +4026,12 @@ public class EditorApplication implements ApplicationListener {
 
     public Level getLevel() { return level; }
 
-    public int getSelectionX() {
-        return Editor.selection.tiles.x;
-    }
-
-    public int getSelectionY() {
-        return Editor.selection.tiles.y;
-    }
-
 	public Vector3 getIntersection() {
 		if(pickedSurface.isPicked)
 			return new Vector3(intpos);
 
 		float floorPos = Editor.selection.tiles.first().floorHeight;
-		return new Vector3(getSelectionX(), floorPos, getSelectionY());
+		return new Vector3(Editor.selection.tiles.x, floorPos, Editor.selection.tiles.y);
 	}
 
     public MoveMode getMoveMode() {
