@@ -727,7 +727,7 @@ public class EditorApplication implements ApplicationListener {
 
 				end = ray.getEndPoint(rayOutVector, distance + 0.005f);
 
-                // TODO: Tile selection bounding
+                // Tile selection bounding
 				Editor.selection.tiles.x = (int)end.x;
 				Editor.selection.tiles.y = (int)end.z;
 
@@ -763,7 +763,6 @@ public class EditorApplication implements ApplicationListener {
 						// don't modify selection area!
 						movingControlPoint = true;
 					} else {
-						// TODO: Updating tile selection
 						// The user is dragging the selection area to set its size. Update the selection area based on their mouse position.
 						int newX = MathUtils.clamp((int) intpos.x, 0, level.width - 1);
 						int newY = MathUtils.clamp((int) intpos.z, 0, level.height - 1);
@@ -1065,130 +1064,128 @@ public class EditorApplication implements ApplicationListener {
 				int selWidth = Editor.selection.tiles.width;
 				int selHeight = Editor.selection.tiles.height;
 
-                // TODO: Tile selection iteration
-                // TODO: This uses the selection dimensions
-				for(int x = selX; x < selX + selWidth; x++) {
-					for(int y = selY; y < selY + selHeight; y++) {
-						Tile t = level.getTileOrNull(x,y);
-						if(t != null) {
-							if(pickedControlPoint.controlPointType == ControlPointType.floor) {
-								t.floorHeight -= dragOffset.y;
-								t.packHeights();
+                for (TileSelectionInfo info : Editor.selection.tiles) {
+                    Tile t = info.tile;
+                    if (t == null) {
+                        continue;
+                    }
 
-                                if(t.getMinOpenHeight() < 0f) {
-                                    t.compressFloorAndCeiling(true);
-                                }
-							}
-							else if(pickedControlPoint.controlPointType == ControlPointType.ceiling) {
-								t.ceilHeight -= dragOffset.y;
-								t.packHeights();
+                    if(pickedControlPoint.controlPointType == ControlPointType.floor) {
+                        t.floorHeight -= dragOffset.y;
+                        t.packHeights();
 
-                                if(t.getMinOpenHeight() < 0f) {
-                                    t.compressFloorAndCeiling(false);
-                                }
-							}
-							else if(pickedControlPoint.controlPointType == ControlPointType.northCeil || pickedControlPoint.controlPointType == ControlPointType.northFloor) {
+                        if(t.getMinOpenHeight() < 0f) {
+                            t.compressFloorAndCeiling(true);
+                        }
+                    }
+                    else if(pickedControlPoint.controlPointType == ControlPointType.ceiling) {
+                        t.ceilHeight -= dragOffset.y;
+                        t.packHeights();
 
-								float mod = 1 - ((float)y - (float)selY) / (float)selHeight;
-								if(pickedControlPoint.controlPointType == ControlPointType.northCeil) {
-									t.ceilSlopeNE -= dragOffset.y * mod;
-									t.ceilSlopeNW -= dragOffset.y * mod;
-								}
-								else {
-									t.slopeNE -= dragOffset.y * mod;
-									t.slopeNW -= dragOffset.y * mod;
-								}
+                        if(t.getMinOpenHeight() < 0f) {
+                            t.compressFloorAndCeiling(false);
+                        }
+                    }
+                    else if(pickedControlPoint.controlPointType == ControlPointType.northCeil || pickedControlPoint.controlPointType == ControlPointType.northFloor) {
 
-								if(selHeight > 1) {
-									mod = 1 - ((float)y - (float)selY + 1f) / (float)selHeight;
-									if(pickedControlPoint.controlPointType == ControlPointType.northCeil) {
-										t.ceilSlopeSE -= dragOffset.y * mod;
-										t.ceilSlopeSW -= dragOffset.y * mod;
-									}
-									else {
-										t.slopeSE -= dragOffset.y * mod;
-										t.slopeSW -= dragOffset.y * mod;
-									}
-								}
-								t.packHeights();
-							}
-							else if(pickedControlPoint.controlPointType == ControlPointType.southCeil || pickedControlPoint.controlPointType == ControlPointType.southFloor) {
+                        float mod = 1 - ((float)info.y - (float)selY) / (float)selHeight;
+                        if(pickedControlPoint.controlPointType == ControlPointType.northCeil) {
+                            t.ceilSlopeNE -= dragOffset.y * mod;
+                            t.ceilSlopeNW -= dragOffset.y * mod;
+                        }
+                        else {
+                            t.slopeNE -= dragOffset.y * mod;
+                            t.slopeNW -= dragOffset.y * mod;
+                        }
 
-								float mod = ((float)y - (float)selY + 1) / (float)selHeight;
-								if(pickedControlPoint.controlPointType == ControlPointType.southCeil) {
-									t.ceilSlopeSE -= dragOffset.y * mod;
-									t.ceilSlopeSW -= dragOffset.y * mod;
-								}
-								else {
-									t.slopeSE -= dragOffset.y * mod;
-									t.slopeSW -= dragOffset.y * mod;
-								}
+                        if(selHeight > 1) {
+                            mod = 1 - ((float)info.y - (float)selY + 1f) / (float)selHeight;
+                            if(pickedControlPoint.controlPointType == ControlPointType.northCeil) {
+                                t.ceilSlopeSE -= dragOffset.y * mod;
+                                t.ceilSlopeSW -= dragOffset.y * mod;
+                            }
+                            else {
+                                t.slopeSE -= dragOffset.y * mod;
+                                t.slopeSW -= dragOffset.y * mod;
+                            }
+                        }
+                        t.packHeights();
+                    }
+                    else if(pickedControlPoint.controlPointType == ControlPointType.southCeil || pickedControlPoint.controlPointType == ControlPointType.southFloor) {
 
-								if(selHeight > 1) {
-									mod = ((float)y - (float)selY) / (float)selHeight;
-									if(pickedControlPoint.controlPointType == ControlPointType.southCeil) {
-										t.ceilSlopeNE -= dragOffset.y * mod;
-										t.ceilSlopeNW -= dragOffset.y * mod;
-									}
-									else {
-										t.slopeNE -= dragOffset.y * mod;
-										t.slopeNW -= dragOffset.y * mod;
-									}
-								}
-								t.packHeights();
-							}
-							else if(pickedControlPoint.controlPointType == ControlPointType.westCeil || pickedControlPoint.controlPointType == ControlPointType.westFloor) {
+                        float mod = ((float)info.y - (float)selY + 1) / (float)selHeight;
+                        if(pickedControlPoint.controlPointType == ControlPointType.southCeil) {
+                            t.ceilSlopeSE -= dragOffset.y * mod;
+                            t.ceilSlopeSW -= dragOffset.y * mod;
+                        }
+                        else {
+                            t.slopeSE -= dragOffset.y * mod;
+                            t.slopeSW -= dragOffset.y * mod;
+                        }
 
-								float mod = 1 - ((float)x - (float)selX) / (float)selWidth;
-								if(pickedControlPoint.controlPointType == ControlPointType.westCeil) {
-									t.ceilSlopeNE -= dragOffset.y * mod;
-									t.ceilSlopeSE -= dragOffset.y * mod;
-								}
-								else {
-									t.slopeNE -= dragOffset.y * mod;
-									t.slopeSE -= dragOffset.y * mod;
-								}
+                        if(selHeight > 1) {
+                            mod = ((float)info.y - (float)selY) / (float)selHeight;
+                            if(pickedControlPoint.controlPointType == ControlPointType.southCeil) {
+                                t.ceilSlopeNE -= dragOffset.y * mod;
+                                t.ceilSlopeNW -= dragOffset.y * mod;
+                            }
+                            else {
+                                t.slopeNE -= dragOffset.y * mod;
+                                t.slopeNW -= dragOffset.y * mod;
+                            }
+                        }
+                        t.packHeights();
+                    }
+                    else if(pickedControlPoint.controlPointType == ControlPointType.westCeil || pickedControlPoint.controlPointType == ControlPointType.westFloor) {
 
-								if(selWidth > 1) {
-									mod = 1 - ((float)x - (float)selX + 1f) / (float)selWidth;
-									if(pickedControlPoint.controlPointType == ControlPointType.westCeil) {
-										t.ceilSlopeNW -= dragOffset.y * mod;
-										t.ceilSlopeSW -= dragOffset.y * mod;
-									}
-									else {
-										t.slopeNW -= dragOffset.y * mod;
-										t.slopeSW -= dragOffset.y * mod;
-									}
-								}
-								t.packHeights();
-							}
-							else if(pickedControlPoint.controlPointType == ControlPointType.eastCeil || pickedControlPoint.controlPointType == ControlPointType.eastFloor) {
+                        float mod = 1 - ((float)info.x - (float)selX) / (float)selWidth;
+                        if(pickedControlPoint.controlPointType == ControlPointType.westCeil) {
+                            t.ceilSlopeNE -= dragOffset.y * mod;
+                            t.ceilSlopeSE -= dragOffset.y * mod;
+                        }
+                        else {
+                            t.slopeNE -= dragOffset.y * mod;
+                            t.slopeSE -= dragOffset.y * mod;
+                        }
 
-								float mod = ((float)x - (float)selX + 1) / (float)selWidth;
-								if(pickedControlPoint.controlPointType == ControlPointType.eastCeil) {
-									t.ceilSlopeNW -= dragOffset.y * mod;
-									t.ceilSlopeSW -= dragOffset.y * mod;
-								}
-								else {
-									t.slopeNW -= dragOffset.y * mod;
-									t.slopeSW -= dragOffset.y * mod;
-								}
+                        if(selWidth > 1) {
+                            mod = 1 - ((float)info.x - (float)selX + 1f) / (float)selWidth;
+                            if(pickedControlPoint.controlPointType == ControlPointType.westCeil) {
+                                t.ceilSlopeNW -= dragOffset.y * mod;
+                                t.ceilSlopeSW -= dragOffset.y * mod;
+                            }
+                            else {
+                                t.slopeNW -= dragOffset.y * mod;
+                                t.slopeSW -= dragOffset.y * mod;
+                            }
+                        }
+                        t.packHeights();
+                    }
+                    else if(pickedControlPoint.controlPointType == ControlPointType.eastCeil || pickedControlPoint.controlPointType == ControlPointType.eastFloor) {
 
-								if(selWidth > 1) {
-									mod = ((float)x - (float)selX) / (float)selWidth;
-									if(pickedControlPoint.controlPointType == ControlPointType.eastCeil) {
-										t.ceilSlopeNE -= dragOffset.y * mod;
-										t.ceilSlopeSE -= dragOffset.y * mod;
-									}
-									else {
-										t.slopeNE -= dragOffset.y * mod;
-										t.slopeSE -= dragOffset.y * mod;
-									}
-								}
-								t.packHeights();
-							}
-						}
-					}
+                        float mod = ((float)info.x - (float)selX + 1) / (float)selWidth;
+                        if(pickedControlPoint.controlPointType == ControlPointType.eastCeil) {
+                            t.ceilSlopeNW -= dragOffset.y * mod;
+                            t.ceilSlopeSW -= dragOffset.y * mod;
+                        }
+                        else {
+                            t.slopeNW -= dragOffset.y * mod;
+                            t.slopeSW -= dragOffset.y * mod;
+                        }
+
+                        if(selWidth > 1) {
+                            mod = ((float)info.x - (float)selX) / (float)selWidth;
+                            if(pickedControlPoint.controlPointType == ControlPointType.eastCeil) {
+                                t.ceilSlopeNE -= dragOffset.y * mod;
+                                t.ceilSlopeSE -= dragOffset.y * mod;
+                            }
+                            else {
+                                t.slopeNE -= dragOffset.y * mod;
+                                t.slopeSE -= dragOffset.y * mod;
+                            }
+                        }
+                        t.packHeights();
+                    }
 				}
 
 				if(pickedControlPoint.controlPointType == ControlPointType.vertex) {
@@ -3159,7 +3156,6 @@ public class EditorApplication implements ApplicationListener {
             }
         }
 
-        // TODO: Clipboard support?
         int selX = Editor.selection.tiles.x;
         int selY = Editor.selection.tiles.y;
         int selWidth = Editor.selection.tiles.width;
@@ -3201,7 +3197,6 @@ public class EditorApplication implements ApplicationListener {
             int selX = Editor.selection.tiles.x;
             int selY = Editor.selection.tiles.y;
 
-            // TODO: Update clipboard to have a TileSelection?
             for(int x = 0; x < clipboard.selWidth; x++) {
                 for(int y = 0; y < clipboard.selHeight; y++) {
                     if(clipboard.tiles[x][y] == null)
@@ -3949,7 +3944,6 @@ public class EditorApplication implements ApplicationListener {
 			float floor = selectionHeights.y;
 			float tileHeight = ceiling - floor;
 
-			// TODO: Selection bounds
 			Vector3 size = new Vector3(Editor.selection.tiles.width, tileHeight, Editor.selection.tiles.height);
 			orbitDistance = size.len();
 
