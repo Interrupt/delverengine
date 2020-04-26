@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
@@ -31,8 +30,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.*;
-import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
@@ -72,7 +71,6 @@ import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.StringManager;
 import com.noise.PerlinNoise;
-import com.badlogic.gdx.math.MathUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -4107,61 +4105,38 @@ public class EditorApplication implements ApplicationListener {
     }
 
 	public void moveTiles(int moveX, int moveY, float moveZ) {
-        // TODO: Possibly refactor here?
-		int selX = Editor.selection.tiles.x;
-		int selY = Editor.selection.tiles.y;
-		int selWidth = Editor.selection.tiles.width;
-		int selHeight = Editor.selection.tiles.height;
-
 		// Move Tiles
 		if(selected) {
-			Tile[] moving = new Tile[selWidth * selHeight];
+		    Array<TileSelectionInfo> tilesToMove = new Array<TileSelectionInfo>();
+		    for (TileSelectionInfo info : Editor.selection.tiles) {
+		        tilesToMove.add(info);
+                level.setTile(info.x, info.y, null);
+                markWorldAsDirty(info.x, info.y, 1);
+            }
 
-			for (int x = 0; x < selWidth; x++) {
-				for (int y = 0; y < selHeight; y++) {
-					int tileX = selX + x;
-					int tileY = selY + y;
+            for (TileSelectionInfo info : tilesToMove) {
+                Tile t = info.tile;
+                int newX = info.x + moveX;
+                int newY = info.y + moveY;
 
-					Tile t = level.getTileOrNull(tileX, tileY);
-					moving[x + y * Editor.selection.tiles.width] = t;
+                if(moveZ != 0 && t != null) {
+                    t.floorHeight += moveZ;
+                    t.ceilHeight += moveZ;
+                }
 
-					level.setTile(tileX, tileY, null);
-					markWorldAsDirty(tileX, tileY, 1);
-				}
-			}
+                level.setTile(newX, newY, t);
+                markWorldAsDirty(newX, newY, 1);
+            }
 
-			for (int x = 0; x < selWidth; x++) {
-				for (int y = 0; y < selHeight; y++) {
-					int tileX = selX + x + moveX;
-					int tileY = selY + y + moveY;
-
-					Tile t = moving[x + y * Editor.selection.tiles.width];
-
-					if(moveZ != 0 && t != null) {
-						t.floorHeight += moveZ;
-						t.ceilHeight += moveZ;
-					}
-
-					level.setTile(tileX, tileY, t);
-
-					markWorldAsDirty(tileX, tileY, 1);
-				}
-			}
-
-			// Move Markers
-			for(int x = selX; x < selX + selWidth; x++) {
-				for(int y = selY; y < selY + selHeight; y++) {
-					if(level.editorMarkers != null && level.editorMarkers.size > 0) {
-						for(int i = 0; i < level.editorMarkers.size; i++) {
-							EditorMarker m = level.editorMarkers.get(i);
-							if(m.x == x && m.y == y) {
-								m.x += moveX;
-								m.y += moveY;
-							}
-						}
-					}
-				}
-			}
+            // Move markers
+            for (TileSelectionInfo info : Editor.selection.tiles) {
+                for (EditorMarker m : level.editorMarkers) {
+                    if (m.x == info.x && m.y == info.y) {
+                        m.x += moveX;
+                        m.y += moveY;
+                    }
+                }
+            }
 
 			Editor.selection.tiles.x += moveX;
 			Editor.selection.tiles.y += moveY;
