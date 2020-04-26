@@ -1933,7 +1933,7 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.input.setCursorCatched(false);
 
 		initTextures();
-        setupHud(wallTextures);
+
 
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
                 TextureAtlas.cachedRepeatingAtlases.firstKey();
@@ -2457,11 +2457,14 @@ public class EditorApplication implements ApplicationListener {
 		spriteAtlases.put(Entity.ArtType.door, loadAtlas("textures.png", 4, false));
 		spriteAtlases.put(Entity.ArtType.texture, loadAtlas("textures.png", 4, false));
 		spriteAtlases.put(Entity.ArtType.particle, loadAtlas("particles.png", 8, false));
+
+        setupHud(wallTextures);
 	}
 
     private void setupHud(TextureRegion[] wallTextures) {
-
-        ui = new EditorUi();
+        if (ui == null) {
+            ui = new EditorUi();
+        }
 
         wallPickerButton = new Image(new TextureRegionDrawable(wallTextures[0]));
         wallPickerButton.setScaling(Scaling.stretch);
