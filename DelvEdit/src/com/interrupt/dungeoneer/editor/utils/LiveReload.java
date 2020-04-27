@@ -2,10 +2,12 @@ package com.interrupt.dungeoneer.editor.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.EditorArt;
 
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
@@ -17,6 +19,8 @@ public class LiveReload {
 
     private long lastTimeCalled = 0;
     private final long MIN_TIME_BETWEEN_CALLS = 100;
+
+    public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
 
     private final List<String> watchedExtensions = Arrays.asList("dat", "obj", "png", "frag", "vert");
 
@@ -44,11 +48,10 @@ public class LiveReload {
 							long now = System.currentTimeMillis();
 
 							if (watchedExtensions.contains(extension) && now - lastTimeCalled > MIN_TIME_BETWEEN_CALLS) {
-								Gdx.app.log("Editor", "Live loading assets");
 								lastTimeCalled = now;
 
 								// Reload must happen on main render thread.
-								Editor.app.needToReloadAssets.set(true);
+								needToReloadAssets.set(true);
 								break;
 							}
 						}
@@ -62,6 +65,7 @@ public class LiveReload {
     }
 
     public void init() {
+		Gdx.app.log("LiveReload", "Initializing");
     	if (watcher.isAlive()) {
     		return;
 		}
@@ -71,8 +75,17 @@ public class LiveReload {
 	}
 
     public void dispose() {
+    	Gdx.app.log("LiveReload", "Disposing");
     	watcher.interrupt();
 	}
+
+	public void tick() {
+        if (needToReloadAssets.compareAndSet(true, false)) {
+        	Gdx.app.log("LiveReload", "Reloading assets");
+            EditorArt.refresh();
+            Editor.app.initTextures();
+        }
+    }
 
 	private String getFileExtension(String filename) {
     	int index = filename.lastIndexOf(".");

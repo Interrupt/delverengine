@@ -76,7 +76,6 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
@@ -352,7 +351,6 @@ public class EditorApplication implements ApplicationListener {
 	Vector3 rayOutVector = new Vector3();
 
 	private LiveReload liveReload;
-	public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
 
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
@@ -1936,6 +1934,7 @@ public class EditorApplication implements ApplicationListener {
 
 		initTextures();
 
+
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
                 TextureAtlas.cachedRepeatingAtlases.firstKey();
 
@@ -2308,14 +2307,12 @@ public class EditorApplication implements ApplicationListener {
 			readRightClick = false;
 		}
 
+		// Tick subsystems.
 		input.tick();
         editorInput.tick();
+        liveReload.tick();
 
 		CachePools.clearOnTick();
-
-		if (needToReloadAssets.compareAndSet(true, false)) {
-			EditorArt.refresh();
-		}
 	}
 
     public void undo() {
@@ -2465,8 +2462,7 @@ public class EditorApplication implements ApplicationListener {
 	}
 
     private void setupHud(TextureRegion[] wallTextures) {
-
-        ui = new EditorUi();
+		ui = new EditorUi();
 
         wallPickerButton = new Image(new TextureRegionDrawable(wallTextures[0]));
         wallPickerButton.setScaling(Scaling.stretch);
@@ -2590,6 +2586,8 @@ public class EditorApplication implements ApplicationListener {
         inputMultiplexer.addProcessor(input);
 
         setInputProcessor();
+
+		ui.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public void setInputProcessor() {
