@@ -2462,9 +2462,7 @@ public class EditorApplication implements ApplicationListener {
 	}
 
     private void setupHud(TextureRegion[] wallTextures) {
-        if (ui == null) {
-            ui = new EditorUi();
-        }
+		ui = new EditorUi();
 
         wallPickerButton = new Image(new TextureRegionDrawable(wallTextures[0]));
         wallPickerButton.setScaling(Scaling.stretch);
@@ -2588,6 +2586,8 @@ public class EditorApplication implements ApplicationListener {
         inputMultiplexer.addProcessor(input);
 
         setInputProcessor();
+
+		ui.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public void setInputProcessor() {
