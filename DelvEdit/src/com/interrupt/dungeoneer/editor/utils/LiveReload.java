@@ -48,7 +48,6 @@ public class LiveReload {
 							long now = System.currentTimeMillis();
 
 							if (watchedExtensions.contains(extension) && now - lastTimeCalled > MIN_TIME_BETWEEN_CALLS) {
-								Gdx.app.log("Editor", "Live loading assets");
 								lastTimeCalled = now;
 
 								// Reload must happen on main render thread.
@@ -66,6 +65,7 @@ public class LiveReload {
     }
 
     public void init() {
+		Gdx.app.log("LiveReload", "Initializing");
     	if (watcher.isAlive()) {
     		return;
 		}
@@ -75,11 +75,13 @@ public class LiveReload {
 	}
 
     public void dispose() {
+    	Gdx.app.log("LiveReload", "Disposing");
     	watcher.interrupt();
 	}
 
 	public void tick() {
         if (needToReloadAssets.compareAndSet(true, false)) {
+        	Gdx.app.log("LiveReload", "Reloading assets");
             EditorArt.refresh();
             Editor.app.initTextures();
         }
