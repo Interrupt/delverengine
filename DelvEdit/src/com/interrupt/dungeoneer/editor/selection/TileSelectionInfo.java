@@ -7,6 +7,8 @@ public class TileSelectionInfo {
     public int y;
     public Tile tile;
 
+    public TileSelectionInfo() {}
+
     public TileSelectionInfo(int x, int y, Tile tile) {
         this.x = x;
         this.y = y;

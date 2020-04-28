@@ -15,6 +15,8 @@ public class AdjacentTileSelectionInfo {
     public Tile tile;
     public AdjacencyDirection dir;
 
+    public AdjacentTileSelectionInfo() {}
+
     public AdjacentTileSelectionInfo(int x, int y, Tile tile, AdjacencyDirection direction) {
         this.x = x;
         this.y = y;
