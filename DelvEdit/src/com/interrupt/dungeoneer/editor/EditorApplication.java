@@ -39,7 +39,6 @@ import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
-import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
@@ -1916,7 +1915,7 @@ public class EditorApplication implements ApplicationListener {
 		Tile t = new Tile();
 		t.floorHeight = -0.5f;
 		t.ceilHeight = 0.5f;
-		//level.setTile(0, 1, t);
+		level.setTile(7, 7, t);
 
 		gridMesh = genGrid(level.width,level.height);
 	}
