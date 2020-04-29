@@ -9,6 +9,12 @@ public class TileSelectionInfo {
 
     public TileSelectionInfo() {}
 
+    public TileSelectionInfo(TileSelectionInfo copy) {
+        this.x = copy.x;
+        this.y = copy.y;
+        this.tile = copy.tile;
+    }
+
     public TileSelectionInfo(int x, int y, Tile tile) {
         this.x = x;
         this.y = y;

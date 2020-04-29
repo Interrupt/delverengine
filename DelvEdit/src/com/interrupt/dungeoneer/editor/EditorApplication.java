@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -38,6 +39,7 @@ import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
+import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
@@ -269,7 +271,6 @@ public class EditorApplication implements ApplicationListener {
 
     private boolean tileDragging = false;
 
-	private Vector2 selectionHeights = new Vector2();
     private boolean vertexSelectionMode = false;
 
     public float time = 0;
@@ -723,7 +724,7 @@ public class EditorApplication implements ApplicationListener {
 
 				end = ray.getEndPoint(rayOutVector, distance + 0.005f);
 
-                // Tile selection bounding
+						// Tile selection bounding
 				Editor.selection.tiles.x = (int)end.x;
 				Editor.selection.tiles.y = (int)end.z;
 
@@ -785,43 +786,26 @@ public class EditorApplication implements ApplicationListener {
 
             GlRenderer.bindTexture(selectionTex);
 
-			int scaleWidth = Editor.selection.tiles.width;
-			int scaleHeight = Editor.selection.tiles.height;
-			int selX = Editor.selection.tiles.x;
-			int selY = Editor.selection.tiles.y;
-
-			Tile t = level.getTileOrNull(selX,selY);
-			if(t!= null && !t.renderSolid) {
-				float selZ = t.floorHeight;
-				if(intpos != null) {
-					selZ = (int)((intpos.y - 0.001f) * 16) / 16f;
-				}
-
-				if(!selected) selectionHeights.set(t.ceilHeight, selZ);
-			}
-			else {
-				TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
-				float size = atlas.rowScale * atlas.scale;
-				if(!selected) selectionHeights.set(size - 0.5f, -0.5f);
+			Tile t = Editor.selection.tiles.first();
+			if(t == null || t.renderSolid) {
+				// TODO: Set cursor height to match atlas.
+				//TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
+				//float size = atlas.rowScale * atlas.scale;
+				//if(!selected) selectionHeights.set(size - 0.5f, -0.5f);
 			}
 
 			if(slopePointMode || slopeEdgeMode)
 				drawSlopeLines(slopeSelNum, slopeEdgeMode);
 
-			if(scaleWidth < 0) selX += 1;
-			if(scaleHeight < 0) selY += 1;
-
-			float xOffset = scaleWidth > 0 ? 0.015f : - 0.015f;
-			float yOffset = scaleHeight > 0 ? 0.015f : - 0.015f;
-
+			// Draw selection
 			if(shouldDrawBox) {
-				boxRenderer.translate(selX + xOffset, selectionHeights.x + 0.008f, selY + yOffset);
 				boxRenderer.setColor(0.75f, 0.75f, 0.75f, 0.5f);
 				boxRenderer.begin(ShapeType.Line);
 
-				boxRenderer.box(0, 0, 0, scaleWidth - (xOffset * 2f), (selectionHeights.y - selectionHeights.x) - 0.015f, -scaleHeight + (yOffset * 2f));
+				BoundingBox bounds = Editor.selection.tiles.getBounds();
+				boxRenderer.box(bounds.min.x, bounds.min.z, bounds.min.y, bounds.getWidth(), bounds.getDepth(), -bounds.getHeight());
+
 				boxRenderer.end();
-				boxRenderer.identity();
 			}
 		}
 
@@ -3795,7 +3779,7 @@ public class EditorApplication implements ApplicationListener {
 			t.ceilHeight = size - 0.5f;
 		}
 
-		t.floorHeight = selectionHeights.y;
+		t.floorHeight = Editor.selection.tiles.getBounds().min.z;
 
 		setTile(t);
 
@@ -3927,14 +3911,13 @@ public class EditorApplication implements ApplicationListener {
 		}
 		// Focus on tile selection
 		else if (selected) {
-			float ceiling = selectionHeights.x;
-			float floor = selectionHeights.y;
-			float tileHeight = ceiling - floor;
+			BoundingBox bounds = Editor.selection.tiles.getBounds();
 
-			Vector3 size = new Vector3(Editor.selection.tiles.width, tileHeight, Editor.selection.tiles.height);
+			Vector3 size = new Vector3();
+			bounds.getDimensions(size);
 			orbitDistance = size.len();
 
-			selectedPosition.set(Editor.selection.tiles.x + (Editor.selection.tiles.width / 2f), Editor.selection.tiles.y + (Editor.selection.tiles.width / 2f), floor + tileHeight / 2f);
+			bounds.getCenter(selectedPosition);
 		}
 
 		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(orbitDistance);
@@ -4121,7 +4104,6 @@ public class EditorApplication implements ApplicationListener {
 
 			Editor.selection.tiles.x += moveX;
 			Editor.selection.tiles.y += moveY;
-			selectionHeights.add(moveZ, moveZ);
 
 			controlPoints.clear();
 		}

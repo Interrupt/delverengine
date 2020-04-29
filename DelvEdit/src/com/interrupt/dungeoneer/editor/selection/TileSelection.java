@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.editor.selection;
 
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.game.Level;
@@ -97,5 +98,37 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         }
 
         return result.iterator();
+    }
+
+    private final BoundingBox bounds = new BoundingBox();
+    public BoundingBox getBounds() {
+        TileSelectionInfo first = null;
+
+        for (TileSelectionInfo info : this) {
+            if (info.tile == null) {
+                TileSelectionInfo i = new TileSelectionInfo(info);
+                i.tile = Tile.solidWall;
+                info = i;
+            }
+
+            BoundingBox b = getBounds(info);
+
+            if (first == null) {
+                bounds.set(b);
+                first = info;
+            }
+
+            bounds.ext(getBounds(info));
+        }
+
+        return bounds;
+    }
+
+    private final BoundingBox tileBounds = new BoundingBox();
+    private BoundingBox getBounds(TileSelectionInfo info) {
+        tileBounds.min.set(info.x, info.y, info.tile.floorHeight);
+        tileBounds.max.set(info.x + 1, info.y + 1, info.tile.ceilHeight);
+
+        return tileBounds;
     }
 }
