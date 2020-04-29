@@ -86,18 +86,19 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
          return x >= this.x && x < this.x + width && y >= this.y && y < this.y + height;
     }
 
+    private final Array<TileSelectionInfo> tileInfos = new Array<TileSelectionInfo>();
     @Override
     public Iterator<TileSelectionInfo> iterator() {
-        Array<TileSelectionInfo> result = new Array<TileSelectionInfo>();
+        tileInfos.clear();
 
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
                 Tile t = Editor.app.getLevel().getTileOrNull(i, j);
-                result.add(new TileSelectionInfo(i, j, t));
+                tileInfos.add(new TileSelectionInfo(i, j, t));
             }
         }
 
-        return result.iterator();
+        return tileInfos.iterator();
     }
 
     private final BoundingBox bounds = new BoundingBox();
