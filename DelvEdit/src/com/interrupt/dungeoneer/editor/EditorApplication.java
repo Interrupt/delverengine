@@ -80,7 +80,6 @@ import java.util.HashMap;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
-	//public EditorTool tool = null;
 	public EditorUi ui = null;
 	public PerspectiveCamera camera = new PerspectiveCamera();
 	public EditorCameraController cameraController = null;
