@@ -29,7 +29,13 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 	double maxRot = 0.8;
 
 	int scrollAmount;
-    
+
+	boolean isMoving;
+	float currentMoveTime;
+	final float moveTime = 0.0625f;
+	final Vector3 moveStart = new Vector3();
+	final Vector3 moveEnd = new Vector3();
+
     public EditorCameraController() {}
     
     @Override
@@ -173,6 +179,20 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 			position.set(cameraNewDirection.x, cameraNewDirection.z, cameraNewDirection.y);
 		}
 
+		// Handle smoothly lerping to a destination.
+		if (isMoving) {
+			currentMoveTime += Gdx.graphics.getDeltaTime();
+
+			position.set(moveStart);
+			position.lerp(moveEnd, currentMoveTime / moveTime);
+
+			if (currentMoveTime >= moveTime) {
+				currentMoveTime = 0;
+				isMoving = false;
+				position.set(moveEnd);
+			}
+		}
+
         camera.position.set(position.x, position.z, position.y);
 
         scrollAmount = 0;
@@ -239,6 +259,7 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
         return false;
     }
 
+    /** Position the camera to view the current selection. */
     public void viewSelected() {
         PerspectiveCamera camera = Editor.app.camera;
         Level level = Editor.app.level;
@@ -268,6 +289,14 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 
 		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(orbitDistance);
 		Vector3 finalPosition = new Vector3(selectedPosition).sub(cameraOffset);
-		position.set(finalPosition);
+		moveTo(finalPosition);
+	}
+
+	/** Smoothly move to given destination. */
+	public void moveTo(Vector3 destination) {
+    	moveStart.set(position);
+		moveEnd.set(destination);
+		isMoving = true;
+		currentMoveTime = 0;
 	}
 }
