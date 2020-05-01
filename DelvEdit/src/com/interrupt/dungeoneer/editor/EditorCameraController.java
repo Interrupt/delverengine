@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.helpers.AnimationHelper;
+import com.interrupt.helpers.InterpolationHelper;
 
 /** Subsystem for controlling and positioning the editor camera. */
 public class EditorCameraController extends InputAdapter implements EditorSubsystem {
@@ -30,11 +32,7 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 
 	int scrollAmount;
 
-	boolean isMoving;
-	float currentMoveTime;
-	final float moveTime = 0.0625f;
-	final Vector3 moveStart = new Vector3();
-	final Vector3 moveEnd = new Vector3();
+	AnimationHelper animationHelper;
 
     public EditorCameraController() {}
     
@@ -179,18 +177,9 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 			position.set(cameraNewDirection.x, cameraNewDirection.z, cameraNewDirection.y);
 		}
 
-		// Handle smoothly lerping to a destination.
-		if (isMoving) {
-			currentMoveTime += Gdx.graphics.getDeltaTime();
-
-			position.set(moveStart);
-			position.lerp(moveEnd, currentMoveTime / moveTime);
-
-			if (currentMoveTime >= moveTime) {
-				currentMoveTime = 0;
-				isMoving = false;
-				position.set(moveEnd);
-			}
+		if (animationHelper != null && !animationHelper.isDonePlaying()) {
+			animationHelper.tickAnimation(Gdx.graphics.getDeltaTime());
+			position.set(animationHelper.getCurrentPosition());
 		}
 
         camera.position.set(position.x, position.z, position.y);
@@ -294,9 +283,13 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 
 	/** Smoothly move to given destination. */
 	public void moveTo(Vector3 destination) {
-    	moveStart.set(position);
-		moveEnd.set(destination);
-		isMoving = true;
-		currentMoveTime = 0;
+		animationHelper = new AnimationHelper(
+				position,
+				Vector3.Zero,
+				destination,
+				Vector3.Zero,
+				0.5f,
+				InterpolationHelper.InterpolationMode.exp10Out
+		);
 	}
 }
