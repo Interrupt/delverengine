@@ -80,6 +80,13 @@ import java.util.HashMap;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
+	public EditorUi ui = null;
+	public PerspectiveCamera camera = new PerspectiveCamera();
+	public EditorCameraController cameraController = null;
+	public EditorHistory history = new EditorHistory();
+	public Player player = null;
+	public Level level = null;
+	public GlRenderer renderer = null;
 
     private EditorClipboard clipboard = null;
 
@@ -87,8 +94,6 @@ public class EditorApplication implements ApplicationListener {
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
 	public enum DragMode { NONE, XY, X, Y, Z }
 	public enum MoveMode { NONE, DRAG, ROTATE }
-
-	public EditorHistory history = new EditorHistory();
 
 	public Color controlPointColor = new Color(1f, 0.4f, 0f, 1f);
 
@@ -218,8 +223,6 @@ public class EditorApplication implements ApplicationListener {
 
 	private boolean rightClickWasDown = false;
 
-    public PerspectiveCamera camera = new PerspectiveCamera();
-
     protected Pixmap wallPixmap;
     protected Texture selectionTex;
     protected Texture walltex;
@@ -231,42 +234,19 @@ public class EditorApplication implements ApplicationListener {
 
     protected EntityManager entityManager;
 
-    Level level = null;
-
 	public String currentFileName;
 	public String currentDirectory;
-
-    float camX = 7.5f;
-    float camY = 8;
-    float camZ = 6.5f;
-
-    float orbitDistance = 4.0f;
-
-    float rotX = 3.14159f;
-    float rotY = 1.4f;
-    double rota = 0;
-	double rotya = 0;
-	float rotYClamp = 1.571f;
-
-	float scrollSpeed = 0.4f;
-	float za = 0f;
-
-	double walkSpeed = 0.15;
-	double rotSpeed = 0.009;
-	double maxRot = 0.8;
 
 	boolean readRotate;
 
 	Mesh cubeMesh;
     Mesh gridMesh;
 
-	GlRenderer renderer = null;
-
     private boolean slopePointMode = false;
     private boolean slopeEdgeMode = false;
     private int slopeSelNum = 0;
 
-    private boolean selected = false;
+    public boolean selected = false;
 
     private boolean tileDragging = false;
 
@@ -276,8 +256,6 @@ public class EditorApplication implements ApplicationListener {
 
 	protected DecalBatch spriteBatch;
     protected DecalBatch pointBatch;
-
-    public EditorUi ui = null;
 
     Image wallPickerButton = null;
     Image bottomWallPickerButton = null;
@@ -296,9 +274,7 @@ public class EditorApplication implements ApplicationListener {
     private int messageTimer = 0;
     private String message = "";
 
-	private Player player = null;
-
-    private boolean showLights = false;
+	private boolean showLights = false;
 	private boolean lightsDirty = true;
 
     private boolean movingEntity = false;
@@ -382,6 +358,8 @@ public class EditorApplication implements ApplicationListener {
 		input = new GameInput();
 		Gdx.input.setInputProcessor( input );
 
+		editorInput = new EditorInput();
+
         renderer.init();
 		renderer.enableLighting = showLights;
 
@@ -393,6 +371,9 @@ public class EditorApplication implements ApplicationListener {
 
 		liveReload = new LiveReload();
 		liveReload.init();
+
+		cameraController = new EditorCameraController();
+		cameraController.init();
 
 		StringManager.init();
 		Game.init();
@@ -413,6 +394,7 @@ public class EditorApplication implements ApplicationListener {
 			gameApp.dispose();
 		}
 
+		cameraController.dispose();
 		liveReload.dispose();
 
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
@@ -476,12 +458,15 @@ public class EditorApplication implements ApplicationListener {
 				Gdx.input.setInputProcessor( inputMultiplexer );
 				input.clear();
 
-				camX = Game.instance.player.x;
-				camZ = Game.instance.player.z + Game.instance.player.eyeHeight;
-				camY = Game.instance.player.y;
+				float x = Game.instance.player.x;
+				float z = Game.instance.player.z + Game.instance.player.eyeHeight;
+				float y = Game.instance.player.y;
 
-				rotX = Game.instance.player.rot + 3.14159265f;
-				rotY = -Game.instance.player.yrot;
+				float rotationX = Game.instance.player.rot + 3.14159265f;
+				float rotationY = -Game.instance.player.yrot;
+
+				cameraController.setPosition(x, y, z);
+				cameraController.setRotation(rotationX, rotationY);
 
 				Audio.stopLoopingSounds();
 			}
@@ -545,11 +530,7 @@ public class EditorApplication implements ApplicationListener {
 		GlRenderer.fogEnd = level.fogEnd;
 		GlRenderer.viewDistance = level.viewDistance;
 
-		camera.direction.set(0, 0, 1);
-		camera.up.set(0, 1, 0);
-		camera.rotate(rotY * 57.2957795f, 1f, 0, 0);
-		camera.rotate((float)(rotX + 3.14) * 57.2957795f, 0, 1f, 0);
-		camera.update();
+		cameraController.draw();
 
 		renderer.updateDynamicLights(camera);
 		renderer.updateShaderAttributes();
@@ -2007,9 +1988,13 @@ public class EditorApplication implements ApplicationListener {
 				level = openLevel;
 				refresh();
 
+				/*
 				camX = openLevel.width / 2f;
 				camZ = 4.5f;
 				camY = openLevel.height / 2f;
+				*/
+
+				cameraController.setPosition(openLevel.width / 2f, 4.5f, openLevel.height / 2f);
 
 				history = new EditorHistory();
 				Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
@@ -2114,121 +2099,6 @@ public class EditorApplication implements ApplicationListener {
 		}
 		if(Editor.selection.picked == null) movingEntity = false;
 
-		boolean turnLeft = (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnRight = (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnUp = (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-		boolean turnDown = (Gdx.input.getDeltaY() < 0 && Gdx.input.isButtonPressed(Buttons.MIDDLE));
-
-		turnLeft |= Gdx.input.isKeyPressed(Keys.LEFT) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
-		turnRight |= Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
-		turnUp |= Gdx.input.isKeyPressed(Keys.DOWN) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
-		turnDown |= Gdx.input.isKeyPressed(Keys.UP) && !Gdx.input.isKeyPressed(Keys.SHIFT_LEFT);
-
-		if(turnLeft) {
-			rota += rotSpeed;
-			if(rota > maxRot) rota = maxRot;
-		}
-		else if(turnRight) {
-			rota -= rotSpeed;
-			if(rota < -maxRot) rota = -maxRot;
-		}
-
-		rotX += rota;
-		rota *= 0.8;
-
-		if(turnUp) {
-			rotya += rotSpeed * 0.6f;
-			if(rotya > maxRot) rotya = maxRot;
-		}
-		else if(turnDown) {
-			rotya -= rotSpeed * 0.6f;
-			if(rotya < -maxRot) rotya = -maxRot;
-		}
-
-		rotY += rotya;
-
-		if (rotY < -rotYClamp) rotY = -rotYClamp;
-		if (rotY > rotYClamp) rotY = rotYClamp;
-
-		rotya *= 0.8;
-
-		float xm = 0f;
-		float zm = 0f;
-
-		if(editorInput.isKeyPressed(Keys.A)) {
-			xm = -1f;
-		}
-		if(editorInput.isKeyPressed(Keys.D)) {
-			xm = 1f;
-		}
-
-		if(editorInput.isKeyPressed(Keys.W) || editorInput.scrollAmount < 0) {
-			zm = -1f;
-		}
-		if(editorInput.isKeyPressed(Keys.S) || editorInput.scrollAmount > 0) {
-			zm = 1f;
-		}
-
-		if (editorInput.scrollAmount < 0) {
-			za -= scrollSpeed;
-		}
-		else if (editorInput.scrollAmount > 0) {
-			za += scrollSpeed;
-		}
-
-		zm += za;
-
-		za *= 0.8f;
-
-		if(editorInput.isKeyPressed(Keys.Q) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
-			camZ -= 0.1f;
-		}
-		if(editorInput.isKeyPressed(Keys.E) && !editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
-			camZ += 0.1f;
-		}
-
-		if (editorInput.isKeyPressed(Keys.SHIFT_LEFT)) {
-			xm *= 2.0f;
-			zm *= 2.0f;
-		}
-
-		orbitDistance += zm * walkSpeed;
-
-		camZ += (zm * Math.sin(rotY)) * walkSpeed;
-		zm *= Math.cos(rotY);
-		camX += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * walkSpeed;
-		camY += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * walkSpeed;
-
-		if(player != null) {
-			player.rot = rotX;
-			player.yrot = rotY;
-
-			player.xa += (xm * Math.cos(rotX) + zm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
-			player.ya += (zm * Math.cos(rotX) - xm * Math.sin(rotX)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
-		}
-
-		if (Gdx.input.isKeyPressed(Keys.ALT_LEFT) && (editorInput.isButtonPressed(Buttons.RIGHT) || turnLeft || turnRight || turnUp || turnDown)) {
-			// Calculate the next camera direction vector;
-			Vector3 cameraNewDirection = new Vector3(0, 0, 1);
-			cameraNewDirection.rotate(rotY * 57.2957795f, 1f, 0, 0);
-			cameraNewDirection.rotate((float)(rotX + 3.14) * 57.2957795f, 0, 1f, 0);
-			cameraNewDirection.nor();
-
-			// Calculate the orbit pivot.
-			if (orbitDistance < 0) {
-				orbitDistance = 3.0f;
-			}
-			Vector3 pivotPosition = new Vector3(camera.direction).scl(orbitDistance).add(camera.position);
-
-			// Calculate new camera position.
-			cameraNewDirection.scl(-orbitDistance);
-			cameraNewDirection.add(pivotPosition);
-
-			camX = cameraNewDirection.x;
-			camY = cameraNewDirection.z;
-			camZ = cameraNewDirection.y;
-		}
-
 		// Tile editing mode?
 		if(Editor.selection.picked == null) {
 			if(Gdx.input.isKeyPressed(Keys.NUM_1)) {
@@ -2261,10 +2131,6 @@ public class EditorApplication implements ApplicationListener {
 			level.editorTick(player, 0);
 		}
 
-		camera.position.x = camX;
-		camera.position.y = camZ;
-		camera.position.z = camY;
-
 		if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
 			readLeftClick = true;
 		}
@@ -2282,6 +2148,7 @@ public class EditorApplication implements ApplicationListener {
 		// Tick subsystems.
 		input.tick();
         editorInput.tick();
+        cameraController.tick();
         liveReload.tick();
 
 		CachePools.clearOnTick();
@@ -2376,11 +2243,14 @@ public class EditorApplication implements ApplicationListener {
 
 		gameApp.createFromEditor(previewLevel);
 
-		Game.instance.player.x = camera.position.x;
-		Game.instance.player.y = camera.position.z;
-		Game.instance.player.z = camera.position.y - Game.instance.player.eyeHeight;
-		Game.instance.player.rot = rotX - 3.14159265f;
-		Game.instance.player.yrot = -rotY;
+		Vector3 cameraPosition = cameraController.getPosition();
+		Vector2 cameraRotation = cameraController.getRotation();
+
+		Game.instance.player.x = cameraPosition.x;
+		Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
+		Game.instance.player.z = cameraPosition.z;
+		Game.instance.player.rot = cameraRotation.x - 3.14159265f;
+		Game.instance.player.yrot = -cameraRotation.y;
 		Game.isDebugMode = true;
 	}
 
@@ -2550,7 +2420,6 @@ public class EditorApplication implements ApplicationListener {
         stage.addActor(wallPickerLayoutTable);
         ui.initUi();
 
-        editorInput = new EditorInput();
         inputMultiplexer = new InputMultiplexer();
 
         inputMultiplexer.addProcessor(stage);
@@ -3879,12 +3748,15 @@ public class EditorApplication implements ApplicationListener {
 
     public void toggleSimulation() {
         if(player == null) {
+        	Vector3 cameraPosition = cameraController.getPosition();
+        	Vector2 cameraRotation = cameraController.getRotation();
+
             player = new Player();
-            player.x = camX - 0.5f;
-            player.y = camY - 0.5f;
-            player.z = camZ;
-            player.rot = rotX - 3.14159265f;
-            player.yrot = rotY;
+            player.x = cameraPosition.x - 0.5f;
+            player.y = cameraPosition.y - 0.5f;
+            player.z = cameraPosition.z;
+            player.rot = cameraRotation.x - 3.14159265f;
+            player.yrot = cameraRotation.y;
 
             for(Entity e : level.entities) { e.editorStartPreview(level); }
         } else {
@@ -3896,37 +3768,10 @@ public class EditorApplication implements ApplicationListener {
     }
 
     public void viewSelected() {
-		float minDistance = 3.0f;
-
-		// Default to framing up level grid.
-		Vector3 selectedPosition = new Vector3(level.width / 2f, level.height / 2f, 0);
-		orbitDistance = selectedPosition.len();
-
-		// Focus on picked entity
-		if (Editor.selection.picked != null) {
-			orbitDistance = getEntityBoundingSphereRadius(Editor.selection.picked) * 1.5f / (float)Math.tan(Math.toRadians(camera.fieldOfView) / 2);
-			orbitDistance = Math.max(minDistance, orbitDistance);
-			selectedPosition.set(Editor.selection.picked.x, Editor.selection.picked.y, Editor.selection.picked.z);
-		}
-		// Focus on tile selection
-		else if (selected) {
-			BoundingBox bounds = Editor.selection.tiles.getBounds();
-
-			Vector3 size = new Vector3();
-			bounds.getDimensions(size);
-			orbitDistance = size.len();
-
-			bounds.getCenter(selectedPosition);
-		}
-
-		Vector3 cameraOffset = new Vector3(camera.direction.x,camera.direction.z,camera.direction.y).scl(orbitDistance);
-		Vector3 finalPosition = new Vector3(selectedPosition).sub(cameraOffset);
-		camX = finalPosition.x;
-		camY = finalPosition.y;
-		camZ = finalPosition.z;
+		cameraController.viewSelected();
 	}
 
-	private float getEntityBoundingSphereRadius(Entity entity) {
+	public float getEntityBoundingSphereRadius(Entity entity) {
 		if (entity instanceof Light) {
 			return ((Light)entity).range;
 		}
@@ -3941,10 +3786,10 @@ public class EditorApplication implements ApplicationListener {
         level = new Level(width,height);
         refresh();
 
-        camX = level.width / 2;
-        camZ = 4.5f;
-        camY = level.height / 2;
-    }
+        float x = level.width / 2f;
+        float z = 4.5f;
+        float y = level.height / 2f;
+        cameraController.setPosition(x, y, z);    }
 
 	public void createdNewLevel() {
 		currentDirectory = null;
