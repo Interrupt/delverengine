@@ -1,17 +1,13 @@
 package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.interrupt.dungeoneer.editor.ui.EditorUi;
-import com.interrupt.dungeoneer.editor.ui.FilePicker;
+import com.interrupt.dungeoneer.editor.file.SaveAdapter;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileFilter;
 
 public class EditorActions {
+    public ActionListener newAction;
     public ActionListener saveAction;
     public ActionListener saveAsAction;
     public ActionListener openAction;
@@ -63,116 +59,34 @@ public class EditorActions {
     }
 
     private void initActions() {
+        newAction = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                Editor.app.file.create();
+            }
+        };
+
         saveAction = new ActionListener() {
+            @Override
             public void actionPerformed (ActionEvent event) {
-                // Invoke the save as dialog if we haven't saved anything yet
-                if(Editor.app.currentFileName == null || Editor.app.currentDirectory == null) {
-                    saveAsAction.actionPerformed(event);
-                }
-                else {
-                    Editor.app.save(Editor.app.currentDirectory + Editor.app.currentFileName);
-                    Editor.app.setTitle(Editor.app.currentFileName);
-                }
+                Editor.app.file.save();
             }
         };
 
         saveAsAction = new ActionListener() {
             public void actionPerformed (ActionEvent event) {
-                class WSFilter implements FileFilter {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return (pathname.getName().endsWith(".bin") || pathname.getName().endsWith(".dat"));
-                    }
-                }
-
-                FileFilter wsFilter = new WSFilter();
-
-                if(Editor.app.currentDirectory == null) {
-                    Editor.app.currentDirectory = new FileHandle(".").file().getAbsolutePath();
-                    Editor.app.currentDirectory = Editor.app.currentDirectory.substring(0, Editor.app.currentDirectory.length() - 2);
-                }
-
-                FilePicker picker = FilePicker.createSaveDialog("Save Level", EditorUi.getSmallSkin(), new FileHandle(Editor.app.currentDirectory));
-                picker.setFileNameEnabled(true);
-                picker.setNewFolderEnabled(false);
-                picker.setFilter(wsFilter);
-
-                if(Editor.app.currentFileName == null) {
-                    picker.setFileName("level.bin");
-                }
-                else {
-                    picker.setFileName(Editor.app.currentFileName);
-                }
-
-                picker.setResultListener(new FilePicker.ResultListener() {
-                    @Override
-                    public boolean result(boolean success, FileHandle result) {
-                        if(success) {
-                            try {
-                                Editor.app.save(result.file().getAbsolutePath());
-                                Editor.app.currentDirectory = result.file().getParent() + "/";
-                                Editor.app.currentFileName = result.name();
-
-                                Editor.app.setTitle(Editor.app.currentFileName);
-                            }
-                            catch(Exception ex) {
-                                Gdx.app.error("DelvEdit", ex.getMessage());
-                            }
-                        }
-                        return true;
-                    }
-                });
-
-                picker.show(Editor.app.ui.getStage());
-
-                Editor.app.ui.showingModal = picker;
-                Editor.app.editorInput.resetKeys();
+                Editor.app.file.saveAs(new SaveAdapter());
             }
         };
 
         openAction = new ActionListener() {
             public void actionPerformed (ActionEvent event) {
-                class WSFilter implements FileFilter {
-                    @Override
-                    public boolean accept(File path) {
-                        String name = path.getName();
-                        return (name.endsWith(".dat") || name.endsWith(".png") || name.endsWith(".bin"));
-                    }
-                }
-                FileFilter wsFilter = new WSFilter();
-
-                if(Editor.app.currentDirectory == null) {
-                    Editor.app.currentDirectory = new FileHandle(".").file().getAbsolutePath();
-                    Editor.app.currentDirectory = Editor.app.currentDirectory.substring(0, Editor.app.currentDirectory.length() - 2);
-                }
-
-                FilePicker picker = FilePicker.createLoadDialog("Open Level", EditorUi.getSmallSkin(), new FileHandle(Editor.app.currentDirectory));
-                picker.setFileNameEnabled(true);
-                picker.setNewFolderEnabled(false);
-                if(Editor.app.currentFileName != null) picker.setFileName(Editor.app.currentFileName);
-                picker.setFilter(wsFilter);
-
-                picker.setResultListener(new FilePicker.ResultListener() {
-                    @Override
-                    public boolean result(boolean success, FileHandle result) {
-                        if(success) {
-                            Editor.app.open(result);
-                        }
-
-                        return true;
-                    }
-                });
-
-                picker.show(Editor.app.ui.getStage());
-
-                Editor.app.ui.showingModal = picker;
-                Editor.app.editorInput.resetKeys();
+                Editor.app.file.open();
             }
         };
 
         exitAction = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Editor.app.frame.dispatchEvent(new WindowEvent(Editor.app.frame, WindowEvent.WINDOW_CLOSING));
+                Gdx.app.exit();
             }
         };
 

@@ -15,12 +15,7 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.editor.*;
-import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
-import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
-import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
-import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenuBar;
+import com.interrupt.dungeoneer.editor.ui.menu.*;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -49,7 +44,6 @@ public class EditorUi {
     public Actor showingModal;
 
     ActionListener resizeWindowAction;
-    ActionListener newWindowAction;
     ActionListener pickAction;
     ActionListener uploadModAction;
     ActionListener setThemeAction;
@@ -143,26 +137,6 @@ public class EditorUi {
         mainTable.setFillParent(true);
         mainTable.align(Align.left | Align.top);
 
-        // action listener for the new level dialog
-        newWindowAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                NewLevelDialog newLevelDialog = new NewLevelDialog(smallSkin) {
-                    @Override
-                    protected void result(Object object) {
-                        if((Boolean)object) {
-                            Editor.app.createNewLevel(getLevelWidth(), getLevelHeight());
-                            Editor.app.createdNewLevel();
-                        }
-                    }
-                };
-
-                newLevelDialog.show(stage);
-
-                // Dialog captures input, reset to a good state.
-                Editor.app.editorInput.resetKeys();
-            }
-        };
-
         resizeWindowAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 NewLevelDialog newLevelDialog = new NewLevelDialog(smallSkin) {
@@ -246,7 +220,7 @@ public class EditorUi {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 FileHandle fh = Gdx.files.absolute(recentFile);
-                                Editor.app.open(fh);
+                                Editor.app.file.open(fh);
                             }
                         })
                     );
@@ -279,7 +253,7 @@ public class EditorUi {
         // make the menu bar
         menuBar = new Scene2dMenuBar(smallSkin);
         menuBar.addItem(new MenuItem("File", smallSkin)
-            .addItem(new MenuItem("New", smallSkin, newWindowAction).setAccelerator(new MenuAccelerator(Keys.N, true, false)))
+            .addItem(new MenuItem("New", smallSkin, actions.newAction).setAccelerator(new MenuAccelerator(Keys.N, true, false)))
             .addItem(new MenuItem("Open", smallSkin, actions.openAction).setAccelerator(new MenuAccelerator(Keys.O, true, false)))
             .addItem(openRecent)
             .addSeparator()

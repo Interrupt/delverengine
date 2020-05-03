@@ -54,4 +54,13 @@ public class EditorHistory {
         if(pos > 0) pos--;
         return KryoSerializer.loadLevel(history.get(pos));
     }
+
+    private final byte[] nullHistoryState = new byte[]{};
+    public byte[] top() {
+	    if (history.isEmpty()) {
+	        return nullHistoryState;
+        }
+
+	    return history.peek();
+    }
 }
