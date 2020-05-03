@@ -21,5 +21,6 @@ public class Editor {
 
     public static void dispose() {
 	    Editor.options.dispose();
+	    Editor.app.dispose();
     }
 }

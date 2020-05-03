@@ -71,7 +71,6 @@ import com.interrupt.managers.StringManager;
 import com.noise.PerlinNoise;
 
 import javax.swing.*;
-import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
 public class EditorApplication implements ApplicationListener {
@@ -340,6 +339,7 @@ public class EditorApplication implements ApplicationListener {
 
 		new LwjglApplication(this, config) {
 		    public void close() {
+		        Editor.dispose();
 		        super.exit();
 		        System.exit(0);
             }
@@ -431,8 +431,6 @@ public class EditorApplication implements ApplicationListener {
 
 		cameraController.dispose();
 		liveReload.dispose();
-
-		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
 	@Override
