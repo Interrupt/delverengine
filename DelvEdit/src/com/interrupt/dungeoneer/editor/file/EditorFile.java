@@ -61,6 +61,11 @@ public class EditorFile {
         return !Arrays.equals(historyMarker, Editor.app.history.top());
     }
 
+    public void markClean() {
+        historyMarker = Editor.app.history.top();
+        Editor.app.updateTitle();
+    }
+
     /** Save file. Will prompt user for path if needed. */
     public void save() {
         save(new SaveAdapter());
@@ -127,8 +132,7 @@ public class EditorFile {
     }
 
     private void saveInternal(String fileName) {
-        Editor.app.setTitle(Editor.app.file.name());
-        historyMarker = Editor.app.history.top();
+        markClean();
 
         Level level = Editor.app.level;
         level.preSaveCleanup();
@@ -260,15 +264,13 @@ public class EditorFile {
             // NOTE: You must access the new Editor file via Editor.app.file
             // for the rest of this method.
             Editor.app.file = new EditorFile(fileHandle);
-            Editor.app.setTitle(Editor.app.file.name());
+            Editor.app.updateTitle();
 
             String fileName = Editor.app.file.name();
             String dir = Editor.app.file.directory();
 
             FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
             if(levelFileHandle.exists()) {
-                Editor.app.setTitle(Editor.app.file.name());
-
                 Level openLevel;
 
                 if(fileName.endsWith(".png")) {
@@ -297,7 +299,8 @@ public class EditorFile {
                 Editor.app.cameraController.setPosition(openLevel.width / 2f, 4.5f, openLevel.height / 2f);
 
                 Editor.app.history = new EditorHistory();
-                Editor.app.file.historyMarker = Editor.app.history.top();
+                Editor.app.history.saveState(Editor.app.level);
+                Editor.app.file.markClean();
 
                 Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
                 Editor.options.recentlyOpenedFiles.insert(0, levelFileHandle.path());
@@ -346,11 +349,14 @@ public class EditorFile {
     }
 
     private void createInternal(int width, int height) {
+        Editor.app.history = new EditorHistory();
         Editor.app.file = new EditorFile();
-        Editor.app.setTitle(Editor.app.file.name());
+
         Editor.app.level = new Level(width,height);
         Editor.app.refresh();
-        historyMarker = Editor.app.history.top();
+
+        Editor.app.history.saveState(Editor.app.level);
+        Editor.app.file.markClean();
 
         Editor.app.cameraController.setPosition(
                 Editor.app.level.width / 2f,

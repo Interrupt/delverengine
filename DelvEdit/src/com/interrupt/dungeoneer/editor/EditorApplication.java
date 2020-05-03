@@ -79,7 +79,7 @@ public class EditorApplication implements ApplicationListener {
 	public EditorUi ui = null;
 	public PerspectiveCamera camera = new PerspectiveCamera();
 	public EditorCameraController cameraController = null;
-	public EditorHistory history = new EditorHistory();
+	public EditorHistory history;
 	public Player player = null;
 	public Level level = null;
 	public GlRenderer renderer = null;
@@ -368,6 +368,9 @@ public class EditorApplication implements ApplicationListener {
 	}
 
 	public void init(){
+        renderer = new GlRenderer();
+        EditorArt.initAtlases();
+
 		input = new GameInput();
 		Gdx.input.setInputProcessor( input );
 
@@ -388,8 +391,6 @@ public class EditorApplication implements ApplicationListener {
 		cameraController = new EditorCameraController();
 		cameraController.init();
 
-        file = new EditorFile();
-
 		StringManager.init();
 		Game.init();
 
@@ -401,6 +402,25 @@ public class EditorApplication implements ApplicationListener {
 			// whoops
 			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
 		}
+
+        Gdx.input.setCursorCatched(false);
+        initTextures();
+
+        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
+                TextureAtlas.cachedRepeatingAtlases.firstKey();
+
+        level = new Level(17,17);
+        Tile t = new Tile();
+        t.floorHeight = -0.5f;
+        t.ceilHeight = 0.5f;
+        level.setTile(7, 7, t);
+
+        history = new EditorHistory();
+        file = new EditorFile();
+        history.saveState(Editor.app.level);
+        file.markClean();
+
+        gridMesh = genGrid(level.width,level.height);
 	}
 
 	@Override
@@ -1893,27 +1913,7 @@ public class EditorApplication implements ApplicationListener {
 
 	@Override
 	public void create() {
-
-		renderer = new GlRenderer();
-
-        EditorArt.initAtlases();
 		init();
-
-		Gdx.input.setCursorCatched(false);
-
-		initTextures();
-
-
-        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
-                TextureAtlas.cachedRepeatingAtlases.firstKey();
-
-		level = new Level(17,17);
-		Tile t = new Tile();
-		t.floorHeight = -0.5f;
-		t.ceilHeight = 0.5f;
-		level.setTile(7, 7, t);
-
-		gridMesh = genGrid(level.width,level.height);
 	}
 
 	public boolean isSelected() {
@@ -3871,6 +3871,15 @@ public class EditorApplication implements ApplicationListener {
 		pickViz.draw(pickerFrameBuffer.getColorBufferTexture(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1, 1);
 		pickViz.end();
 	}
+
+	public void updateTitle() {
+	    String name = file.name();
+	    if (file.isDirty()) {
+	        name += "*";
+        }
+
+	    setTitle(name);
+    }
 
 	public void setTitle(String title) {
 		Gdx.graphics.setTitle(title + " - DelvEdit");
