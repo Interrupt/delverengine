@@ -2113,9 +2113,6 @@ public class EditorApplication implements ApplicationListener {
 		if (ui.isShowingContextMenu()) {
 			ui.hideContextMenu();
 		}
-
-		// NOTE: Is this needed?
-        //history.saveState(level);
     }
 
     public void toggleLights() {
@@ -3715,9 +3712,6 @@ public class EditorApplication implements ApplicationListener {
 		Editor.selection.selected.clear();
 		controlPoints.clear();
 		pickedControlPoint = null;
-
-		// NOTE: Is this needed?
-        //history.saveState(level);
 
         ui.showEntityPropertiesMenu(true);
 	}
