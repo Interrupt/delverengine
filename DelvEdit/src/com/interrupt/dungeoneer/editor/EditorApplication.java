@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -24,16 +23,14 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
+import com.interrupt.dungeoneer.editor.file.EditorFile;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
@@ -41,6 +38,7 @@ import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
+import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
 import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
@@ -64,7 +62,6 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.interfaces.Directional;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
-import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 import com.interrupt.helpers.FloatTuple;
@@ -74,8 +71,6 @@ import com.interrupt.managers.StringManager;
 import com.noise.PerlinNoise;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
 public class EditorApplication implements ApplicationListener {
@@ -83,10 +78,11 @@ public class EditorApplication implements ApplicationListener {
 	public EditorUi ui = null;
 	public PerspectiveCamera camera = new PerspectiveCamera();
 	public EditorCameraController cameraController = null;
-	public EditorHistory history = new EditorHistory();
+	public EditorHistory history;
 	public Player player = null;
 	public Level level = null;
 	public GlRenderer renderer = null;
+	public EditorFile file = null;
 
     private EditorClipboard clipboard = null;
 
@@ -234,9 +230,6 @@ public class EditorApplication implements ApplicationListener {
 
     protected EntityManager entityManager;
 
-	public String currentFileName;
-	public String currentDirectory;
-
 	boolean readRotate;
 
 	Mesh cubeMesh;
@@ -327,13 +320,6 @@ public class EditorApplication implements ApplicationListener {
 
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				Editor.dispose();
-			}
-		});
 
 		Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 
@@ -351,10 +337,40 @@ public class EditorApplication implements ApplicationListener {
 		config.addIcon("icon-32.png", Files.FileType.Internal);  // 32x32 icon (Windows + Linux)
 		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
 
-		new LwjglApplication(this, config);
+		new LwjglApplication(this, config) {
+		    public void close() {
+		        Editor.dispose();
+		        super.exit();
+		        System.exit(0);
+            }
+
+		    @Override
+            public void exit() {
+                if (!file.isDirty()) {
+                    close();
+                }
+
+                Dialog savePrompt = new SaveChangesDialog() {
+                    @Override
+                    public void onSave() {
+                        Editor.app.file.save();
+                    }
+
+                    @Override
+                    public void onDontSave() {
+                        close();
+                    }
+                };
+
+                savePrompt.show(Editor.app.ui.getStage());
+            }
+        };
 	}
 
 	public void init(){
+        renderer = new GlRenderer();
+        EditorArt.initAtlases();
+
 		input = new GameInput();
 		Gdx.input.setInputProcessor( input );
 
@@ -386,6 +402,25 @@ public class EditorApplication implements ApplicationListener {
 			// whoops
 			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
 		}
+
+        Gdx.input.setCursorCatched(false);
+        initTextures();
+
+        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
+                TextureAtlas.cachedRepeatingAtlases.firstKey();
+
+        level = new Level(17,17);
+        Tile t = new Tile();
+        t.floorHeight = -0.5f;
+        t.ceilHeight = 0.5f;
+        level.setTile(7, 7, t);
+
+        history = new EditorHistory();
+        file = new EditorFile();
+        history.saveState(Editor.app.level);
+        file.markClean();
+
+        gridMesh = genGrid(level.width,level.height);
 	}
 
 	@Override
@@ -396,8 +431,6 @@ public class EditorApplication implements ApplicationListener {
 
 		cameraController.dispose();
 		liveReload.dispose();
-
-		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
 	@Override
@@ -1878,134 +1911,7 @@ public class EditorApplication implements ApplicationListener {
 
 	@Override
 	public void create() {
-
-		renderer = new GlRenderer();
-
-        EditorArt.initAtlases();
 		init();
-
-		Gdx.input.setCursorCatched(false);
-
-		initTextures();
-
-
-        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
-                TextureAtlas.cachedRepeatingAtlases.firstKey();
-
-		level = new Level(17,17);
-		Tile t = new Tile();
-		t.floorHeight = -0.5f;
-		t.ceilHeight = 0.5f;
-		level.setTile(7, 7, t);
-
-		gridMesh = genGrid(level.width,level.height);
-	}
-
-	/** Save level. */
-	public void save(String filename) {
-
-		level.preSaveCleanup();
-
-		// cleanup some of the tiles
-		for(int x = 0; x < level.width; x++) {
-			for(int y = 0; y < level.height; y++) {
-				Tile cTile = level.getTileOrNull(x, y);
-				if(cTile == null) {
-
-					// if any tiles around are not solid, make this a real tile
-					boolean makeRealTile = false;
-					for(int xx = x - 1; xx <= x + 1; xx += 2) {
-						for(int yy = y - 1; yy <= y + 1; yy += 2) {
-							Tile tile = level.getTile(xx, yy);
-							if(!tile.renderSolid) makeRealTile = true;
-						}
-					}
-
-					if(makeRealTile) {
-						Tile t = new Tile();
-						t.renderSolid = true;
-						t.blockMotion = true;
-						level.setTile(x, y, t);
-					}
-				}
-				else {
-					if(cTile.wallTex == 6 && !(cTile instanceof ExitTile) && cTile.IsSolid()) {
-						ExitTile exitTile = new ExitTile();
-						Tile.copy(cTile, exitTile);
-						level.setTile(x,  y, exitTile);
-					}
-				}
-			}
-		}
-
-		// write as json
-		if(filename.endsWith(".dat")) {
-			Game.toJson(level, Gdx.files.absolute(filename));
-		}
-		else {
-			KryoSerializer.saveLevel(Gdx.files.absolute(filename), level);
-		}
-	}
-
-	/** Open level. */
-	public void open(FileHandle fileHandle) {
-		try {
-			currentDirectory = fileHandle.file().getParent() + "/";
-			currentFileName = fileHandle.name();
-
-			setTitle(currentFileName);
-
-			String file = currentFileName;
-			String dir = currentDirectory;
-
-			FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
-			if(levelFileHandle.exists()) {
-				setTitle(currentFileName);
-
-				Level openLevel;
-
-				if(file.endsWith(".png")) {
-					String heightFile = dir + file.replace(".png", "-height.png");
-					if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
-						heightFile = dir + file.replace(".png", "_height.png");
-						if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
-							heightFile = null;
-						}
-					}
-
-					openLevel = new Level();
-					openLevel.loadForEditor(dir + file, heightFile);
-				}
-				else if(file.endsWith(".bin")) {
-					openLevel = KryoSerializer.loadLevel(levelFileHandle);
-					openLevel.init(Source.EDITOR);
-				}
-				else {
-					openLevel = Game.fromJson(Level.class, levelFileHandle);
-					openLevel.init(Source.EDITOR);
-				}
-
-				level = openLevel;
-				refresh();
-
-				/*
-				camX = openLevel.width / 2f;
-				camZ = 4.5f;
-				camY = openLevel.height / 2f;
-				*/
-
-				cameraController.setPosition(openLevel.width / 2f, 4.5f, openLevel.height / 2f);
-
-				history = new EditorHistory();
-				Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
-				Editor.options.recentlyOpenedFiles.insert(0, levelFileHandle.path());
-
-				viewSelected();
-			}
-		}
-		catch(Exception ex) {
-			Gdx.app.error("DelvEdit", ex.getMessage());
-		}
 	}
 
 	public boolean isSelected() {
@@ -2207,8 +2113,6 @@ public class EditorApplication implements ApplicationListener {
 		if (ui.isShowingContextMenu()) {
 			ui.hideContextMenu();
 		}
-
-        history.saveState(level);
     }
 
     public void toggleLights() {
@@ -3782,22 +3686,6 @@ public class EditorApplication implements ApplicationListener {
 		return new Vector3(entity.collision.x, entity.collision.z / 2, entity.collision.y).len();
 	}
 
-    public void createNewLevel(int width, int height) {
-        level = new Level(width,height);
-        refresh();
-
-        float x = level.width / 2f;
-        float z = 4.5f;
-        float y = level.height / 2f;
-        cameraController.setPosition(x, y, z);    }
-
-	public void createdNewLevel() {
-		currentDirectory = null;
-		currentFileName = null;
-		setTitle("New Level");
-		viewSelected();
-	}
-
     public void resizeLevel(int levelWidth, int levelHeight) {
         Level oldLevel = level;
         level = new Level(levelWidth,levelHeight);
@@ -3824,8 +3712,6 @@ public class EditorApplication implements ApplicationListener {
 		Editor.selection.selected.clear();
 		controlPoints.clear();
 		pickedControlPoint = null;
-
-        history.saveState(level);
 
         ui.showEntityPropertiesMenu(true);
 	}
@@ -3977,6 +3863,15 @@ public class EditorApplication implements ApplicationListener {
 		pickViz.draw(pickerFrameBuffer.getColorBufferTexture(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1, 1);
 		pickViz.end();
 	}
+
+	public void updateTitle() {
+	    String name = file.name();
+	    if (file.isDirty()) {
+	        name += "*";
+        }
+
+	    setTitle(name);
+    }
 
 	public void setTitle(String title) {
 		Gdx.graphics.setTitle(title + " - DelvEdit");
