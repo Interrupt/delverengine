@@ -10,12 +10,14 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '1.0'
+    version = '1.2.0'
     ext {
         appName = "delver"
         gdxVersion = '1.9.9'
         roboVMVersion = '2.1.0'
         kryoVersion = '2.23.0'
+        reflectionsVersion = '0.9.12'
+        inkVersion = '0.7.3'
     }
 
     repositories {
@@ -45,6 +47,7 @@ project(":DelvEdit") {
         compile project(":Dungeoneer")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "org.reflections:reflections:$reflectionsVersion"
     }
 }
 
@@ -55,6 +58,7 @@ project(":Dungeoneer") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.esotericsoftware.kryo:kryo:$kryoVersion"
+        compile "com.bladecoder.ink:blade-ink:$inkVersion"
     }
 }
 

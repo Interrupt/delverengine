@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -153,7 +154,11 @@ public class DynamicLight extends Entity {
 	
 	@Override
 	public void tick(Level level, float delta)
-	{	
+	{
+		if (!GameManager.renderer.enableLighting) {
+			return;
+		}
+
 		updateLightColor(delta);
 		
 		if(isActive && (on || (toggleLerpTime > 0 && toggleLerpTime < 1))) {

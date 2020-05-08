@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.screens;
 
-import com.badlogic.gdx.graphics.Color;
-
 public class SplashScreenInfo {
     public SplashScreenInfo() { }
 
@@ -13,6 +11,9 @@ public class SplashScreenInfo {
 
     /** Splash screen logo filepath. */
     public String logoImage = "splash/Delver-Logo.png";
+
+    /** Apply texture filtering to logo. */
+    public boolean logoFilter = false;
 
     /** Splash screen music filepath. */
     public String music = "title.mp3";

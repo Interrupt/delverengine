@@ -3,16 +3,17 @@ package com.interrupt.dungeoneer.editor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 
 public class EditorInput implements InputProcessor {
-
-    private boolean[] buttonsDown = new boolean[100];
-    private boolean[] keysDown = new boolean[256];
+    private final boolean[] buttonsDown = new boolean[100];
+    private final boolean[] keysDown = new boolean[256];
     public IntArray buttonEvents = new IntArray();
+
+    private final Array<InputProcessor> listeners = new Array<InputProcessor>();
 
     public boolean isButtonPressed(int button) {
         return buttonsDown[button];
@@ -20,10 +21,7 @@ public class EditorInput implements InputProcessor {
 
     public boolean ignoreRightClick = false;
 
-    EditorFrame editor;
-    public EditorInput(EditorFrame editor) {
-        this.editor = editor;
-    }
+    public EditorInput() {}
 
     @Override
     public boolean keyDown(int i) {
@@ -55,26 +53,55 @@ public class EditorInput implements InputProcessor {
 
         keysDown[i] = true;
 
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.keyDown(i);
+            if (results) {
+                return true;
+            }
+        }
+
         return false;
     }
 
     @Override
     public boolean keyUp(int i) {
         keysDown[i] = false;
+
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.keyUp(i);
+            if (results) {
+                return true;
+            }
+        }
+
         return false;
     }
 
     @Override
-    public boolean keyTyped(char c) { return false; }
+    public boolean keyTyped(char c) {
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.keyTyped(c);
+            if (results) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
         buttonsDown[button] = true;
         if(!buttonEvents.contains(button)) buttonEvents.add(button);
 
-        lastMouseLocation.set(x, y);
-
         ignoreRightClick = false;
+
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.touchDown(x, y, pointer, button);
+            if (results) {
+                return true;
+            }
+        }
 
         return false;
     }
@@ -83,50 +110,57 @@ public class EditorInput implements InputProcessor {
     public boolean touchUp(int x, int y, int pointer, int button) {
         buttonsDown[button] = false;
 
-        lastMouseLocation.set(x, y);
-
         if(Gdx.input.isCursorCatched()) {
             Gdx.input.setCursorCatched(false);
         }
 
-        editor.editorUi.touchUp(x, y, pointer, button);
+        Editor.app.ui.touchUp(x, y, pointer, button);
+
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.touchUp(x, y, pointer, button);
+            if (results) {
+                return true;
+            }
+        }
 
         return false;
     }
 
-    private Vector2 lastMouseLocation = new Vector2();
-
     @Override
     public boolean touchDragged(int x, int y, int pointer) {
-
-        if(buttonsDown[Input.Buttons.RIGHT]) {
-            ignoreRightClick = true;
-
-            float moveX = (lastMouseLocation.x - x);
-            float moveY = (lastMouseLocation.y - y);
-
-            if(moveX >= 1 || moveY >= 1) {
-                if (!Gdx.input.isCursorCatched()) {
-                    Gdx.input.setCursorCatched(true);
-                }
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.touchDragged(x, y, pointer);
+            if (results) {
+                return true;
             }
-
-            editor.rotX += moveX * 0.005f;
-            editor.rotY -= moveY * 0.005f;
         }
-
-        lastMouseLocation.set(x, y);
 
         return false;
     }
 
     @Override
     public boolean mouseMoved(int x, int y) {
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.mouseMoved(x, y);
+            if (results) {
+                return true;
+            }
+        }
+
         return false;
     }
 
     @Override
-    public boolean scrolled(int i) { return false; }
+    public boolean scrolled(int amount) {
+        for (InputProcessor listener : listeners) {
+            boolean results = listener.scrolled(amount);
+            if (results) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public boolean isKeyPressed(int i) {
         return keysDown[i];
@@ -138,5 +172,13 @@ public class EditorInput implements InputProcessor {
 
     public void tick() {
         buttonEvents.clear();
+    }
+
+    public void addListener(InputProcessor listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(InputProcessor listener) {
+        listeners.removeValue(listener, true);
     }
 }

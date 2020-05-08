@@ -16,6 +16,8 @@ import com.interrupt.dungeoneer.editor.ui.menu.FileListItem;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
 
 public class FilePicker extends Dialog {
@@ -181,7 +183,10 @@ public class FilePicker extends Dialog {
         if (result != null && result.length() > 0) {
             path += result;
         }
-        return new FileHandle(path);
+
+        Path cleanPath = Paths.get(path).normalize();
+
+        return new FileHandle(cleanPath.toString());
     }
 
     public FilePicker setFilter(FileFilter filter) {
