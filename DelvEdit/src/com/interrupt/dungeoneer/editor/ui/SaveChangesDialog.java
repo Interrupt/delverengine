@@ -102,7 +102,7 @@ public class SaveChangesDialog extends Dialog {
         if (hours > 0) {
             long minutes = Editor.app.file.getMinutesSinceLastSave() % 60;
 
-            return hours + " " + pluralize("hour", hours) + " and " + minutes + pluralize("minutes", minutes);
+            return hours + " " + pluralize("hour", hours) + " and " + minutes + pluralize("minute", minutes);
         }
 
         long minutes = Editor.app.file.getMinutesSinceLastSave();
