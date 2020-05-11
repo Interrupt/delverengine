@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Delver Interfaces",
+    "definitions": {
+        "EntityLike": {
+            "oneOf": [
+                { "$ref": "dungeoneer/entities/Door.schema.json"},
+                { "$ref": "dungeoneer/entities/Foliage.schema.json"},
+                { "$ref": "dungeoneer/entities/Entity.schema.json"},
+                { "$ref": "dungeoneer/entities/Light.schema.json"},
+                { "$ref": "dungeoneer/entities/ParticleEmitter.schema.json"},
+                { "$ref": "dungeoneer/entities/Sprite.schema.json"},
+                { "$ref": "dungeoneer/entities/Torch.schema.json"},
+                { "$ref": "dungeoneer/entities/triggers/Trigger.schema.json"}
+            ]
+        },
+        "ItemLike": {
+            "oneOf": [
+                { "$ref": "dungeoneer/entities/Item.schema.json"}
+            ]
+        },
+        "LightLike": {
+            "oneOf": [
+                { "$ref": "dungeoneer/entities/Light.schema.json"},
+                { "$ref": "dungeoneer/entities/Torch.schema.json"}
+            ]
+        },
+        "StatusEffectLike": {
+            "oneOf": [
+                { "$ref": "" }
+            ]
+        },
+        "TriggerLike": {
+            "oneOf": [
+                { "$ref": "dungeoneer/entities/triggers/Trigger.schema.json"}
+            ]
+        }
+    }
+}

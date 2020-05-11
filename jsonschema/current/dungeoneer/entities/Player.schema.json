@@ -61,7 +61,7 @@
             "description": "Player inventory.",
             "baseClass": "Player",
             "items": [
-                { "$ref": "../../Interfaces.schema.json#/definitions/ItemLike" }
+                { "$ref": "../../Interfaces.schema.json#/definitions/ItemLike"}
             ]
         },
         "startingInventory": {
@@ -69,7 +69,7 @@
             "description": "New game player inventory.",
             "baseClass": "Player",
             "items": [
-                { "$ref": "../../Interfaces.schema.json#/definitions/ItemLike" }
+                { "$ref": "../../Interfaces.schema.json#/definitions/ItemLike"}
             ]
         },
         "torchColor": {
