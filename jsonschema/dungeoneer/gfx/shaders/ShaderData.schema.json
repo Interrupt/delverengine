@@ -30,7 +30,7 @@
                         { "type":  "number" },
                         { "type":  "integer"}
                     ],
-                    "description": "Shader attribute.",
+                    "description": "Shader attribute."
                 }
             }
         },
