@@ -508,3 +508,24 @@ menu-command-icon
   orig: 10, 11
   offset: 0, 2
   index: -1
+statusbar-info-icon
+  rotate: false
+  xy: 78, 140
+  size: 20, 24
+  orig: 20, 24
+  offset: 0, 0
+  index: -1
+statusbar-warning-icon
+  rotate: false
+  xy: 96, 140
+  size: 20, 24
+  orig: 20, 24
+  offset: 0, 0
+  index: -1
+statusbar-error-icon
+  rotate: false
+  xy: 115, 140
+  size: 20, 24
+  orig: 20, 24
+  offset: 0, 0
+  index: -1
