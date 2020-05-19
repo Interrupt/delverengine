@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class EditorUi {
+    public EditorStatusBar statusBar;
+
     Stage stage;
     Table mainTable;
     final EditorActions actions = new EditorActions();
@@ -436,6 +438,11 @@ public class EditorUi {
                 return false;
             }
         });
+
+        statusBar = new EditorStatusBar();
+        Table statusBarContainer = new Table();
+        statusBarContainer.add(statusBar).align(Align.bottomLeft).fill();
+        stage.addActor(statusBarContainer);
     }
 
     public void showEntityPropertiesMenu(boolean resetScroll) {
@@ -517,9 +524,9 @@ public class EditorUi {
 
             entityPropertiesPane.setSize(propertiesSize.x + (fillsStage ? 60f : 30f), propertiesSize.y);
 
-            sidebarTable.setSize(entityPropertiesPane.getWidth(), stage.getHeight() - menuBar.getHeight());
+            sidebarTable.setSize(entityPropertiesPane.getWidth(), Gdx.graphics.getHeight() - menuBar.getHeight() - 30);
             sidebarTable.setX(stage.getWidth() - sidebarTable.getWidth());
-            sidebarTable.setY(0f);
+            sidebarTable.setY(30f);
 
             propertiesCell.width(entityPropertiesPane.getWidth());
         }

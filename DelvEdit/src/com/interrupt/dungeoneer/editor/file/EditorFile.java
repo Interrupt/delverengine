@@ -176,6 +176,8 @@ public class EditorFile {
         else {
             KryoSerializer.saveLevel(Gdx.files.absolute(fileName), level);
         }
+
+        Editor.app.ui.statusBar.showMessage(String.format("Saved \"%s\"", this.fileName));
     }
 
     /** Open the given file. */

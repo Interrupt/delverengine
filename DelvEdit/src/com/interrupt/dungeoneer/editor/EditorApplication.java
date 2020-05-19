@@ -2898,6 +2898,8 @@ public class EditorApplication implements ApplicationListener {
 
                 clipboard.entities.add(copy);
             }
+
+            ui.statusBar.showMessage(String.format("Copied %d selected entity(s)", clipboard.entities.size));
         }
 
         // Copy tiles
@@ -2914,6 +2916,8 @@ public class EditorApplication implements ApplicationListener {
 
                 clipboard.tiles.add(info);
             }
+
+            ui.statusBar.showMessage(String.format("Copied %d selected tile(s)", clipboard.tiles.size));
         }
 
         // Serialize to system clipboard.
@@ -2952,20 +2956,26 @@ public class EditorApplication implements ApplicationListener {
 
             level.setTile(offsetX, offsetY, t);
             markWorldAsDirty(offsetX, offsetY, 1);
+
+            ui.statusBar.showMessage(String.format("Pasted %d tile(s)", clipboard.tiles.size));
         }
 
         // Paste entities
-        for(Entity e : clipboard.entities) {
-            Entity copy = copyEntity(e);
-            copy.x += cursorTileX + 1;
-            copy.y += cursorTileY + 1;
+        if (clipboard.entities.size > 0) {
+            for (Entity e : clipboard.entities) {
+                Entity copy = copyEntity(e);
+                copy.x += cursorTileX + 1;
+                copy.y += cursorTileY + 1;
 
-            Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
-            if(copyAt != null) {
-                copy.z += copyAt.getFloorHeight(0.5f, 0.5f);
+                Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
+                if (copyAt != null) {
+                    copy.z += copyAt.getFloorHeight(0.5f, 0.5f);
+                }
+
+                addEntity(copy);
             }
 
-            addEntity(copy);
+            ui.statusBar.showMessage(String.format("Pasted %d entity(s)", clipboard.entities.size));
         }
 
         // Save undo history
@@ -3587,14 +3597,15 @@ public class EditorApplication implements ApplicationListener {
 
 	public void doDelete() {
         if(Editor.selection.picked != null) {
-            level.entities.removeValue(Editor.selection.picked, true);
-			markWorldAsDirty((int) Editor.selection.picked.x, (int) Editor.selection.picked.y, 4);
-
-            for(Entity selEntity : Editor.selection.selected) {
+			int count = 0;
+            for(Entity selEntity : Editor.selection.all) {
+                count++;
                 level.entities.removeValue(selEntity, true);
 
 				markWorldAsDirty((int)selEntity.x, (int)selEntity.y, 4);
             }
+
+            ui.statusBar.showMessage(String.format("Deleted %d entity(s)", count));
 
             clearEntitySelection();
 
