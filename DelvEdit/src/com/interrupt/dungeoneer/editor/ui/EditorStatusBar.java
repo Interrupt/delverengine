@@ -52,9 +52,20 @@ public class EditorStatusBar extends Group {
             public void act(float delta) {
                 super.act(delta);
 
-                int x = Editor.selection.tiles.x;
-                int y = Editor.selection.tiles.y;
-                this.setText(String.format("X %d, Y %d", x, y));
+                float x;
+                float y;
+                float z;
+                if (Editor.selection.picked == null) {
+                    x = Editor.selection.tiles.x;
+                    y = Editor.selection.tiles.y;
+                    z = Editor.selection.tiles.first().floorHeight + 0.5f;
+                }
+                else {
+                    x = Editor.selection.picked.x;
+                    y = Editor.selection.picked.y;
+                    z = Editor.selection.picked.z;
+                }
+                this.setText(String.format("X  %.3f,  Y %.3f,  Z %.3f", x, y, z));
             }
         });
 
