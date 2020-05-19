@@ -354,6 +354,7 @@ public class EditorApplication implements ApplicationListener {
                     @Override
                     public void onSave() {
                         Editor.app.file.save();
+                        close();
                     }
 
                     @Override
