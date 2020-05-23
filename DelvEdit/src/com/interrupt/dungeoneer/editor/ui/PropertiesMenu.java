@@ -18,7 +18,6 @@ import com.interrupt.dungeoneer.editor.EditorArt;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
-import org.lwjgl.LWJGLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -373,9 +372,9 @@ public class PropertiesMenu extends Table {
                                 }
 
                                 Gdx.input.setCursorPosition((int) firstX, (int) firstY);
-                                if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
+                                /*if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
                                     Gdx.input.setCursorPosition((int) firstX, Gdx.graphics.getHeight() - 1 - (int) firstY);
-                                }
+                                }*/
                             }
 
                             @Override

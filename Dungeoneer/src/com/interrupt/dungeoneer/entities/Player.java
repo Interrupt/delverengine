@@ -4,14 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.vr.VRContext;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameInput;
@@ -41,6 +39,7 @@ import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
 import com.interrupt.managers.StringManager;
+import org.lwjgl.openvr.VRControllerAxis;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -819,7 +818,22 @@ public class Player extends Actor {
 
 		// angle the camera a tad when strafing
         strafeCameraAngleMod *= (0.825f);
-        strafeCameraAngleMod += (xm * delta);
+
+        // Hacky temp VR Movement Stuff
+		if(GameManager.renderer.vrContext != null) {
+			VRContext.VRDevice controller = GameManager.renderer.vrContext.getDeviceByType(VRContext.VRDeviceType.Controller);
+			if(controller != null) {
+				zm += controller.getAxisX(0) * walkVel;
+				xm += controller.getAxisY(0) * walkVel;
+			}
+
+			VRContext.VRDevice hmd = GameManager.renderer.vrContext.getDeviceByType(VRContext.VRDeviceType.HeadMountedDisplay);
+			if(hmd != null) {
+				Vector3 dir = hmd.getDirection(VRContext.Space.World);
+				rot = (float)Math.atan2(dir.x, dir.z);
+				rot -= 1.5708f; // Rotate -90 degrees
+			}
+		}
 		
 		//controllers!
 		if(input.usingGamepad && !isDead && !isInOverlay) {

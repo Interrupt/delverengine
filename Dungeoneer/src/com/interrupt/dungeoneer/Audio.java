@@ -92,7 +92,7 @@ public class Audio {
 			if(loaded != null) loadedSounds.put(filename, loaded);
 			return loaded;
 		} catch (Exception e) {
-			Gdx.app.log("DelverAudio", "Error loading " + filename);
+			// Gdx.app.log("DelverAudio", "Error loading " + filename);
 			return null;
 		}
 	}
@@ -314,7 +314,10 @@ public class Audio {
 	}
 
     static public void playNextTrack(final boolean loop, final boolean playMore) {
-        try {
+		// TODO: Fixme?
+		return;
+
+        /*try {
             String trackToPlay = musicTracks.get((nextMusicTrackIndex++) % musicTracks.size);
 
 			if (!loadedMusic.equals(trackToPlay)) {
@@ -354,7 +357,7 @@ public class Audio {
             	music = null;
 			}
 			loadedMusic = "";
-        }
+        }*/
     }
 
     static public void setMusicTargetVolume(float targetVolume) {

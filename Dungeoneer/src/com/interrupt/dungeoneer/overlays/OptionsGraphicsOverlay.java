@@ -251,7 +251,7 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
 
         if(doForcedValuesUpdate || (lastFov != fovSlider.getValue())) {
             lastFov = fovSlider.getValue();
-            GameManager.renderer.camera.fieldOfView = lastFov;
+            //GameManager.renderer.camera.fieldOfView = lastFov;
             Options.instance.fieldOfView = lastFov;
             fovValueLabel.setText(String.format("%1.0f",lastFov));
         }

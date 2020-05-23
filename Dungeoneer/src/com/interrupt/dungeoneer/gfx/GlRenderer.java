@@ -23,8 +23,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.vr.VRCamera;
+import com.badlogic.gdx.vr.VRContext;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.GameApplication;
+import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
@@ -266,6 +269,8 @@ public class GlRenderer {
 	public IntMap<Entity> entitiesForPicking = null;
 	public Color entityPickColor = new Color();
 
+	public VRContext vrContext;
+
 	public void initTextures() {
 
 		needToInit = false;
@@ -409,6 +414,60 @@ public class GlRenderer {
 
 		handLagRotation = null;
 		offhandLagRotation = null;
+
+		// Setting up VR
+		vrContext = new VRContext();
+		vrContext.getEyeData(VRContext.Eye.Left).camera.far = viewDistance;
+		vrContext.getEyeData(VRContext.Eye.Right).camera.far = viewDistance;
+
+		vrContext.addListener(new VRContext.VRDeviceListener() {
+			public void connected (VRContext.VRDevice device) {
+				Gdx.app.log("DelverVR", device + " connected");
+				if (device.getType() == VRContext.VRDeviceType.Controller && device.getModelInstance() != null) {
+					//modelInstances.add(device.getModelInstance());
+				}
+			}
+
+			public void disconnected (VRContext.VRDevice device) {
+				Gdx.app.log("DelverVR", device + " disconnected");
+				if (device.getType() == VRContext.VRDeviceType.Controller && device.getModelInstance() != null) {
+					//modelInstances.removeValue(device.getModelInstance(), true);
+				}
+			}
+
+			public void buttonPressed (VRContext.VRDevice device, int button) {
+				Gdx.app.log("DelverVR", device + " button pressed: " + button);
+
+				/*if (device == context.getDeviceByType(VRContext.VRDeviceType.Controller)) {
+					if (button == VRContext.VRControllerButtons.SteamVR_Trigger) isTeleporting = true;
+				}*/
+			}
+
+			public void buttonReleased (VRContext.VRDevice device, int button) {
+				Gdx.app.log("DelverVR", device + " button released: " + button);
+
+				/*if (device == context.getDeviceByType(VRContext.VRDeviceType.Controller)) {
+					if (button == VRContext.VRControllerButtons.SteamVR_Trigger) {
+						if (intersectControllerXZPlane(context.getDeviceByType(VRContext.VRDeviceType.Controller), tmp)) {
+							// Teleportation
+							// - Tracker space origin in world space is initially at [0,0,0]
+							// - When teleporting, we want to set the tracker space origin in world space to the
+							// teleportation point
+							// - Then we need to offset the tracker space
+							// origin in world space by the camera
+							// x/z position so the camera is at the
+							// teleportation point in world space
+							tmp2.set(context.getDeviceByType(VRContext.VRDeviceType.HeadMountedDisplay).getPosition(VRContext.Space.Tracker));
+							tmp2.y = 0;
+							tmp.sub(tmp2);
+
+							context.getTrackerSpaceOriginToWorldSpaceTranslationOffset().set(tmp);
+						}
+						isTeleporting = false;
+					}
+				}*/
+			}
+		});
 	}
 
 	public void initHud() {
@@ -420,11 +479,15 @@ public class GlRenderer {
 		Game.hud.init(itemTextures.getSpriteRegions());
 	}
 
-	public void render(Game game) {
+	public void render(Game game, VRContext.Eye eye) {
 
 		time += Gdx.graphics.getDeltaTime();
 
 		boolean inCutscene = cutsceneCamera != null && cutsceneCamera.isActive;
+
+		// Set VR data
+		VRCamera vrCamera = vrContext.getEyeData(eye).camera;
+		camera = vrCamera;
 
 		this.game = game;
 		if(game != null) {
@@ -448,7 +511,7 @@ public class GlRenderer {
 
 		clearBoundTexture();
 
-		// Update camera
+		// Update camera position
 		xPos = game.player.x;
 		yPos = game.player.y;
 		zPos = game.player.z + game.player.getStepUpValue() + game.player.eyeHeight;
@@ -462,12 +525,11 @@ public class GlRenderer {
 		camera.far = viewDistance;
 		camera.up.set(0, 1, 0);
 
-		if(!inCutscene) {
+		if(!inCutscene && vrContext == null) {
 			camera.position.x = xPos;
 			camera.position.y = zPos;
 			camera.position.z = yPos;
 			camera.direction.set(0, 0, -1);
-
 
 			if (Options.instance.headBobEnabled) {
 				camera.rotate(Vector3.Z, Math.min(1f, Math.max(game.player.strafeCameraAngleMod, -1f)) * 5f);
@@ -506,7 +568,9 @@ public class GlRenderer {
 			lastHeldRotation.set(heldRotation);
 		}
 
-		camera.update();
+		// Start VR context
+		vrContext.getTrackerSpaceOriginToWorldSpaceTranslationOffset().set(xPos * VRContext.WORLD_SCALE, (game.player.z - 0.5f) * VRContext.WORLD_SCALE, yPos * VRContext.WORLD_SCALE);
+		vrContext.beginEye(eye);
 
 		startFrame();
 
@@ -595,6 +659,8 @@ public class GlRenderer {
 		if(!inCutscene) {
 			drawUI();
 		}
+
+		vrContext.endEye();
 	}
 
 	public void clearDecals() {
@@ -1909,6 +1975,16 @@ public class GlRenderer {
 		sd.setPosition(camera.position.x, camera.position.y, camera.position.z);
 		sd.setRotation(camera.direction, camera.up);
 		sd.setBlending(-1, -1);
+
+		// If in VR mode, use the device position instead
+		if(vrContext != null) {
+			VRContext.VRDevice controller = vrContext.getDeviceByType(VRContext.VRDeviceType.Controller);
+
+			sd.setPosition(controller.getPosition(VRContext.Space.World));
+			sd.getPosition().scl(VRContext.WORLD_SCALE);
+
+			sd.setRotation(controller.getDirection(VRContext.Space.World), controller.getUp(VRContext.Space.World));
+		}
 
 		if(heldItem.drawable != null) {
 			if (heldItem.drawable.blendMode == Entity.BlendMode.ALPHA) {

@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.vr.VRContext;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -123,7 +124,12 @@ public class GameManager {
 	
 	public void render() {
 		try {
-			renderer.render(game);
+            renderer.vrContext.pollEvents();
+			renderer.vrContext.begin();
+			renderer.render(game, VRContext.Eye.Left);
+			renderer.render(game, VRContext.Eye.Right);
+			renderer.vrContext.renderToCompanionWindow(VRContext.Eye.Right);
+			renderer.vrContext.end();
 		}
 		catch (Exception ex) {
 			// Something really bad happened

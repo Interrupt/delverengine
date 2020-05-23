@@ -3,8 +3,8 @@ package com.interrupt.dungeoneer.editor;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -321,23 +321,25 @@ public class EditorApplication implements ApplicationListener {
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
-		Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
+		Graphics.DisplayMode defaultMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
 
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "New Level - DelvEdit";
-		config.fullscreen = false;
+		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+		config.setTitle("New Level - DelvEdit");
+		/*config.fullscreen = false;
 		config.width = defaultMode.width;
 		config.height = defaultMode.height;
 		config.vSyncEnabled = true;
 		config.foregroundFPS = 120;
 		config.backgroundFPS = 30;
-		config.stencil = 8;
+		config.stencil = 8;*/
 
-		config.addIcon("icon-128.png", Files.FileType.Internal); // 128x128 icon (mac OS)
-		config.addIcon("icon-32.png", Files.FileType.Internal);  // 32x32 icon (Windows + Linux)
-		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
+		config.setWindowedMode(defaultMode.width, defaultMode.height);
 
-		new LwjglApplication(this, config) {
+		config.setIdleFPS(30);
+
+		config.setWindowIcon(Files.FileType.Internal, "icon-128.png", "icon-32.png", "icon-16.png");
+
+		new Lwjgl3Application(this, config) {
 		    public void close() {
 		        Editor.dispose();
 		        super.exit();

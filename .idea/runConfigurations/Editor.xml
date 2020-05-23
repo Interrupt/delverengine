@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Editor" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.interrupt.dungeoneer.EditorStarter" />
-    <module name="delverengine.DelvEdit.main" />
+    <module name="DelvEdit_main" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Dungeoneer" />
     <method v="2">
       <option name="Make" enabled="true" />

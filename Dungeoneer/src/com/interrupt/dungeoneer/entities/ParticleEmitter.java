@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.entities;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
@@ -149,7 +150,7 @@ public class ParticleEmitter extends Entity {
 		}
 		
 		if(Game.instance != null) {
-			PerspectiveCamera camera = GameManager.renderer.camera;
+			Camera camera = GameManager.renderer.camera;
 			playerPosition.set(camera.position.x, camera.position.z, camera.position.y);
 			position.set(x, y, z);
 			

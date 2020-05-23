@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Game" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.interrupt.dungeoneer.DesktopStarter" />
-    <module name="delverengine.DungeoneerDesktop.main" />
+    <module name="DungeoneerDesktop_main" />
+    <option name="PROGRAM_PARAMETERS" value="debug=true" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Dungeoneer" />
     <method v="2">
       <option name="Make" enabled="true" />
