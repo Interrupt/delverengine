@@ -309,6 +309,10 @@ public class EditorFile {
 
                 Editor.app.viewSelected();
             }
+            else {
+                Editor.app.ui.statusBar.showError("Unable to open " + levelFileHandle.path());
+                Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
+            }
         }
         catch(Exception ex) {
             Gdx.app.error("DelvEdit", ex.getMessage());
