@@ -1,0 +1,121 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Tile Data",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.tiles.TileData",
+            "description": "Fully-qualified Java class name."
+        },
+        "isWater": {
+            "type": "boolean",
+            "description": "Is tile water?",
+            "default": false
+        },
+        "isLava": {
+            "type": "boolean",
+            "description": "Is tile lava?",
+            "default": false
+        },
+        "hurts": {
+            "type": "integer",
+            "description": "Damage to deal to Actors in tile.",
+            "default": 0
+        },
+        "damageType": {
+            "$ref": "../entities/items/Weapon.schema.json#/definitions/DamageType",
+            "description": "Type of damage to deal.",
+            "default": "FIRE"
+        },
+        "particleTex": {
+            "type": "integer",
+            "description": "Particle sprite index.",
+            "default": 0
+        },
+        "particleFullbrite": {
+            "type": "boolean",
+            "description": "Draw particle without shading?",
+            "default": false
+        },
+        "particleColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Particle tint color.",
+            "default": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0
+            }
+        },
+        "entitiesCanSpawn": {
+            "type": "boolean",
+            "description": "Allow Entities to spawn on tile?",
+            "default": true
+        },
+        "darkenFloor": {
+            "type": "boolean",
+            "description": "",
+            "default": false
+        },
+        "drawCeiling": {
+            "type": "boolean",
+            "description": "Draw ceiling?",
+            "default": true
+        },
+        "drawWalls": {
+            "type": "boolean",
+            "description": "Draw walls?",
+            "default": true
+        },
+        "flowTex": {
+            "type": "integer",
+            "description": "Texture index for vertical flowing water/lava."
+        },
+        "edgeTex": {
+            "type": "integer",
+            "description": "Texture index for water/lava edge treatment."
+        },
+        "flowEdgeTex": {
+            "type": "integer",
+            "description": "Texture index for vertical flowing water/lava edge treatment."
+        },
+        "lightColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Color of light emitted from tile."
+        },
+        "mapColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Color of tile on map."
+        },
+        "friction": {
+            "type": "number",
+            "description": "Friction for tile.",
+            "default": 1
+        },
+        "walkSound": {
+            "type": "string",
+            "description": "Walking sound filepath.",
+            "default": "footsteps/feet_default_01.mp3,footsteps/feet_default_02.mp3,footsteps/feet_default_03.mp3,footsteps/feet_default_04.mp3,footsteps/feet_default_05.mp3,footsteps/feet_default_06.mp3,footsteps/feet_default_07.mp3,footsteps/feet_default_08.mp3,footsteps/feet_default_09.mp3"
+        },
+        "ambientSound": {
+            "type": "string",
+            "description": "Ambient sound filepath"
+        },
+        "ambientSoundVolume": {
+            "type": "number",
+            "description": "Ambient sound volume.",
+            "default": 1
+        },
+        "ambientSoundRadius": {
+            "type": "number",
+            "description": "Ambient sound radius.",
+            "default": 5
+        },
+        "flowingSoundVolume": {
+            "type": "number",
+            "description": "Flowing sound volume."
+        }
+    },
+    "required": [
+        "class"
+    ]
+}

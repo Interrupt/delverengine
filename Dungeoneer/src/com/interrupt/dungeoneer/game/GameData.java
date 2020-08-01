@@ -2,12 +2,25 @@ package com.interrupt.dungeoneer.game;
 
 public class GameData {
     public GameData() { }
+    /** Tutorial level. Shown when starting a new save slot. */
     public Level tutorialLevel = null;
+
+    /** End level. Shown when the game is beaten. */
     public Level endingLevel = null;
+
+    /** Filepaths of entity data. */
     public String[] entityDataFiles = {"entities.dat"};
+
+    /** Filepaths of monster data. */
     public String[] monsterDataFiles = {"monsters.dat"};
+
+    /** Filepaths of item data. */
     public String[] itemDataFiles = {"items.dat"};
+
+    /** Filepath of player data. */
     public String playerDataFile = "player.dat";
+
+    /** Is player allowed to jump? */
     public boolean playerJumpEnabled = false;
 
     public void merge(GameData modData) {

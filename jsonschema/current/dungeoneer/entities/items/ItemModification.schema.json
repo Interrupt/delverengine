@@ -1,0 +1,82 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ItemModification",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.entities.items.ItemModification",
+            "description": "Fully-qualified Java class name.",
+            "baseClass": "ItemModification"
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of ItemModification.",
+            "baseClass": "ItemModification"
+        },
+        "hpMod": {
+            "type": "number",
+            "description": "Health points modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "armorMod": {
+            "type": "number",
+            "description": "Armor points modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "moveSpeedMod": {
+            "type": "number",
+            "description": "Move speed modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "agilityMod": {
+            "type": "number",
+            "description": "Agility modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "magicMod": {
+            "type": "number",
+            "description": "Magic modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "attackMod": {
+            "type": "number",
+            "description": "Attack modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "attackSpeedMod": {
+            "type": "number",
+            "description": "Attack speed modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "damageMod": {
+            "type": "number",
+            "description": "Damage modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "knockbackMod": {
+            "type": "number",
+            "description": "Knockback modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "magicResistMod": {
+            "type": "number",
+            "description": "Magic resistance modifier.",
+            "baseClass": "ItemModification",
+            "default": 0.0
+        },
+        "damageType": {
+            "description": "Damage type",
+            "$ref": "Weapon.schema.json#/definitions/DamageType",
+            "baseClass": "Item"
+        }
+    }
+}

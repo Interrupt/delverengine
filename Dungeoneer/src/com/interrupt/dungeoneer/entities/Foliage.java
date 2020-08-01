@@ -26,9 +26,11 @@ public class Foliage extends Sprite {
 
     private Vector2 rotOffset = new Vector2();
 
+	/** Where to place foliage. */
 	@EditorProperty
     public foliageAttachment foliagePosition = foliageAttachment.FLOOR;
 
+	/** Ambient sway amount. */
     public float swayAmount = 4.5f;
 
     @Override

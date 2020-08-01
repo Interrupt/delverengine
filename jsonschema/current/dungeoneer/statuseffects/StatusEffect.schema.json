@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Entity",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.statuseffects.StatusEffect",
+            "description": "Fully-qualified Java class name.",
+            "baseClass": "StatusEffect"
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of status effect. Shown on player HUD.",
+            "baseClass": "StatusEffect",
+            "default": "statuseffects.StatusEffect.defaultNameText"
+        },
+        "timer": {
+            "type": "number",
+            "description": "Duration of status effect in milliseconds.",
+            "baseClass": "StatusEffect",
+            "default": 1000
+        },
+        "speedMod": {
+            "type": "number",
+            "description": "Speed multiplier for effected player and monsters.",
+            "baseClass": "StatusEffect",
+            "default": 1
+        },
+        "damageMod": {
+            "type": "number",
+            "description": "Damage multiplier for effected actors.",
+            "baseClass": "StatusEffect",
+            "default": 1
+        },
+        "magicDamageMod": {
+            "type": "number",
+            "description": "Magic damage multiplier for effected actors.",
+            "baseClass": "StatusEffect",
+            "default": 1
+        },
+        "active": {
+            "type": "boolean",
+            "description": "Is status effect active?",
+            "baseClass": "StatusEffect",
+            "default": true
+        },
+        "showParticleEffect": {
+            "type": "boolean",
+            "description": "Show a particle effect while active?",
+            "baseClass": "StatusEffect",
+            "default": true
+        },
+        "shader": {
+            "type": "string",
+            "description": "Shader name to draw effected actor with.",
+            "baseClass": "StatusEffect"
+        },
+        "statusEffectType": {
+            "$ref": "#/definitions/StatusEffectType",
+            "description": "Status effect type.",
+            "baseClass": "StatusEffect"
+        }
+    },
+    "definitions": {
+        "StatusEffectType": {
+            "type": "string",
+            "enum": [
+                "BURNING",
+                "DRUNK",
+                "INVISIBLE",
+                "PARALYZE",
+                "POISON",
+                "RESTORE",
+                "SHIELD",
+                "SLOW",
+                "LEVITATE",
+                "SPEED"
+            ]
+        }
+    }
+}

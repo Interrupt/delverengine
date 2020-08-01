@@ -1,0 +1,66 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Shader Data",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.shaders.ShaderData",
+            "description": "Fully-qualified Java class name."
+        },
+        "name": {
+            "type": "string",
+            "description": "Shader name.",
+            "default": ""
+        },
+        "vertex": {
+            "type": "string",
+            "description": "Filepath to vertex shader."
+        },
+        "fragment": {
+            "type": "string",
+            "description": "Filepath to fragment shader."
+        },
+        "attributes": {
+            "type": "object",
+            "description": "Dictionary of shader attributes.",
+            "patternProperties": {
+                ".*": {
+                    "anyOf": [
+                        { "type": "object" },
+                        { "type":  "number" },
+                        { "type":  "integer"}
+                    ],
+                    "description": "Shader attribute."
+                }
+            }
+        },
+        "textures": {
+            "type": "array",
+            "description": "Array of texture filepaths to send to shader."
+        },
+        "textureFilter": {
+            "$ref": "#/definitions/TextureFilter",
+            "description": "Texture filter.",
+            "default": "Linear"
+        }
+    },
+    "required": [
+        "name",
+        "vertex",
+        "fragment"
+    ],
+    "definitions": {
+        "TextureFilter": {
+            "type": "string",
+            "enum": [
+                "Nearest",
+                "Linear",
+                "MipMap",
+                "MipMapNearestNearest",
+                "MipMapLinearNearest",
+                "MipMapNearestLinear",
+                "MipMapLinearLinear"
+            ]
+        }
+    }
+}

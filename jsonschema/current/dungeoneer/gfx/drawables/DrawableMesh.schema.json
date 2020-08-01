@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Drawable Mesh",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.drawables.DrawableMesh",
+            "description": "Fully-qualified Java class name."
+        },
+        "meshFile": {
+            "type": "string",
+            "description": "Mesh filepath.",
+            "default": "meshes/chair.obj"
+        },
+        "textureFile": {
+            "type": "string",
+            "description": "Mesh texture filepath.",
+            "default": "meshes.png"
+        },
+        "x": {
+            "type": "number",
+            "description": "Position x-coordinate.",
+            "default": 0.0
+        },
+        "y": {
+            "type": "number",
+            "description": "Position y-coordinate.",
+            "default": 0.0
+        },
+        "z": {
+            "type": "number",
+            "description": "Position z-coordinate.",
+            "default": 0.0
+        },
+        "rotX": {
+            "type": "number",
+            "description": "Rotation x-coordinate.",
+            "default": 0.0
+        },
+        "rotY": {
+            "type": "number",
+            "description": "Rotation y-coordinate.",
+            "default": 0.0
+        },
+        "rotZ": {
+            "type": "number",
+            "description": "Rotation z-coordinate.",
+            "default": 0.0
+        },
+        "isStaticMesh": {
+            "type": "boolean",
+            "description": "Is mesh static. Static meshes are combined and drawn more efficiently.",
+            "default": false
+        }
+    },
+    "default": {
+        "meshFile": "meshes/chair.obj",
+        "textureFile": "meshes.png"
+    }
+}

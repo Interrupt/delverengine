@@ -47,19 +47,30 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Player extends Actor {
-	
+	/** Player gold amount. */
 	public int gold = 0;
 
+	/** Player z-axis rotation. */
 	public float rot = 0;
+
+	/** Player y-axis rotation. */
 	public float yrot = 0;
+
 	public float rota = 0;
 	public float rotya = 0;
 	
 	public float rot2 = 0;
 
+	/** Player jump height. */
 	public float jumpHeight = 0.05f;
+
+	/** Player eye height. */
 	public float eyeHeight = 0.12f;
+
+	/** Head bob speed. */
 	public float headBobSpeed = 0.319f;
+
+	/** Head bob height. */
 	public float headBobHeight = 0.3f;
 	
 	public boolean hasAttacked;
@@ -74,7 +85,8 @@ public class Player extends Actor {
 	
 	public boolean ignoreStairs = false;
 	public float spawnX, spawnY;
-	
+
+	/** Player key count. */
 	public int keys = 0;
 	
 	public float attackChargeTime = 40;
@@ -101,12 +113,12 @@ public class Player extends Actor {
 	
 	public int levelNum = 0;
 	
-	// inventory stuff
+	/** Player inventory. */
 	public Array<Item> inventory = new Array<Item>();
 	public Integer selectedBarItem = null;
 	public Integer heldItem = null;
 
-	// items to start with!
+	/** New game player inventory. */
 	public Array<Entity> startingInventory = new Array<Entity>();
 	
 	public HashMap<String,Item> equippedItems = new HashMap<String,Item>();
@@ -151,11 +163,15 @@ public class Player extends Actor {
 	Vector3 tempVec2 = new Vector3();
 	Vector3 tempVec3 = new Vector3();
 	Vector3 tempVec4 = new Vector3();
-	
+
+	/** Player light color. */
 	public Color torchColor = new Color(1f, 0.8f, 0.4f, 1f);
-	private Color originalTorchColor = null;
+
+	/** Player light range. */
 	public float torchRange = 3.0f;
-	
+
+	private Color originalTorchColor = null;
+
 	public boolean inEditor = false;
 	
 	public static transient ControllerState controllerState = new ControllerState();
@@ -191,6 +207,7 @@ public class Player extends Actor {
 
     public transient float strafeCameraAngleMod = 0f;
 
+    /** Does player level up? */
     private boolean canLevelUp = true;
 
     private Array<TravelInfo> travelPath = new Array<TravelInfo>();

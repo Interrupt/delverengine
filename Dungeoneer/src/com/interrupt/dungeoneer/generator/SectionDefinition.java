@@ -7,22 +7,22 @@ import com.interrupt.dungeoneer.serializers.KryoSerializer;
 public class SectionDefinition {
     public SectionDefinition() { }
 
-    // what kind of loot should we drop here?
+    /** What kind of loot should we drop here? */
     public int difficultyLevel = 1;
 
-    // when should we let this section appear?
+    /** When should we let this section appear? */
     public int sortOrder = 1;
 
+    /** Name of section. */
     public String name = "My Section";
 
-    // number of levels in this section
+    /** Number of levels in this section. */
     public int floors = 2;
 
-    // the transition level to use after all floors in this section
-    // if numFloors is 0, just use this level
+    /** Transition level to use after all floors in this section. If numFloors is 0, just use this level. */
     public Level transitionLevel = null;
 
-    // the list of possible level templates to use when making floors
+    /** Array of possible level templates to use when making floors. */
     public Array<Level> levelTemplates = null;
 
     public Array<Level> buildLevels() {

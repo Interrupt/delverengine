@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.Entity.CollidesWith;
 import com.interrupt.dungeoneer.entities.items.Bow;
 import com.interrupt.dungeoneer.entities.items.ItemModification;
 import com.interrupt.dungeoneer.entities.items.Weapon;
@@ -28,6 +27,7 @@ import java.util.Random;
 
 public class Item extends Entity {
 	public enum ItemType { key, torch, potion, wand, sword, ring, amulet, junk, armor, quest, scroll, bow, thrown, stack, gold };
+	/** Item type */
 	public ItemType itemType;
 	
 	public enum ItemCondition { broken, worn, normal, fine, excellent };
@@ -47,52 +47,69 @@ public class Item extends Entity {
 			1.2f,
 			1.5f
 	};
-	
+
+	/** Current item condition */
 	@EditorProperty
 	public ItemCondition itemCondition = ItemCondition.normal;
-	
+
+	/** Item enchantment */
 	public ItemModification enchantment = null;
+	/** Item prefx enchantment */
 	public ItemModification prefixEnchantment = null;
-	
+
+	/** Sprite index of item while held */
 	@EditorProperty
 	public Integer heldTex = null;
-	
+
+	/** Sprite index of item while in inventory */
 	@EditorProperty
 	public Integer inventoryTex = null;
-	
+
+	/** Slot to equip item to */
 	@EditorProperty
 	public String equipLoc = "";
-	
+
+	/** Sound played when Item is equipped */
 	@EditorProperty
 	public String equipSound = "";
-	
+
+	/** Sound played when Item is picked up */
 	@EditorProperty
 	public String pickupSound = "pu_gen.mp3";
 
+	/** Is item identified? */
 	@EditorProperty
 	public boolean identified = true;
-	
+
+	/** Amount of gold item is worth */
 	public int cost = 20;
 	
 	protected transient Vector3 workVec = new Vector3();
 
+	/** Item's level. Will scale stats */
 	public int itemLevel = 1;
 
+	/** Minimum allowed item level */
     @EditorProperty(type = "Level Scaling")
     public Integer minItemLevel = null;
 
+    /** Maximum allowed item level */
     @EditorProperty(type = "Level Scaling")
     public Integer maxItemLevel = null;
 
+    /** Is item unique? */
 	@EditorProperty
 	public boolean unique = false;
 
+	/** Entity id to send trigger event when picked up */
 	@EditorProperty(type = "Triggers")
 	public String triggersOnPickup = null;
 
+	/** Allow enchantments on item when spawned? */
 	@EditorProperty(group = "Spawning")
 	public boolean canSpawnEnchanted = true;
 
+	/** Set random condition for item when spawned? */
 	@EditorProperty(group = "Spawning")
 	public boolean randomizeCondition = true;
 
@@ -110,10 +127,12 @@ public class Item extends Entity {
 		canSleep = true;
 		shadowType = ShadowType.BLOB;
 	}
-	
+
+	/** Item name */
 	@EditorProperty
 	public String name;
 
+	/** Item description */
 	@EditorProperty
 	public String description;
 

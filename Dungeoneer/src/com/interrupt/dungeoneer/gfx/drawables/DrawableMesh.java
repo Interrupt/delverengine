@@ -22,7 +22,10 @@ import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.managers.ShaderManager;
 
 public class DrawableMesh extends Drawable {
+	/** Mesh filepath. */
 	public String meshFile = "meshes/chair.obj";
+
+	/** Mesh texture filepath. */
 	public String textureFile = "meshes.png";
 	
 	public transient Mesh loadedMesh;
@@ -36,19 +39,31 @@ public class DrawableMesh extends Drawable {
 	private transient Vector3 workVec = new Vector3();
 
 	public transient Vector3 scaleVector = null;
-	
+
+	/** Position x-coordinate. */
 	public float x = 0;
+
+	/** Position y-coordinate. */
 	public float y = 0;
+
+	/** Position z-coordinate. */
 	public float z = 0;
-	
+
+	/** Rotation x-coordinate. */
 	public float rotX = 0;
+
+	/** Rotation y-coordinate. */
 	public float rotY = 0;
+
+	/** Rotation z-coordinate. */
 	public float rotZ = 0;
 	
 	public transient BoundingBox bbox = null;
 	private transient BoundingBox frustrumCheckBox = new BoundingBox();
-	
+
+	/** Is mesh static. Static meshes are combined and drawn more efficiently. */
 	public boolean isStaticMesh = false;
+
     public boolean addCollisionTriangles = false;
 
     public boolean bakeLighting = false;
