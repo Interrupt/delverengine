@@ -1,117 +1,73 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Item",
+    "title": "Projectile",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Item",
+            "const": "com.interrupt.dungeoneer.entities.projectiles.Projectile",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Item"
+            "baseClass": "Projectile"
         },
-        "itemType": {
-            "description": "Item type.",
-            "$ref": "Item.schema.json#/definitions/ItemType",
-            "baseClass": "Item"
+        "speed": {
+            "type": "number",
+            "description": "Projectile speed.",
+            "baseClass": "Projectile",
+            "default": 0.3
         },
-        "itemCondition": {
-            "description": "Item current condition.",
-            "$ref": "Item.schema.json#/definitions/ItemCondition",
-            "baseClass": "Item"
-        },
-        "enchantment": {
-            "description": "Item enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
-            "baseClass": "Item"
-        },
-        "prefixEnchantment": {
-            "description": "Item prefix enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
-            "baseClass": "Item"
-        },
-        "heldTex": {
+        "damage": {
             "type": "integer",
-            "description": "Sprite index of item while held.",
-            "baseClass": "Entity"
+            "description": "Damage amount",
+            "baseClass": "Projectile",
+            "default": 3
         },
-        "inventoryTex": {
-            "type": "integer",
-            "description": "Sprite index of item while in inventory.",
-            "baseClass": "Entity"
+        "knockback": {
+            "type": "number",
+            "description": "Strength of knockback effect.",
+            "baseClass": "Projectile",
+            "default": 0.1
         },
-        "equipLoc": {
-            "description": "Slot to equip item to.",
-            "$ref": "Item.schema.json#/definitions/EquipLocation",
-            "baseClass": "Item"
+        "destroyTimer": {
+            "type": "number",
+            "description": "Projectile lifetime in milliseconds.",
+            "baseClass": "Projectile"
         },
-        "equipSound": {
-            "type": "string",
-            "description": "Sound played when Item is equipped.",
-            "baseClass": "Item"
+        "destroyDelay": {
+            "type": "number",
+            "description": "Destroy delay.",
+            "baseClass": "Projectile"
         },
-        "pickupSound": {
-            "type": "string",
-            "description": "Sound played when Item is picked up.",
-            "baseClass": "Item",
-            "default": "pu_gen.mp3"
+        "damageType": {
+            "description": "Damage type.",
+            "$ref": "../items/Weapon.schema.json#/definitions/DamageType",
+            "baseClass": "Projectile"
         },
-        "identified": {
+        "destroyOnEntityHit": {
             "type": "boolean",
-            "description": "Is item identified?",
-            "baseClass": "Item",
+            "description": "Destroy projectile when it hits something?",
+            "baseClass": "Projectile",
             "default": true
         },
-        "cost": {
-            "type": "integer",
-            "description": "Amount of gold item is worth.",
-            "baseClass": "Item"
+        "hitDecal": {
+            "description": "Hit decal.",
+            "$ref": "../ProjectedDecal.schema.json",
+            "baseClass": "Projectile",
+            "default": {
+                "artType": "sprite",
+                "tex": 19,
+                "size": 0.6
+            }
         },
-        "itemLevel": {
-            "type": "integer",
-            "description": "Item's level. Will scale stats.",
-            "baseClass": "Item"
-        },
-        "minItemLevel": {
-            "type": "integer",
-            "description": "Minimum allowed item level.",
-            "baseClass": "Item"
-        },
-        "maxItemLevel": {
-            "type": "integer",
-            "description": "Maximum allowed item level.",
-            "baseClass": "Item"
-        },
-        "unique": {
-            "type": "boolean",
-            "description": "Is item unique?",
-            "baseClass": "Item",
-            "default": false
-        },
-        "triggersOnPickup": {
+        "hitSound": {
             "type": "string",
-            "description": "Entity id to send trigger event when picked up.",
-            "baseClass": "Item"
+            "description": "Sound to play when projectile hits something.",
+            "baseClass": "Projectile",
+            "default": "mg_green_impact_01.mp3,mg_green_impact_02.mp3,mg_green_impact_03.mp3,mg_green_impact_04.mp3"
         },
-        "canSpawnEnchanted": {
+        "makeHitParticles": {
             "type": "boolean",
-            "description": "Allow enchantments on item when spawned?",
-            "baseClass": "Item",
+            "description": "Make particles when projectile hits something?",
+            "baseClass": "Projectile",
             "default": true
-        },
-        "randomizeCondition": {
-            "type": "boolean",
-            "description": "Set random condition for item when spawned?",
-            "baseClass": "Item",
-            "default": true
-        },
-        "name": {
-            "type": "string",
-            "description": "Item name.",
-            "baseClass": "Item"
-        },
-        "description": {
-            "type": "string",
-            "description": "Item description.",
-            "baseClass": "Item"
         },
         "id": {
             "type": "string",
@@ -183,7 +139,7 @@
             "baseClass": "Entity"
         },
         "artType": {
-            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "$ref": "../Entity.schema.json#/definitions/ArtType",
             "baseClass": "Entity"
         },
         "spriteAtlas": {
@@ -192,7 +148,7 @@
             "baseClass": "Entity"
         },
         "entityType": {
-            "$ref": "Entity.schema.json#/definitions/EntityType",
+            "$ref": "../Entity.schema.json#/definitions/EntityType",
             "baseClass": "Entity"
         },
         "isSolid": {
@@ -202,12 +158,12 @@
             "default": false
         },
         "collision": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
         "collidesWith": {
-            "$ref": "Entity.schema.json#/definitions/CollidesWith",
+            "$ref": "../Entity.schema.json#/definitions/CollidesWith",
             "baseClass": "Entity",
             "default": "all"
         },
@@ -238,13 +194,13 @@
             "maximum": 1.0
         },
         "detailLevel": {
-            "$ref": "Entity.schema.json#/definitions/DetailLevel",
+            "$ref": "../Entity.schema.json#/definitions/DetailLevel",
             "description": "Detail level at which to be drawn",
             "baseClass": "Entity",
             "default": "LOW"
         },
         "drawDistance": {
-            "$ref": "Entity.schema.json#/definitions/DrawDistance",
+            "$ref": "../Entity.schema.json#/definitions/DrawDistance",
             "description": "Distance at which to be drawn.",
             "baseClass": "Entity",
             "default": "FAR"
@@ -274,7 +230,7 @@
             "default": "drops/drop_soft.mp3"
         },
         "shadowType": {
-            "$ref": "Entity.schema.json#/definitions/ShadowType",
+            "$ref": "../Entity.schema.json#/definitions/ShadowType",
             "description": "Type of drop shadow.",
             "baseClass": "Entity",
             "default": "NONE"
@@ -321,7 +277,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../../gdx/Color.schema.json",
+            "$ref": "../../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -337,7 +293,7 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },
@@ -346,51 +302,8 @@
             "description": "Array of attached Entities.",
             "baseClass": "Entity",
             "items": {
-                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+                "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike"
             }
-        }
-    },
-    "definitions": {
-        "ItemType": {
-            "type": "string",
-            "enum": [
-                "key",
-                "torch",
-                "potion",
-                "wand",
-                "sword",
-                "ring",
-                "amulet",
-                "junk",
-                "armor",
-                "quest",
-                "scroll",
-                "bow",
-                "thrown",
-                "stack",
-                "gold"
-            ]
-        },
-        "ItemCondition": {
-            "type": "string",
-            "enum": [
-                "broken",
-                "worn",
-                "normal",
-                "fine",
-                "excellent"
-            ]
-        },
-        "EquipLocation": {
-            "type": "string",
-            "enum": [
-                "ARMOR",
-                "AMULET",
-                "HAT",
-                "OFFHAND",
-                "PANTS",
-                "RING"
-            ]
         }
     }
 }

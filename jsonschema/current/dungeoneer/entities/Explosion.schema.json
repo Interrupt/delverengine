@@ -1,117 +1,203 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Item",
+    "title": "Explosion",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Item",
+            "const": "com.interrupt.dungeoneer.entities.Explosion",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Item"
+            "baseClass": "Explosion"
         },
-        "itemType": {
-            "description": "Item type.",
-            "$ref": "Item.schema.json#/definitions/ItemType",
-            "baseClass": "Item"
-        },
-        "itemCondition": {
-            "description": "Item current condition.",
-            "$ref": "Item.schema.json#/definitions/ItemCondition",
-            "baseClass": "Item"
-        },
-        "enchantment": {
-            "description": "Item enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
-            "baseClass": "Item"
-        },
-        "prefixEnchantment": {
-            "description": "Item prefix enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
-            "baseClass": "Item"
-        },
-        "heldTex": {
-            "type": "integer",
-            "description": "Sprite index of item while held.",
-            "baseClass": "Entity"
-        },
-        "inventoryTex": {
-            "type": "integer",
-            "description": "Sprite index of item while in inventory.",
-            "baseClass": "Entity"
-        },
-        "equipLoc": {
-            "description": "Slot to equip item to.",
-            "$ref": "Item.schema.json#/definitions/EquipLocation",
-            "baseClass": "Item"
-        },
-        "equipSound": {
+        "explodeSound": {
             "type": "string",
-            "description": "Sound played when Item is equipped.",
-            "baseClass": "Item"
+            "description": "Sound to play on explode.",
+            "baseClass": "Explosion",
+            "default": "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3"
         },
-        "pickupSound": {
-            "type": "string",
-            "description": "Sound played when Item is picked up.",
-            "baseClass": "Item",
-            "default": "pu_gen.mp3"
+        "decalDirection": {
+            "description": "Direction to orient decal",
+            "$ref": "../../gdx/Vector3.schema.json",
+            "baseClass": "Explosion",
+            "default": {
+                "x:": 0.01,
+                "y:": 0,
+                "z": -1
+            }
         },
-        "identified": {
+        "hitDecal": {
+            "description": "Decal",
+            "$ref": "ProjectedDecal.schema.json",
+            "baseClass": "Explosion"
+        },
+        "particleCount": {
+            "type": "integer",
+            "description": "Number of particles to spawn.",
+            "baseClass": "Explosion",
+            "default": 22
+        },
+        "particleForce": {
+            "type": "number",
+            "description": "Initial particle speed.",
+            "baseClass": "Explosion",
+            "default": 1
+        },
+        "explosionStartTex": {
+            "type": "integer",
+            "description": "Particle sprite animation start index.",
+            "baseClass": "Explosion",
+            "default": 1
+        },
+        "explosionEndTex": {
+            "type": "integer",
+            "description": "Particle sprite animation end index.",
+            "baseClass": "Explosion",
+            "default": 3
+        },
+        "explosionAnimSpeed": {
+            "type": "integer",
+            "description": "Particle sprite animation speed.",
+            "baseClass": "Explosion",
+            "default": 22
+        },
+        "impulseDistance": {
+            "type": "number",
+            "description": "Impulse range.",
+            "baseClass": "Explosion",
+            "default": 1
+        },
+        "impulseAmount":{
+            "type": "number",
+            "description": "Impulse strength.",
+            "baseClass": "Explosion",
+            "default": 0.2
+        },
+        "shakeDistance": {
+            "type": "number",
+            "description": "Screen shake range.",
+            "baseClass": "Explosion",
+            "default": 5
+        },
+        "shakeAmount":{
+            "type": "number",
+            "description": "Screen shake strength.",
+            "baseClass": "Explosion",
+            "default": 3
+        },
+        "lightMod": {
+            "type": "number",
+            "description": "Light color scalar.",
+            "baseClass": "Explosion",
+            "default": 1.6
+        },
+        "explosionLightStartColor": {
+            "description": "Light color start value.",
+            "$ref": "../../gdx/Color.schema.json",
+            "baseClass": "Explosion"
+        },
+        "explosionLightEndColor": {
+            "description": "Light color end value.",
+            "$ref": "../../gdx/Color.schema.json",
+            "baseClass": "Explosion"
+        },
+        "explodeDelay": {
+            "type": "number",
+            "description": "Time to delay explosion in milliseconds.",
+            "baseClass": "Explosion",
+            "default": 0
+        },
+        "makeDustRing": {
             "type": "boolean",
-            "description": "Is item identified?",
-            "baseClass": "Item",
-            "default": true
-        },
-        "cost": {
-            "type": "integer",
-            "description": "Amount of gold item is worth.",
-            "baseClass": "Item"
-        },
-        "itemLevel": {
-            "type": "integer",
-            "description": "Item's level. Will scale stats.",
-            "baseClass": "Item"
-        },
-        "minItemLevel": {
-            "type": "integer",
-            "description": "Minimum allowed item level.",
-            "baseClass": "Item"
-        },
-        "maxItemLevel": {
-            "type": "integer",
-            "description": "Maximum allowed item level.",
-            "baseClass": "Item"
-        },
-        "unique": {
-            "type": "boolean",
-            "description": "Is item unique?",
-            "baseClass": "Item",
+            "description": "Create dust ring on explode?",
+            "baseClass": "Explosion",
             "default": false
         },
-        "triggersOnPickup": {
-            "type": "string",
-            "description": "Entity id to send trigger event when picked up.",
-            "baseClass": "Item"
+        "dustRingColor": {
+            "description": "Dust ring color.",
+            "$ref": "../../gdx/Color.schema.json",
+            "baseClass": "Explosion"
         },
-        "canSpawnEnchanted": {
+        "makeFlyAways": {
             "type": "boolean",
-            "description": "Allow enchantments on item when spawned?",
-            "baseClass": "Item",
-            "default": true
+            "description": "Create fly aways?",
+            "baseClass": "Explosion",
+            "default": false
         },
-        "randomizeCondition": {
-            "type": "boolean",
-            "description": "Set random condition for item when spawned?",
-            "baseClass": "Item",
-            "default": true
+        "flyAwayColor": {
+            "description": "Fly away color.",
+            "$ref": "../../gdx/Color.schema.json",
+            "baseClass": "Explosion"
         },
-        "name": {
-            "type": "string",
-            "description": "Item name.",
-            "baseClass": "Item"
+        "damage": {
+            "type": "number",
+            "description": "Damage amount.",
+            "baseClass": "Explosion",
+            "default": 0
         },
-        "description": {
-            "type": "string",
-            "description": "Item description.",
-            "baseClass": "Item"
+        "damageType": {
+            "description": "Damage type.",
+            "$ref": "./items/Weapon.schema.json#/definitions/DamageType",
+            "baseClass": "Explosion"
+        },
+        "spawns": {
+            "type": "array",
+            "description": "List of entities to potentially spawn.",
+            "items": {
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+            },
+            "baseClass": "Explosion"
+        },
+        "spawnCount": {
+            "type": "integer",
+            "description": "Number of entities to create.",
+            "baseClass": "Explosion",
+            "default": 1
+        },
+        "spawnVelocity": {
+            "description": "Spawned entity initial velocity.",
+            "$ref": "../../gdx/Vector3.schema.json",
+            "baseClass": "Explosion",
+            "default": {
+                "x": 0,
+                "y": 0,
+                "z": 0.0625
+            }
+        },
+        "spawnRandomVelocity": {
+            "description": "Spawned entity initial random velocity.",
+            "$ref": "../../gdx/Vector3.schema.json",
+            "baseClass": "Explosion",
+            "default": {
+                "x": 0.125,
+                "y": 0.125,
+                "z": 0.0625
+            }
+        },
+        "spawnSpread": {
+            "description": "Spawned entity random position offset.",
+            "$ref": "../../gdx/Vector3.schema.json",
+            "baseClass": "Explosion",
+            "default": {
+                "x": 0.125,
+                "y": 0.125,
+                "z": 0
+            }
+        },
+        "spawnMomentumTransfer": {
+            "type": "number",
+            "description": "Amount of speed spawned entity receives.",
+            "baseClass": "Explosion",
+            "default": 1
+        },
+        "applyStatusEffectChance": {
+            "type": "number",
+            "description": "Chance to apply status effect.",
+            "baseClass": "Explosion",
+            "default": 1
+        },
+        "applyStatusEffect": {
+            "description": "Status effect.",
+            "$ref": "../../Interfaces.schema.json#/definitions/StatusEffectLike",
+            "baseClass": "Explosion"
         },
         "id": {
             "type": "string",
@@ -348,49 +434,6 @@
             "items": {
                 "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
             }
-        }
-    },
-    "definitions": {
-        "ItemType": {
-            "type": "string",
-            "enum": [
-                "key",
-                "torch",
-                "potion",
-                "wand",
-                "sword",
-                "ring",
-                "amulet",
-                "junk",
-                "armor",
-                "quest",
-                "scroll",
-                "bow",
-                "thrown",
-                "stack",
-                "gold"
-            ]
-        },
-        "ItemCondition": {
-            "type": "string",
-            "enum": [
-                "broken",
-                "worn",
-                "normal",
-                "fine",
-                "excellent"
-            ]
-        },
-        "EquipLocation": {
-            "type": "string",
-            "enum": [
-                "ARMOR",
-                "AMULET",
-                "HAT",
-                "OFFHAND",
-                "PANTS",
-                "RING"
-            ]
         }
     }
 }

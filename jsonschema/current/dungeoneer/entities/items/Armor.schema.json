@@ -1,31 +1,47 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Item",
+    "title": "Armor",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Item",
+            "const": "com.interrupt.dungeoneer.entities.items.Armor",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Item"
+            "baseClass": "Armor"
+        },
+        "baseMods": {
+            "description": "Base modifiers",
+            "$ref": "../items/ItemModification.schema.json",
+            "baseClass": "Weapon"
+        },
+        "armor": {
+            "type": "integer",
+            "description": "Armor point value.",
+            "baseClass": "Armor"
+        },
+        "durability" : {
+            "type": "integer",
+            "description": "How durable armor is.",
+            "baseClass": "Armor",
+            "default": 25
         },
         "itemType": {
             "description": "Item type.",
-            "$ref": "Item.schema.json#/definitions/ItemType",
+            "$ref": "../Item.schema.json#/definitions/ItemType",
             "baseClass": "Item"
         },
         "itemCondition": {
             "description": "Item current condition.",
-            "$ref": "Item.schema.json#/definitions/ItemCondition",
+            "$ref": "../Item.schema.json#/definitions/ItemCondition",
             "baseClass": "Item"
         },
         "enchantment": {
             "description": "Item enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
+            "$ref": "../items/ItemModification.schema.json",
             "baseClass": "Item"
         },
         "prefixEnchantment": {
             "description": "Item prefix enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
+            "$ref": "../items/ItemModification.schema.json",
             "baseClass": "Item"
         },
         "heldTex": {
@@ -40,7 +56,7 @@
         },
         "equipLoc": {
             "description": "Slot to equip item to.",
-            "$ref": "Item.schema.json#/definitions/EquipLocation",
+            "$ref": "../Item.schema.json#/definitions/EquipLocation",
             "baseClass": "Item"
         },
         "equipSound": {
@@ -183,7 +199,7 @@
             "baseClass": "Entity"
         },
         "artType": {
-            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "$ref": "../Entity.schema.json#/definitions/ArtType",
             "baseClass": "Entity"
         },
         "spriteAtlas": {
@@ -192,7 +208,7 @@
             "baseClass": "Entity"
         },
         "entityType": {
-            "$ref": "Entity.schema.json#/definitions/EntityType",
+            "$ref": "../Entity.schema.json#/definitions/EntityType",
             "baseClass": "Entity"
         },
         "isSolid": {
@@ -202,12 +218,12 @@
             "default": false
         },
         "collision": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
         "collidesWith": {
-            "$ref": "Entity.schema.json#/definitions/CollidesWith",
+            "$ref": "../Entity.schema.json#/definitions/CollidesWith",
             "baseClass": "Entity",
             "default": "all"
         },
@@ -238,13 +254,13 @@
             "maximum": 1.0
         },
         "detailLevel": {
-            "$ref": "Entity.schema.json#/definitions/DetailLevel",
+            "$ref": "../Entity.schema.json#/definitions/DetailLevel",
             "description": "Detail level at which to be drawn",
             "baseClass": "Entity",
             "default": "LOW"
         },
         "drawDistance": {
-            "$ref": "Entity.schema.json#/definitions/DrawDistance",
+            "$ref": "../Entity.schema.json#/definitions/DrawDistance",
             "description": "Distance at which to be drawn.",
             "baseClass": "Entity",
             "default": "FAR"
@@ -274,7 +290,7 @@
             "default": "drops/drop_soft.mp3"
         },
         "shadowType": {
-            "$ref": "Entity.schema.json#/definitions/ShadowType",
+            "$ref": "../Entity.schema.json#/definitions/ShadowType",
             "description": "Type of drop shadow.",
             "baseClass": "Entity",
             "default": "NONE"
@@ -321,7 +337,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../../gdx/Color.schema.json",
+            "$ref": "../../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -337,7 +353,7 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },
@@ -346,51 +362,8 @@
             "description": "Array of attached Entities.",
             "baseClass": "Entity",
             "items": {
-                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+                "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike"
             }
-        }
-    },
-    "definitions": {
-        "ItemType": {
-            "type": "string",
-            "enum": [
-                "key",
-                "torch",
-                "potion",
-                "wand",
-                "sword",
-                "ring",
-                "amulet",
-                "junk",
-                "armor",
-                "quest",
-                "scroll",
-                "bow",
-                "thrown",
-                "stack",
-                "gold"
-            ]
-        },
-        "ItemCondition": {
-            "type": "string",
-            "enum": [
-                "broken",
-                "worn",
-                "normal",
-                "fine",
-                "excellent"
-            ]
-        },
-        "EquipLocation": {
-            "type": "string",
-            "enum": [
-                "ARMOR",
-                "AMULET",
-                "HAT",
-                "OFFHAND",
-                "PANTS",
-                "RING"
-            ]
         }
     }
 }

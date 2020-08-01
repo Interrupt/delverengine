@@ -14,13 +14,13 @@ public class GameData {
     /** Filepaths of monster data. */
     public String[] monsterDataFiles = {"monsters.dat"};
 
-    /** Filepaths of monster data. */
+    /** Filepaths of item data. */
     public String[] itemDataFiles = {"items.dat"};
 
     /** Filepath of player data. */
     public String playerDataFile = "player.dat";
 
-    /** Is player allowed to jump. */
+    /** Is player allowed to jump? */
     public boolean playerJumpEnabled = false;
 
     public void merge(GameData modData) {

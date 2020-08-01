@@ -1,117 +1,53 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Item",
+    "title": "ProjectedDecal",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Item",
+            "const": "com.interrupt.dungeoneer.entities.ProjectedDecal",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Item"
+            "baseClass": "ProjectedDecal"
         },
-        "itemType": {
-            "description": "Item type.",
-            "$ref": "Item.schema.json#/definitions/ItemType",
-            "baseClass": "Item"
+        "direction": {
+            "description": "Direction to orient decal",
+            "$ref": "../../gdx/Vector3.schema.json",
+            "baseClass": "ProjectedDecal"
         },
-        "itemCondition": {
-            "description": "Item current condition.",
-            "$ref": "Item.schema.json#/definitions/ItemCondition",
-            "baseClass": "Item"
-        },
-        "enchantment": {
-            "description": "Item enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
-            "baseClass": "Item"
-        },
-        "prefixEnchantment": {
-            "description": "Item prefix enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
-            "baseClass": "Item"
-        },
-        "heldTex": {
-            "type": "integer",
-            "description": "Sprite index of item while held.",
-            "baseClass": "Entity"
-        },
-        "inventoryTex": {
-            "type": "integer",
-            "description": "Sprite index of item while in inventory.",
-            "baseClass": "Entity"
-        },
-        "equipLoc": {
-            "description": "Slot to equip item to.",
-            "$ref": "Item.schema.json#/definitions/EquipLocation",
-            "baseClass": "Item"
-        },
-        "equipSound": {
-            "type": "string",
-            "description": "Sound played when Item is equipped.",
-            "baseClass": "Item"
-        },
-        "pickupSound": {
-            "type": "string",
-            "description": "Sound played when Item is picked up.",
-            "baseClass": "Item",
-            "default": "pu_gen.mp3"
-        },
-        "identified": {
+        "isOrtho": {
             "type": "boolean",
-            "description": "Is item identified?",
-            "baseClass": "Item",
+            "description": "Is projection orthographic?",
+            "baseClass": "ProjectedDecal",
             "default": true
         },
-        "cost": {
-            "type": "integer",
-            "description": "Amount of gold item is worth.",
-            "baseClass": "Item"
+        "start": {
+            "type": "number",
+            "description": "Near clipping plane of projection.",
+            "baseClass": "ProjectedDecal",
+            "default": 0.2
         },
-        "itemLevel": {
-            "type": "integer",
-            "description": "Item's level. Will scale stats.",
-            "baseClass": "Item"
+        "end": {
+            "type": "number",
+            "description": "Far clipping plane of projection.",
+            "baseClass": "ProjectedDecal",
+            "default": 10
         },
-        "minItemLevel": {
-            "type": "integer",
-            "description": "Minimum allowed item level.",
-            "baseClass": "Item"
+        "fieldOfView": {
+            "type": "number",
+            "description": "Field of view for projection.",
+            "baseClass": "ProjectedDecal",
+            "default": 20
         },
-        "maxItemLevel": {
-            "type": "integer",
-            "description": "Maximum allowed item level.",
-            "baseClass": "Item"
+        "decalWidth": {
+            "type": "number",
+            "description": "Width of decal",
+            "baseClass": "ProjectedDecal",
+            "default": 0.99
         },
-        "unique": {
-            "type": "boolean",
-            "description": "Is item unique?",
-            "baseClass": "Item",
-            "default": false
-        },
-        "triggersOnPickup": {
-            "type": "string",
-            "description": "Entity id to send trigger event when picked up.",
-            "baseClass": "Item"
-        },
-        "canSpawnEnchanted": {
-            "type": "boolean",
-            "description": "Allow enchantments on item when spawned?",
-            "baseClass": "Item",
-            "default": true
-        },
-        "randomizeCondition": {
-            "type": "boolean",
-            "description": "Set random condition for item when spawned?",
-            "baseClass": "Item",
-            "default": true
-        },
-        "name": {
-            "type": "string",
-            "description": "Item name.",
-            "baseClass": "Item"
-        },
-        "description": {
-            "type": "string",
-            "description": "Item description.",
-            "baseClass": "Item"
+        "decalHeight": {
+            "type": "number",
+            "description": "Height of decal",
+            "baseClass": "ProjectedDecal",
+            "default": 0.99
         },
         "id": {
             "type": "string",
@@ -348,49 +284,6 @@
             "items": {
                 "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
             }
-        }
-    },
-    "definitions": {
-        "ItemType": {
-            "type": "string",
-            "enum": [
-                "key",
-                "torch",
-                "potion",
-                "wand",
-                "sword",
-                "ring",
-                "amulet",
-                "junk",
-                "armor",
-                "quest",
-                "scroll",
-                "bow",
-                "thrown",
-                "stack",
-                "gold"
-            ]
-        },
-        "ItemCondition": {
-            "type": "string",
-            "enum": [
-                "broken",
-                "worn",
-                "normal",
-                "fine",
-                "excellent"
-            ]
-        },
-        "EquipLocation": {
-            "type": "string",
-            "enum": [
-                "ARMOR",
-                "AMULET",
-                "HAT",
-                "OFFHAND",
-                "PANTS",
-                "RING"
-            ]
         }
     }
 }

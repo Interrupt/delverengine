@@ -1,31 +1,187 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Item",
+    "title": "Gun",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.Item",
+            "const": "com.interrupt.dungeoneer.entities.items.Gun",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Item"
+            "baseClass": "Gun"
+        },
+        "automatic": {
+            "type": "boolean",
+            "description": "Is automatic fire?",
+            "baseClass": "Gun",
+            "default": true
+        },
+        "cycleTime": {
+            "type": "number",
+            "description": "Time between shots in milliseconds.",
+            "baseClass": "Gun",
+            "default": 6
+        },
+        "ammoType": {
+            "type": "string",
+            "description": "Ammo type. Must correspond to a ItemStack stackType.",
+            "baseClass": "Gun",
+            "default": "BULLET"
+        },
+        "ammoPerShot": {
+            "type": "integer",
+            "description": "Ammo consumed per shot.",
+            "baseClass": "Gun",
+            "default": 1
+        },
+        "outOfAmmoSound": {
+            "type": "string",
+            "description": "Sound to play when attempting to fire with no ammo.",
+            "baseClass": "Gun",
+            "default": "button.mp3"
+        },
+        "fireSound": {
+            "type": "string",
+            "description": "Sound to play when firing.",
+            "baseClass": "Gun",
+            "default": "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3"
+        },
+        "hitEffect": {
+            "description": "Explosion on hit.",
+            "$ref": "../Explosion.schema.json",
+            "baseClass": "Gun"
+        },
+        "muzzleFlash": {
+            "description": "Muzzle flash effect played when firing.",
+            "$ref": "../Explosion.schema.json",
+            "baseClass": "Gun"
+        },
+        "projectileNum": {
+            "type": "integer",
+            "description": "Number of projectiles per shot.",
+            "baseClass": "Gun",
+            "default": 1
+        },
+        "projectileSpreadX": {
+            "type": "number",
+            "description": "Projectile horizontal spread.",
+            "baseClass": "Gun",
+            "default": 0
+        },
+        "projectileSpreadY": {
+            "type": "number",
+            "description": "Projectile vertical spread.",
+            "baseClass": "Gun",
+            "default": 0
+        },
+        "hitParticles": {
+            "type": "int",
+            "description": "Number of particles for each projectile hit.",
+            "baseClass": "Gun",
+            "default": 7
+        },
+        "projectile": {
+            "description": "Projectile to fire. Will use hitscan if not set.",
+            "$ref": "../projectiles/Projectile.schema.json",
+            "baseClass": "Gun"
+        },
+        "baseMods": {
+            "description": "Base modifiers",
+            "$ref": "../items/ItemModification.schema.json",
+            "baseClass": "Weapon"
+        },
+        "damageType": {
+            "description": "Damage type",
+            "$ref": "Weapon.schema.json#/definitions/DamageType",
+            "baseClass": "Weapon"
+        },
+        "baseDamage" : {
+            "type": "integer",
+            "description": "Base amount of damage to deal.",
+            "baseClass": "Weapon",
+            "default": 2
+        },
+        "randDamage" : {
+            "type": "integer",
+            "description": "Random amount of damage to deal.",
+            "baseClass": "Weapon",
+            "default": 2
+        },
+        "knockback": {
+            "type": "number",
+            "description": "Strength of knockback effect.",
+            "baseClass": "Weapon",
+            "default": 0.8
+        },
+        "reach": {
+            "type": "number",
+            "description": "Distance which weapon can hit.",
+            "baseClass": "Weapon",
+            "default": 0.5
+        },
+        "speed": {
+            "type": "number",
+            "description": "Length of attack animation.",
+            "baseClass": "Weapon",
+            "default": 0.5
+        },
+        "chargespeed": {
+            "type": "number",
+            "description": "Unused.",
+            "baseClass": "Weapon",
+            "default": 1
+        },
+        "attackAnimation": {
+            "type": "string",
+            "description": "Name of animation to play for a standard attack.",
+            "baseClass": "Weapon"
+        },
+        "attackStrongAnimation": {
+            "type": "string",
+            "description": "Name of animation to play for a charged attack.",
+            "baseClass": "Weapon"
+        },
+        "chargeAnimation": {
+            "type": "string",
+            "description": "Name of animation to play for charging windup.",
+            "baseClass": "Weapon"
+        },
+        "twoHanded": {
+            "type": "boolean",
+            "description": "Requires two hands?",
+            "baseClass": "Weapon",
+            "default": false
+        },
+        "durability" : {
+            "type": "integer",
+            "description": "How durable weapon is.",
+            "baseClass": "Weapon",
+            "default": 25
+        },
+        "chargesAttack": {
+            "type": "boolean",
+            "description": "Can perform a charged attack?",
+            "baseClass": "Weapon",
+            "default": true
+        },
+        "brokenTex" : {
+            "type": "integer",
+            "description": "Sprite index of item while held.",
+            "baseClass": "Weapon",
+            "default": -1
         },
         "itemType": {
-            "description": "Item type.",
-            "$ref": "Item.schema.json#/definitions/ItemType",
+            "$ref": "../Item.schema.json#/definitions/ItemType",
             "baseClass": "Item"
         },
         "itemCondition": {
-            "description": "Item current condition.",
-            "$ref": "Item.schema.json#/definitions/ItemCondition",
+            "$ref": "../Item.schema.json#/definitions/ItemCondition",
             "baseClass": "Item"
         },
         "enchantment": {
-            "description": "Item enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
+            "$ref": "../items/ItemModification.schema.json",
             "baseClass": "Item"
         },
         "prefixEnchantment": {
-            "description": "Item prefix enchantment.",
-            "$ref": "./items/ItemModification.schema.json",
+            "$ref": "../items/ItemModification.schema.json",
             "baseClass": "Item"
         },
         "heldTex": {
@@ -39,8 +195,7 @@
             "baseClass": "Entity"
         },
         "equipLoc": {
-            "description": "Slot to equip item to.",
-            "$ref": "Item.schema.json#/definitions/EquipLocation",
+            "$ref": "../Item.schema.json#/definitions/EquipLocation",
             "baseClass": "Item"
         },
         "equipSound": {
@@ -99,7 +254,7 @@
         },
         "randomizeCondition": {
             "type": "boolean",
-            "description": "Set random condition for item when spawned?",
+            "description": "Pick random condition for item when spawned?",
             "baseClass": "Item",
             "default": true
         },
@@ -183,7 +338,7 @@
             "baseClass": "Entity"
         },
         "artType": {
-            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "$ref": "../Entity.schema.json#/definitions/ArtType",
             "baseClass": "Entity"
         },
         "spriteAtlas": {
@@ -192,7 +347,7 @@
             "baseClass": "Entity"
         },
         "entityType": {
-            "$ref": "Entity.schema.json#/definitions/EntityType",
+            "$ref": "../Entity.schema.json#/definitions/EntityType",
             "baseClass": "Entity"
         },
         "isSolid": {
@@ -202,12 +357,12 @@
             "default": false
         },
         "collision": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Dimensions of Entity bounding box.",
             "baseClass": "Entity"
         },
         "collidesWith": {
-            "$ref": "Entity.schema.json#/definitions/CollidesWith",
+            "$ref": "../Entity.schema.json#/definitions/CollidesWith",
             "baseClass": "Entity",
             "default": "all"
         },
@@ -238,13 +393,13 @@
             "maximum": 1.0
         },
         "detailLevel": {
-            "$ref": "Entity.schema.json#/definitions/DetailLevel",
+            "$ref": "../Entity.schema.json#/definitions/DetailLevel",
             "description": "Detail level at which to be drawn",
             "baseClass": "Entity",
             "default": "LOW"
         },
         "drawDistance": {
-            "$ref": "Entity.schema.json#/definitions/DrawDistance",
+            "$ref": "../Entity.schema.json#/definitions/DrawDistance",
             "description": "Distance at which to be drawn.",
             "baseClass": "Entity",
             "default": "FAR"
@@ -274,7 +429,7 @@
             "default": "drops/drop_soft.mp3"
         },
         "shadowType": {
-            "$ref": "Entity.schema.json#/definitions/ShadowType",
+            "$ref": "../Entity.schema.json#/definitions/ShadowType",
             "description": "Type of drop shadow.",
             "baseClass": "Entity",
             "default": "NONE"
@@ -321,7 +476,7 @@
             "default": false
         },
         "color": {
-            "$ref": "../../gdx/Color.schema.json",
+            "$ref": "../../../gdx/Color.schema.json",
             "description": "Entity tint color.",
             "baseClass": "Entity",
             "default": {
@@ -337,7 +492,7 @@
             "default": false
         },
         "attachmentTransform": {
-            "$ref": "../../gdx/Vector3.schema.json",
+            "$ref": "../../../gdx/Vector3.schema.json",
             "description": "Position offset of attached Entities.",
             "baseClass": "Entity"
         },
@@ -346,51 +501,8 @@
             "description": "Array of attached Entities.",
             "baseClass": "Entity",
             "items": {
-                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+                "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike"
             }
-        }
-    },
-    "definitions": {
-        "ItemType": {
-            "type": "string",
-            "enum": [
-                "key",
-                "torch",
-                "potion",
-                "wand",
-                "sword",
-                "ring",
-                "amulet",
-                "junk",
-                "armor",
-                "quest",
-                "scroll",
-                "bow",
-                "thrown",
-                "stack",
-                "gold"
-            ]
-        },
-        "ItemCondition": {
-            "type": "string",
-            "enum": [
-                "broken",
-                "worn",
-                "normal",
-                "fine",
-                "excellent"
-            ]
-        },
-        "EquipLocation": {
-            "type": "string",
-            "enum": [
-                "ARMOR",
-                "AMULET",
-                "HAT",
-                "OFFHAND",
-                "PANTS",
-                "RING"
-            ]
         }
     }
 }
