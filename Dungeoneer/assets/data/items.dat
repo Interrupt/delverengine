@@ -279,8 +279,8 @@
 	],
 	potions:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:2,
 			name:"Red potion",
 			yOffset:-0.11,
@@ -289,8 +289,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:3,
 			name:"Blue potion",
 			yOffset:-0.11,
@@ -299,8 +299,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:4,
 			name:"Green potion",
 			yOffset:-0.11,
@@ -309,8 +309,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:5,
 			name:"Purple potion",
 			yOffset:-0.11,
@@ -319,8 +319,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:6,
 			name:"Dark potion",
 			yOffset:-0.11,
@@ -329,8 +329,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:7,
 			name:"Gold potion",
 			yOffset:-0.11,
@@ -339,8 +339,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:1,
 			name:"Bright potion",
 			yOffset:-0.11,

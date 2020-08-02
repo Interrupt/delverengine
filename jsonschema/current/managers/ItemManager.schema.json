@@ -62,7 +62,11 @@
             }
         },
         "potions": {
-            "description": "Potion table."
+            "description": "Potion table.",
+            "type": "array",
+            "items": {
+                "$ref": "../Interfaces.schema.json#/definitions/PotionLike"
+            }
         },
         "food": {
             "description": "Food table."

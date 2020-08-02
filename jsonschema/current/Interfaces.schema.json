@@ -4,36 +4,43 @@
     "definitions": {
         "EntityLike": {
             "oneOf": [
-                { "$ref": "dungeoneer/entities/Entity.schema.json"},
-                { "$ref": "dungeoneer/entities/Door.schema.json"},
-                { "$ref": "dungeoneer/entities/Explosion.schema.json"},
-                { "$ref": "dungeoneer/entities/Foliage.schema.json"},
-                { "$ref": "dungeoneer/entities/ParticleEmitter.schema.json"},
-                { "$ref": "dungeoneer/entities/ProjectedDecal.schema.json"},
-                { "$ref": "dungeoneer/entities/Sprite.schema.json"},
-                { "$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
-                { "$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
-                { "$ref": "Interfaces.schema.json#/definitions/ItemLike"},
-                { "$ref": "Interfaces.schema.json#/definitions/LightLike"},
-                { "$ref": "Interfaces.schema.json#/definitions/TriggerLike"}
+                {"$ref": "dungeoneer/entities/Entity.schema.json"},
+                {"$ref": "dungeoneer/entities/Door.schema.json"},
+                {"$ref": "dungeoneer/entities/Explosion.schema.json"},
+                {"$ref": "dungeoneer/entities/Foliage.schema.json"},
+                {"$ref": "dungeoneer/entities/ParticleEmitter.schema.json"},
+                {"$ref": "dungeoneer/entities/ProjectedDecal.schema.json"},
+                {"$ref": "dungeoneer/entities/Sprite.schema.json"},
+                {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
+                {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/LightLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/TriggerLike"}
             ]
         },
         "ItemLike": {
             "oneOf": [
-                { "$ref": "dungeoneer/entities/Item.schema.json"},
-                { "$ref": "dungeoneer/entities/items/Armor.schema.json"},
-                { "$ref": "dungeoneer/entities/items/Bow.schema.json"},
-                { "$ref": "dungeoneer/entities/items/Gun.schema.json"},
-                { "$ref": "dungeoneer/entities/items/ItemStack.schema.json"},
-                { "$ref": "dungeoneer/entities/items/Sword.schema.json"},
-                { "$ref": "dungeoneer/entities/items/Weapon.schema.json"},
-                { "$ref": "dungeoneer/entities/projectiles/Missile.schema.json"}
+                {"$ref": "dungeoneer/entities/Item.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Armor.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Bow.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Gun.schema.json"},
+                {"$ref": "dungeoneer/entities/items/ItemStack.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Sword.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Weapon.schema.json"},
+                {"$ref": "dungeoneer/entities/projectiles/Missile.schema.json"}
+                {"$ref": "Interfaces.schema.json#/definitions/PotionLike"}
             ]
         },
         "LightLike": {
             "oneOf": [
-                { "$ref": "dungeoneer/entities/Light.schema.json"},
-                { "$ref": "dungeoneer/entities/Torch.schema.json"}
+                {"$ref": "dungeoneer/entities/Light.schema.json"},
+                {"$ref": "dungeoneer/entities/Torch.schema.json"}
+            ]
+        },
+        "PotionLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/entities/items/Potion.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Elixer.schema.json"}
             ]
         },
         "SpellLike": {
@@ -54,12 +61,12 @@
         },
         "StatusEffectLike": {
             "oneOf": [
-                { "$ref": "dungeoneer/statuseffects/StatusEffect.schema.json" }
+                {"$ref": "dungeoneer/statuseffects/StatusEffect.schema.json" }
             ]
         },
         "TriggerLike": {
             "oneOf": [
-                { "$ref": "dungeoneer/entities/triggers/Trigger.schema.json"}
+                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"}
             ]
         }
     }
