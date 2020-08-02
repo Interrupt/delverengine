@@ -54,8 +54,12 @@
                 "$ref": "../Interfaces.schema.json#/definitions/ItemLike"
             }
         },
-        "wand": {
-            "description": "Wand table."
+        "wands": {
+            "description": "Wand table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Wand.schema.json"
+            }
         },
         "potions": {
             "description": "Potion table."
