@@ -1,0 +1,111 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "SplashExplosion",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.entities.spells.SplashExplosion",
+            "description": "Fully-qualified Java class name.",
+            "baseClass": "SplashExplosion"
+        },
+        "damage": {
+            "type": "integer",
+            "description": "Damage amount.",
+            "baseClass": "SplashExplosion",
+            "default": 2
+        },
+        "radius": {
+            "type": "number",
+            "description": "Splash radius.",
+            "baseClass": "SplashExplosion",
+            "default": 0.5
+        },
+        "physicsForce": {
+            "type": "number",
+            "description": "Explosion force.",
+            "baseClass": "SplashExplosion",
+            "default": 0.2
+        },
+        "explodeSound": {
+            "type": "string",
+            "description": "Sound to play when exploding.",
+            "baseClass": "SplashExplosion",
+            "default": "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3"
+        },
+        "mpCost": {
+            "type": "integer",
+            "description": "Mana point cost.",
+            "baseClass": "Spell",
+            "default": 1
+        },
+        "baseDamage": {
+            "type": "integer",
+            "description": "Base amount of damage to deal.",
+            "baseClass": "Spell",
+            "default": 1
+        },
+        "randDamage": {
+            "type": "integer",
+            "description": "Random amount of damage to deal.",
+            "baseClass": "Spell",
+            "default": 1
+        },
+        "damageType": {
+            "$ref": "../items/Weapon.schema.json#/definitions/DamageType",
+            "description": "Damage type.",
+            "baseClass": "Spell",
+            "default": "MAGIC"
+        },
+        "spellColor": {
+            "$ref": "../../../gdx/Color.schema.json",
+            "description": "Spell color.",
+            "baseClass": "Spell",
+            "default": {
+                "r": 0.6172,
+                "g": 0.0937,
+                "b": 0.7695,
+                "a": 1.0
+            }
+        },
+        "castSound": {
+            "type": "string",
+            "description": "Sound to play when cast.",
+            "baseClass": "Spell",
+            "default": "spell-missile-2.mp3,spell-missile-2_02.mp3,spell-missile-2_03.mp3,spell-missile-2_04.mp3"
+        },
+        "castSoundVolume": {
+            "type": "number",
+            "description": "Spell cast volume.",
+            "baseClass": "Spell",
+            "default": 0.5
+        },
+        "minDistanceToTarget": {
+            "type": "number",
+            "description": "Minimum spell range.",
+            "baseClass": "Spell",
+            "default": 0
+        },
+        "maxDistanceToTarget": {
+            "type": "number",
+            "description": "Maximum spell range.",
+            "baseClass": "Spell",
+            "default": 30
+        },
+        "applyStatusEffect": {
+            "$ref": "../../../Interfaces.schema.json#/definitions/StatusEffectLike",
+            "description": "Status effect to apply to target.",
+            "baseClass": "Spell"
+        },
+        "doCastVfx": {
+            "type": "boolean",
+            "description": "Create vfx entity when cast?",
+            "baseClass": "Spell",
+            "default": true
+        },
+        "castVfx": {
+            "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike",
+            "description": "Entity to spawn when spell is cast.",
+            "baseClass": "Spell"
+        }
+    }
+}

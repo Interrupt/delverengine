@@ -205,29 +205,32 @@
 	},
 	wands:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Wand,
-			itemType:wand,
+			class: "com.interrupt.dungeoneer.entities.items.Wand",
+			itemType: "wand",
 			name:"Test Wand",
 			magicStatBoostMod: 6,
 			spell: {
-				class:com.interrupt.dungeoneer.entities.spells.MagicMissile,
+				class: "com.interrupt.dungeoneer.entities.spells.MagicMissile",
 				magicMissileProjectile: {
-					class: com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile,
-					tex:52,
+					class: "com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile",
+					tex: 52,
 					endAnimTex: 55,
 					scale: 0.5,
 					animSpeed: 7.5,
-					spriteAtlas:"particle",
-					floating:true,
-					fullbrite:true,
+					spriteAtlas: "particle",
+					floating: true,
+					fullbrite: true,
 					knockback: 0.01,
 					attached: [
 						{
-							class: com.interrupt.dungeoneer.entities.SpriteBeam,
+							class: "com.interrupt.dungeoneer.entities.SpriteBeam",
 							tex: 30,
-							color: {r:0.6172,g:0.0937,b:0.7695},
+							color: {
+                                r: 0.6172,
+                                g: 0.0937,
+                                b: 0.7695},
 							yOffset: -0.425,
-							beamRenderMode: LINE
+							beamRenderMode: "LINE"
 						}
 					],
 					splashRadius: 0.5,
@@ -248,25 +251,30 @@
 					    randomRoll: 45.0
                     }
 				},
-				spellColor:{r:0.6172,g:0.0937,b:0.7695},
-				appearance: { tex: 15, texAtlas: "particle" },
+				spellColor:{
+                    r: 0.6172,
+                    g: 0.0937,
+                    b: 0.7695},
+				appearance: {
+                    tex: 15,
+                    texAtlas: "particle"
+                },
 				castSoundVolume: 0.1,
 				trailInterval: 2,
 				splashForce: 0.01,
 				speed: 0.45,
-				shotAccuracy: 0.92,
-				castSoundVolume: 0.1
+				shotAccuracy: 0.92
 			},
 			charges:20,
-			damageType:MAGIC,
-			baseDamage:1,
-			randDamage:1,
+			damageType: "MAGIC",
+			baseDamage: 1,
+			randDamage: 1,
 			autoFire: true,
 			autoFireTime: 10,
-			tex:1,
-			spriteAtlas:"wands",
+			tex: 1,
+			spriteAtlas: "wands",
 			yOffset: 0.0,
-			cost:45
+			cost: 45
 		}
 	],
 	potions:[
@@ -401,7 +409,6 @@
 			cost:30
 		}
 	],
-
 	weaponEnchantments:[
 		{
 			class: "com.interrupt.dungeoneer.entities.items.ItemModification",
@@ -409,7 +416,6 @@
 			attackSpeedMod: 0.3
 		}
 	],
-
 	weaponPrefixEnchantments: [
 		{
 			class: "com.interrupt.dungeoneer.entities.items.ItemModification",

@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.entities.spells;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
@@ -9,9 +7,11 @@ import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
+
+import java.util.Random;
 
 public class Heal extends Spell {
+    /** Heal amount. */
 	private int heal = 6;
 	
 	public Heal() { }

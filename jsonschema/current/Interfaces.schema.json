@@ -36,6 +36,22 @@
                 { "$ref": "dungeoneer/entities/Torch.schema.json"}
             ]
         },
+        "SpellLike": {
+            "oneOf": [
+                {"$ref":  "dungeoneer/entities/spells/Spell.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/ApplyStatusEffect.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Beam.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/EnchantArmor.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/EnchantWeapon.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/FillMap.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Heal.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Identifiy.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/MagicMissile.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/SplashExplosion.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/SpreadMagicMissile.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Teleport.schema.json"}
+            ]
+        },
         "StatusEffectLike": {
             "oneOf": [
                 { "$ref": "dungeoneer/statuseffects/StatusEffect.schema.json" }
