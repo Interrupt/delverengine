@@ -350,19 +350,5 @@
                 "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike"
             }
         }
-    },
-    "definitions": {
-        "PotionType": {
-            "type": "string",
-            "enum": [
-                "health",
-                "magic",
-                "maxhealth",
-                "poison",
-                "restore",
-                "shield",
-                "paralyze"
-            ]
-        }
     }
 }
