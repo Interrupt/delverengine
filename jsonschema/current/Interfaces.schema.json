@@ -5,6 +5,7 @@
         "EntityLike": {
             "oneOf": [
                 {"$ref": "dungeoneer/entities/Entity.schema.json"},
+                {"$ref": "dungeoneer/entities/DirectionalEntity.schema.json"},
                 {"$ref": "dungeoneer/entities/Door.schema.json"},
                 {"$ref": "dungeoneer/entities/Explosion.schema.json"},
                 {"$ref": "dungeoneer/entities/Foliage.schema.json"},

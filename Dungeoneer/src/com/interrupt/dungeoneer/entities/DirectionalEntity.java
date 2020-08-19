@@ -5,7 +5,8 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.interfaces.Directional;
 
 public class DirectionalEntity extends Entity implements Directional {
-	@EditorProperty( group = "Visual" )
+	/** Entity rotation. */
+    @EditorProperty( group = "Visual" )
 	public Vector3 rotation = new Vector3();
 	
 	public transient Vector3 dirWork = new Vector3();
