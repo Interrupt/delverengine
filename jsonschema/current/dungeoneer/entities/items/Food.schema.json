@@ -29,7 +29,7 @@
         "consumeSound": {
             "type": "string",
             "description": "Sound played when Food is consumed.",
-            "baseClass": "Item"
+            "baseClass": "Food"
         },
         "itemType": {
             "$ref": "../Item.schema.json#/definitions/ItemType",
