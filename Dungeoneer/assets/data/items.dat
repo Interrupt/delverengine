@@ -365,8 +365,8 @@
 	],
 	decorations:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Decoration,
-			itemType:junk,
+			class: "com.interrupt.dungeoneer.entities.items.Decoration",
+			itemType: "junk",
 			tex:2,
 			name:"Test Junk",
 			yOffset:-0.11
@@ -374,8 +374,8 @@
 	],
 	junk:[
 		{
-			class: com.interrupt.dungeoneer.entities.items.Decoration,
-			itemType: junk,
+			class: "com.interrupt.dungeoneer.entities.items.Decoration",
+			itemType: "junk",
 			collision:{x: 0.1, y: 0.1, z: 0.2},
 			tex: 3,
 			mass: 0.7,
@@ -384,7 +384,7 @@
 			equipLoc: "OFFHAND",
 			attached: [
 				{
-					class: com.interrupt.dungeoneer.entities.DynamicLight,
+					class: "com.interrupt.dungeoneer.entities.DynamicLight",
 					id: "",
 					range: 3,
 					lightColor: {
@@ -392,7 +392,7 @@
 						y: 0.47,
 						z: 0.12
 					},
-					lightType: fire,
+					lightType: "fire",
 					z:-0.2,
 					haloMode: "BOTH"
 				}

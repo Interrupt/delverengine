@@ -83,7 +83,11 @@
             }
         },
         "decorations": {
-            "description": "Decorations table."
+            "description": "Decorations table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Decoration.schema.json"
+            }
         },
         "junk": {
             "description": "Junk table.",
