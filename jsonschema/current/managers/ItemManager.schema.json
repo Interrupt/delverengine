@@ -69,7 +69,11 @@
             }
         },
         "food": {
-            "description": "Food table."
+            "description": "Food table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Food.schema.json"
+            }
         },
         "scrolls": {
             "description": "Scroll table."

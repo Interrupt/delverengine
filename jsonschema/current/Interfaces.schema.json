@@ -23,11 +23,12 @@
                 {"$ref": "dungeoneer/entities/Item.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Armor.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Bow.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Food.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Gun.schema.json"},
                 {"$ref": "dungeoneer/entities/items/ItemStack.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Sword.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Weapon.schema.json"},
-                {"$ref": "dungeoneer/entities/projectiles/Missile.schema.json"}
+                {"$ref": "dungeoneer/entities/projectiles/Missile.schema.json"},
                 {"$ref": "Interfaces.schema.json#/definitions/PotionLike"}
             ]
         },

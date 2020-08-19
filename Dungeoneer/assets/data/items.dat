@@ -398,9 +398,9 @@
 	],
 	food:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Food,
-			itemType:potion,
-			foodType:food,
+			class: "com.interrupt.dungeoneer.entities.items.Food",
+			itemType: "potion",
+			foodType: "food",
             foodMod:0.5,
 			tex:4,
 			name:"Testing Food",
