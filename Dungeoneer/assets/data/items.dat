@@ -279,8 +279,8 @@
 	],
 	potions:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:2,
 			name:"Red potion",
 			yOffset:-0.11,
@@ -289,8 +289,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:3,
 			name:"Blue potion",
 			yOffset:-0.11,
@@ -299,8 +299,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:4,
 			name:"Green potion",
 			yOffset:-0.11,
@@ -309,8 +309,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:5,
 			name:"Purple potion",
 			yOffset:-0.11,
@@ -319,8 +319,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:6,
 			name:"Dark potion",
 			yOffset:-0.11,
@@ -329,8 +329,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:7,
 			name:"Gold potion",
 			yOffset:-0.11,
@@ -339,8 +339,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:1,
 			name:"Bright potion",
 			yOffset:-0.11,
@@ -351,19 +351,22 @@
 	],
 	scrolls:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Scroll,
-			itemType:scroll,
-			spell: { class:com.interrupt.dungeoneer.entities.spells.Heal, heal:6 },
+			class: "com.interrupt.dungeoneer.entities.items.Scroll",
+			itemType: "scroll",
+			spell: {
+                class: "com.interrupt.dungeoneer.entities.spells.Heal",
+                heal: 6
+            },
 			tex:72,
-			name:"Testing Scroll",
-			yOffset:-0.11,
-			cost:120
+			name: "Testing Scroll",
+			yOffset: -0.11,
+			cost: 120
 		}
 	],
 	decorations:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Decoration,
-			itemType:junk,
+			class: "com.interrupt.dungeoneer.entities.items.Decoration",
+			itemType: "junk",
 			tex:2,
 			name:"Test Junk",
 			yOffset:-0.11
@@ -371,8 +374,8 @@
 	],
 	junk:[
 		{
-			class: com.interrupt.dungeoneer.entities.items.Decoration,
-			itemType: junk,
+			class: "com.interrupt.dungeoneer.entities.items.Decoration",
+			itemType: "junk",
 			collision:{x: 0.1, y: 0.1, z: 0.2},
 			tex: 3,
 			mass: 0.7,
@@ -381,7 +384,7 @@
 			equipLoc: "OFFHAND",
 			attached: [
 				{
-					class: com.interrupt.dungeoneer.entities.DynamicLight,
+					class: "com.interrupt.dungeoneer.entities.DynamicLight",
 					id: "",
 					range: 3,
 					lightColor: {
@@ -389,7 +392,7 @@
 						y: 0.47,
 						z: 0.12
 					},
-					lightType: fire,
+					lightType: "fire",
 					z:-0.2,
 					haloMode: "BOTH"
 				}
@@ -398,9 +401,9 @@
 	],
 	food:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Food,
-			itemType:potion,
-			foodType:food,
+			class: "com.interrupt.dungeoneer.entities.items.Food",
+			itemType: "potion",
+			foodType: "food",
             foodMod:0.5,
 			tex:4,
 			name:"Testing Food",

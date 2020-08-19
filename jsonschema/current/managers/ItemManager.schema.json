@@ -62,16 +62,32 @@
             }
         },
         "potions": {
-            "description": "Potion table."
+            "description": "Potion table.",
+            "type": "array",
+            "items": {
+                "$ref": "../Interfaces.schema.json#/definitions/PotionLike"
+            }
         },
         "food": {
-            "description": "Food table."
+            "description": "Food table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Food.schema.json"
+            }
         },
         "scrolls": {
-            "description": "Scroll table."
+            "description": "Scroll table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Scroll.schema.json"
+            }
         },
         "decorations": {
-            "description": "Decorations table."
+            "description": "Decorations table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Decoration.schema.json"
+            }
         },
         "junk": {
             "description": "Junk table.",

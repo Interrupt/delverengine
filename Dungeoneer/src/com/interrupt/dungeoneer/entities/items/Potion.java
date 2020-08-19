@@ -1,17 +1,10 @@
 package com.interrupt.dungeoneer.entities.items;
 
-import java.text.MessageFormat;
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.Actor;
-import com.interrupt.dungeoneer.entities.Bomb;
-import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Item;
-import com.interrupt.dungeoneer.entities.Player;
+import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
@@ -19,10 +12,14 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.statuseffects.*;
 import com.interrupt.managers.StringManager;
 
+import java.text.MessageFormat;
+import java.util.Random;
+
 public class Potion extends Item {
 	
 	public enum PotionType { health, magic, maxhealth, poison, restore, shield, paralyze }
-	
+
+	/** Potion type. */
 	@EditorProperty
 	public PotionType potionType = PotionType.health;
 	

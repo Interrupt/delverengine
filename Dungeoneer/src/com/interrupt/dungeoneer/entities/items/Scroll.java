@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.managers.StringManager;
 
 public class Scroll extends Item {
+    /** Spell to cast when consumed. */
 	public Spell spell;
 	
 	public void Read(Player player) {
