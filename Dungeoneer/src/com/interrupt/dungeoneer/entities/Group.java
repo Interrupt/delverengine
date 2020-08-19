@@ -1,19 +1,15 @@
 package com.interrupt.dungeoneer.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 
 import java.util.UUID;
 
 public class Group extends DirectionalEntity {
-	
+	/** Array of grouped Entities. */
 	public Array<Entity> entities = new Array<Entity>();
 	
 	protected Vector3 lastRot = new Vector3();

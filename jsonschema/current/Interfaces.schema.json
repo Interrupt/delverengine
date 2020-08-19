@@ -9,6 +9,7 @@
                 {"$ref": "dungeoneer/entities/Door.schema.json"},
                 {"$ref": "dungeoneer/entities/Explosion.schema.json"},
                 {"$ref": "dungeoneer/entities/Foliage.schema.json"},
+                {"$ref": "dungeoneer/entities/Group.schema.json"},
                 {"$ref": "dungeoneer/entities/ParticleEmitter.schema.json"},
                 {"$ref": "dungeoneer/entities/ProjectedDecal.schema.json"},
                 {"$ref": "dungeoneer/entities/Sprite.schema.json"},
