@@ -1,26 +1,25 @@
 package com.interrupt.dungeoneer.entities;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
-import com.interrupt.dungeoneer.tiles.Tile;
 
 public class Model extends DirectionalEntity {
-	
+	/** Path to mesh file of Model. */
 	@EditorProperty( group = "Visual", type = "FILE_PICKER", params = "meshes")
 	public String meshFile = null;
-	
+
+	/** Path to texture file for Model. */
 	@EditorProperty( group = "Visual", type = "FILE_PICKER", params = "")
 	public String textureFile = "meshes.png";
 
+	/** Can decals project onto this Entity? */
 	@EditorProperty( group = "Visual")
 	public boolean receiveDecals = true;
 
+	/** Should lighting for this Model be baked? */
 	@EditorProperty( group = "Visual")
 	public boolean bakeLighting = false;
 	
