@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
@@ -9,10 +8,11 @@ import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.managers.EntityManager;
 
 public class Prefab extends Group {
-	
+	/** Prefab category. */
 	@EditorProperty
 	public String category = "NONE";
-	
+
+	/** Prefab name. */
 	@EditorProperty
 	public String name = "NONE";
 	
