@@ -76,7 +76,11 @@
             }
         },
         "scrolls": {
-            "description": "Scroll table."
+            "description": "Scroll table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Scroll.schema.json"
+            }
         },
         "decorations": {
             "description": "Decorations table."

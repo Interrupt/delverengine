@@ -351,13 +351,16 @@
 	],
 	scrolls:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Scroll,
-			itemType:scroll,
-			spell: { class:com.interrupt.dungeoneer.entities.spells.Heal, heal:6 },
+			class: "com.interrupt.dungeoneer.entities.items.Scroll",
+			itemType: "scroll",
+			spell: {
+                class: "com.interrupt.dungeoneer.entities.spells.Heal",
+                heal: 6
+            },
 			tex:72,
-			name:"Testing Scroll",
-			yOffset:-0.11,
-			cost:120
+			name: "Testing Scroll",
+			yOffset: -0.11,
+			cost: 120
 		}
 	],
 	decorations:[
