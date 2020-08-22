@@ -16,7 +16,6 @@
                 {"$ref": "dungeoneer/entities/ProjectedDecal.schema.json"},
                 {"$ref": "dungeoneer/entities/Sprite.schema.json"},
                 {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
-                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
                 {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/LightLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/TriggerLike"}
