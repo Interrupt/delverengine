@@ -2017,11 +2017,9 @@ public class Level {
 				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
 						if(t.invertLight) {
-							//c.sub(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
 							c.sub(attenuateLightColor(pos, t));
 						}
 						else {
-							//c.add(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
 							c.add(attenuateLightColor(pos, t));
 						}
 					}
@@ -2040,11 +2038,9 @@ public class Level {
 					
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
 						if(t.invertLight) {
-							//c.sub(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
 							c.sub(attenuateLightColor(pos, t));
 						}
 						else {
-							//c.add(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
 							c.sub(attenuateLightColor(pos, t));
 						}
 					}
@@ -2063,11 +2059,9 @@ public class Level {
 					
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
 						if(t.invertLight) {
-							//c.sub(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
 							c.sub(attenuateLightColor(pos, t));
 						}
 						else {
-							//c.add(attenuateLightColor(pos.x, pos.y, pos.z, t.x, t.y, t.z, t.range, t.getColor()));
 							c.add(attenuateLightColor(pos, t));
 						}
 					}
@@ -2192,7 +2186,6 @@ public class Level {
 
 							//l.cacheLightColor(x, y, z, lightColor);
 						} else {
-							//Color lightColor = attenuateLightColor(x, y, z, l.x, l.y, l.z, l.range, l.getColor()).mul(shadowMul);
 							Color lightColor = attenuateLightColor(new Vector3(x, y, z), l);
 
 							if (l.invertLight)
