@@ -33,17 +33,17 @@ public class MessageOverlay extends WindowOverlay {
 	public float drawTimer = 0;
 	public Color textColor = Color.WHITE;
 
-    private boolean finishedShowingText = false;
-    private int showingCharacters = -1;
+    protected boolean finishedShowingText = false;
+    protected int showingCharacters = -1;
 
     public Action afterAction = null;
 
-	Table mainTable = null;
+	protected Table mainTable = null;
 
 	float lastHeight = 0f;
     public String triggerOnClose;
 
-    private boolean animateText = true;
+    protected boolean animateText = true;
 
     public MessageOverlay(Array<String> message, NinePatchDrawable background, Color textColor) {
 		if(background != null) this.background = background;
@@ -73,8 +73,8 @@ public class MessageOverlay extends WindowOverlay {
 		}
 	}
 	
-	private final Array<String> messages = new Array<String>();
-	private int index = 0;
+	protected final Array<String> messages = new Array<String>();
+	protected int index = 0;
 
 	Label messageText = null;
 	CharSequence thisText = "";
@@ -93,6 +93,10 @@ public class MessageOverlay extends WindowOverlay {
     public void resetGlyphLayout() {
 	    glyphLayout = null;
     }
+
+	public void onDoneAnimatingText() {
+
+	}
 
 	@Override
 	public void tick(float delta) {
@@ -151,6 +155,8 @@ public class MessageOverlay extends WindowOverlay {
 
 			if (!finishedShowingText) {
 				finishedShowingText = ((int) (timer * 40f) - 5) >= thisText.length();
+
+				if(finishedShowingText) onDoneAnimatingText();
 			}
 		}
 
