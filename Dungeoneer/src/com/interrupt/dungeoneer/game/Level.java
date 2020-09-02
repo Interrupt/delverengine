@@ -15,7 +15,6 @@ import com.interrupt.dungeoneer.collision.Collision;
 import com.interrupt.dungeoneer.collision.Collision.CollisionType;
 import com.interrupt.dungeoneer.editor.EditorMarker;
 import com.interrupt.dungeoneer.entities.*;
-import com.interrupt.dungeoneer.entities.Door.DoorDirection;
 import com.interrupt.dungeoneer.entities.Door.DoorState;
 import com.interrupt.dungeoneer.entities.Entity.CollidesWith;
 import com.interrupt.dungeoneer.entities.Entity.EntityType;
@@ -35,7 +34,6 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.partitioning.LightSpatialHash;
 import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
-import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 import com.interrupt.helpers.TileEdges;
@@ -1901,6 +1899,27 @@ public class Level {
 			}
 		}
 	}
+
+	private void updateLight(Entity entity) {
+		if (entity == null) {
+			return;
+		}
+
+		if(entity instanceof Light && entity.isActive)
+		{
+			Light t = (Light)entity;
+			lightSpatialHash.AddLight(t);
+		}
+
+		if (!(entity instanceof Group)) {
+			return;
+		}
+
+		Group group = (Group)entity;
+		for (Entity e : group.entities) {
+			updateLight(e);
+		}
+	}
 	
 	public void updateLights(Source source)
 	{
@@ -1928,11 +1947,7 @@ public class Level {
 		for(int i = 0; i < entities.size; i++)
 		{
 			Entity e = entities.get(i);
-			if(e instanceof Light && e.isActive)
-			{
-				Light t = (Light)e;
-				lightSpatialHash.AddLight(t);
-			}
+			updateLight(e);
 		}
 		
 		for(int i = 0; i < non_collidable_entities.size; i++)
@@ -1965,11 +1980,7 @@ public class Level {
 		for(int i = 0; i < static_entities.size; i++)
 		{
 			Entity e = static_entities.get(i);
-			if(e instanceof Light && e.isActive)
-			{
-				Light t = (Light)e;
-				lightSpatialHash.AddLight(t);
-			}
+			updateLight(e);
 		}
 		
 		// light some entities
