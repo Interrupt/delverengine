@@ -200,7 +200,7 @@ public class Gun extends Weapon {
             Vector3 hitEntityAt = new Vector3();
 
             Vector3 hitLocation = null;
-            for (int i = 0; i < lvl.entities.size && hit == null; i++) {
+            for (int i = 0; i < lvl.entities.size; i++) {
                 Entity e = lvl.entities.get(i);
                 if (!(e instanceof Sprite || e instanceof Light) && e.isSolid) {
                     testPos.x = e.x;
