@@ -1,10 +1,6 @@
 package com.interrupt.dungeoneer.entities;
 
-import java.util.Random;
-import java.util.Vector;
-
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
@@ -19,10 +15,11 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.tiles.Tile;
+
+import java.util.Random;
 
 public class Entity {
 	
@@ -796,6 +793,16 @@ public class Entity {
 		this.y = y;
 		this.z = z;
 	}
+
+	public void setPosition(Entity other) {
+	    if (other == null) {
+	        return;
+        }
+
+	    x = other.x;
+	    y = other.y;
+	    z = other.z;
+    }
 	
 	public void matchEntity(Entity toMatch) {
 		matchPositionAndVelocity(toMatch);

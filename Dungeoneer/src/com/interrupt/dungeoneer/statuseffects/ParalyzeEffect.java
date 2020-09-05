@@ -41,8 +41,8 @@ public class ParalyzeEffect extends StatusEffect {
         this.effectParticle.z = owner.z + this.effectOffset.z;
 
         if(owner instanceof Player) {
-            this.effectParticle.x += 0.5f + Game.camera.direction.x * 0.25f;
-            this.effectParticle.y += 0.5f + Game.camera.direction.z * 0.25f;
+            this.effectParticle.x += Game.camera.direction.x * 0.25f;
+            this.effectParticle.y += Game.camera.direction.z * 0.25f;
         }
     }
 
