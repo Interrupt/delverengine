@@ -14,8 +14,8 @@ allprojects {
     ext {
         appName = "delver"
         gdxVersion = '1.9.9'
-        roboVMVersion = '2.1.0'
-        kryoVersion = '2.23.0'
+        roboVMVersion = '2.3.9'
+        kryoVersion = '2.24.0'
         reflectionsVersion = '0.9.12'
         inkVersion = '0.7.3'
     }
@@ -29,39 +29,35 @@ allprojects {
 }
 
 project(":DungeoneerDesktop") {
-    apply plugin: "java"
+    apply plugin: "java-library"
 
     dependencies {
-        compile project(":Dungeoneer")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+        implementation project(":Dungeoneer")
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
     }
 }
 
 project(":DelvEdit") {
-    apply plugin: "java"
+    apply plugin: "java-library"
 
     dependencies {
-        compile project(":Dungeoneer")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "org.reflections:reflections:$reflectionsVersion"
+        implementation project(":Dungeoneer")
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        api "org.reflections:reflections:$reflectionsVersion"
     }
 }
 
 project(":Dungeoneer") {
-    apply plugin: "java"
+    apply plugin: "java-library"
 
     dependencies {
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
-        compile "com.esotericsoftware.kryo:kryo:$kryoVersion"
-        compile "com.bladecoder.ink:blade-ink:$inkVersion"
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        api "com.esotericsoftware.kryo:kryo:$kryoVersion"
+        api "com.bladecoder.ink:blade-ink:$inkVersion"
     }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }
