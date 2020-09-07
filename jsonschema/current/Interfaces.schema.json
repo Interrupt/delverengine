@@ -96,7 +96,8 @@
         },
         "TriggerLike": {
             "oneOf": [
-                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"}
+                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ButtonDecal.schema.json"}
             ]
         }
     }
