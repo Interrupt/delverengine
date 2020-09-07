@@ -18,6 +18,7 @@
                 {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
                 {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/BasicTriggerLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/LightLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/TriggerLike"}
@@ -38,6 +39,11 @@
                 {"$ref":  "dungeoneer/entities/areas/SpawnBlockerArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/StatusEffectArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/TeleportArea.schema.json"},
+            ]
+        },
+        "BasicTriggerLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/entities/triggers/BasicTrigger.schema.json"}
             ]
         },
         "ItemLike": {
