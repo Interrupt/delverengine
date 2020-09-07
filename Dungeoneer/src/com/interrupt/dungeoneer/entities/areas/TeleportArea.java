@@ -12,19 +12,21 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.tiles.Tile;
 
 import java.util.Random;
 
 public class TeleportArea extends Area {
     public TeleportArea() { hidden = true; spriteAtlas = "editor"; tex = 11; isStatic = false; isDynamic = true; }
 
+    /** WarpMarker id to teleport to. */
     @EditorProperty
     public String toWarpMarkerId = null;
 
+    /** Keep relative position offset? */
     @EditorProperty
     public boolean preserveOffset = true;
 
+    /** Show teleport particle effect? */
     @EditorProperty
     public boolean doTeleportEffect = false;
 

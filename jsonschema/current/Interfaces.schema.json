@@ -17,6 +17,7 @@
                 {"$ref": "dungeoneer/entities/Sprite.schema.json"},
                 {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
                 {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/LightLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/TriggerLike"}
@@ -27,6 +28,16 @@
                 {"$ref":  "dungeoneer/entities/Actor.schema.json"},
                 {"$ref":  "dungeoneer/entities/Monster.schema.json"},
                 {"$ref":  "dungeoneer/entities/Player.schema.json"}
+            ]
+        },
+        "AreaLike": {
+            "oneOf": [
+                {"$ref":  "dungeoneer/entities/areas/Area.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/FogArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/SkyboxArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/SpawnBlockerArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/StatusEffectArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/TeleportArea.schema.json"},
             ]
         },
         "ItemLike": {
