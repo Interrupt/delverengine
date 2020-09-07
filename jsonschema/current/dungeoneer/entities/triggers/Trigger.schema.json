@@ -4,7 +4,7 @@
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.trigger.Trigger",
+            "const": "com.interrupt.dungeoneer.entities.triggers.Trigger",
             "description": "Fully-qualified Java class name.",
             "baseClass": "Trigger"
         },
