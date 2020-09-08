@@ -16,12 +16,14 @@
                 {"$ref": "dungeoneer/entities/ProjectedDecal.schema.json"},
                 {"$ref": "dungeoneer/entities/Sprite.schema.json"},
                 {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/BasicTrigger.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ButtonModel.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ButtonDecal.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
                 {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},
-                {"$ref": "Interfaces.schema.json#/definitions/BasicTriggerLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
-                {"$ref": "Interfaces.schema.json#/definitions/LightLike"},
-                {"$ref": "Interfaces.schema.json#/definitions/TriggerLike"}
+                {"$ref": "Interfaces.schema.json#/definitions/LightLike"}
             ]
         },
         "ActorLike": {
@@ -38,12 +40,7 @@
                 {"$ref":  "dungeoneer/entities/areas/SkyboxArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/SpawnBlockerArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/StatusEffectArea.schema.json"},
-                {"$ref":  "dungeoneer/entities/areas/TeleportArea.schema.json"},
-            ]
-        },
-        "BasicTriggerLike": {
-            "oneOf": [
-                {"$ref": "dungeoneer/entities/triggers/BasicTrigger.schema.json"}
+                {"$ref":  "dungeoneer/entities/areas/TeleportArea.schema.json"}
             ]
         },
         "ItemLike": {
@@ -92,12 +89,6 @@
         "StatusEffectLike": {
             "oneOf": [
                 {"$ref": "dungeoneer/statuseffects/StatusEffect.schema.json" }
-            ]
-        },
-        "TriggerLike": {
-            "oneOf": [
-                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
-                {"$ref": "dungeoneer/entities/triggers/ButtonDecal.schema.json"}
             ]
         }
     }
