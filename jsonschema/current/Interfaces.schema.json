@@ -19,6 +19,7 @@
                 {"$ref": "dungeoneer/entities/triggers/BasicTrigger.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/ButtonModel.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/ButtonDecal.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ConditionalTrigger.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
                 {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},

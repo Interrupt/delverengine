@@ -5,18 +5,21 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 
 public class ConditionalTrigger extends Trigger {
-	
 	public enum CompareType {EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL};
-	
+
+	/** Type of comparison to perform. */
 	@EditorProperty
-	public CompareType compareType=CompareType.EQUAL;
-	
+	public CompareType compareType = CompareType.EQUAL;
+
+	/** Value to compare against. */
 	@EditorProperty
 	public String testValue = "";
 
+	/** Treat {@link #triggerValue} as an integer and increment each time triggered.  */
 	@EditorProperty
 	public boolean incrementWhenTriggered = false;
 
+	/** Entity to send trigger event when comparison fails. */
 	@EditorProperty
 	public String triggersOnFail = null;
 
