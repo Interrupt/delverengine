@@ -6,15 +6,16 @@ import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Game;
 
 public class DamageTrigger extends BasicTrigger {
-
+    /** Damage amount needed to send trigger event. */
 	@EditorProperty
 	public int damageThreshold = 1;
 
-	public DamageTrigger() { hidden = true; spriteAtlas = "editor"; tex = 11; }
-
+	/** Entity to send trigger event when damage fails to exceed {@link #damageThreshold}. */
 	@EditorProperty
 	public String triggersOnFail = null;
-	
+
+	public DamageTrigger() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+
 	@Override
 	public void doTriggerEvent(String value) { }
 

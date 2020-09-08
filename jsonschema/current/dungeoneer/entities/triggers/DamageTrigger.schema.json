@@ -1,12 +1,23 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "BasicTrigger",
+    "title": "DamageTrigger",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.triggers.BasicTrigger",
+            "const": "com.interrupt.dungeoneer.entities.triggers.DamageTrigger",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "BasicTrigger"
+            "baseClass": "DamageTrigger"
+        },
+        "damageThreshold": {
+            "type": "integer",
+            "description": "Damage amount needed to send trigger event.",
+            "baseClass": "DamageTrigger",
+            "default": 1
+        },
+        "triggersOnFail": {
+            "type": "string",
+            "description": "Entity to send trigger event when damage fails to exceed damageThreshold.",
+            "baseClass": "DamageTrigger"
         },
         "isSecret": {
             "type": "boolean",
@@ -323,34 +334,6 @@
             "type": "array",
             "description": "Array of attached Entities.",
             "baseClass": "Entity"
-        }
-    },
-    "definitions": {
-        "TriggerStatus":{
-            "type": "string",
-            "enum": [
-                "WAITING",
-                "TRIGGERED",
-                "RESETTING",
-                "DESTROYED"
-            ]
-        },
-        "TriggerType":{
-            "type": "string",
-            "enum": [
-                "USE",
-                "PLAYER_TOUCHED",
-                "ACTOR_TOUCHED",
-                "ANY_TOUCHED"
-            ]
-        },
-        "GameTime":{
-            "type": "string",
-            "enum": [
-                "WHENEVER",
-                "DESCENT",
-                "ESCAPE"
-            ]
         }
     }
 }
