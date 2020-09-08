@@ -1,12 +1,23 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Trigger",
+    "title": "LevelSwap",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.triggers.Trigger",
+            "const": "com.interrupt.dungeoneer.entities.triggers.LevelSwap",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Trigger"
+            "baseClass": "LevelSwap"
+        },
+        "levelFilename": {
+            "type": "string",
+            "description": "Filename of level to insert when triggered.",
+            "baseClass": "LevelSwap"
+        },
+        "updateLights": {
+            "type": "boolean",
+            "description": "Update lights after level is inserted?",
+            "baseClass": "LevelSwap",
+            "default": true
         },
         "isSecret": {
             "type": "boolean",
@@ -332,34 +343,6 @@
             "type": "array",
             "description": "Array of attached Entities.",
             "baseClass": "Entity"
-        }
-    },
-    "definitions": {
-        "TriggerStatus":{
-            "type": "string",
-            "enum": [
-                "WAITING",
-                "TRIGGERED",
-                "RESETTING",
-                "DESTROYED"
-            ]
-        },
-        "TriggerType":{
-            "type": "string",
-            "enum": [
-                "USE",
-                "PLAYER_TOUCHED",
-                "ACTOR_TOUCHED",
-                "ANY_TOUCHED"
-            ]
-        },
-        "GameTime":{
-            "type": "string",
-            "enum": [
-                "WHENEVER",
-                "DESCENT",
-                "ESCAPE"
-            ]
         }
     }
 }

@@ -1,12 +1,40 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Trigger",
+    "title": "ButtonDecal",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.triggers.Trigger",
+            "const": "com.interrupt.dungeoneer.entities.triggers.ButtonDecal",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Trigger"
+            "baseClass": "ButtonDecal"
+        },
+        "direction": {
+            "$ref": "../../../gdx/Vector3.schema.json",
+            "description": "Decal direction.",
+            "baseClass": "ButtonDecal",
+            "default": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            }
+        },
+        "buttonState": {
+            "type": "integer",
+            "description": "Current button state. Increments each time button is pressed.",
+            "baseClass": "ButtonDecal",
+            "default": 0
+        },
+        "stateCount": {
+            "type": "integer",
+            "description": "Total number of button states.",
+            "baseClass": "ButtonDecal",
+            "default": 2
+        },
+        "buttonTex": {
+            "type": "integer",
+            "description": "Sprite index.",
+            "baseClass": "ButtonDecal",
+            "default": 0
         },
         "isSecret": {
             "type": "boolean",
@@ -332,34 +360,6 @@
             "type": "array",
             "description": "Array of attached Entities.",
             "baseClass": "Entity"
-        }
-    },
-    "definitions": {
-        "TriggerStatus":{
-            "type": "string",
-            "enum": [
-                "WAITING",
-                "TRIGGERED",
-                "RESETTING",
-                "DESTROYED"
-            ]
-        },
-        "TriggerType":{
-            "type": "string",
-            "enum": [
-                "USE",
-                "PLAYER_TOUCHED",
-                "ACTOR_TOUCHED",
-                "ANY_TOUCHED"
-            ]
-        },
-        "GameTime":{
-            "type": "string",
-            "enum": [
-                "WHENEVER",
-                "DESCENT",
-                "ESCAPE"
-            ]
         }
     }
 }

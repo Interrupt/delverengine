@@ -1,104 +1,128 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Trigger",
+    "title": "ButtonModel",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.triggers.Trigger",
+            "const": "com.interrupt.dungeoneer.entities.triggers.ButtonModel",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Trigger"
-        },
-        "isSecret": {
-            "type": "boolean",
-            "description": "Does this count as a secret?",
-            "baseClass": "Trigger",
-            "default": false
-        },
-        "triggerType": {
-            "$ref": "Trigger.schema.json#/definitions/TriggerType",
-            "description": "Kind of acton that activates trigger.",
-            "baseClass": "Trigger",
-            "default": "USE"
+            "baseClass": "ButtonModel"
         },
         "triggersId": {
             "type": "string",
             "description": "Entity to send trigger event when triggered.",
-            "baseClass": "Trigger"
+            "baseClass": "ButtonModel"
         },
         "triggerResets": {
             "type": "boolean",
             "description": "Reset after being triggered?",
-            "baseClass": "Trigger",
+            "baseClass": "ButtonModel",
             "default": true
-        },
-        "onlyTriggerById": {
-            "type": "string",
-            "description": "Only allow trigger events from Entities with specified id.",
-            "baseClass": "Trigger"
         },
         "triggerDelay": {
             "type": "number",
             "description": "Time to wait before performing trigger action after receiving trigger event.",
-            "baseClass": "Trigger",
+            "baseClass": "ButtonModel",
             "default": 0
         },
         "triggerResetTime": {
             "type": "number",
             "description": "Time to wait to reset after performing trigger action.",
-            "baseClass": "Trigger",
-            "default": 0
+            "baseClass": "ButtonModel",
+            "default": 20
         },
         "triggerValue": {
             "type": "string",
             "description": "Trigger event value.",
-            "baseClass": "Trigger"
+            "baseClass": "ButtonModel"
         },
         "triggerPropogates": {
             "type": "string",
             "description": "Pass trigger event value to targeted trigger?",
-            "baseClass": "Trigger",
+            "baseClass": "ButtonModel",
             "default": true
         },
         "useVerb": {
             "type": "string",
             "description": "Text to show for interaction prompt.",
-            "baseClass": "Trigger",
+            "baseClass": "ButtonModel",
             "default": "entities.Trigger.defaultUseVerb"
         },
         "message": {
             "type": "string",
             "description": "Message to display when triggered.",
-            "baseClass": "Trigger",
+            "baseClass": "ButtonModel",
             "default": ""
         },
         "messageTime": {
             "type": "number",
             "description": "Duration to display message in seconds.",
-            "baseClass": "Trigger",
+            "baseClass": "ButtonModel",
             "default": 5
         },
         "messageSize": {
             "type": "number",
             "description": "Size of displayed message.",
-            "baseClass": "Trigger",
+            "baseClass": "ButtonModel",
             "default": 1
         },
         "triggerSound": {
             "type": "string",
             "description": "Filepath of sound to play when triggered.",
-            "baseClass": "Trigger"
+            "baseClass": "ButtonModel"
         },
-        "triggersDuring": {
-            "$ref": "Trigger.schema.json#/definitions/GameTime",
-            "description": "Which phase of the game to permit triggering.",
-            "baseClass": "Trigger",
-            "default": "WHENEVER"
+        "triggeredTransformation": {
+            "$ref": "../../../gdx/Vector3.schema.json",
+            "description": "Triggered animation position component.",
+            "baseClass": "ButtonModel",
+            "default": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -0.05
+            }
         },
-        "appearsDuringEndgame": {
+        "triggeredRotation": {
+            "$ref": "../../../gdx/Vector3.schema.json",
+            "description": "Triggered animation rotation component.",
+            "baseClass": "ButtonModel",
+            "default": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 20.0
+            }
+        },
+        "triggerAnimationTime": {
+            "type": "number",
+            "description": "Triggered animation time.",
+            "baseClass": "ButtonModel",
+            "default": 20.0
+        },
+        "meshFile": {
+            "type": "string",
+            "description": "Path to mesh file of Model.",
+            "baseClass": "Model"
+        },
+        "textureFile": {
+            "type": "string",
+            "description": "Path to texture file for Model.",
+            "baseClass": "Model"
+        },
+        "receiveDecals": {
             "type": "boolean",
-            "description": "Does this appear during end game?",
-            "baseClass": "Trigger",
+            "description": "Can decals project onto this Entity?",
+            "baseClass": "Model",
             "default": true
+        },
+        "bakeLighting": {
+            "type": "boolean",
+            "description": "Should lighting for this Model be baked?",
+            "baseClass": "Model",
+            "default": false
+        },
+        "rotation": {
+            "$ref": "../../../gdx/Vector3.schema.json",
+            "description": "Entity rotation.",
+            "baseClass": "DirectionalEntity"
         },
         "id": {
             "type": "string",
@@ -331,35 +355,10 @@
         "attached": {
             "type": "array",
             "description": "Array of attached Entities.",
-            "baseClass": "Entity"
-        }
-    },
-    "definitions": {
-        "TriggerStatus":{
-            "type": "string",
-            "enum": [
-                "WAITING",
-                "TRIGGERED",
-                "RESETTING",
-                "DESTROYED"
-            ]
-        },
-        "TriggerType":{
-            "type": "string",
-            "enum": [
-                "USE",
-                "PLAYER_TOUCHED",
-                "ACTOR_TOUCHED",
-                "ANY_TOUCHED"
-            ]
-        },
-        "GameTime":{
-            "type": "string",
-            "enum": [
-                "WHENEVER",
-                "DESCENT",
-                "ESCAPE"
-            ]
+            "baseClass": "Entity",
+            "items": {
+                "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike"
+            }
         }
     }
 }

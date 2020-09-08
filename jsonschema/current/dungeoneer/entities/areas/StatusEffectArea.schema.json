@@ -1,104 +1,36 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Trigger",
+    "title": "StatusEffectArea",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.triggers.Trigger",
+            "const": "com.interrupt.dungeoneer.entities.areas.StatusEffectArea",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Trigger"
+            "baseClass": "StatusEffectArea"
         },
-        "isSecret": {
+        "effectType": {
+            "$ref": "../../statuseffects/StatusEffect.schema.json#/definitions/StatusEffectType",
+            "description": "Status effect type.",
+            "baseClass": "StatusEffectArea",
+            "default": "POISON"
+        },
+        "showParticleEffect": {
             "type": "boolean",
-            "description": "Does this count as a secret?",
-            "baseClass": "Trigger",
+            "description": "Show particle effect?",
+            "baseClass": "StatusEffectArea",
+            "default": true
+        },
+        "statusEffectTime": {
+            "type": "number",
+            "description": "Status effect duration.",
+            "baseClass": "Entity",
+            "default": 20.0
+        },
+        "stopOnExit": {
+            "type": "boolean",
+            "description": "Does effect stop when exiting the area?",
+            "baseClass": "StatusEffectArea",
             "default": false
-        },
-        "triggerType": {
-            "$ref": "Trigger.schema.json#/definitions/TriggerType",
-            "description": "Kind of acton that activates trigger.",
-            "baseClass": "Trigger",
-            "default": "USE"
-        },
-        "triggersId": {
-            "type": "string",
-            "description": "Entity to send trigger event when triggered.",
-            "baseClass": "Trigger"
-        },
-        "triggerResets": {
-            "type": "boolean",
-            "description": "Reset after being triggered?",
-            "baseClass": "Trigger",
-            "default": true
-        },
-        "onlyTriggerById": {
-            "type": "string",
-            "description": "Only allow trigger events from Entities with specified id.",
-            "baseClass": "Trigger"
-        },
-        "triggerDelay": {
-            "type": "number",
-            "description": "Time to wait before performing trigger action after receiving trigger event.",
-            "baseClass": "Trigger",
-            "default": 0
-        },
-        "triggerResetTime": {
-            "type": "number",
-            "description": "Time to wait to reset after performing trigger action.",
-            "baseClass": "Trigger",
-            "default": 0
-        },
-        "triggerValue": {
-            "type": "string",
-            "description": "Trigger event value.",
-            "baseClass": "Trigger"
-        },
-        "triggerPropogates": {
-            "type": "string",
-            "description": "Pass trigger event value to targeted trigger?",
-            "baseClass": "Trigger",
-            "default": true
-        },
-        "useVerb": {
-            "type": "string",
-            "description": "Text to show for interaction prompt.",
-            "baseClass": "Trigger",
-            "default": "entities.Trigger.defaultUseVerb"
-        },
-        "message": {
-            "type": "string",
-            "description": "Message to display when triggered.",
-            "baseClass": "Trigger",
-            "default": ""
-        },
-        "messageTime": {
-            "type": "number",
-            "description": "Duration to display message in seconds.",
-            "baseClass": "Trigger",
-            "default": 5
-        },
-        "messageSize": {
-            "type": "number",
-            "description": "Size of displayed message.",
-            "baseClass": "Trigger",
-            "default": 1
-        },
-        "triggerSound": {
-            "type": "string",
-            "description": "Filepath of sound to play when triggered.",
-            "baseClass": "Trigger"
-        },
-        "triggersDuring": {
-            "$ref": "Trigger.schema.json#/definitions/GameTime",
-            "description": "Which phase of the game to permit triggering.",
-            "baseClass": "Trigger",
-            "default": "WHENEVER"
-        },
-        "appearsDuringEndgame": {
-            "type": "boolean",
-            "description": "Does this appear during end game?",
-            "baseClass": "Trigger",
-            "default": true
         },
         "id": {
             "type": "string",
@@ -331,35 +263,10 @@
         "attached": {
             "type": "array",
             "description": "Array of attached Entities.",
-            "baseClass": "Entity"
-        }
-    },
-    "definitions": {
-        "TriggerStatus":{
-            "type": "string",
-            "enum": [
-                "WAITING",
-                "TRIGGERED",
-                "RESETTING",
-                "DESTROYED"
-            ]
-        },
-        "TriggerType":{
-            "type": "string",
-            "enum": [
-                "USE",
-                "PLAYER_TOUCHED",
-                "ACTOR_TOUCHED",
-                "ANY_TOUCHED"
-            ]
-        },
-        "GameTime":{
-            "type": "string",
-            "enum": [
-                "WHENEVER",
-                "DESCENT",
-                "ESCAPE"
-            ]
+            "baseClass": "Entity",
+            "items": {
+                "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike"
+            }
         }
     }
 }

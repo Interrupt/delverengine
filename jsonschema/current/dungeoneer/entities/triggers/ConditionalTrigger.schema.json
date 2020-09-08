@@ -1,12 +1,35 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "Trigger",
+    "title": "ConditionalTrigger",
     "type": "object",
     "properties": {
         "class": {
-            "const": "com.interrupt.dungeoneer.entities.triggers.Trigger",
+            "const": "com.interrupt.dungeoneer.entities.triggers.ConditionalTrigger",
             "description": "Fully-qualified Java class name.",
-            "baseClass": "Trigger"
+            "baseClass": "ConditionalTrigger"
+        },
+        "compareType": {
+            "$ref": "ConditionalTrigger.schema.json#/definitions/CompareType",
+            "description": "Type of comparison to perform.",
+            "baseClass": "ConditionalTrigger",
+            "default": "EQUAL"
+        },
+        "testValue": {
+            "type": "string",
+            "description": "Value to compare against.",
+            "baseClass": "ConditionalTrigger",
+            "default": ""
+        },
+        "incrementWhenTriggered": {
+            "type": "boolean",
+            "description": "Treat triggerValue as an integer and increment each time triggered.",
+            "baseClass": "ConditionalTrigger",
+            "default": false
+        },
+        "triggersOnFail": {
+            "type": "string",
+            "description": "Entity to send trigger event when comparison fails.",
+            "baseClass": "ConditionalTrigger"
         },
         "isSecret": {
             "type": "boolean",
@@ -335,30 +358,15 @@
         }
     },
     "definitions": {
-        "TriggerStatus":{
+        "CompareType":{
             "type": "string",
             "enum": [
-                "WAITING",
-                "TRIGGERED",
-                "RESETTING",
-                "DESTROYED"
-            ]
-        },
-        "TriggerType":{
-            "type": "string",
-            "enum": [
-                "USE",
-                "PLAYER_TOUCHED",
-                "ACTOR_TOUCHED",
-                "ANY_TOUCHED"
-            ]
-        },
-        "GameTime":{
-            "type": "string",
-            "enum": [
-                "WHENEVER",
-                "DESCENT",
-                "ESCAPE"
+                "EQUAL",
+                "NOT_EQUAL",
+                "GREATER",
+                "LESS",
+                "GREATER_EQUAL",
+                "LESS_EQUAL"
             ]
         }
     }

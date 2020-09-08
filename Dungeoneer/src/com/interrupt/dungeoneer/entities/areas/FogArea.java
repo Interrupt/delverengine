@@ -7,23 +7,27 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 
 public class FogArea extends Area {
     public FogArea() { hidden = true; spriteAtlas = "editor"; tex = 11; isStatic = false; isDynamic = true; }
 
+    /** Fog color. */
     @EditorProperty
     public Color fogColor = new Color();
 
+    /** Distance at which fog effect starts. */
     @EditorProperty
     public float fogStart = 1;
 
+    /** Distance at which fog effect is full strength. */
     @EditorProperty
     public float fogEnd = 4;
 
+    /** Camera far draw distance. */
     @EditorProperty
     public float viewDistance = 20;
 
+    /** Time to fade in fog effect. */
     @EditorProperty
     public float changeTime = 300;
 

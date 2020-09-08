@@ -28,15 +28,16 @@ import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
-import com.interrupt.dungeoneer.input.Actions;
-import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.GamepadManager;
 import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
-import com.interrupt.managers.*;
+import com.interrupt.managers.EntityManager;
+import com.interrupt.managers.ItemManager;
+import com.interrupt.managers.MonsterManager;
+import com.interrupt.managers.StringManager;
 import com.interrupt.utils.Logger;
 import com.interrupt.utils.OSUtils;
 
@@ -1252,6 +1253,7 @@ public class Game {
 					swap.x = dragging.x;
 					swap.y = dragging.y;
 					swap.z = dragging.z;
+					swap.physicsSleeping = false;
 					swap.isActive = true;
 					Game.instance.level.entities.add(swap);
 				}
