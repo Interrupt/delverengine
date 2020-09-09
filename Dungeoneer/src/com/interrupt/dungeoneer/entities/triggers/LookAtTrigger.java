@@ -9,16 +9,17 @@ import com.interrupt.dungeoneer.game.Level;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 
 public class LookAtTrigger extends BasicTrigger {
-
+    /** How long must player looked at until trigger event fires. */
 	@EditorProperty
 	public float lookTime = 10;
 
+	/** Maximum distance player can be from trigger and cause event to fire. */
 	@EditorProperty
 	public float lookDistanceThreshold = 6;
 
 	float hasLookedAtTime = 0f;
 
-	private transient Vector3 t_checkDistance = new Vector3();
+	private final transient Vector3 t_checkDistance = new Vector3();
 
 	public LookAtTrigger() { hidden = true; spriteAtlas = "editor"; tex = 11; }
 	
