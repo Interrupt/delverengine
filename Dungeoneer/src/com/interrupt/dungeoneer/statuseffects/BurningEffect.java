@@ -39,10 +39,7 @@ public class BurningEffect extends StatusEffect {
 
 		// put out the fire, if this is water
 		if(owner.inwater) {
-			float offset = 0;
-			if(owner instanceof Player) offset = 0.5f;
-
-			Tile waterTile = Game.instance.level.findWaterTile(owner.x + offset, owner.y + offset, owner.z, owner.collision);
+			Tile waterTile = Game.instance.level.findWaterTile(owner.x, owner.y, owner.z, owner.collision);
 			if(waterTile != null && waterTile.data != null && (waterTile.data.hurts <= 0 || waterTile.data.damageType != DamageType.FIRE)) {
 				active = false;
 			}
@@ -55,11 +52,9 @@ public class BurningEffect extends StatusEffect {
 		}
 
 		for(int i = 0; i < 8; i++) {
-			float positionOffset = 0f;
 			float spreadMod = 1f;
 
 			if (owner instanceof Player) {
-				positionOffset = 0.5f;
 				spreadMod = 2.75f;
 			}
 
@@ -73,8 +68,8 @@ public class BurningEffect extends StatusEffect {
 			p.fullbrite = true;
 			p.checkCollision = false;
 			p.floating = true;
-			p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod + positionOffset;
-			p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod + positionOffset;
+			p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+			p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
 			p.z = owner.z + (Game.rand.nextFloat() * owner.collision.z) - 0.5f;
 			p.playAnimation(64, 69, 40f);
 
