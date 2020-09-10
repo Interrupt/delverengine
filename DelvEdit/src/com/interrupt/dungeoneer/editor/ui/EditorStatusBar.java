@@ -24,7 +24,13 @@ public class EditorStatusBar extends Group {
         table.setHeight(30);
 
         //table.setDebug(true, true);
-        infoIcon = new Image(skin, "statusbar-info-icon");
+        try {
+            infoIcon = new Image(skin, "statusbar-info-icon");
+        }
+        catch (Exception e) {
+            infoIcon = new Image();
+        }
+
         infoIcon.setVisible(false);
 
         // Info box
@@ -91,7 +97,11 @@ public class EditorStatusBar extends Group {
         info.setText(message);
         info.setVisible(true);
 
-        infoIcon.setDrawable(skin.getDrawable(drawableName));
+        try {
+            infoIcon.setDrawable(skin.getDrawable(drawableName));
+        }
+        catch (Exception ignored) { }
+
         infoIcon.setVisible(true);
     }
 }
