@@ -14,26 +14,15 @@ public class EditorStatusBar extends Group {
     Label info;
     Image infoIcon;
     float infoTime = 0;
+    Label location;
+
+    private final Skin skin;
 
     public EditorStatusBar() {
-        final Skin skin = EditorUi.getSmallSkin();
+        skin = EditorUi.getSmallSkin();
         table = new Table(skin);
-        table.setBackground("menu_default_normal");
-        table.align(Align.left);
-        table.setWidth(Gdx.graphics.getWidth());
-        table.setHeight(30);
-
         //table.setDebug(true, true);
-        try {
-            infoIcon = new Image(skin, "statusbar-info-icon");
-        }
-        catch (Exception e) {
-            infoIcon = new Image();
-        }
 
-        infoIcon.setVisible(false);
-
-        // Info box
         info = new Label("", skin) {
             @Override
             public void act(float delta) {
@@ -49,11 +38,14 @@ public class EditorStatusBar extends Group {
             }
         };
 
-        table.add(infoIcon);
-        table.add(info).align(Align.left).expand();
+        try {
+            infoIcon = new Image(skin, "statusbar-info-icon");
+        }
+        catch (Exception e) {
+            infoIcon = new Image();
+        }
 
-        // Cursor location
-        table.add(new Label("0, 0", skin) {
+        location = new Label("0, 0", skin) {
             @Override
             public void act(float delta) {
                 super.act(delta);
@@ -73,9 +65,25 @@ public class EditorStatusBar extends Group {
                 }
                 this.setText(String.format("X  %.3f,  Y %.3f,  Z %.3f", x, y, z));
             }
-        });
+        };
+
+        infoIcon.setVisible(false);
+        table.add(infoIcon);
+        table.add(info).align(Align.left).expand();
+        table.add(location);
 
         addActor(table);
+    }
+
+    public void refresh() {
+        refreshDrawables();
+    }
+
+    protected void refreshDrawables() {
+        table.setBackground("menu_default_normal");
+        table.align(Align.left);
+        table.setWidth(Gdx.graphics.getWidth());
+        table.setHeight(30);
     }
 
     public void showInfo(String message) {

@@ -440,6 +440,7 @@ public class EditorUi {
         });
 
         statusBar = new EditorStatusBar();
+        statusBar.refresh();
         Table statusBarContainer = new Table();
         statusBarContainer.add(statusBar).align(Align.bottomLeft).fill();
         stage.addActor(statusBarContainer);
@@ -516,15 +517,18 @@ public class EditorUi {
         viewport.update((int)width, (int)height, true);
 
         menuBar.refresh();
+        statusBar.refresh();
 
         mainTable.pack();
 
         if(entityPropertiesPane != null && propertiesMenu != null) {
             boolean fillsStage = propertiesSize.y > stage.getHeight() - menuBar.getHeight();
 
-            entityPropertiesPane.setSize(propertiesSize.x + (fillsStage ? 60f : 30f), propertiesSize.y);
+            float availableHeight = stage.getHeight() - menuBar.getHeight() - 30;
 
-            sidebarTable.setSize(entityPropertiesPane.getWidth(), Gdx.graphics.getHeight() - menuBar.getHeight() - 30);
+            entityPropertiesPane.setSize(propertiesSize.x + (fillsStage ? 60f : 30f), availableHeight);
+
+            sidebarTable.setSize(entityPropertiesPane.getWidth(), entityPropertiesPane.getHeight());
             sidebarTable.setX(stage.getWidth() - sidebarTable.getWidth());
             sidebarTable.setY(30f);
 
