@@ -1560,14 +1560,20 @@ public class EditorApplication implements ApplicationListener {
 		renderer.Tesselate(level);
 		renderer.renderWorld(level);
 
-		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
+		// Pull the vertices a bit closer to the camera this time around, to stop z-fighting with the depth of
+		// previously drawn objects.
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
+		Gdx.gl.glPolygonOffset(-0.15f, 1);
 
 		// LEQUAL
 		Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
 
 		renderer.renderEntitiesForPicking(level);
 		pickerFrameBuffer.end();
+
+		// Put things back to normal
+		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 	}
 
 	private void refreshTriangleSpatialHash() {
