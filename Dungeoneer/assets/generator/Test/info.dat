@@ -26,81 +26,49 @@
 	genInfos: [
 		{
 			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "rocks on grey",
-			floorTex: 2,
-			textureAtlas: "t1",
+			comment: "rocks on light rock",
+			floorTex: 0,
+			textureAtlas: "tech_outdoor",
 			chance: 0.10,
 			clusterCount: 2,
 			clusterSpread: 0.4,
 			performanceControlledClustering: true,
 			spawns: [{
 				class:com.interrupt.dungeoneer.entities.Sprite,
-				tex: 0,
-				spriteAtlas: "sprites",
+				tex: 4,
+				spriteAtlas: "tech_sprites",
 				isDynamic: false
 			}]
 		},
 		{
 			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "grass on grey",
-			floorTex: 2,
-			textureAtlas: "t1",
+			comment: "grass on light rock",
+			floorTex: 0,
+			textureAtlas: "tech_outdoor",
 			chance: 0.08,
 			clusterCount: 3,
 			clusterSpread: 0.4,
 			performanceControlledClustering: true,
 			spawns: [{
 				class:com.interrupt.dungeoneer.entities.Foliage,
-				tex: 1,
-				spriteAtlas: "sprites",
+				tex: 5,
+				spriteAtlas: "tech_sprites",
 				isDynamic: false
 			}]
 		},
 		{
-            class:com.interrupt.dungeoneer.generator.GenInfo,
-            comment: "grass on green",
-            floorTex: 17,
-            textureAtlas: "t1",
-            chance: 0.35,
-            clusterCount: 2,
-            clusterSpread: 0.4,
-            performanceControlledClustering: true,
-            spawns: [{
-                class:com.interrupt.dungeoneer.entities.Foliage,
-                tex: 1,
-                spriteAtlas: "sprites",
-                isDynamic: false
-            }]
-        },
-		{
 			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "rocks on orange",
-			floorTex: 10,
-			textureAtlas: "t1",
+			comment: "rocks on dark rock",
+			floorTex: 0,
+			textureAtlas: "tech_outdoor_dark",
 			chance: 0.25,
 			clusterCount: 4,
 			clusterSpread: 0.4,
 			performanceControlledClustering: true,
 			spawns: [{
 				class:com.interrupt.dungeoneer.entities.Sprite,
-				tex: 0,
-				spriteAtlas: "sprites",
-				isDynamic: false
-			}]
-		},
-		{
-			class:com.interrupt.dungeoneer.generator.GenInfo,
-			comment: "grass on orange",
-			floorTex: 10,
-			textureAtlas: "t1",
-			chance: 0.025,
-			clusterCount: 3,
-			clusterSpread: 0.4,
-			performanceControlledClustering: true,
-			spawns: [{
-				class:com.interrupt.dungeoneer.entities.Foliage,
-				tex: 1,
-				spriteAtlas: "sprites",
+				tex: 4,
+				spriteAtlas: "tech_sprites",
 				isDynamic: false
 			}]
 		}
