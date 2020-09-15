@@ -238,7 +238,7 @@
             "Floor Lamp":{
                 "class":"com.interrupt.dungeoneer.entities.Prefab",
                 "name":"Floor Lamp On,Floor Lamp On,Floor Lamp On,Floor Lamp On,Floor Lamp Off",
-                "category":"Example Meshes"
+                "category":"Examples/Tech"
             },
             "Floor Lamp On":{
                 "class":"com.interrupt.dungeoneer.entities.Group",
@@ -246,12 +246,17 @@
                     {
                         "class":"com.interrupt.dungeoneer.entities.Light",
                         "isDynamic":false,
+                        "x": 0,
+                        "y": 0,
+                        "z": 0.189,
                         "lightColor":{
                             "a":1,
                             "b":0.98,
                             "g":1,
                             "r":0.75
-                        }
+                        },
+                        "animateHalo": false,
+                        "haloMode": "CORONA_ONLY"
                     },
                     {
                         "class":"com.interrupt.dungeoneer.entities.Sprite",
@@ -344,7 +349,7 @@
             "Greeble 0":{
                 "class":"com.interrupt.dungeoneer.entities.Prefab",
                 "name":"Greeble 0A,Greeble 0B",
-                "category":"Example Meshes"
+                "category":"Examples/Tech"
             },
             "Greeble 0A":{
                 "class":"com.interrupt.dungeoneer.entities.Model",
@@ -363,12 +368,12 @@
                 "entities":[
                     {
                         "class":"com.interrupt.dungeoneer.entities.Prefab",
-                        "category":"Example Meshes",
+                        "category":"Examples/Tech",
                         "name":"Greeble 0A"
                     },
                     {
                         "class":"com.interrupt.dungeoneer.entities.Prefab",
-                        "category":"Example Meshes",
+                        "category":"Examples/Tech",
                         "y":0.12607098,
                         "z":0.1546365,
                         "name":"Greeble 2"
@@ -378,7 +383,7 @@
             "Greeble 1":{
                 "class":"com.interrupt.dungeoneer.entities.Prefab",
                 "name":"Greeble 1A,Greeble 1B,Greeble 1C",
-                "category":"Example Meshes"
+                "category":"Examples/Tech"
             },
             "Greeble 1A":{
                 "class":"com.interrupt.dungeoneer.entities.Model",
@@ -425,7 +430,7 @@
                 "entities":[
                     {
                         "class":"com.interrupt.dungeoneer.entities.Prefab",
-                        "category":"Example Meshes",
+                        "category":"Examples/Tech",
                         "name":"Greeble 1B"
                     },
                     {
@@ -459,7 +464,7 @@
             "Greeble 3":{
                 "class":"com.interrupt.dungeoneer.entities.Prefab",
                 "name":"Greeble 3A,Greeble 3B,Greeble 3C",
-                "category":"Example Meshes"
+                "category":"Examples/Tech"
             },
             "Greeble 3A":{
                 "class":"com.interrupt.dungeoneer.entities.Model",
@@ -478,12 +483,12 @@
                 "entities":[
                     {
                         "class":"com.interrupt.dungeoneer.entities.Prefab",
-                        "category":"Example Meshes",
+                        "category":"Examples/Tech",
                         "name":"Greeble 3A"
                     },
                     {
                         "class":"com.interrupt.dungeoneer.entities.Prefab",
-                        "category":"Example Meshes",
+                        "category":"Examples/Tech",
                         "x":-0.12641716,
                         "y":0.12607098,
                         "z":0.1233865,
@@ -496,12 +501,12 @@
                 "entities":[
                     {
                         "class":"com.interrupt.dungeoneer.entities.Prefab",
-                        "category":"Example Meshes",
+                        "category":"Examples/Tech",
                         "name":"Greeble 3A"
                     },
                     {
                         "class":"com.interrupt.dungeoneer.entities.Prefab",
-                        "category":"Example Meshes",
+                        "category":"Examples/Tech",
                         "x":0.12641716,
                         "y":0.12607098,
                         "z":0.1233865,

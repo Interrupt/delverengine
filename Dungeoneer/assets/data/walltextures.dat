@@ -19,6 +19,13 @@
         "name": "tech"
     },
     {
+        "columns": 4,
+        "filename": "textures/tech/example_animated_tiles.png",
+        "scale":1,
+        "name": "tech_animated",
+        "shader": "animate"
+    },
+    {
         "columns": 1,
         "filename": "textures/tech/outdoor.png",
         "scale":16,

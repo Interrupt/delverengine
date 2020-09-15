@@ -20,6 +20,7 @@ void main() {
   color = v_color * tex_Color;
   if(tex_Color.a < 0.01) discard;
 
+  // Pack emissive into the alpha channel
   color += tex_Color * (1.0 - tex_Color.a) * 2.5;
 
   gl_FragColor = mix(u_FogColor, color, v_fogFactor);

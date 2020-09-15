@@ -38,8 +38,19 @@ void main() {
   gl_Position = u_projectionViewMatrix * a_position;
   v_color = a_color + u_AmbientColor;
 
+  // Find out where in the sheet we are, and make a flipbook offset
+  float texIndex = floor(mod(v_texCoords.x, 1.0) / u_tex_width);
+  float indexOffset = mod(texIndex, float(u_sprite_columns));
+  float animOffset = mod(floor(u_time * c_animateSpeed), float(u_sprite_columns));
+
   // Flip through the atlas on this row
-  v_texCoords.x += mod(floor(u_time * c_animateSpeed), float(u_sprite_columns)) * u_tex_width;
+  v_texCoords.x += animOffset * u_tex_width;
+
+  // If we overrun our row, back up
+  if(animOffset + indexOffset >= u_sprite_columns)
+  {
+    v_texCoords.x -= u_tex_width * float(u_sprite_columns);
+  }
 
   if(u_UsedLights != 0) {
     for(int i=0; i < {{MAX_DYNAMIC_LIGHTS}}; i++)
