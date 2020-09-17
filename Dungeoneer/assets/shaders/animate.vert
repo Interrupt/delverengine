@@ -47,7 +47,7 @@ void main() {
   v_texCoords.x += animOffset * u_tex_width;
 
   // If we overrun our row, back up
-  if(animOffset + indexOffset >= u_sprite_columns)
+  if(animOffset + indexOffset >= float(u_sprite_columns))
   {
     v_texCoords.x -= u_tex_width * float(u_sprite_columns);
   }
