@@ -178,22 +178,14 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) { // Pan mode enabled (SHIFT_LEFT held)
-            Editor.app.editorInput.ignoreRightClick = true;
-
             float panSpeed = (float) walkSpeed * 0.1f;
 
             Vector3 vMove = camera.up.cpy().scl(Gdx.input.getDeltaY() * panSpeed);
             Vector3 hMove = camera.up.cpy().crs(camera.direction).scl(Gdx.input.getDeltaX() * panSpeed);
 
-            if (!vMove.isZero() || !hMove.isZero()) {
-                if (!Gdx.input.isCursorCatched()) {
-                    Gdx.input.setCursorCatched(true);
-                }
-
-                position.x += vMove.x + hMove.x;
-                position.y += vMove.z + hMove.z;
-                position.z += vMove.y + hMove.y;
-            }
+            position.x += vMove.x + hMove.x;
+            position.y += vMove.z + hMove.z;
+            position.z += vMove.y + hMove.y;
         }
 
         if (animationHelper != null && !animationHelper.isDonePlaying()) {
@@ -223,42 +215,18 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
     }
 
     @Override
-    public boolean touchDown(int x, int y, int pointer, int button) {
-        lastMouseLocation.set(x, y);
-
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int x, int y, int pointer, int button) {
-        lastMouseLocation.set(x, y);
-
-        return false;
-    }
-
-    private final Vector2 lastMouseLocation = new Vector2();
-
-    @Override
     public boolean touchDragged(int x, int y, int pointer) {
         if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            Editor.app.editorInput.ignoreRightClick = true;
+
+            if (!Gdx.input.isCursorCatched()) {
+                Gdx.input.setCursorCatched(true);
+            }
 
             if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) { // Normal rotation, pan mode disabled (SHIFT_LEFT released)
-                float moveX = (lastMouseLocation.x - x);
-                float moveY = (lastMouseLocation.y - y);
-
-                if (moveX >= 1 || moveY >= 1) {
-                    if (!Gdx.input.isCursorCatched()) {
-                        Gdx.input.setCursorCatched(true);
-                    }
-                }
-
-                rotation.x += moveX * 0.005f;
-                rotation.y -= moveY * 0.005f;
+                rotation.x -= Gdx.input.getDeltaX() * 0.005f;
+                rotation.y += Gdx.input.getDeltaY() * 0.005f;
             }
         }
-
-        lastMouseLocation.set(x, y);
 
         return true;
     }
