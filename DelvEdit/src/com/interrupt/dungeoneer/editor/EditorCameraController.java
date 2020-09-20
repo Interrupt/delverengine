@@ -12,25 +12,18 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.helpers.AnimationHelper;
 import com.interrupt.helpers.InterpolationHelper;
 
-/**
- * Subsystem for controlling and positioning the editor camera.
- */
+/** Subsystem for controlling and positioning the editor camera. */
 public class EditorCameraController extends InputAdapter implements EditorSubsystem {
-    final Vector3 position = new Vector3(7.5f, 8f, 6.5f);
-    final Vector2 rotation = new Vector2(3.14159f, 1.4f);
+    final Vector3 position = new Vector3(4, 4, 4);
+    final Vector2 rotation = new Vector2((float) Math.PI / 4, 0.7f);
 
     float orbitDistance = 4.0f;
 
-    double rota = 0;
-    double ya = 0;
-    float yClamp = 1.571f;
-
-    float scrollSpeed = 0.4f;
-    float za = 0f;
+    double yawAcceleration = 0;
+    double pitchAcceleration = 0;
 
     double walkSpeed = 0.15;
-    double rotSpeed = 0.009;
-    double maxRot = 0.8;
+    double rotSpeed = 0.005;
 
     int scrollAmount;
 
@@ -55,9 +48,29 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 
         camera.direction.set(0, 0, 1);
         camera.up.set(0, 1, 0);
-        camera.rotate(rotation.y * 57.2957795f, 1f, 0, 0);
-        camera.rotate((float) (rotation.x + 3.14) * 57.2957795f, 0, 1f, 0);
+        camera.rotate((float) Math.toDegrees(rotation.y), 1f, 0, 0);
+        camera.rotate((float) Math.toDegrees(rotation.x), 0, 1f, 0);
         camera.update();
+    }
+
+    private boolean inRotateMode() {
+        return Gdx.input.isButtonPressed(Input.Buttons.MIDDLE) || (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+    }
+
+    private boolean inOrbitMode() {
+        return Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) && inRotateMode();
+    }
+
+    private boolean inPanMode() {
+        return !Gdx.input.isButtonPressed(Input.Buttons.MIDDLE) && Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+    }
+
+    private boolean canRotateWithArrowKeys() {
+        return !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+    }
+
+    private boolean inFastMode() {
+        return Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
     }
 
     @Override
@@ -65,108 +78,36 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
         PerspectiveCamera camera = Editor.app.camera;
         EditorInput input = Editor.app.editorInput;
 
-        boolean turnLeft = (Gdx.input.getDeltaX() < 0 && Gdx.input.isButtonPressed(Input.Buttons.MIDDLE));
-        boolean turnRight = (Gdx.input.getDeltaX() > 0 && Gdx.input.isButtonPressed(Input.Buttons.MIDDLE));
-        boolean turnUp = (Gdx.input.getDeltaY() > 0 && Gdx.input.isButtonPressed(Input.Buttons.MIDDLE));
-        boolean turnDown = (Gdx.input.getDeltaY() < 0 && Gdx.input.isButtonPressed(Input.Buttons.MIDDLE));
+        if (canRotateWithArrowKeys()) {
+            yawAcceleration += Gdx.input.isKeyPressed(Input.Keys.LEFT) ? rotSpeed : 0;
+            yawAcceleration -= Gdx.input.isKeyPressed(Input.Keys.RIGHT) ? rotSpeed : 0;
 
-        turnLeft |= Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
-        turnRight |= Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
-        turnUp |= Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
-        turnDown |= Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
-
-        if (turnLeft) {
-            rota += rotSpeed;
-            if (rota > maxRot) rota = maxRot;
-        } else if (turnRight) {
-            rota -= rotSpeed;
-            if (rota < -maxRot) rota = -maxRot;
+            pitchAcceleration += Gdx.input.isKeyPressed(Input.Keys.DOWN) ? rotSpeed : 0;
+            pitchAcceleration -= Gdx.input.isKeyPressed(Input.Keys.UP) ? rotSpeed : 0;
         }
 
-        rotation.x += rota;
-        rota *= 0.8;
+        rotation.x += yawAcceleration;
+        yawAcceleration *= 0.8;
 
-        if (turnUp) {
-            ya += rotSpeed * 0.6f;
-            if (ya > maxRot) ya = maxRot;
-        } else if (turnDown) {
-            ya -= rotSpeed * 0.6f;
-            if (ya < -maxRot) ya = -maxRot;
-        }
+        rotation.y += pitchAcceleration;
+        pitchAcceleration *= 0.8;
 
-        rotation.y += ya;
+        rotation.y = (float)Math.min(Math.PI / 2, Math.max(-Math.PI / 2, rotation.y));
 
-        if (rotation.y < -yClamp) rotation.y = -yClamp;
-        if (rotation.y > yClamp) rotation.y = yClamp;
-
-        ya *= 0.8;
-
-        float xm = 0f;
-        float zm = 0f;
-
-        if (input.isKeyPressed(Input.Keys.A)) {
-            xm = -1f;
-        }
-        if (input.isKeyPressed(Input.Keys.D)) {
-            xm = 1f;
-        }
-
-        if (input.isKeyPressed(Input.Keys.W) || scrollAmount < 0) {
-            zm = -1f;
-        }
-        if (input.isKeyPressed(Input.Keys.S) || scrollAmount > 0) {
-            zm = 1f;
-        }
-
-        if (scrollAmount < 0) {
-            za -= scrollSpeed;
-        } else if (scrollAmount > 0) {
-            za += scrollSpeed;
-        }
-
-        zm += za;
-
-        za *= 0.8f;
-
-        if (input.isKeyPressed(Input.Keys.Q) && !input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            position.z -= 0.1f;
-        }
-        if (input.isKeyPressed(Input.Keys.E) && !input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            position.z += 0.1f;
-        }
-
-        if (input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            xm *= 2.0f;
-            zm *= 2.0f;
-        }
-
-        orbitDistance += zm * walkSpeed;
-
-        position.z += (zm * Math.sin(rotation.y)) * walkSpeed;
-        zm *= Math.cos(rotation.y);
-        position.x += (xm * Math.cos(rotation.x) + zm * Math.sin(rotation.x)) * walkSpeed;
-        position.y += (zm * Math.cos(rotation.x) - xm * Math.sin(rotation.x)) * walkSpeed;
-
-        Player player = Editor.app.player;
-        if (player != null) {
-            player.rot = rotation.x;
-            player.yrot = rotation.y;
-
-            player.xa += (xm * Math.cos(rotation.x) + zm * Math.sin(rotation.x)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
-            player.ya += (zm * Math.cos(rotation.x) - xm * Math.sin(rotation.x)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) && (input.isButtonPressed(Input.Buttons.RIGHT) || turnLeft || turnRight || turnUp || turnDown)) {
+        if (animationHelper != null && !animationHelper.isDonePlaying()) { // Animation first, do not allow movement if animating.
+            animationHelper.tickAnimation(Gdx.graphics.getDeltaTime());
+            position.set(animationHelper.getCurrentPosition());
+        } else if (inOrbitMode()) {
             // Calculate the next camera direction vector;
             Vector3 cameraNewDirection = new Vector3(0, 0, 1);
-            cameraNewDirection.rotate(rotation.y * 57.2957795f, 1f, 0, 0);
-            cameraNewDirection.rotate((float) (rotation.x + 3.14) * 57.2957795f, 0, 1f, 0);
+
+            cameraNewDirection.rotate((float) Math.toDegrees(rotation.y), 1f, 0, 0);
+            cameraNewDirection.rotate((float) Math.toDegrees(rotation.x), 0, 1f, 0);
+
             cameraNewDirection.nor();
 
             // Calculate the orbit pivot.
-            if (orbitDistance < 0) {
-                orbitDistance = 3.0f;
-            }
+            orbitDistance = Math.max(3, orbitDistance);
 
             Vector3 pivotPosition = new Vector3(camera.direction).scl(orbitDistance).add(camera.position);
 
@@ -175,27 +116,73 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
             cameraNewDirection.add(pivotPosition);
 
             position.set(cameraNewDirection.x, cameraNewDirection.z, cameraNewDirection.y);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) { // Pan mode enabled (SHIFT_LEFT held)
+        } else if (inPanMode()) {
             float panSpeed = (float) walkSpeed * 0.1f;
 
+            // Compute upward and sideways movement vectors, scale them by scroll amount.
             Vector3 vMove = camera.up.cpy().scl(Gdx.input.getDeltaY() * panSpeed);
             Vector3 hMove = camera.up.cpy().crs(camera.direction).scl(Gdx.input.getDeltaX() * panSpeed);
 
             position.x += vMove.x + hMove.x;
             position.y += vMove.z + hMove.z;
             position.z += vMove.y + hMove.y;
-        }
+        } else {
+            float xMovement = 0f;
+            float zMovement = 0f;
 
-        if (animationHelper != null && !animationHelper.isDonePlaying()) {
-            animationHelper.tickAnimation(Gdx.graphics.getDeltaTime());
-            position.set(animationHelper.getCurrentPosition());
+            if (input.isKeyPressed(Input.Keys.A)) {
+                xMovement += 1f;
+            }
+            if (input.isKeyPressed(Input.Keys.D)) {
+                xMovement -= 1f;
+            }
+
+            if (input.isKeyPressed(Input.Keys.W) || scrollAmount < 0) {
+                zMovement += 1f + -scrollAmount;
+            }
+            if (input.isKeyPressed(Input.Keys.S) || scrollAmount > 0) {
+                zMovement -= 1f + scrollAmount;
+            }
+
+            scrollAmount = 0;
+
+            if (inFastMode()) {
+                xMovement *= 2.0f;
+                zMovement *= 2.0f;
+            } else {
+                if (input.isKeyPressed(Input.Keys.Q)) {
+                    position.z -= 0.1f;
+                }
+                if (input.isKeyPressed(Input.Keys.E)) {
+                    position.z += 0.1f;
+                }
+            }
+
+            position.z -= zMovement * Math.sin(rotation.y) * walkSpeed;
+
+            zMovement *= Math.cos(rotation.y); // Project onto grid plane for lateral movement adjustment.
+
+            position.x += (zMovement * Math.sin(rotation.x) + xMovement * Math.cos(-rotation.x)) * walkSpeed;
+            position.y += (zMovement * Math.cos(rotation.x) + xMovement * Math.sin(-rotation.x)) * walkSpeed;
+
+            orbitDistance -= zMovement * walkSpeed;
+
+            updatePlayer(xMovement, zMovement); // Adjust player rotation and movement.
         }
 
         camera.position.set(position.x, position.z, position.y);
+    }
 
-        scrollAmount = 0;
+    private void updatePlayer(float xMovement, float zMovement) {
+        Player player = Editor.app.player;
+
+        if (player != null) {
+            player.rot = rotation.x;
+            player.yrot = rotation.y;
+
+            player.xa += (xMovement * Math.cos(rotation.x) - zMovement * Math.sin(rotation.x)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
+            player.rota += (zMovement * Math.cos(rotation.x) + xMovement * Math.sin(rotation.x)) * 0.025f * Math.min(player.friction * 1.4f, 1f);
+        }
     }
 
     public Vector3 getPosition() {
@@ -216,16 +203,13 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 
     @Override
     public boolean touchDragged(int x, int y, int pointer) {
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-
+        if (inRotateMode()) { // Normal rotation, pan mode disabled (SHIFT_LEFT released)
             if (!Gdx.input.isCursorCatched()) {
                 Gdx.input.setCursorCatched(true);
             }
 
-            if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) { // Normal rotation, pan mode disabled (SHIFT_LEFT released)
-                rotation.x -= Gdx.input.getDeltaX() * 0.005f;
-                rotation.y += Gdx.input.getDeltaY() * 0.005f;
-            }
+            rotation.x -= Gdx.input.getDeltaX() * rotSpeed;
+            rotation.y += Gdx.input.getDeltaY() * rotSpeed;
         }
 
         return true;
@@ -233,14 +217,12 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 
     @Override
     public boolean scrolled(int amount) {
-        scrollAmount = amount;
+        scrollAmount += amount;
 
         return false;
     }
 
-    /**
-     * Position the camera to view the current selection.
-     */
+    /** Position the camera to view the current selection. */
     public void viewSelected() {
         PerspectiveCamera camera = Editor.app.camera;
         Level level = Editor.app.level;
@@ -251,21 +233,21 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
         Vector3 selectedPosition = new Vector3(level.width / 2f, level.height / 2f, 0);
         orbitDistance = selectedPosition.len();
 
-        // Focus on picked entity
+        // Focus on picked entity.
         if (Editor.selection.picked != null) {
             orbitDistance = Editor.app.getEntityBoundingSphereRadius(Editor.selection.picked) * 1.5f / (float) Math.tan(Math.toRadians(camera.fieldOfView) / 2);
             orbitDistance = Math.max(minDistance, orbitDistance);
             selectedPosition.set(Editor.selection.picked.x, Editor.selection.picked.y, Editor.selection.picked.z);
         }
-        // Focus on tile selection
+        // Focus on tile selection.
         else if (Editor.app.selected) {
             BoundingBox bounds = Editor.selection.tiles.getBounds();
 
             Vector3 size = new Vector3();
             bounds.getDimensions(size);
-            orbitDistance = size.len();
-
             bounds.getCenter(selectedPosition);
+
+            orbitDistance = size.len();
         }
 
         Vector3 cameraOffset = new Vector3(camera.direction.x, camera.direction.z, camera.direction.y).scl(orbitDistance);
@@ -273,9 +255,7 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
         moveTo(finalPosition);
     }
 
-    /**
-     * Smoothly move to given destination.
-     */
+    /** Smoothly move to given destination. */
     public void moveTo(Vector3 destination) {
         animationHelper = new AnimationHelper(
                 position,
