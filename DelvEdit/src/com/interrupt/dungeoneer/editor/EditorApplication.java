@@ -1319,15 +1319,14 @@ public class EditorApplication implements ApplicationListener {
 						Editor.selection.picked.z = dragStart.z;
 					}
 					if(dragMode == DragMode.Y) {
-						Editor.selection.picked.z = dragStart.z;
-						Editor.selection.picked.y = dragStart.y;
+                        Editor.selection.picked.x = dragStart.x;
 					}
 					else if(dragMode == DragMode.Z) {
 						Editor.selection.picked.x = dragStart.x;
 						Editor.selection.picked.y = dragStart.y;
 					}
 					else if(dragMode == DragMode.X) {
-						Editor.selection.picked.x = dragStart.x;
+                        Editor.selection.picked.y = dragStart.y;
 					}
 
 					if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
@@ -1400,23 +1399,23 @@ public class EditorApplication implements ApplicationListener {
 						this.drawLine(startLine, endLine, 2, EditorColors.Z_AXIS);
 					}
 					else if(dragMode == DragMode.X) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y - 10f);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
 						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 					}
 					else if(dragMode == DragMode.Y) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y -10f);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
 						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 					else if(dragMode == DragMode.XY || (!movingEntity && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))) {
 						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y - 10f);
 						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
-						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
+						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 
 						startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
 						endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
+						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 					}
 				}
 			}
@@ -1462,8 +1461,8 @@ public class EditorApplication implements ApplicationListener {
 
 		if(player == null) {
 			lineRenderer.begin(ShapeType.Line);
-			drawLine(xGridStart, xGridEnd, 2f, EditorColors.Y_AXIS_DARK);
-			drawLine(yGridStart, yGridEnd, 2f, EditorColors.X_AXIS_DARK);
+			drawLine(xGridStart, xGridEnd, 2f, EditorColors.X_AXIS_DARK);
+			drawLine(yGridStart, yGridEnd, 2f, EditorColors.Y_AXIS_DARK);
 			lineRenderer.end();
 		}
 
@@ -2478,7 +2477,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
+	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
 		float tau = (float)Math.PI * 2;
@@ -2496,7 +2495,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
+	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
 		float tau = (float)Math.PI * 2;
