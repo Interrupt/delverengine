@@ -98,16 +98,14 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
             animationHelper.tickAnimation(Gdx.graphics.getDeltaTime());
             position.set(animationHelper.getCurrentPosition());
         } else if (inOrbitMode()) {
-            // Calculate the next camera direction vector;
+            // Calculate the next camera direction vector.
             Vector3 cameraNewDirection = new Vector3(0, 0, 1);
 
             cameraNewDirection.rotate((float) Math.toDegrees(rotation.y), 1f, 0, 0);
             cameraNewDirection.rotate((float) Math.toDegrees(rotation.x), 0, 1f, 0);
 
-            cameraNewDirection.nor();
-
             // Calculate the orbit pivot.
-            orbitDistance = Math.max(3, orbitDistance);
+            orbitDistance = Math.max(0, orbitDistance);
 
             Vector3 pivotPosition = new Vector3(camera.direction).scl(orbitDistance).add(camera.position);
 
@@ -158,14 +156,14 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
                 }
             }
 
+            orbitDistance -= zMovement * walkSpeed;
+
             position.z -= zMovement * Math.sin(rotation.y) * walkSpeed;
 
             zMovement *= Math.cos(rotation.y); // Project onto grid plane for lateral movement adjustment.
 
             position.x += (zMovement * Math.sin(rotation.x) + xMovement * Math.cos(-rotation.x)) * walkSpeed;
             position.y += (zMovement * Math.cos(rotation.x) + xMovement * Math.sin(-rotation.x)) * walkSpeed;
-
-            orbitDistance -= zMovement * walkSpeed;
 
             updatePlayer(xMovement, zMovement); // Adjust player rotation and movement.
         }
@@ -247,7 +245,7 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
             bounds.getDimensions(size);
             bounds.getCenter(selectedPosition);
 
-            orbitDistance = size.len();
+            orbitDistance = size.len() * 2;
         }
 
         Vector3 cameraOffset = new Vector3(camera.direction.x, camera.direction.z, camera.direction.y).scl(orbitDistance);
