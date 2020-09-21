@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -824,17 +823,11 @@ public class EditorApplication implements ApplicationListener {
 
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
-		if(Editor.selection.picked instanceof ProjectedDecal) {
-			renderProjection(((ProjectedDecal) Editor.selection.picked).perspective);
-		}
-		else if(Editor.selection.picked instanceof Mover) {
+		if(Editor.selection.picked instanceof Mover) {
 			renderMoverVizualization((Mover) Editor.selection.picked);
 		}
 		for(Entity selectedEntity : Editor.selection.selected) {
-			if(selectedEntity instanceof ProjectedDecal) {
-				renderProjection(((ProjectedDecal)selectedEntity).perspective);
-			}
-			else if(selectedEntity instanceof Mover) {
+			if(selectedEntity instanceof Mover) {
 				renderMoverVizualization((Mover)selectedEntity);
 			}
 		}
@@ -1587,6 +1580,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 		else if(theEntity instanceof ProjectedDecal) {
 			((ProjectedDecal)theEntity).refresh();
+			((ProjectedDecal)theEntity).updateDrawable();
 		}
 		else if(theEntity instanceof Model) {
 			Model m = (Model)theEntity;
@@ -1674,36 +1668,6 @@ public class EditorApplication implements ApplicationListener {
 		lineRenderer.line(e.x - e.collision.x, zStart, e.y - e.collision.y, e.x - e.collision.x, zEnd, e.y - e.collision.y);
 		lineRenderer.line(e.x + e.collision.x, zStart, e.y + e.collision.y, e.x + e.collision.x, zEnd, e.y + e.collision.y);
 		lineRenderer.line(e.x + e.collision.x, zStart, e.y - e.collision.y, e.x + e.collision.x, zEnd, e.y - e.collision.y);
-	}
-
-	public void renderProjection(Camera perspective) {
-		if(perspective == null) return;
-
-		for(int i = 0; i < 4; i++) {
-			Vector3 startPoint = perspective.frustum.planePoints[i];
-			Vector3 endPoint = i != 3 ? perspective.frustum.planePoints[i + 1] : perspective.frustum.planePoints[0];
-
-			lineRenderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
-		}
-
-		for(int i = 0; i < 4; i++) {
-			Vector3 startPoint = perspective.frustum.planePoints[i];
-			Vector3 endPoint = perspective.frustum.planePoints[i + 4];
-
-			lineRenderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
-		}
-
-		for(int i = 4; i < 8; i++) {
-			Vector3 startPoint = perspective.frustum.planePoints[i];
-			Vector3 endPoint = i != 7 ? perspective.frustum.planePoints[i + 1] : perspective.frustum.planePoints[4];
-
-			lineRenderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
-		}
-
-		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glLineWidth(1f);
-		lineRenderer.setColor(Color.CYAN);
-		lineRenderer.flush();
 	}
 
 	public void renderMoverVizualization(Mover e) {
