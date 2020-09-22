@@ -20,6 +20,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.managers.StringManager;
 
@@ -27,6 +28,7 @@ import java.text.MessageFormat;
 import java.util.Random;
 
 public class Item extends Entity {
+
 	public enum ItemType { key, torch, potion, wand, sword, ring, amulet, junk, armor, quest, scroll, bow, thrown, stack, gold };
 	public ItemType itemType;
 	
@@ -90,6 +92,15 @@ public class Item extends Entity {
 	@EditorProperty(type = "Triggers")
 	public String triggersOnPickup = null;
 
+	@EditorProperty( group = "Visual - Model", type = "FILE_PICKER", params = "meshes")
+	public String meshFile = null;
+
+	@EditorProperty( group = "Visual - Model", type = "FILE_PICKER", params = "meshes")
+	public String viewMeshFile = null;
+
+	@EditorProperty( group = "Visual - Model", type = "FILE_PICKER", params = "")
+	public String textureFile = "";
+
 	@EditorProperty(group = "Spawning")
 	public boolean canSpawnEnchanted = true;
 
@@ -97,6 +108,9 @@ public class Item extends Entity {
 	public boolean randomizeCondition = true;
 
 	public boolean wasOnEntity = true;
+
+	public transient String lastMeshFile = null;
+	public transient String lastTextureFile = null;
 	
 	public Item() {
 		isSolid = true;
@@ -147,10 +161,12 @@ public class Item extends Entity {
 		if(source == Level.Source.LEVEL_START) {
 			if (this instanceof Bow) {
 				roll = 135;
-				((DrawableSprite) drawable).drawOffset.z = 0.0f;
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z = 0.0f;
 			} else if (this instanceof Weapon) {
 				roll = 45f;
-				((DrawableSprite) drawable).drawOffset.z -= 0.15f;
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z -= 0.15f;
 			} else {
 				roll = 0f;
 			}
@@ -296,10 +312,14 @@ public class Item extends Entity {
 		else {
 			if (this instanceof Bow) {
 				roll = Interpolation.linear.apply(roll, 135, 0.3f);
-				((DrawableSprite) drawable).drawOffset.z = 0.0f;
+
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z = 0.0f;
 			} else if (this instanceof Weapon) {
 				roll = Interpolation.linear.apply(roll, 45, 0.3f);
-				((DrawableSprite) drawable).drawOffset.z -= 0.15f;
+
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z -= 0.15f;
 			}
 			else {
 				roll = Interpolation.linear.apply(roll, 0, 0.3f);
@@ -456,6 +476,35 @@ public class Item extends Entity {
 	}
 	
 	public void updateDrawable() {
+		updateDrawableInternal(false);
+	}
+
+	public void updateHeldDrawable() {
+		updateDrawableInternal(true);
+	}
+
+	protected void updateDrawableInternal(boolean held) {
+		String meshToUse = getMeshToUse(held);
+		if(meshToUse != null && (((lastMeshFile != meshToUse)) || (textureFile == null || (lastTextureFile != textureFile)))) {
+			String pickedMeshFile = meshToUse;
+			if(meshToUse.contains(",")) {
+				String[] files = meshToUse.split(",");
+				pickedMeshFile = files[Game.rand.nextInt(files.length)];
+			}
+
+			String pickedTextureFile = textureFile;
+			if(textureFile.contains(",")) {
+				String[] files = textureFile.split(",");
+				pickedTextureFile = files[Game.rand.nextInt(files.length)];
+			}
+
+			drawable = new DrawableMesh(pickedMeshFile, pickedTextureFile);
+		} else {
+			// Make sure we stop using the mesh version when done
+			if(drawable instanceof DrawableMesh)
+				drawable = null;
+		}
+
 		if(drawable != null) {
 			drawable.update(this);
 		}
@@ -614,4 +663,21 @@ public class Item extends Entity {
 
 	// override this to take action when picked up
 	public void onPickup() { }
+
+	public boolean shouldUseMesh(boolean held) {
+		String mesh = getMeshToUse(held);
+		return mesh != null;
+	}
+
+	private String getMeshToUse(boolean held) {
+		if(held) {
+			if(viewMeshFile != null && !viewMeshFile.isEmpty())
+				return viewMeshFile;
+		}
+
+		if(meshFile != null && !meshFile.isEmpty())
+			return meshFile;
+
+		return null;
+	}
 }

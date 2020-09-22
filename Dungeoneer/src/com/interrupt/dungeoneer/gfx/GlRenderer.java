@@ -50,7 +50,6 @@ import com.interrupt.dungeoneer.ui.EquipLoc;
 import com.interrupt.dungeoneer.ui.FontBounds;
 import com.interrupt.dungeoneer.ui.Hotbar;
 import com.interrupt.dungeoneer.ui.UiSkin;
-import com.interrupt.helpers.FloatTuple;
 import com.interrupt.managers.ShaderManager;
 import com.interrupt.managers.TileManager;
 import com.noise.PerlinNoise;
@@ -1881,8 +1880,11 @@ public class GlRenderer {
 			handMaxLerpTime -= 2.5f * Gdx.graphics.getDeltaTime();
 			if(handMaxLerpTime < 0) handMaxLerpTime = 0;
 
-			if (handMaxDirection.y > 0.25f)
-				handMaxDirection.y = Interpolation.exp5.apply(0.25f, handMaxDirection.y, handMaxLerpTime);
+			// Give non-ranged items a max angle to look up
+			if(!(heldItem instanceof Bow || heldItem instanceof Wand || heldItem instanceof Gun)) {
+				if (handMaxDirection.y > 0.25f)
+					handMaxDirection.y = Interpolation.exp5.apply(0.25f, handMaxDirection.y, handMaxLerpTime);
+			}
 
 			handMaxDirection = handMaxDirection.nor();
 		}
@@ -1896,6 +1898,44 @@ public class GlRenderer {
 		downDirection.set(camera.up).nor();
 
 		handLagRotation.set(handMaxDirection);
+
+		// Handle drawable meshes. First, make sure a model is loaded if this was just in the inventory
+		if(heldItem.shouldUseMesh(true))
+			heldItem.updateHeldDrawable();
+
+		if(heldItem.drawable instanceof DrawableMesh) {
+			heldItem.x = camera.position.x;
+			heldItem.z = camera.position.y + 0.5f - heldItem.yOffset; // Bump the held item up a bit, but negate the yOffset
+			heldItem.y = camera.position.z;
+
+			// translate forward
+			heldItem.x += handMaxDirection.x * (transform.z + 0.28f);
+			heldItem.z += handMaxDirection.y * (transform.z + 0.28f);
+			heldItem.y += handMaxDirection.z * (transform.z + 0.28f);
+
+			// translate right
+			heldItem.x += rightDirection.x * (transform.x - 0.12f);
+			heldItem.z += rightDirection.y * (transform.x - 0.12f);
+			heldItem.y += rightDirection.z * (transform.x - 0.12f);
+
+			// translate down
+			heldItem.x += downDirection.x * (transform.y - 0.07f);
+			heldItem.z += downDirection.y * (transform.y - 0.07f);
+			heldItem.y += downDirection.z * (transform.y - 0.07f);
+
+			((DrawableMesh)heldItem.drawable).dir.set(camera.direction);
+			((DrawableMesh)heldItem.drawable).rotX = rotation.x;
+			((DrawableMesh)heldItem.drawable).rotY = rotation.y;
+			((DrawableMesh)heldItem.drawable).rotZ = rotation.z;
+			heldItem.drawable.update(heldItem);
+
+			Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
+			renderMesh((DrawableMesh)heldItem.drawable, modelShaderInfo);
+			Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDepthFunc(GL20.GL_ALWAYS);
+			return;
+		}
 
 		DDecal sd = decalPool.obtain();
 		usedDecals.add(sd);
