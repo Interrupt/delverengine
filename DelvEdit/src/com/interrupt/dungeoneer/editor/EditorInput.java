@@ -96,6 +96,8 @@ public class EditorInput implements InputProcessor {
 
         ignoreRightClick = false;
 
+        Editor.app.ui.touchDown(x, y, pointer, button);
+
         for (InputProcessor listener : listeners) {
             boolean results = listener.touchDown(x, y, pointer, button);
             if (results) {
