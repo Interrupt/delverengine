@@ -495,7 +495,7 @@ public class EditorApplication implements ApplicationListener {
 				float z = Game.instance.player.z + Game.instance.player.eyeHeight;
 				float y = Game.instance.player.y;
 
-				float rotationX = Game.instance.player.rot + 3.14159265f;
+				float rotationX = Game.instance.player.rot;
 				float rotationY = -Game.instance.player.yrot;
 
 				cameraController.setPosition(x, y, z);
@@ -525,6 +525,7 @@ public class EditorApplication implements ApplicationListener {
         if(stage != null) {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
+
         }
 	}
 
