@@ -1,5 +1,10 @@
 {
 	entities:{
+	    "Features": {
+			"NeoText": {
+				class: com.interrupt.dungeoneer.entities.NeoText
+			}
+	    }
 		"Areas": {
 			"Spawn Blocker": {
 				class:com.interrupt.dungeoneer.entities.areas.SpawnBlockerArea,

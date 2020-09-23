@@ -36,10 +36,7 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredMusic;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredShop;
 import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.decals.DDecal;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableProjectedDecal;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.gfx.drawables.*;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.gfx.shaders.WaterShaderInfo;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
@@ -129,6 +126,9 @@ public class GlRenderer {
 	public static ShaderInfo fogShaderInfo;
 
 	public SpriteBatch uiBatch;
+
+	public Array<DrawableText> textToRender = new Array<>();
+	public SpriteBatch textBatch;
 
 	protected ArrayMap<String, DecalBatch> opaqueSpriteBatches = new ArrayMap<String, DecalBatch>();
 	protected ArrayMap<String, DecalBatch> transparentSpriteBatches = new ArrayMap<String, DecalBatch>();
@@ -395,6 +395,8 @@ public class GlRenderer {
 
 		uiBatch = new SpriteBatch();
 		uiBatch.setShader(uiShader);
+
+		textBatch = new SpriteBatch();
 
 		postProcessBatch = new SpriteBatch();
 		postProcessBatch.disableBlending();
@@ -778,6 +780,69 @@ public class GlRenderer {
 		}
 	}
 
+	public void renderTextBatches() {
+		ShaderProgram activeProgram;
+
+		if (renderingForPicking) {
+			activeProgram = ShaderManager.getShaderManager().getCompiledShader("picking").shader;
+		} else {
+			activeProgram = smoothLighting;
+		}
+
+		textBatch.setShader(activeProgram);
+
+		try {
+			int pvMatrixLoc = activeProgram.getUniformLocation("u_projectionViewMatrix");
+
+			for (int i = 0; i < textToRender.size; i++) {
+				DrawableText dT = textToRender.get(i);
+
+				textBatch.begin();
+
+				Gdx.gl.glDepthMask(true); // SpriteBatch.begin() forces off depth writing, which we need for 3D space.
+
+				Vector3 position = dT.parentPosition.cpy().add(dT.drawOffset);
+
+				if (renderingForPicking) {
+					font.setColor(dT.pickingColor);
+				} else {
+					if (dT.editorState == Entity.EditorState.hovered) {
+						font.setColor(Color.SKY);
+					} else {
+						font.setColor(dT.worldColor.cpy().mul(dT.color)); // How to 'light' this correctly?
+					}
+				}
+
+				GlyphLayout layout = font.draw(textBatch, dT.text, 0, 0);
+
+				float scale = 0.025f * dT.scale;
+				Matrix4 pvmMatrix = camera.combined.cpy() // Calculate a new matrix to override the already-set uniform.
+						.translate(position.x, position.z, position.y)
+						.rotate(new Quaternion().setEulerAngles(dT.parentRotation.z, dT.parentRotation.y, dT.parentRotation.x))
+						.scale(scale, scale, scale)
+						.translate( -layout.width / 2, 0, 0); // Center text on origin.
+
+				activeProgram.setUniformMatrix(pvMatrixLoc, pvmMatrix);
+
+				if (dT.editorState == Entity.EditorState.picked) {
+					textBatch.flush();
+
+					font.setColor(Color.CORAL);
+					font.draw(textBatch, dT.text, 0, 0);
+
+					activeProgram.setUniformMatrix(pvMatrixLoc, pvmMatrix.translate(0, 0, -0.2f));
+				}
+
+				textBatch.end();
+			}
+
+			activeProgram.setUniformMatrix(pvMatrixLoc, camera.combined); // Reset the projection matrix.
+
+			textToRender.clear();
+		}
+		catch(Exception ex) { }
+	}
+
 	public void renderOpaqueSprites() {
 		try {
 			for (int i = 0; i < opaqueSpriteBatches.size; i++) {
@@ -1057,6 +1122,7 @@ public class GlRenderer {
 		}
 
 		renderOpaqueSprites();
+		renderTextBatches();
 	}
 
 	public void renderEntitiesForPicking(Level level) {
@@ -1094,6 +1160,7 @@ public class GlRenderer {
 		}
 
 		renderOpaqueSprites();
+		renderTextBatches();
 
 		renderingForPicking = false;
 	}
@@ -1500,6 +1567,10 @@ public class GlRenderer {
 				renderDrawableSprite(s.x, s.y, s.z, true, s, (DrawableSprite)s.drawable);
 			else
 				renderDrawableSprite(s.x, s.y, s.z, false, s, (DrawableSprite)s.drawable);
+		}
+
+		else if(s.drawable instanceof DrawableText) {
+			renderDrawableText(s.x, s.y, s.z, s, (DrawableText)s.drawable);
 		}
 		else if(s.drawable instanceof DrawableBeam) {
 			renderDrawableBeam(s.x, s.y, s.z, (DrawableBeam)s.drawable);
@@ -2237,7 +2308,6 @@ public class GlRenderer {
 		}
 		else {
 			Color lightmap = GetLightmapAt(x + drawable.drawOffset.x, z, y + drawable.drawOffset.y);
-
 			if(drawable.colorLastFrame != null) {
 				drawable.colorLastFrame.lerp(lightmap.r, lightmap.g, lightmap.b, 1f, 4.5f * Gdx.graphics.getDeltaTime());
 				sd.setColor(drawable.colorLastFrame.r, drawable.colorLastFrame.g, drawable.colorLastFrame.b, drawable.color.a);
@@ -2294,6 +2364,13 @@ public class GlRenderer {
 		batch.add(sd);
 
 		usedDecals.add(sd);
+	}
+
+	public void renderDrawableText(float x, float y, float z, Entity entity, DrawableText drawable)
+	{
+		drawable.worldColor.set(GetLightmapAt(x + drawable.drawOffset.x, z, y + drawable.drawOffset.y));
+		drawable.pickingColor.set(entityPickColor);
+		textToRender.add(drawable);
 	}
 
 	Vector3 t_beam_axis = new Vector3();
