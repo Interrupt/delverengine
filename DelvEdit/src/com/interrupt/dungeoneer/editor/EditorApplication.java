@@ -408,18 +408,25 @@ public class EditorApplication implements ApplicationListener {
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
                 TextureAtlas.cachedRepeatingAtlases.firstKey();
 
-        level = new Level(17,17);
-        Tile t = new Tile();
-        t.floorHeight = -0.5f;
-        t.ceilHeight = 0.5f;
-        level.setTile(7, 7, t);
+		createEmptyLevel(17, 17);
+	}
 
-        history = new EditorHistory();
-        file = new EditorFile();
-        history.saveState(Editor.app.level);
-        file.markClean();
+	public void createEmptyLevel(int width, int height) {
+		level = new Level(width, height);
+		refresh();
+		
+		history = new EditorHistory();
+		file = new EditorFile();
+		
+		Tile t = new Tile();
+		t.floorHeight = -0.5f;
+		t.ceilHeight = 0.5f;
+		level.setTile(width / 2, height / 2, t);
 
-        gridMesh = genGrid(level.width,level.height);
+		history.saveState(level);
+		file.markClean();
+
+		cameraController.setDefaultPositionAndRotation();
 	}
 
 	@Override
@@ -2627,10 +2634,12 @@ public class EditorApplication implements ApplicationListener {
     }
 
 	public void refresh() {
-		gridMesh.dispose();
-		gridMesh = null;
+		if (gridMesh != null) {
+			gridMesh.dispose();
+			gridMesh = null;
+		}
 
-		gridMesh = genGrid(level.width,level.height);
+		gridMesh = genGrid(level.width, level.height);
 
 		refreshLights();
 	}
