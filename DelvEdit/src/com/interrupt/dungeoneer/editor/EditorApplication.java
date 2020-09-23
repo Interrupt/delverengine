@@ -725,6 +725,8 @@ public class EditorApplication implements ApplicationListener {
 			shouldDrawBox = false;
 		}
 
+		shouldDrawBox = ui.isShowingModal() ? false : shouldDrawBox;
+
 		if(Editor.selection.picked == null && Editor.selection.hovered == null || tileDragging) {
 			if(!selected || (!(pickedControlPoint != null || movingControlPoint) &&
                     editorInput.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.justTouched())) {
