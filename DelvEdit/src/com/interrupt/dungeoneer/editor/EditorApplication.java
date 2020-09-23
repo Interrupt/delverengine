@@ -419,11 +419,11 @@ public class EditorApplication implements ApplicationListener {
 		file = new EditorFile();
 		
 		Tile t = new Tile();
-        t.floorHeight = -0.5f;
+		t.floorHeight = -0.5f;
 		t.ceilHeight = 0.5f;
-        level.setTile(width / 2, height / 2, t);
+		level.setTile(width / 2, height / 2, t);
 
-        history.saveState(level);
+		history.saveState(level);
 		file.markClean();
 
 		cameraController.setDefaultPositionAndRotation();

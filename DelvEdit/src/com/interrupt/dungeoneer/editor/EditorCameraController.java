@@ -278,6 +278,6 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
         float position = projectedDistance / 1.4142f;
 
         setPosition(position + width / 2, position + height / 2, altitude);
-		setRotation((float)Math.PI + (float)Math.PI / 4f, lookAngle);
+        setRotation((float)Math.PI + (float)Math.PI / 4f, lookAngle);
     }
 }
