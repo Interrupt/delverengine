@@ -2160,7 +2160,7 @@ public class EditorApplication implements ApplicationListener {
 		Game.instance.player.x = cameraPosition.x;
 		Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
 		Game.instance.player.z = cameraPosition.z;
-		Game.instance.player.rot = cameraRotation.x - 3.14159265f;
+		Game.instance.player.rot = cameraRotation.x;
 		Game.instance.player.yrot = -cameraRotation.y;
 		Game.isDebugMode = true;
 	}
