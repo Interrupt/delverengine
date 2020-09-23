@@ -92,6 +92,8 @@ public class EditorInput implements InputProcessor {
         buttonsDown[button] = true;
         if(!buttonEvents.contains(button)) buttonEvents.add(button);
 
+        Editor.app.ui.touchDown(x, y, pointer, button);
+
         for (InputProcessor listener : listeners) {
             boolean results = listener.touchDown(x, y, pointer, button);
             if (results) {

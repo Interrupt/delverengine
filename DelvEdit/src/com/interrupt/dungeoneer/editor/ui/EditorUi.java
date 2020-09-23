@@ -611,4 +611,10 @@ public class EditorUi {
             }
         }
     }
+
+    public void touchDown(int x, int y, int pointer, int button) {
+        if (button == Input.Buttons.RIGHT) {
+            hideContextMenu();
+        }
+    }
 }
