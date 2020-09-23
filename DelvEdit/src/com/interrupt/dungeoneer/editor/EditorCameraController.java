@@ -264,4 +264,20 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
                 InterpolationHelper.InterpolationMode.exp10Out
         );
     }
+
+    public void setDefaultPositionAndRotation() {
+        Level level = Editor.app.level;
+        int width = level.width;
+        int height = level.height;
+
+        float altitude = 6f;
+        float distance = 10f;
+
+        float lookAngle = (float)Math.asin((float)altitude/distance);
+        float projectedDistance = distance * (float)Math.cos((float)lookAngle);
+        float position = projectedDistance / 1.4142f;
+
+        setPosition(position + width / 2, position + height / 2, altitude);
+		setRotation((float)Math.PI + (float)Math.PI / 4f, lookAngle);
+    }
 }
