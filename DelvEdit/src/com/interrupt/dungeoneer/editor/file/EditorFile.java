@@ -349,21 +349,7 @@ public class EditorFile {
     }
 
     private void createInternal(int width, int height) {
-        Editor.app.history = new EditorHistory();
-        Editor.app.file = new EditorFile();
-
-        Editor.app.level = new Level(width,height);
-        Editor.app.refresh();
-
-        Editor.app.history.saveState(Editor.app.level);
-        Editor.app.file.markClean();
-
-        Editor.app.cameraController.setPosition(
-                Editor.app.level.width / 2f,
-                Editor.app.level.height / 2f,
-                4.5f
-        );
-        Editor.app.viewSelected();
+        Editor.app.createEmptyLevel(width, height);
     }
 
     public long getMillisSinceLastSave() {
