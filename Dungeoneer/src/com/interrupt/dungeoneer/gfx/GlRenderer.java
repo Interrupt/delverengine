@@ -808,17 +808,17 @@ public class GlRenderer {
 			float glyphWidth, glyphHeight = glyph.height * dT.scale * baseTextScale;
 
 			// Draw a decal per-glyph for this text
-			for(int ii = 0; ii < dT.text.length(); ii++) {
-				char character =  dT.text.charAt(ii);
+			for (int ii = 0; ii < dT.text.length(); ii++) {
+				char character = dT.text.charAt(ii);
 
 				glyph = font.getData().getGlyph(character);
 
 				if (glyph == null && character == '\n') { // Newline support is in DrawableText, replaces "\\n" with "\n" there to avoid issues with font boundary calculations.
-                    curXPos = 0;
-                    curZPos += glyphHeight;
+					curXPos = 0;
+					curZPos += glyphHeight;
 
 					lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
-                    continue;
+					continue;
 				}
 
 				glyphWidth = glyph.width * dT.scale * baseTextScale;
@@ -852,11 +852,11 @@ public class GlRenderer {
 				usedDecals.add(sd);
 
 				sd.setBlending(-1, -1);
-				if(!renderingForPicking) {
+				if (!renderingForPicking) {
 					if (dT.blendMode == Entity.BlendMode.ALPHA) {
 						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 					} else if (dT.blendMode == Entity.BlendMode.ADD) {
- 						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 					}
 				}
 
@@ -868,7 +868,7 @@ public class GlRenderer {
 				sd.rotateX(dT.parentRotation.x);
 				sd.rotateZ(dT.parentRotation.y);
 
-				if(dT.fullbrite) {
+				if (dT.fullbrite) {
 					sd.setColor(dT.color.r, dT.color.g, dT.color.b, 1.0f);
 				} else {
 					tempColor.set(GetLightmapAt(tx, tz, ty)).mul(dT.color);
