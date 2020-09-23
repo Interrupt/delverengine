@@ -2931,7 +2931,7 @@ public class EditorApplication implements ApplicationListener {
 
             Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
             if(copyAt != null) {
-                copy.z += copyAt.getFloorHeight(0.5f, 0.5f);
+                copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
             }
 
             addEntity(copy);
