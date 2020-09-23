@@ -736,15 +736,30 @@ public class EditorApplication implements ApplicationListener {
 
 				end = ray.getEndPoint(rayOutVector, distance + 0.005f);
 
-						// Tile selection bounding
+				// Tile selection bounding
+				boolean isOutOfBounds = false;
 				Editor.selection.tiles.x = (int)end.x;
 				Editor.selection.tiles.y = (int)end.z;
 
-				if(Editor.selection.tiles.x < 0) Editor.selection.tiles.x = 0;
-				if(Editor.selection.tiles.x >= level.width) Editor.selection.tiles.x = level.width - 1;
+				if(Editor.selection.tiles.x < 0) {
+					Editor.selection.tiles.x = 0;
+					isOutOfBounds = true;
+				}
+				if(Editor.selection.tiles.x >= level.width) {
+					Editor.selection.tiles.x = level.width - 1;
+					isOutOfBounds = true;
+				}
 
-				if(Editor.selection.tiles.y < 0) Editor.selection.tiles.y = 0;
-				if(Editor.selection.tiles.y >= level.height) Editor.selection.tiles.y = level.height - 1;
+				if(Editor.selection.tiles.y < 0) {
+					Editor.selection.tiles.y = 0;
+					isOutOfBounds = true;
+				}
+				if(Editor.selection.tiles.y >= level.height) {
+					Editor.selection.tiles.y = level.height - 1;
+					isOutOfBounds = true;
+				}
+
+				shouldDrawBox = isOutOfBounds ? false : shouldDrawBox;
 
                 Editor.selection.tiles.width = Editor.selection.tiles.height = 1;
 				selStartX = Editor.selection.tiles.x;
