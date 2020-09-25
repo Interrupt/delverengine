@@ -1,5 +1,7 @@
 package com.interrupt.dungeoneer.entities;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Art;
@@ -73,6 +75,9 @@ public class Text extends DirectionalEntity {
 			tx = rotTemp.x + x;
 			ty = rotTemp.y + y;
 			tz = rotTemp.z + z;
+
+			BitmapFont.Glyph glyph = GameManager.renderer.font.getData().getGlyph(c);
+			TextureRegion tr = GameManager.renderer.font.getRegion();
 
 			SpriteDecal s = new SpriteDecal(0, 0, charPos);
 			s.x = tx - x;
