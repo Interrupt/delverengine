@@ -74,7 +74,7 @@ public class GlRenderer {
 	public TextureRegion miniMap;
 	public boolean showMap = false;
 
-	protected BitmapFont font = null;
+	public BitmapFont font = null;
 
 	protected TextureAtlas wallTextures;
 	protected TextureAtlas spriteTextures;
@@ -780,67 +780,104 @@ public class GlRenderer {
 		}
 	}
 
+	TextureRegion tempGlyphTextureRegion = new TextureRegion();
 	public void renderTextBatches() {
-		ShaderProgram activeProgram;
+		DecalBatch batch = getDecalBatch("sprite", Entity.BlendMode.OPAQUE);
+		if (renderingForPicking)
+			batch = getDecalBatch("picking", Entity.BlendMode.OPAQUE);
 
-		if (renderingForPicking) {
-			activeProgram = ShaderManager.getShaderManager().getCompiledShader("picking").shader;
-		} else {
-			activeProgram = smoothLighting;
-		}
+		// Global text scale modifier. Make a constant?
+		float baseTextScale = 0.025f;
 
-		textBatch.setShader(activeProgram);
+		for (int i = 0; i < textToRender.size; i++) {
+			DrawableText dT = textToRender.get(i);
 
-		try {
-			int pvMatrixLoc = activeProgram.getUniformLocation("u_projectionViewMatrix");
+			float curXPos = 0f;
+			float textWidth = 0f;
 
-			for (int i = 0; i < textToRender.size; i++) {
-				DrawableText dT = textToRender.get(i);
+			// TODO: Handle newline characters?
 
-				textBatch.begin();
+			// Figure out the width of this text
+			for(int ii = 0; ii < dT.text.length(); ii++) {
+				BitmapFont.Glyph glyph = font.getData().getGlyph(dT.text.charAt(ii));
+				textWidth += glyph.width * dT.scale * baseTextScale;
+			}
 
-				Gdx.gl.glDepthMask(true); // SpriteBatch.begin() forces off depth writing, which we need for 3D space.
+			// Draw a decal per-glyph for this text
+			for(int ii = 0; ii < dT.text.length(); ii++) {
+				BitmapFont.Glyph glyph = font.getData().getGlyph(dT.text.charAt(ii));
 
-				Vector3 position = dT.parentPosition.cpy().add(dT.drawOffset);
+				float glyphWidth = glyph.width * dT.scale * baseTextScale;
+				float glyphHeight = glyph.height * dT.scale * baseTextScale;
 
-				if (renderingForPicking) {
-					font.setColor(dT.pickingColor);
-				} else {
-					if (dT.editorState == Entity.EditorState.hovered) {
-						font.setColor(Color.SKY);
-					} else {
-						font.setColor(dT.worldColor.cpy().mul(dT.color)); // How to 'light' this correctly?
+				float tx = dT.parentPosition.x + curXPos;
+				float ty = dT.parentPosition.y + 0.001f; // Pull out a bit, to place directly on walls
+				float tz = dT.parentPosition.z + (glyphHeight * 0.5f); // Place font baseline directly on entity origin
+
+				// Center text on origin
+				tx -= textWidth * 0.5f;
+
+				// Offset a tiny bit, because something was doing that in the glyph rendering code
+				tx += 0.1f * dT.scale;
+
+				// Increase the cursor position for next time
+				curXPos += glyphWidth;
+
+				// Update the position based on our rotation
+				Vector3 rotTemp = new Vector3(tx - dT.parentPosition.x, ty - dT.parentPosition.y, tz - dT.parentPosition.z);
+				rotTemp.rotate(Vector3.X, -dT.parentRotation.x);
+				rotTemp.rotate(Vector3.Y, -dT.parentRotation.y);
+				rotTemp.rotate(Vector3.Z, -dT.parentRotation.z);
+
+				tx = rotTemp.x + dT.parentPosition.x;
+				ty = rotTemp.y + dT.parentPosition.y;
+				tz = rotTemp.z + dT.parentPosition.z - 0.5f;
+
+				// Have everything, can now set up a sprite decal to draw
+				DDecal sd = decalPool.obtain();
+				usedDecals.add(sd);
+
+				sd.setBlending(-1, -1);
+				if(!renderingForPicking) {
+					if (dT.blendMode == Entity.BlendMode.ALPHA) {
+						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+					} else if (dT.blendMode == Entity.BlendMode.ADD) {
+ 						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 					}
 				}
 
-				GlyphLayout layout = font.draw(textBatch, dT.text, 0, 0);
+				sd.setPosition(tx, tz, ty);
+				sd.transformationOffset = Vector2.Zero;
 
-				float scale = 0.025f * dT.scale;
-				Matrix4 pvmMatrix = camera.combined.cpy() // Calculate a new matrix to override the already-set uniform.
-						.translate(position.x, position.z, position.y)
-						.rotate(new Quaternion().setEulerAngles(dT.parentRotation.z, dT.parentRotation.y, dT.parentRotation.x))
-						.scale(scale, scale, scale)
-						.translate( -layout.width / 2, 0, 0); // Center text on origin.
+				sd.setRotation(0, 0, 0);
+				sd.rotateY(dT.parentRotation.z);
+				sd.rotateX(dT.parentRotation.x);
+				sd.rotateZ(dT.parentRotation.y);
 
-				activeProgram.setUniformMatrix(pvMatrixLoc, pvmMatrix);
-
-				if (dT.editorState == Entity.EditorState.picked) {
-					textBatch.flush();
-
-					font.setColor(Color.CORAL);
-					font.draw(textBatch, dT.text, 0, 0);
-
-					activeProgram.setUniformMatrix(pvMatrixLoc, pvmMatrix.translate(0, 0, -0.2f));
+				if(dT.fullbrite) {
+					sd.setColor(dT.color.r, dT.color.g, dT.color.b, 1.0f);
+				} else {
+					Color lightmap = GetLightmapAt(tx, tz, ty);
+					sd.setColor(lightmap.r, lightmap.g, lightmap.b, 1.0f);
 				}
 
-				textBatch.end();
+				if (renderingForPicking)
+					sd.setColor(dT.pickingColor);
+
+				sd.setScale(1f);
+				sd.setWidth(glyphWidth);
+				sd.setHeight(glyphHeight);
+
+				tempGlyphTextureRegion.setTexture(font.getRegion().getTexture());
+				tempGlyphTextureRegion.setRegion(glyph.u, glyph.v2, glyph.u2, glyph.v);
+				sd.setTextureRegion(tempGlyphTextureRegion);
+
+				batch.add(sd);
 			}
-
-			activeProgram.setUniformMatrix(pvMatrixLoc, camera.combined); // Reset the projection matrix.
-
-			textToRender.clear();
+			batch.flush();
 		}
-		catch(Exception ex) { }
+
+		textToRender.clear();
 	}
 
 	public void renderOpaqueSprites() {
@@ -1470,6 +1507,7 @@ public class GlRenderer {
 		}
 
 		renderOpaqueSprites();
+		renderTextBatches();
 		renderMeshes();
 		renderTransparentEntities();
 
@@ -2368,7 +2406,6 @@ public class GlRenderer {
 
 	public void renderDrawableText(float x, float y, float z, Entity entity, DrawableText drawable)
 	{
-		drawable.worldColor.set(GetLightmapAt(x + drawable.drawOffset.x, z, y + drawable.drawOffset.y));
 		drawable.pickingColor.set(entityPickColor);
 		textToRender.add(drawable);
 	}
