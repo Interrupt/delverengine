@@ -61,14 +61,9 @@ public class PoisonEffect extends StatusEffect {
 
 	private void doPoisonEffect(Actor owner) {
 		int impactParticleCount = Game.rand.nextInt(8) + 2;
-		Vector3 cameraRight = Game.camera.direction.crs(new Vector3(0,1,0)).nor();
-		Vector3 particleDirection = CachePools.getVector3();
-
 		for (int i = 0; i < impactParticleCount; i++) {
 			this.createPoisonParticle(owner, 0.5f);
 		}
-
-		CachePools.freeVector3(particleDirection);
 	}
 
 	private void createPoisonParticle(Actor owner, float scale) {
@@ -76,11 +71,9 @@ public class PoisonEffect extends StatusEffect {
 			return;
 		}
 
-		float positionOffset = 0f;
 		float spreadMod = 1f;
 		float zMod = 0f;
 		if(owner instanceof Player) {
-			positionOffset = 0.5f;
 			spreadMod = 2.75f;
 			zMod = -0.3f;
 		}
@@ -94,8 +87,8 @@ public class PoisonEffect extends StatusEffect {
 		p.fullbrite = true;
 		p.checkCollision = false;
 		p.floating = true;
-		p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod + positionOffset;
-		p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod + positionOffset;
+		p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+		p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
 		p.z = owner.z + zMod;
 
 		p.za = Game.rand.nextFloat() * 0.004f + 0.004f;

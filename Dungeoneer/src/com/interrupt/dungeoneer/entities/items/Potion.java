@@ -49,9 +49,7 @@ public class Potion extends Item {
 		else if(potionType == PotionType.maxhealth) {
 			displayText = StringManager.get("items.Potion.maxHealDisplayText");
 			player.hp = player.getMaxHp();
-			
-			if(player.statusEffects != null && player.statusEffects.size > 0)
-				player.statusEffects.clear();
+			player.clearStatusEffects();
 		}
 		else if(potionType == PotionType.restore) {
 			player.hp += 1;

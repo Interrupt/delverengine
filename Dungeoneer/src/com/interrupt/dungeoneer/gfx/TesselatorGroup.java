@@ -54,9 +54,12 @@ public class TesselatorGroup {
         TextureAtlas lastAtlas = null;
 
         for(int i = 0; i < tesselators.size; i++) {
+            ShaderInfo shader = null;
+
             // Bind the atlas for drawing
             TextureAtlas atlas = TextureAtlas.bindRepeatingTextureAtlasByIndex(tesselators.getKeyAt(i));
-            ShaderInfo shader = atlas.getShader();
+            if(atlas != null)
+                shader = atlas.getShader();
 
             // If there's no custom shader set, use the default one
             if(shader == null)
@@ -70,14 +73,16 @@ public class TesselatorGroup {
                 shader.begin();
 
                 // Set some shader properties based on the atlas
-                Texture tex = atlas.texture;
-                if(tex != null) {
-                    shader.setAttribute("u_tex_width", (float)atlas.spriteSize / tex.getWidth());
-                    shader.setAttribute("u_tex_height", 1f / tex.getHeight());
-                }
+                if(atlas != null) {
+                    Texture tex = atlas.texture;
+                    if (tex != null) {
+                        shader.setAttribute("u_tex_width", (float) atlas.spriteSize / tex.getWidth());
+                        shader.setAttribute("u_tex_height", 1f / tex.getHeight());
+                    }
 
-                shader.setAttribute("u_sprite_columns", atlas.columns);
-                shader.setAttribute("u_sprite_rows", atlas.rows);
+                    shader.setAttribute("u_sprite_columns", atlas.columns);
+                    shader.setAttribute("u_sprite_rows", atlas.rows);
+                }
             }
 
             tesselators.getValueAt(i).renderMesh(shader);

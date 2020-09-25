@@ -563,6 +563,9 @@ public class Door extends Entity {
 			drawable.dir.rotate(Vector3.Y, 90f);
 		}
 		else if(doorDirection == DoorDirection.SOUTH) {
+			drawable.dir.rotate(Vector3.Y, 0f);
+		}
+		else if(doorDirection == DoorDirection.NORTH) {
 			drawable.dir.rotate(Vector3.Y, 180f);
 		}
 		else if(doorDirection == DoorDirection.WEST) {
@@ -571,7 +574,7 @@ public class Door extends Entity {
 		
 		if(rot != 0) {
 			if(doorType == DoorType.NORMAL)
-				drawable.dir.rotate(Vector3.Y, rot);
+				drawable.dir.rotate(Vector3.Y, -rot);
 			else if(doorType == DoorType.TRAPDOOR)
 				drawable.dir.rotate(Vector3.X, -rot);
 		}

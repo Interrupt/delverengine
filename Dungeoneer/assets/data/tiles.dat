@@ -24,7 +24,8 @@
 				"lightColor": {
 					"r": 0.6941,
 					"g": 0.1686,
-					"b": 0.1372 },
+					"b": 0.1372
+				},
 				"mapColor": {
 					"r": 1.0,
 					"g": 0.0,
@@ -50,6 +51,47 @@
 				"drawCeiling": false,
 				"drawWalls": false
 			}
-		}
+		},
+		"tech":{
+	         "11":{
+	            "class":"com.interrupt.dungeoneer.tiles.TileData",
+	            "isWater":false,
+	            "lightColor":{
+	               "r":1.0,
+	               "g":0.0,
+	               "b":0.0
+	            },
+	            "ambientSoundVolume":0.05,
+	            "ambientSoundRadius":8.0
+	         },
+	         "16":{
+	            "class":"com.interrupt.dungeoneer.tiles.TileData",
+	            "isWater":true,
+	            "lightColor":{
+	               "r":0.0,
+	               "g":0.5,
+	               "b":0.0
+	            },
+	            "mapColor":{
+	               "r":0.0,
+	               "g":1.0,
+	               "b":0.0
+	            },
+	            "hurts":1,
+	            "damageType":"POISON",
+	            "particleTex":25,
+	            "particleFullbrite":true,
+	            "flowTex":17,
+	            "edgeTex":18,
+	            "flowEdgeTex":19,
+	            "particleColor":{
+	               "r":0.0,
+	               "g":1.0,
+	               "b":0.0
+	            },
+	            "ambientSound":"ambient/env_lava.mp3",
+	            "ambientSoundRadius":9.0
+	        }
+	    }
 	}
 }
