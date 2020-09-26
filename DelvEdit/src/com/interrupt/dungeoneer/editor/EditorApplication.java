@@ -408,18 +408,25 @@ public class EditorApplication implements ApplicationListener {
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
                 TextureAtlas.cachedRepeatingAtlases.firstKey();
 
-        level = new Level(17,17);
-        Tile t = new Tile();
-        t.floorHeight = -0.5f;
-        t.ceilHeight = 0.5f;
-        level.setTile(7, 7, t);
+		createEmptyLevel(17, 17);
+	}
 
-        history = new EditorHistory();
-        file = new EditorFile();
-        history.saveState(Editor.app.level);
-        file.markClean();
+	public void createEmptyLevel(int width, int height) {
+		level = new Level(width, height);
+		refresh();
+		
+		history = new EditorHistory();
+		file = new EditorFile();
+		
+		Tile t = new Tile();
+		t.floorHeight = -0.5f;
+		t.ceilHeight = 0.5f;
+		level.setTile(width / 2, height / 2, t);
 
-        gridMesh = genGrid(level.width,level.height);
+		history.saveState(level);
+		file.markClean();
+
+		cameraController.setDefaultPositionAndRotation();
 	}
 
 	@Override
@@ -494,7 +501,7 @@ public class EditorApplication implements ApplicationListener {
 				float z = Game.instance.player.z + Game.instance.player.eyeHeight;
 				float y = Game.instance.player.y;
 
-				float rotationX = Game.instance.player.rot + 3.14159265f;
+				float rotationX = Game.instance.player.rot;
 				float rotationY = -Game.instance.player.yrot;
 
 				cameraController.setPosition(x, y, z);
@@ -524,6 +531,7 @@ public class EditorApplication implements ApplicationListener {
         if(stage != null) {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
+
         }
 	}
 
@@ -724,6 +732,8 @@ public class EditorApplication implements ApplicationListener {
 		if(shouldDrawBox && !selected && Gdx.input.isCursorCatched()) {
 			shouldDrawBox = false;
 		}
+
+		shouldDrawBox = ui.isShowingModal() ? false : shouldDrawBox;
 
 		if(Editor.selection.picked == null && Editor.selection.hovered == null || tileDragging) {
 			if(!selected || (!(pickedControlPoint != null || movingControlPoint) &&
@@ -2137,7 +2147,7 @@ public class EditorApplication implements ApplicationListener {
 		Game.instance.player.x = cameraPosition.x;
 		Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
 		Game.instance.player.z = cameraPosition.z;
-		Game.instance.player.rot = cameraRotation.x - 3.14159265f;
+		Game.instance.player.rot = cameraRotation.x;
 		Game.instance.player.yrot = -cameraRotation.y;
 		Game.isDebugMode = true;
 	}
@@ -2640,10 +2650,12 @@ public class EditorApplication implements ApplicationListener {
     }
 
 	public void refresh() {
-		gridMesh.dispose();
-		gridMesh = null;
+		if (gridMesh != null) {
+			gridMesh.dispose();
+			gridMesh = null;
+		}
 
-		gridMesh = genGrid(level.width,level.height);
+		gridMesh = genGrid(level.width, level.height);
 
 		refreshLights();
 	}
@@ -2946,7 +2958,7 @@ public class EditorApplication implements ApplicationListener {
 
             Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
             if(copyAt != null) {
-                copy.z += copyAt.getFloorHeight(0.5f, 0.5f);
+                copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
             }
 
             addEntity(copy);
