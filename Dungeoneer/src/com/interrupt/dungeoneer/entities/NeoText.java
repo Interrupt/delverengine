@@ -10,7 +10,7 @@ public class NeoText extends DirectionalEntity {
 	public String text = "Test";
 
 	@EditorProperty
-	public Color textColor = Color.WHITE;
+	public Color textColor = new Color(Color.WHITE);
 
 	public NeoText() {
 		this.drawable = new DrawableText(this.text);

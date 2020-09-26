@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 
@@ -32,6 +33,12 @@ public class Handles {
     public static void drawWireCube(Vector3 position, Vector3 size) {
         begin();
         drawWireCubeInternal(position, size);
+        end();
+    }
+
+    public static void drawWireFrustum(Frustum frustum) {
+        begin();
+        drawWireFrustumInternal(frustum);
         end();
     }
 
@@ -146,5 +153,28 @@ public class Handles {
         renderer.line(p1, p5);
         renderer.line(p2, p6);
         renderer.line(p3, p7);
+    }
+
+    private static void drawWireFrustumInternal(Frustum frustum) {
+        for(int i = 0; i < 4; i++) {
+			Vector3 startPoint = frustum.planePoints[i];
+			Vector3 endPoint = i != 3 ? frustum.planePoints[i + 1] : frustum.planePoints[0];
+
+			renderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
+		}
+
+		for(int i = 0; i < 4; i++) {
+			Vector3 startPoint = frustum.planePoints[i];
+			Vector3 endPoint = frustum.planePoints[i + 4];
+
+			renderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
+		}
+
+		for(int i = 4; i < 8; i++) {
+			Vector3 startPoint = frustum.planePoints[i];
+			Vector3 endPoint = i != 7 ? frustum.planePoints[i + 1] : frustum.planePoints[4];
+
+			renderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
+		}
     }
 }

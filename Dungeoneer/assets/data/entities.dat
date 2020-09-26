@@ -188,6 +188,337 @@
 				endWait: 6,
 				moverMode: ON_ANY_TOUCH
 			}
-		}
+		},
+        "Examples/Tech":{
+            "Railing":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "meshFile":"meshes/tech/railing_straight.obj",
+                "collision":{
+                    "x":0.5,
+                    "y":0.0625,
+                    "z":0.5
+                },
+                "isSolid":true,
+                "isDynamic":false,
+                "textureFile":"textures/tech/railing.png"
+            },
+            "Railing Corner":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.areas.Area",
+                        "collision":{
+                            "x":0.0625,
+                            "y":0.28125,
+                            "z":0.5
+                        },
+                        "isSolid":true,
+                        "tex":19,
+                        "y":0.21709347
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.areas.Area",
+                        "collision":{
+                            "x":0.28125,
+                            "y":0.0625,
+                            "z":0.5
+                        },
+                        "isSolid":true,
+                        "tex":19,
+                        "x":0.21992588
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Model",
+                        "meshFile":"meshes/tech/railing_corner.obj",
+                        "collision":{
+                            "x":0.5,
+                            "y":0.5,
+                            "z":0.065
+                        },
+                        "textureFile":"textures/tech/railing.png",
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Floor Lamp":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Floor Lamp On,Floor Lamp On,Floor Lamp On,Floor Lamp On,Floor Lamp Off",
+                "category":"Examples/Tech"
+            },
+            "Floor Lamp On":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Light",
+                        "isDynamic":false,
+                        "x": 0,
+                        "y": 0,
+                        "z": 0.189,
+                        "lightColor":{
+                            "a":1,
+                            "b":0.98,
+                            "g":1,
+                            "r":0.75
+                        },
+                        "animateHalo": false,
+                        "haloMode": "CORONA_ONLY"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Sprite",
+                        "spriteAtlas":"tech_sprites",
+                        "color":{
+                            "a":1
+                        },
+                        "collision":{
+                            "x":0.125,
+                            "y":0.125,
+                            "z":0.625
+                        },
+                        "isSolid":true,
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Floor Lamp Off":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Sprite",
+                        "spriteAtlas":"tech_sprites",
+                        "tex":1,
+                        "color":{
+                            "a":1
+                        },
+                        "collision":{
+                            "x":0.125,
+                            "y":0.125,
+                            "z":0.625
+                        },
+                        "isSolid":true,
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Flickering Floor Lamp":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.DynamicLight",
+                        "x":0,
+                        "fullbrite":true,
+                        "range":1.5,
+                        "lightColor":{
+                            "x":0.75,
+                            "y":1,
+                            "z":0.98
+                        },
+                        "lightType":"flicker_off",
+                        "y":0
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Sprite",
+                        "spriteAtlas":"tech_sprites",
+                        "color":{
+                            "a":1
+                        },
+                        "collision":{
+                            "x":0.125,
+                            "y":0.125,
+                            "z":0.625
+                        },
+                        "isSolid":true,
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Catwalk":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.5,
+                    "y":0.5,
+                    "z":0.5
+                },
+                "isDynamic":false,
+                "rotation":{
+                    "z":-630
+                },
+                "meshFile":"meshes/tech/catwalk.obj",
+                "textureFile":"textures/tech/catwalk.png"
+            },
+            "Greeble":{
+                "class": "com.interrupt.dungeoneer.entities.Prefab",
+                "category": "Example Meshes",
+                "name": "Greeble 0,Greeble 1,Greeble 3"
+            },
+            "Greeble 0":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Greeble 0A,Greeble 0B",
+                "category":"Examples/Tech"
+            },
+            "Greeble 0A":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.25,
+                    "y":0.125,
+                    "z":0.875
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_0.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 0B":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 0A"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "y":0.12607098,
+                        "z":0.1546365,
+                        "name":"Greeble 2"
+                    }
+                ]
+            },
+            "Greeble 1":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Greeble 1A,Greeble 1B,Greeble 1C",
+                "category":"Examples/Tech"
+            },
+            "Greeble 1A":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.375,
+                    "y":0.125,
+                    "z":0.75
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_1.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 1B":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Model",
+                        "isSolid":true,
+                        "collision":{
+                            "x":0.375,
+                            "y":0.125,
+                            "z":0.75
+                        },
+                        "isDynamic":false,
+                        "meshFile":"meshes/tech/greeble_1.obj",
+                        "textureFile":"textures/tech/greebles_0.png"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Light",
+                        "isDynamic":false,
+                        "lightColor":{
+                            "r":0.8352941,
+                            "g":0.9254902,
+                            "b":1,
+                            "a":1
+                        },
+                        "range":3
+                    }
+                ]
+            },
+            "Greeble 1C":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 1B"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Model",
+                        "isSolid":true,
+                        "collision":{
+                            "x":0.25,
+                            "y":0.125,
+                            "z":0.5
+                        },
+                        "y": 0.125,
+                        "z":0.1233865,
+                        "isDynamic":false,
+                        "meshFile":"meshes/tech/greeble_2.obj",
+                        "textureFile":"textures/tech/greebles_1.png"
+                    }
+                ]
+            },
+            "Greeble 2":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.25,
+                    "y":0.125,
+                    "z":0.5
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_2.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 3":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Greeble 3A,Greeble 3B,Greeble 3C",
+                "category":"Examples/Tech"
+            },
+            "Greeble 3A":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.5,
+                    "y":0.125,
+                    "z":0.75
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_3.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 3B":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 3A"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "x":-0.12641716,
+                        "y":0.12607098,
+                        "z":0.1233865,
+                        "name":"Greeble 2"
+                    }
+                ]
+            },
+            "Greeble 3C":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 3A"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "x":0.12641716,
+                        "y":0.12607098,
+                        "z":0.1233865,
+                        "name":"Greeble 2"
+                    }
+                ]
+            }
+        }
 	}
 }
