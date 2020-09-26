@@ -99,8 +99,8 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
 
     /** Crops the selection to only contain level in-bounds tiles. */
     public void cropToLevelBounds(int width, int height) {
-        x = Math.min(width, Math.max(0, x));
-        y = Math.min(height, Math.max(0, y));
+        x = Math.min(width - 1, Math.max(0, x));
+        y = Math.min(height - 1, Math.max(0, y));
     }
 
     private final Array<TileSelectionInfo> tileInfos = new Array<TileSelectionInfo>();
