@@ -789,33 +789,44 @@ public class GlRenderer {
 		// Global text scale modifier. Make a constant?
 		float baseTextScale = 0.025f;
 
+		Color tempColor = new Color();
+
 		for (int i = 0; i < textToRender.size; i++) {
 			DrawableText dT = textToRender.get(i);
 
-			float curXPos = 0f;
-			float textWidth = 0f;
+			float curXPos = 0f, curZPos = 0f;
 
 			// TODO: Handle newline characters?
 
-			// Figure out the width of this text
-			for(int ii = 0; ii < dT.text.length(); ii++) {
-				BitmapFont.Glyph glyph = font.getData().getGlyph(dT.text.charAt(ii));
-				textWidth += glyph.width * dT.scale * baseTextScale;
-			}
+			GlyphLayout bounds = FontBounds.GetBounds(font, dT.text);
+			float textWidth = bounds.width * dT.scale * baseTextScale;
+			float textHeight = bounds.height * dT.scale * baseTextScale;
+
+			BitmapFont.Glyph glyph = font.getData().getGlyph('X');
+
+			float glyphWidth, glyphHeight = glyph.height * dT.scale * baseTextScale;
 
 			// Draw a decal per-glyph for this text
 			for(int ii = 0; ii < dT.text.length(); ii++) {
-				BitmapFont.Glyph glyph = font.getData().getGlyph(dT.text.charAt(ii));
+				char character =  dT.text.charAt(ii);
 
-				float glyphWidth = glyph.width * dT.scale * baseTextScale;
-				float glyphHeight = glyph.height * dT.scale * baseTextScale;
+				glyph = font.getData().getGlyph(character);
+
+				if (glyph == null && character == '\n') { // Newline support is in DrawableText, replaces "\\n" with "\n" there to avoid issues with font boundary calculations.
+                    curXPos = 0;
+                    curZPos += glyphHeight;
+                    continue;
+				}
+
+				glyphWidth = glyph.width * dT.scale * baseTextScale;
 
 				float tx = dT.parentPosition.x + curXPos;
 				float ty = dT.parentPosition.y + 0.001f; // Pull out a bit, to place directly on walls
-				float tz = dT.parentPosition.z + (glyphHeight * 0.5f); // Place font baseline directly on entity origin
+				float tz = dT.parentPosition.z - curZPos + (glyphHeight * 0.5f); // Place font baseline directly on entity origin
 
 				// Center text on origin
 				tx -= textWidth * 0.5f;
+				tz += textHeight * 0.5f;
 
 				// Offset a tiny bit, because something was doing that in the glyph rendering code
 				tx += 0.1f * dT.scale;
@@ -857,8 +868,8 @@ public class GlRenderer {
 				if(dT.fullbrite) {
 					sd.setColor(dT.color.r, dT.color.g, dT.color.b, 1.0f);
 				} else {
-					Color lightmap = GetLightmapAt(tx, tz, ty);
-					sd.setColor(lightmap.r, lightmap.g, lightmap.b, 1.0f);
+					tempColor.set(GetLightmapAt(tx, tz, ty)).mul(dT.color);
+					sd.setColor(tempColor.r, tempColor.g, tempColor.b, 1.0f);
 				}
 
 				if (renderingForPicking)
