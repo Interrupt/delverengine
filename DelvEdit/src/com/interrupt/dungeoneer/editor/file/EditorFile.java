@@ -32,7 +32,7 @@ public class EditorFile {
     final Date lastSaveDate;
     byte[] historyMarker;
 
-    public static final String defaultName = "New Level";
+    public static final String defaultName = "New Level.bin";
     public static final String defaultDirectory = ".";
 
     public EditorFile() {
