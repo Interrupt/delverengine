@@ -13,6 +13,7 @@ public class DrawableText extends Drawable {
     public Entity.EditorState editorState = Entity.EditorState.hovered;
     public Color pickingColor = Color.BLACK.cpy();
     public Color color = Color.WHITE.cpy();
+    public float alignmentOffset = 0.5f;
 
     public DrawableText() {
     }
@@ -32,9 +33,25 @@ public class DrawableText extends Drawable {
         editorState = e.editorState;
 
         if (e instanceof NeoText) {
-            text = ((NeoText) e).text;
+            NeoText parentNeoText = (NeoText)e;
+            text = parentNeoText.text;
             text = text.replace("\\n", "\n"); // Hack in support for newlines in the editor.
-            color.set(((NeoText) e).textColor);
+            color.set(parentNeoText.textColor);
+
+            switch (parentNeoText.textAlignment) {
+                case LEFT:
+                    alignmentOffset = 0.0f; break;
+                case CENTER:
+                    alignmentOffset = 0.5f; break;
+                case RIGHT:
+                    alignmentOffset = 1.0f; break;
+            }
         }
+    }
+
+    public enum TextAlignment {
+        LEFT,
+        CENTER,
+        RIGHT
     }
 }

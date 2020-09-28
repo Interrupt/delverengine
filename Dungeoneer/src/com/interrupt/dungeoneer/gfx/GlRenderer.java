@@ -802,6 +802,9 @@ public class GlRenderer {
 			float textWidth = bounds.width * dT.scale * baseTextScale;
 			float textHeight = bounds.height * dT.scale * baseTextScale;
 
+			int line = 0;
+			float lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
+
 			BitmapFont.Glyph glyph = font.getData().getGlyph('X');
 
 			float glyphWidth, glyphHeight = glyph.height * dT.scale * baseTextScale;
@@ -815,6 +818,8 @@ public class GlRenderer {
 				if (glyph == null && character == '\n') { // Newline support is in DrawableText, replaces "\\n" with "\n" there to avoid issues with font boundary calculations.
                     curXPos = 0;
                     curZPos += glyphHeight;
+
+					lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
                     continue;
 				}
 
@@ -825,7 +830,7 @@ public class GlRenderer {
 				float tz = dT.parentPosition.z - curZPos + (glyphHeight * 0.5f); // Place font baseline directly on entity origin
 
 				// Center text on origin
-				tx -= textWidth * 0.5f;
+				tx -= textWidth * 0.5f - (textWidth - lineWidth) * dT.alignmentOffset;
 				tz += textHeight * 0.5f;
 
 				// Offset a tiny bit, because something was doing that in the glyph rendering code
