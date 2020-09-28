@@ -802,7 +802,7 @@ public class GlRenderer {
 
 			int line = 0;
 			float lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
-c
+
 			BitmapFont.Glyph glyph = font.getData().getGlyph('X');
 
 			float glyphWidth, glyphHeight = glyph.height * dT.scale * baseTextScale;
