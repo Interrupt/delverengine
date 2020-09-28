@@ -70,6 +70,17 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         };
     }
 
+    public static TileSelection Rect(int x, int y, int width, int height) {
+        TileSelection tileSelection = new TileSelection();
+
+        tileSelection.x = x;
+        tileSelection.y = y;
+        tileSelection.width = width;
+        tileSelection.height = height;
+
+        return tileSelection;
+    }
+
     public void clear() {
         x = 0;
         y = 0;
