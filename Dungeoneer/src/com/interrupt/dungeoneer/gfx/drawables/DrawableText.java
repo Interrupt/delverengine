@@ -3,7 +3,7 @@ package com.interrupt.dungeoneer.gfx.drawables;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.NeoText;
+import com.interrupt.dungeoneer.entities.Text;
 
 public class DrawableText extends Drawable {
 
@@ -32,18 +32,18 @@ public class DrawableText extends Drawable {
 
         editorState = e.editorState;
 
-        if (e instanceof NeoText) {
-            NeoText parentNeoText = (NeoText)e;
+        if (e instanceof Text) {
+            Text parentText = (Text)e;
 
-            color.set(parentNeoText.textColor);
+            color.set(parentText.textColor);
 
-            text = parentNeoText.text;
+            text = parentText.text;
 
-            if (parentNeoText.substituteControlLiterals) {
+            if (parentText.substituteControlLiterals) {
                 text = text.replace("\\n", "\n"); // Hack in support for newlines in the editor.
             }
 
-            switch (parentNeoText.textAlignment) {
+            switch (parentText.textAlignment) {
                 case LEFT:
                     alignmentOffset = 0.0f; break;
                 case CENTER:
