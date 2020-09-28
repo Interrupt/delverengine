@@ -87,7 +87,7 @@ public class EditorFile {
         class WSFilter implements FileFilter {
             @Override
             public boolean accept(File pathname) {
-                return (pathname.getName().endsWith(".bin") || pathname.getName().endsWith(".dat"));
+                return hasValidLevelExtension(pathname.getName());
             }
         }
 
@@ -104,6 +104,7 @@ public class EditorFile {
             public boolean result(boolean success, FileHandle result) {
                 if(success) {
                     try {
+                        result = addDefaultExtension(result);
                         Editor.app.file = new EditorFile(result);
                         Editor.app.file.saveInternal();
                     }
@@ -350,6 +351,18 @@ public class EditorFile {
 
     private void createInternal(int width, int height) {
         Editor.app.createEmptyLevel(width, height);
+    }
+
+    private FileHandle addDefaultExtension(FileHandle fileHandle) {
+        if (hasValidLevelExtension(fileHandle.name())) {
+            return fileHandle;
+        }
+
+        return new FileHandle(fileHandle.path() + ".bin");
+    }
+
+    private boolean hasValidLevelExtension(String fileName) {
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin"));
     }
 
     public long getMillisSinceLastSave() {
