@@ -34,9 +34,14 @@ public class DrawableText extends Drawable {
 
         if (e instanceof NeoText) {
             NeoText parentNeoText = (NeoText)e;
-            text = parentNeoText.text;
-            text = text.replace("\\n", "\n"); // Hack in support for newlines in the editor.
+
             color.set(parentNeoText.textColor);
+
+            text = parentNeoText.text;
+
+            if (parentNeoText.substituteControlLiterals) {
+                text = text.replace("\\n", "\n"); // Hack in support for newlines in the editor.
+            }
 
             switch (parentNeoText.textAlignment) {
                 case LEFT:

@@ -15,6 +15,9 @@ public class NeoText extends DirectionalEntity {
 	@EditorProperty
 	public DrawableText.TextAlignment textAlignment = DrawableText.TextAlignment.CENTER;
 
+	@EditorProperty
+	public boolean substituteControlLiterals;
+
 	public NeoText() {
 		this.drawable = new DrawableText(this.text);
 		this.isDynamic = false;
