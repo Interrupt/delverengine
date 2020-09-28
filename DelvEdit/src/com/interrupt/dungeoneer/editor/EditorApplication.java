@@ -35,6 +35,7 @@ import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
+import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
@@ -317,6 +318,8 @@ public class EditorApplication implements ApplicationListener {
 
 	private LiveReload liveReload;
 
+	private TileSelection entireLevelSelection;
+
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
@@ -413,6 +416,7 @@ public class EditorApplication implements ApplicationListener {
 
 	public void createEmptyLevel(int width, int height) {
 		level = new Level(width, height);
+		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
 		refresh();
 		
 		history = new EditorHistory();
@@ -747,10 +751,9 @@ public class EditorApplication implements ApplicationListener {
 				end = ray.getEndPoint(rayOutVector, distance + 0.005f);
 
 				// Tile selection bounding
-				Editor.selection.tiles.clear((int)end.x, (int)end.z);
-				boolean isOutOfBounds = Editor.selection.tiles.outOfLevelBounds(level.width, level.height);
-				Editor.selection.tiles.cropToLevelBounds(level.width, level.height);
-				shouldDrawBox = isOutOfBounds ? false : shouldDrawBox;
+				Editor.selection.tiles.x = Math.min(level.width - 1, Math.max(0, (int)end.x));
+				Editor.selection.tiles.y = Math.min(level.height - 1, Math.max(0, (int)end.z));
+				shouldDrawBox &= entireLevelSelection.contains((int)end.x, (int)end.z);
 
 				selStartX = Editor.selection.tiles.x;
 				selStartY = Editor.selection.tiles.y;

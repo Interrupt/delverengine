@@ -70,15 +70,20 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         };
     }
 
-    /** Clear the tile selection and reset the origin to (0, 0). */
-    public void clear() {
-        clear(0, 0);
+    public static TileSelection Rect(int x, int y, int width, int height) {
+        TileSelection tileSelection = new TileSelection();
+
+        tileSelection.x = x;
+        tileSelection.y = y;
+        tileSelection.width = width;
+        tileSelection.height = height;
+
+        return tileSelection;
     }
 
-    /** Clear the tile selection and set the origin explicitly. */
-    public void clear(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public void clear() {
+        x = 0;
+        y = 0;
         width = 1;
         height = 1;
     }
@@ -90,17 +95,6 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
 
     public boolean contains(int x, int y) {
          return x >= this.x && x < this.x + width && y >= this.y && y < this.y + height;
-    }
-
-    /** Returns whether the tile selection contains level out-of-bounds tiles. */
-    public boolean outOfLevelBounds(int width, int height) {
-        return (x < 0 || x >= width || y < 0 || y >= height) ? true: false;
-    }
-
-    /** Crops the selection to only contain level in-bounds tiles. */
-    public void cropToLevelBounds(int width, int height) {
-        x = Math.min(width - 1, Math.max(0, x));
-        y = Math.min(height - 1, Math.max(0, y));
     }
 
     private final Array<TileSelectionInfo> tileInfos = new Array<TileSelectionInfo>();
