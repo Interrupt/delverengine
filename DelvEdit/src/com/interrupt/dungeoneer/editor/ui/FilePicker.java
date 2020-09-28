@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
@@ -238,7 +239,18 @@ public class FilePicker extends Dialog {
     public Dialog show(Stage stage) {
         final Table content = getContentTable();
         content.add(fileListLabel).colspan(2).top().left().expandX().fillX().row();
+
         ScrollPane pane = new ScrollPane(fileList, skin);
+        pane.addListener(new InputListener() {
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                getStage().setScrollFocus(fromActor);
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                getStage().setScrollFocus(null);
+            }
+        });
+
         content.add(pane).size(300, 350).colspan(2).fill().expand().row();
 
         if (fileNameEnabled) {
