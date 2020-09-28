@@ -17,6 +17,7 @@ import com.interrupt.dungeoneer.editor.ui.menu.FileListItem;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -297,7 +298,14 @@ public class FilePicker extends Dialog {
         }
 
         this.stage = stage;
-        changeDirectory(new FileHandle(baseDir.file().getAbsoluteFile()));
+
+        File file = null;
+        try {
+            file = baseDir.file().getCanonicalFile();
+        } catch (IOException e) {
+            file = baseDir.file().getAbsoluteFile();
+        }
+        changeDirectory(new FileHandle(file));
 
         return super.show(stage);
     }
