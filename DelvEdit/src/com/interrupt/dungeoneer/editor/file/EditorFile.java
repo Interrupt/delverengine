@@ -87,7 +87,7 @@ public class EditorFile {
         class WSFilter implements FileFilter {
             @Override
             public boolean accept(File pathname) {
-                return hasValidLevelExtension(pathname.getName());
+                return hasValidSavableExtension(pathname.getName());
             }
         }
 
@@ -227,8 +227,7 @@ public class EditorFile {
         class WSFilter implements FileFilter {
             @Override
             public boolean accept(File path) {
-                String name = path.getName();
-                return (name.endsWith(".dat") || name.endsWith(".png") || name.endsWith(".bin"));
+                return hasValidLoadableExtension(path.getName());
             }
         }
         FileFilter wsFilter = new WSFilter();
@@ -354,15 +353,19 @@ public class EditorFile {
     }
 
     private FileHandle addDefaultExtension(FileHandle fileHandle) {
-        if (hasValidLevelExtension(fileHandle.name())) {
+        if (hasValidSavableExtension(fileHandle.name())) {
             return fileHandle;
         }
 
         return new FileHandle(fileHandle.path() + ".bin");
     }
 
-    private boolean hasValidLevelExtension(String fileName) {
+    private boolean hasValidSavableExtension(String fileName) {
         return (fileName.endsWith(".dat") || fileName.endsWith(".bin"));
+    }
+
+    private boolean hasValidLoadableExtension(String fileName) {
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin") || fileName.endsWith(".png"));
     }
 
     public long getMillisSinceLastSave() {
