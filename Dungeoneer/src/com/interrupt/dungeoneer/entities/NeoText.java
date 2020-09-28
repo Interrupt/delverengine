@@ -17,5 +17,6 @@ public class NeoText extends DirectionalEntity {
 
 	public NeoText() {
 		this.drawable = new DrawableText(this.text);
+		this.isDynamic = false;
 	}
 }

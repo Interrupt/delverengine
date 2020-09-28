@@ -796,15 +796,13 @@ public class GlRenderer {
 
 			float curXPos = 0f, curZPos = 0f;
 
-			// TODO: Handle newline characters?
-
 			GlyphLayout bounds = FontBounds.GetBounds(font, dT.text);
 			float textWidth = bounds.width * dT.scale * baseTextScale;
 			float textHeight = bounds.height * dT.scale * baseTextScale;
 
 			int line = 0;
 			float lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
-
+c
 			BitmapFont.Glyph glyph = font.getData().getGlyph('X');
 
 			float glyphWidth, glyphHeight = glyph.height * dT.scale * baseTextScale;
