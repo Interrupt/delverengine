@@ -31,12 +31,16 @@ public class FilePicker extends Dialog {
     private final Skin skin;
     private boolean fileNameEnabled;
     private boolean newFolderEnabled;
+    private boolean directoryBrowsingEnabled = true;
+    private boolean legacyFormatDisplayToggleEnabled;
     private final TextField fileNameInput;
     private final Label fileNameLabel;
     private final TextButton newFolderButton;
     protected final FileHandle baseDir;
     private final Label fileListLabel;
     private final List fileList;
+    private final CheckBox legacyFormatDisplayToggle;
+    private ChangeListener legacyFormatDisplayToggleChangeListener;
 
     private FileHandle currentDir;
     protected String result;
@@ -63,13 +67,14 @@ public class FilePicker extends Dialog {
             return 1;
         }
     };
-    private FileFilter filter = new FileFilter() {
+
+    private final FileFilter defaultFilter = new FileFilter() {
         @Override
         public boolean accept(File pathname) {
             return true;
         }
     };
-    private boolean directoryBrowsingEnabled = true ;
+    private FileFilter filter = defaultFilter;
 
     public FilePicker(String title, final Skin skin, FileHandle baseDir) {
         super(title, skin);
@@ -95,6 +100,8 @@ public class FilePicker extends Dialog {
                 result = textField.getText();
             }
         });
+
+        legacyFormatDisplayToggle = new CheckBox("Display legacy formats", skin);
 
         newFolderButton = new TextButton("New Folder", skin);
 
@@ -151,7 +158,6 @@ public class FilePicker extends Dialog {
     }
 
     private void changeDirectory(FileHandle directory) {
-
         currentDir = directory;
         String title = currentDir.path();
         if (title.length() > 38) title = "..." + title.substring(title.length() - 38, title.length());
@@ -235,6 +241,35 @@ public class FilePicker extends Dialog {
         return this;
     }
 
+    public FilePicker enableLegacyFormatDisplayToggle(final FileFilter defaultFileFilter, final FileFilter legacyFileFilter) {
+        legacyFormatDisplayToggleEnabled = true;
+
+        if (legacyFormatDisplayToggleChangeListener != null) {
+            legacyFormatDisplayToggle.removeListener(legacyFormatDisplayToggleChangeListener);
+        }
+
+        legacyFormatDisplayToggleChangeListener = new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                filter = legacyFormatDisplayToggle.isChecked() ? legacyFileFilter : defaultFileFilter;
+                changeDirectory(currentDir);
+            }
+        };
+
+        legacyFormatDisplayToggle.addListener(legacyFormatDisplayToggleChangeListener);
+
+        return this;
+    }
+
+    public FilePicker disableLegacyFormatDisplayToggle() {
+        legacyFormatDisplayToggleEnabled = false;
+
+        if (legacyFormatDisplayToggleChangeListener != null) {
+            legacyFormatDisplayToggle.removeListener(legacyFormatDisplayToggleChangeListener);
+        }
+
+        return this;
+    }
 
     @Override
     public Dialog show(Stage stage) {
@@ -253,6 +288,10 @@ public class FilePicker extends Dialog {
         });
 
         content.add(pane).size(300, 350).colspan(2).fill().expand().row();
+
+        if (legacyFormatDisplayToggleEnabled) {
+            content.add(legacyFormatDisplayToggle).left().colspan(2).row();
+        }
 
         if (fileNameEnabled) {
             content.add(fileNameLabel);

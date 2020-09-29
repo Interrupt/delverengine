@@ -223,14 +223,23 @@ public class EditorFile {
     }
 
     private void promptOpenFile() {
-        class WSFilter implements FileFilter {
+        class DefaultFileFilter implements FileFilter {
+            @Override
+            public boolean accept(File path) {
+                String name = path.getName();
+                return (name.endsWith(".dat") || name.endsWith(".bin"));
+            }
+        }
+        FileFilter defaultFileFilter = new DefaultFileFilter();
+
+        class LegacyFileFilter implements FileFilter {
             @Override
             public boolean accept(File path) {
                 String name = path.getName();
                 return (name.endsWith(".dat") || name.endsWith(".png") || name.endsWith(".bin"));
             }
         }
-        FileFilter wsFilter = new WSFilter();
+        FileFilter legacyFileFilter = new LegacyFileFilter();
 
         if(Editor.app.file.directory() == null) {
             Editor.app.file = new EditorFile(new FileHandle("."));
@@ -240,7 +249,8 @@ public class EditorFile {
         picker.setFileNameEnabled(true);
         picker.setNewFolderEnabled(false);
         if(Editor.app.file.name() != null) picker.setFileName(Editor.app.file.name());
-        picker.setFilter(wsFilter);
+        picker.setFilter(defaultFileFilter);
+        picker.enableLegacyFormatDisplayToggle(defaultFileFilter, legacyFileFilter);
 
         picker.setResultListener(new FilePicker.ResultListener() {
             @Override
