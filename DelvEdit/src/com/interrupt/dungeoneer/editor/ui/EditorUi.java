@@ -250,6 +250,31 @@ public class EditorUi {
             }
         });
 
+        MenuItem generateRoomMenuItem = new DynamicMenuItem("Generate Room", smallSkin, new DynamicMenuItemAction() {
+            @Override
+            public boolean isDirty() {
+                return false;
+            }
+
+            @Override
+            public void updateMenuItem(MenuItem item) {
+                item
+                    // TODO: Generate this list dynamically.
+                    .addItem(new MenuItem("Dungeon Room", smallSkin, makeRoomGeneratorAction("DUNGEON_ROOMS")))
+                    .addItem(new MenuItem("Cave Room", smallSkin, makeRoomGeneratorAction("CAVE_ROOMS")))
+                    .addItem(new MenuItem("Sewer Room", smallSkin, makeRoomGeneratorAction("SEWER_ROOMS")))
+                    .addItem(new MenuItem("Temple Room", smallSkin, makeRoomGeneratorAction("TEMPLE_ROOMS")))
+                    .addSeparator()
+                    // TODO: Make this also dynamic and disabled when no room generated before.
+                    .addItem(
+                        new MenuItem("Re-Generate Room", smallSkin, makeAnotherRoomGeneratorAction())
+                            .setAccelerator(new MenuAccelerator(Keys.G, false, true))
+                    )
+                    .addSeparator()
+                    .addItem(new MenuItem("Refresh Room Listing", smallSkin));
+            }
+        });
+
         // make the menu bar
         menuBar = new Scene2dMenuBar(smallSkin);
         menuBar.addItem(new MenuItem("File", smallSkin)
@@ -353,18 +378,7 @@ public class EditorUi {
                 .addItem(new MenuItem("Set Theme", smallSkin, setThemeAction))
                 .addItem(new MenuItem("Set Fog Settings", smallSkin, setFogSettingsAction))
                 .addSeparator()
-                .addItem(
-                    new MenuItem("Generate Room", smallSkin)
-                        .addItem(new MenuItem("Dungeon Room", smallSkin, makeRoomGeneratorAction("DUNGEON_ROOMS")))
-                        .addItem(new MenuItem("Cave Room", smallSkin, makeRoomGeneratorAction("CAVE_ROOMS")))
-                        .addItem(new MenuItem("Sewer Room", smallSkin, makeRoomGeneratorAction("SEWER_ROOMS")))
-                        .addItem(new MenuItem("Temple Room", smallSkin, makeRoomGeneratorAction("TEMPLE_ROOMS")))
-                        .addSeparator()
-                        .addItem(
-                            new MenuItem("Re-Generate Room", smallSkin, makeAnotherRoomGeneratorAction())
-                                .setAccelerator(new MenuAccelerator(Keys.G, false, true))
-                        )
-                )
+                .addItem(generateRoomMenuItem)
                 .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction())
                     .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS")))
                     .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS")))
