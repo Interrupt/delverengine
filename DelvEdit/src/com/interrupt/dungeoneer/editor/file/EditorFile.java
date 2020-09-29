@@ -32,7 +32,7 @@ public class EditorFile {
     final Date lastSaveDate;
     byte[] historyMarker;
 
-    public static final String defaultName = "New Level";
+    public static final String defaultName = "New Level.bin";
     public static final String defaultDirectory = ".";
 
     public EditorFile() {
@@ -87,7 +87,7 @@ public class EditorFile {
         class WSFilter implements FileFilter {
             @Override
             public boolean accept(File pathname) {
-                return (pathname.getName().endsWith(".bin") || pathname.getName().endsWith(".dat"));
+                return hasValidSavableExtension(pathname.getName());
             }
         }
 
@@ -104,6 +104,7 @@ public class EditorFile {
             public boolean result(boolean success, FileHandle result) {
                 if(success) {
                     try {
+                        result = addDefaultExtension(result);
                         Editor.app.file = new EditorFile(result);
                         Editor.app.file.saveInternal();
                     }
@@ -226,8 +227,7 @@ public class EditorFile {
         class WSFilter implements FileFilter {
             @Override
             public boolean accept(File path) {
-                String name = path.getName();
-                return (name.endsWith(".dat") || name.endsWith(".png") || name.endsWith(".bin"));
+                return hasValidLoadableExtension(path.getName());
             }
         }
         FileFilter wsFilter = new WSFilter();
@@ -350,6 +350,22 @@ public class EditorFile {
 
     private void createInternal(int width, int height) {
         Editor.app.createEmptyLevel(width, height);
+    }
+
+    private FileHandle addDefaultExtension(FileHandle fileHandle) {
+        if (hasValidSavableExtension(fileHandle.name())) {
+            return fileHandle;
+        }
+
+        return new FileHandle(fileHandle.path() + ".bin");
+    }
+
+    private boolean hasValidSavableExtension(String fileName) {
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin"));
+    }
+
+    private boolean hasValidLoadableExtension(String fileName) {
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin") || fileName.endsWith(".png"));
     }
 
     public long getMillisSinceLastSave() {
