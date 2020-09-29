@@ -246,6 +246,7 @@ public class FilePicker extends Dialog {
 
         if (legacyFormatDisplayToggleChangeListener != null) {
             legacyFormatDisplayToggle.removeListener(legacyFormatDisplayToggleChangeListener);
+            legacyFormatDisplayToggleChangeListener = null;
         }
 
         legacyFormatDisplayToggleChangeListener = new ChangeListener() {
@@ -266,6 +267,7 @@ public class FilePicker extends Dialog {
 
         if (legacyFormatDisplayToggleChangeListener != null) {
             legacyFormatDisplayToggle.removeListener(legacyFormatDisplayToggleChangeListener);
+            legacyFormatDisplayToggleChangeListener = null;
         }
 
         return this;
