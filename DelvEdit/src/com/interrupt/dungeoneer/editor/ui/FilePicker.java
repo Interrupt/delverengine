@@ -244,11 +244,17 @@ public class FilePicker extends Dialog {
         ScrollPane pane = new ScrollPane(fileList, skin);
         pane.addListener(new InputListener() {
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                getStage().setScrollFocus(fromActor);
+                Stage stage = getStage();
+                if (stage != null) {
+                    stage.setScrollFocus(fromActor);
+                }
             }
 
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                getStage().setScrollFocus(null);
+                Stage stage = getStage();
+                if (stage != null) {
+                    stage.setScrollFocus(null);
+                }
             }
         });
 
