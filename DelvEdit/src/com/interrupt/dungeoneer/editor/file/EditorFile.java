@@ -227,8 +227,7 @@ public class EditorFile {
         class DefaultFileFilter implements FileFilter {
             @Override
             public boolean accept(File path) {
-                String name = path.getName();
-                return (name.endsWith(".dat") || name.endsWith(".bin"));
+                return hasValidLoadableExtension(path.getName());
             }
         }
         FileFilter defaultFileFilter = new DefaultFileFilter();
@@ -236,7 +235,8 @@ public class EditorFile {
         class LegacyFileFilter implements FileFilter {
             @Override
             public boolean accept(File path) {
-                return hasValidLoadableExtension(path.getName());
+                String name = path.getName();
+                return (hasValidLoadableExtension(name) || hasValidLoadableLegacyExtension(name));
             }
         }
         FileFilter legacyFileFilter = new LegacyFileFilter();
@@ -375,7 +375,11 @@ public class EditorFile {
     }
 
     private boolean hasValidLoadableExtension(String fileName) {
-        return (fileName.endsWith(".dat") || fileName.endsWith(".bin") || fileName.endsWith(".png"));
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin"));
+    }
+
+    private boolean hasValidLoadableLegacyExtension(String fileName) {
+        return fileName.endsWith(".png");
     }
 
     public long getMillisSinceLastSave() {
