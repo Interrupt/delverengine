@@ -87,39 +87,6 @@ public class EditorUi {
         };
     }
 
-    private ActionListener makeRoomGeneratorAction(final String generatorType) {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.getLevel().editorMarkers.clear();
-                Editor.app.getLevel().entities.clear();
-
-                Level generatedLevel = new Level(17,17);
-                generatedLevel.roomGeneratorType = generatorType;
-
-                RoomGenerator g = new RoomGenerator(generatedLevel, generatorType);
-                g.generate(true, true, true, true);
-
-                Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
-                Editor.app.getLevel().paste(generatedLevel, 0, 0);
-
-                Editor.app.refresh();
-
-                lastGeneratedRoomType = generatorType;
-            }
-        };
-    }
-
-    private static String lastGeneratedRoomType = "DUNGEON_ROOMS";
-    private ActionListener makeAnotherRoomGeneratorAction() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-            makeRoomGeneratorAction(lastGeneratedRoomType).actionPerformed(actionEvent);
-            }
-        };
-    }
-
     public EditorUi() {
         defaultSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.json"),
                 new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.atlas")));
@@ -251,27 +218,119 @@ public class EditorUi {
         });
 
         MenuItem generateRoomMenuItem = new DynamicMenuItem("Generate Room", smallSkin, new DynamicMenuItemAction() {
+            private String lastGeneratedRoomType = null;
+            private boolean needsRefresh = false;
+
             @Override
             public boolean isDirty() {
-                return false;
+                return needsRefresh;
             }
 
             @Override
             public void updateMenuItem(MenuItem item) {
-                item
-                    // TODO: Generate this list dynamically.
-                    .addItem(new MenuItem("Dungeon Room", smallSkin, makeRoomGeneratorAction("DUNGEON_ROOMS")))
-                    .addItem(new MenuItem("Cave Room", smallSkin, makeRoomGeneratorAction("CAVE_ROOMS")))
-                    .addItem(new MenuItem("Sewer Room", smallSkin, makeRoomGeneratorAction("SEWER_ROOMS")))
-                    .addItem(new MenuItem("Temple Room", smallSkin, makeRoomGeneratorAction("TEMPLE_ROOMS")))
-                    .addSeparator()
-                    // TODO: Make this also dynamic and disabled when no room generated before.
-                    .addItem(
-                        new MenuItem("Re-Generate Room", smallSkin, makeAnotherRoomGeneratorAction())
-                            .setAccelerator(new MenuAccelerator(Keys.G, false, true))
-                    )
-                    .addSeparator()
-                    .addItem(new MenuItem("Refresh Room Listing", smallSkin));
+                // Reset isDirty criteria.
+                needsRefresh = false;
+
+                // Remove existing generator entries.
+                if (item.subMenu != null) {
+                    item.subMenu.items.clear();
+                }
+
+                // Get available generators.
+                Array<String> generators = new Array<String>();
+                // TODO: Load generators from actual game files: /data/room-builders/<generator>_rooms.dat
+                generators.add("dungeon");
+                generators.add("cave");
+                generators.add("sewer");
+                generators.add("temple");
+                generators.sort();
+
+                // Make generator entries.
+                if (generators.size > 0) {
+                    for (String generator : generators) {
+                        String label = generator.substring(0, 1).toUpperCase() + generator.substring(1) + " Room";
+                        String generatorType = generator.toUpperCase() + "_ROOMS";
+
+                        item.addItem(new MenuItem(label, smallSkin, makeRoomGeneratorAction(generatorType)));
+                    }
+                } else {
+                    MenuItem emptyItem = new MenuItem("No generators found in /data/room-builders/", smallSkin);
+                    emptyItem.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
+                    item.addItem(emptyItem);
+                }
+
+                // Make re-generate entry.
+                if (generators.size > 0) {
+                    item.addSeparator();
+
+                    String generatorName = lastGeneratedRoomType != null
+                            ? (" (" + lastGeneratedRoomType.substring(0, 1)
+                                    + lastGeneratedRoomType.substring(1, lastGeneratedRoomType.indexOf("_"))
+                                            .toLowerCase()
+                                    + ")")
+                            : "";
+                    MenuItem menuItem = new MenuItem("Re-Generate Room" + generatorName, smallSkin,
+                            lastGeneratedRoomType != null ? makeRoomGeneratorAction() : makeEmptyAction())
+                                    .setAccelerator(new MenuAccelerator(Keys.G, false, true));
+
+                    if (lastGeneratedRoomType == null) {
+                        menuItem.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
+                        // TODO: Change color of accelerator label.
+                    }
+
+                    item.addItem(menuItem);
+                }
+
+                // Make refresh entry.
+                item.addSeparator().addItem(new MenuItem("Refresh Listing", smallSkin, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        needsRefresh = true;
+                    }
+                }));
+            }
+
+            private ActionListener makeRoomGeneratorAction(final String generatorType) {
+                return new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        Editor.app.getLevel().editorMarkers.clear();
+                        Editor.app.getLevel().entities.clear();
+
+                        Level generatedLevel = new Level(17, 17);
+                        generatedLevel.roomGeneratorType = generatorType;
+
+                        RoomGenerator generator = new RoomGenerator(generatedLevel, generatorType);
+                        generator.generate(true, true, true, true);
+
+                        Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
+                        Editor.app.getLevel().paste(generatedLevel, 0, 0);
+
+                        Editor.app.refresh();
+
+                        if (lastGeneratedRoomType != generatorType) {
+                            needsRefresh = true;
+                        }
+
+                        lastGeneratedRoomType = generatorType;
+                    }
+                };
+            }
+
+            private ActionListener makeRoomGeneratorAction() {
+                return new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        makeRoomGeneratorAction(lastGeneratedRoomType).actionPerformed(actionEvent);
+                    }
+                };
+            }
+
+            private ActionListener makeEmptyAction() {
+                return new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {}
+                };
             }
         });
 
