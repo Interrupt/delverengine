@@ -6,8 +6,13 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Game;
 
 public class TexturePainter {
+	/** Wall texture index mapping. */
 	protected HashMap<String, Array<Float>> wall = null;
+
+	/** Floor texture index mapping. */
 	protected HashMap<String, Array<Float>> floor = null;
+
+	/** Ceiling texture index mapping. */
 	protected HashMap<String, Array<Float>> ceiling = null;
 	
 	public TexturePainter() { }

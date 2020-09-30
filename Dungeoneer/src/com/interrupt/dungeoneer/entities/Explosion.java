@@ -12,68 +12,118 @@ import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.managers.EntityManager;
 
 public class Explosion extends Entity {
-	
+    /** Sound to play on explode. */
 	public String explodeSound = "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3";
+
+	/** Direction to orient decal. */
 	public Vector3 decalDirection = new Vector3(0.01f,0,-1f).nor();
+
+	/** Decal */
 	public ProjectedDecal hitDecal = null;
+
+	/** Number of particles to spawn. */
 	public int particleCount = 22;
+
+	/** Initial particle speed. */
     public float particleForce = 1f;
 
+    /** Particle sprite animation start index. */
     public int explosionStartTex = 1;
+
+    /** Particle sprite animation end index. */
     public int explosionEndTex = 3;
+
+    /** Particle sprite animation speed. */
     public float explosionAnimSpeed = 22f;
 	
-	// physics
+	// Physics
+    /** Impulse range. */
 	public float impulseDistance = 1f;
+
+	/** Impulse strength */
 	public float impulseAmount = 0.2f;
+
+	/** Screen shake range. */
     public float shakeDistance = 5f;
+
+    /** Screen shake strength. */
     public float shakeAmount = 3f;
 
+    /** Light color scalar. */
     public float lightMod = 1.6f;
+
+    /** Light color start value. */
     public Color explosionLightStartColor;
+
+    /** Light color end value. */
     public Color explosionLightEndColor = Colors.EXPLOSION_LIGHT_END;
+
+    /** Length of light color fade. */
     public float explosionLightLifetime = 40.0f;
 
+    /** Time to delay explosion in milliseconds. */
     public float explodeDelay = 0;
     public float fuseTimer = 0;
 
+    /** Create dust ring on explode? */
     public boolean makeDustRing = false;
+
+    /** Dust ring color. */
     public Color dustRingColor;
 
+    /** Create fly aways? */
     public boolean makeFlyAways = false;
+
+    /** Fly away color. */
     public Color flyAwayColor;
 
     public float randomRoll = 0f;
 
     @Deprecated
     public boolean hasHalo = true;
-
     public HaloMode haloMode = HaloMode.NONE;
 	
-	// damage!
+	// Damage!
+    /** Damage amount. */
 	public float damage = 0f;
+
+	/** Damage type. */
 	public DamageType damageType = DamageType.PHYSICAL;
 
     public transient Interpolation interpolation = Interpolation.pow2;
 
+    /** List of entities to potentially spawn. */
     public Array<Entity> spawns = null;
+
+    /** Number of entities to create. */
     int spawnsCount = 1;
+
+    /** Spawned entity initial velocity. */
     public Vector3 spawnVelocity = new Vector3(0.0f, 0.0f, 0.0625f);
+
+    /** Spawned entity initial random velocity. */
     public Vector3 spawnRandomVelocity = new Vector3(0.125f, 0.125f, 0.0625f);
+
+    /** Spawned entity random position offset. */
     public Vector3 spawnSpread = new Vector3(0.125f, 0.125f, 0.0f);
+
+    /** Amount of speed spawned entity receives. */
     public float spawnMomentumTransfer = 1.0f;
 
+    /** Chance to apply status effect. */
     public float applyStatusEffectChance = 1.0f;
+
+    /** Status effect. */
     public StatusEffect applyStatusEffect = null;
 	
+	public transient Entity owner = null;
+
 	public Explosion() {
 	    artType = ArtType.hidden;
         color = null;
         fullbrite = true;
 	}
-	
-	public transient Entity owner = null;
-	
+
 	public Explosion(float x, float y, float z, float impulse, float radius) {
 		artType = ArtType.hidden;
         color = null;

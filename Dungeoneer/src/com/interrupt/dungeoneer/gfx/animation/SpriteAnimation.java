@@ -15,25 +15,41 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.interfaces.Directional;
 
 public class SpriteAnimation {
-	
+	/** Starting frame sprite index. */
 	public int start;
+
+	/** Ending frame sprite index. */
 	public int end;
+
+	/** Animation length in milliseconds. */
 	public float speed;
+
 	public int nextFrameOffset = 1;
 	
 	private int lastTex;
 	private int currentTex;
 	private float time;
-	
+
+	/** Is animation finished? */
 	public boolean done = false;
+
+	/** Does animation loop? */
 	public boolean looping = false;
+
+	/** Is animation playing? */
 	public boolean playing = false;
-	
+
+	/** Mapping of animation frame indices to AnimationAction arrays. */
 	public HashMap<String, Array<AnimationAction>> actions = null;
 
+	/** Number of sprite directions. */
 	public int directions = 1;
+
+	/** Flip sprite for left/right facing? */
 	public boolean flipDirections = true;
+
 	public int directionsOffset = 1;
+
 	public boolean reverseDirectionOrder = false;
 	
 	public SpriteAnimation() { }

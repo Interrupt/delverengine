@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Localized String",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.game.LocalizedString",
+            "description": "Fully-qualified Java class name."
+        },
+        "localizedName": {
+            "type": "string",
+            "description": "Translated string that will display in game."
+        },
+        "comment": {
+            "type": "string",
+            "description": "Comment to provide useful context to translator.",
+            "default": ""
+        },
+        "form": {
+            "type": "string",
+            "description": "A string used to describe the gender and count of a noun. Only used for items."
+        },
+        "forms": {
+            "patternProperties": {
+                ".*": {
+                    "type": "string"
+                }
+            },
+            "description": "A table of form to forms strings used to ensure adjectives and nouns agree. Only used for items."
+        }
+    },
+    "required": [
+        "class",
+        "localizedName"
+    ]
+}

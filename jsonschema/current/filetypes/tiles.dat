@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Tile Data",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "tileData": {
+            "type": "object",
+            "description": "",
+            "patternProperties": {
+                ".*": {
+                    "type": "object",
+                    "description": "TextureAtlas name.",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "object",
+                            "$ref": "../dungeoneer/tiles/TileData.schema.json"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

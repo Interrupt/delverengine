@@ -1,0 +1,459 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Door",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.entities.Door",
+            "description": "Fully-qualified Java class name.",
+            "baseClass": "Door"
+        },
+        "doorMesh": {
+            "type": "string",
+            "description": "Door mesh filepath.",
+            "baseClass": "Door",
+            "default": "meshes/door_0.obj"
+        },
+        "doorTexture": {
+            "type": "string",
+            "description": "Door texture filepath.",
+            "baseClass": "Door",
+            "default": "door.pong"
+        },
+        "doorState": {
+            "$ref": "#/definitions/DoorState",
+            "description": "Current DoorState.",
+            "baseClass": "Door",
+            "default": "CLOSED"
+        },
+        "doorOpenType": {
+            "$ref": "#/definitions/DoorOpenType",
+            "description": "How does door open.",
+            "baseClass": "Door",
+            "default": "ROTATE"
+        },
+        "doorDirection": {
+            "$ref": "#/definitions/DoorDirection",
+            "description": "Door's cardinal direction.",
+            "baseClass": "Door",
+            "default": "NORTH"
+        },
+        "doorType": {
+            "$ref": "#/definitions/DoorType",
+            "description": "Door's type.",
+            "baseClass": "Door",
+            "default": "NORMAL"
+        },
+        "doorInvertOpen": {
+            "type": "boolean",
+            "description": "Flip door open direction?",
+            "baseClass": "Door",
+            "default": false
+        },
+        "isLocked": {
+            "type": "boolean",
+            "description": "Is door locked?",
+            "baseClass": "Door",
+            "default": false
+        },
+        "takesKey": {
+            "type": "boolean",
+            "description": "Can door be unlocked with a key?",
+            "baseClass": "Door",
+            "default": false
+        },
+        "getsStuckOpen": {
+            "type": "boolean",
+            "description": "Does door stay open?",
+            "baseClass": "Door",
+            "default": false
+        },
+        "triggersId": {
+            "type": "string",
+            "description": "Id to trigger on open/close.",
+            "baseClass": "Door",
+            "default": ""
+        },
+        "openSound": {
+            "type": "string",
+            "description": "Filepath of sound to play on door open.",
+            "baseClass": "Door",
+            "default": "wood-door-open.mp3"
+        },
+        "closingSound": {
+            "type": "string",
+            "description": "Filepath of sound to play while door closing.",
+            "baseClass": "Door",
+            "default": "wood-door-close.mp3"
+        },
+        "closedSound": {
+            "type": "string",
+            "description": "Filepath of sound to play when door done closing.",
+            "baseClass": "Door",
+            "default": "wood-door-close-click.mp3"
+        },
+        "breakable": {
+            "type": "boolean",
+            "description": "Can door be destroyed?",
+            "baseClass": "Door",
+            "default": true
+        },
+        "hp": {
+            "type": "integer",
+            "description": "Door maximum hit points.",
+            "baseClass": "Door",
+            "default": 5
+        },
+        "gibSpriteTexStart": {
+            "type": "integer",
+            "description": "Door gib range starting sprite index.",
+            "baseClass": "Door",
+            "default": 40
+        },
+        "gibSpriteTexEnd": {
+            "type": "integer",
+            "description": "Door gib range ending sprite index.",
+            "baseClass": "Door",
+            "default": 42
+        },
+        "gibNum": {
+            "type": "integer",
+            "description": "Number of gibs to create when destroyed.",
+            "baseClass": "Door",
+            "default": 14
+        },
+        "stuckChance": {
+            "type": "number",
+            "description": "Chance door is stuck closed.",
+            "baseClass": "Door",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 1.0
+        },
+        "breakSound": {
+            "type": "string",
+            "description": "Filepath of sound to play when door is destroyed.",
+            "baseClass": "Door"
+        },
+        "triggerMode": {
+            "$ref": "#/definitions/DoorTriggeredMode",
+            "description": "Which action triggers door event.",
+            "baseClass": "Door",
+            "default": "OPEN_CLOSE"
+        },
+        "shakeAmount": {
+            "type": "number",
+            "description": "Amount to shake when hit/stuck.",
+            "baseClass": "Door",
+            "default": 4
+        },
+        "gibVelocity": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Random velocity range to apply to gibs.",
+            "baseClass": "Door",
+            "default": {
+                "x": 0.02,
+                "y": 0.02,
+                "z": 0.04
+            }
+        },
+        "startLoc": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Door collision origin.",
+            "baseClass": "Door"
+        },
+        "id": {
+            "type": "string",
+            "description": "Id of Entity.",
+            "baseClass": "Entity"
+        },
+        "x": {
+            "type": "number",
+            "description": "Position x-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "y": {
+            "type": "number",
+            "description": "Position y-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "z": {
+            "type": "number",
+            "description": "Position z-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "xa": {
+            "type": "number",
+            "description": "Velocity x-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "ya": {
+            "type": "number",
+            "description": "Velocity y-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "za": {
+            "type": "number",
+            "description": "Velocity z-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "roll": {
+            "type": "number",
+            "description": "Roll used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "tex": {
+            "type": "integer",
+            "description": "Sprite index.",
+            "baseClass": "Entity"
+        },
+        "isActive": {
+            "type": "boolean",
+            "description": "Should Entity be updated and drawn.",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "yOffset": {
+            "type": "number",
+            "description": "Vertical offset used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 0
+        },
+        "shader": {
+            "type": "string",
+            "description": "Shader name used to draw the Entity.",
+            "baseClass": "Entity"
+        },
+        "artType": {
+            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "baseClass": "Entity"
+        },
+        "spriteAtlas": {
+            "type": "string",
+            "description": "Sprite TextureAtlas name.",
+            "baseClass": "Entity"
+        },
+        "entityType": {
+            "$ref": "Entity.schema.json#/definitions/EntityType",
+            "baseClass": "Entity"
+        },
+        "isSolid": {
+            "type": "boolean",
+            "description": "Can other entities collide with this Entity.",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "collision": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Dimensions of Entity bounding box.",
+            "baseClass": "Entity"
+        },
+        "collidesWith": {
+            "$ref": "Entity.schema.json#/definitions/CollidesWith",
+            "baseClass": "Entity",
+            "default": "all"
+        },
+        "scale": {
+            "type": "number",
+            "description": "Scale used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 1.0
+        },
+        "hidden": {
+            "type": "boolean",
+            "description": "Should Entity not be drawn?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isDynamic": {
+            "type": "boolean",
+            "description": "Is this a physics object?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "spawnChance": {
+            "type": "number",
+            "description": "Chance to be created.",
+            "baseClass": "Entity",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "detailLevel": {
+            "$ref": "Entity.schema.json#/definitions/DetailLevel",
+            "description": "Detail level at which to be drawn",
+            "baseClass": "Entity",
+            "default": "LOW"
+        },
+        "drawDistance": {
+            "$ref": "Entity.schema.json#/definitions/DrawDistance",
+            "description": "Distance at which to be drawn.",
+            "baseClass": "Entity",
+            "default": "FAR"
+        },
+        "canStepUpOn": {
+            "type": "boolean",
+            "description": "Can Entity be stepped up on?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "floating": {
+            "type": "boolean",
+            "description": "Is Entity floating?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "mass": {
+            "type": "number",
+            "description": "Mass of Entity.",
+            "baseClass": "Entity",
+            "default": 1.0
+        },
+        "dropSound": {
+            "type": "string",
+            "description": "Sound played when Entity hits the floor.",
+            "baseClass": "Entity",
+            "default": "drops/drop_soft.mp3"
+        },
+        "shadowType": {
+            "$ref": "Entity.schema.json#/definitions/ShadowType",
+            "description": "Type of drop shadow.",
+            "baseClass": "Entity",
+            "default": "NONE"
+        },
+        "bounces": {
+            "type": "boolean",
+            "description": "Does Entity bounce?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "stepHeight": {
+            "type": "number",
+            "description": "How high can Entity step up?",
+            "baseClass": "Entity",
+            "default": 0.5
+        },
+        "pushable": {
+            "type": "boolean",
+            "description": "Can Entity be pushed?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isStatic": {
+            "type": "boolean",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isOnFloor": {
+            "type": "boolean",
+            "description": "Is Entity on the floor?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isOnEntity": {
+            "type": "boolean",
+            "description": "Is Entity on another Entity?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "ignorePlayerCollision": {
+            "type": "boolean",
+            "description": "Ignore collision with Player?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "color": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Entity tint color.",
+            "baseClass": "Entity",
+            "default": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0
+            }
+        },
+        "fullbrite": {
+            "type": "boolean",
+            "description": "Draw Entity without shading?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "attachmentTransform": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Position offset of attached Entities.",
+            "baseClass": "Entity"
+        },
+        "attached": {
+            "type": "array",
+            "description": "Array of attached Entities.",
+            "baseClass": "Entity"
+        }
+    },
+    "required": [
+        "class"
+    ],
+    "default": {
+        "class": "com.interrupt.dungeoneer.entities.Door",
+        "artType": "texture",
+        "isSolid": true,
+        "dir": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+        },
+        "isActive": true,
+        "stepHeight": 0,
+        "isDynamic": true
+    },
+    "definitions": {
+        "DoorState": {
+            "type": "string",
+            "enum": [
+                "CLOSED",
+                "OPENING",
+                "OPEN",
+                "CLOSING",
+                "STUCK"
+            ]
+        },
+        "DoorOpenType": {
+            "type": "string",
+            "enum": [
+                "SLIDE",
+                "SLIDE_UP",
+                "ROTATE",
+                "ROTATE_UP"
+            ]
+        },
+        "DoorDirection": {
+            "type": "string",
+            "enum": [
+                "NORTH",
+                "SOUTH",
+                "EAST",
+                "WEST"
+            ]
+        },
+        "DoorType": {
+            "type": "string",
+            "enum": [
+                "NORMAL",
+                "TRAPDOOR"
+            ]
+        },
+        "DoorTriggeredMode": {
+            "type": "string",
+            "enum": [
+                "OPEN_CLOSE",
+                "LOCK_UNLOCK"
+            ]
+        }
+    }
+}

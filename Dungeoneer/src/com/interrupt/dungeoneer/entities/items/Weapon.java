@@ -1,33 +1,30 @@
 package com.interrupt.dungeoneer.entities.items;
 
-import java.text.MessageFormat;
-import java.util.Random;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.collision.Collidor;
-import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.ProjectedDecal;
-import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.managers.StringManager;
 
+import java.text.MessageFormat;
+import java.util.Random;
+
 public class Weapon extends Item {
-	
 	public enum DamageType { PHYSICAL, MAGIC, FIRE, ICE, LIGHTNING, POISON, HEALING, PARALYZE, VAMPIRE }
 
+	/** Base modifiers */
 	public ItemModification baseMods;
-	
+
+	/** Damage type */
 	@EditorProperty
 	public DamageType damageType = DamageType.PHYSICAL;
 
@@ -36,44 +33,56 @@ public class Weapon extends Item {
 	}
 	
 	public Weapon() { }
-	
+
+	/** Base amount of damage to deal */
 	@EditorProperty
 	protected int baseDamage = 2;
-	
+
+	/** Random amount of damage to deal */
 	@EditorProperty
 	protected int randDamage = 2;
-	
+
+	/** Strength of knockback effect */
 	@EditorProperty
 	public float knockback = 0.8f;
-	
+
+	/** Distance which weapon can hit */
 	@EditorProperty
 	public float reach = 0.5f;
-	
+
+	/** Length of attack animation */
 	@EditorProperty
 	public float speed = 0.5f;
 	
 	@EditorProperty
 	public float chargespeed = 1;
-	
+
+	/** Name of animation to play for a standard attack */
 	@EditorProperty
 	public String attackAnimation = null;
-	
+
+	/** Name of animation to play for a charged attack */
 	@EditorProperty
 	public String attackStrongAnimation = null;
-	
+
+	/** Name of animation to play for charging windup */
 	@EditorProperty
 	public String chargeAnimation = null;
-	
+
+	/** Requires two hands? */
 	@EditorProperty
 	public boolean twoHanded = false;
 
+	/** How durable weapon is */
 	@EditorProperty
 	public int durability = 25;
 	private int currentDurability = 0;
 
+	/** Can perform a charged attack? */
 	@EditorProperty
 	public boolean chargesAttack = true;
 
+	/** Sprite index of item while held */
 	@EditorProperty( group = "Visual", type = "SPRITE_ATLAS_NUM" )
 	public int brokenTex = -1;
 

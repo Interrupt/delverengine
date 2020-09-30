@@ -18,17 +18,35 @@ public class Stats {
 		this.MAG = MAG;
 		this.END = END;
 	}
-	
+
+	/** Attack stat. */
 	public int ATK = 4;
+
+	/** Defense stat. */
 	public int DEF = 4;
+
+	/** Dexterity stat. */
 	public int DEX = 4;
+
+	/** Speed stat. */
 	public int SPD = 4;
+
+	/** Magic stat. */
 	public int MAG = 4;
+
+	/** Endurance stat. */
 	public int END = 4;
+
+	/** Healthpoints stat. */
 	public int HP = 8;
 
+	/** Attack speed modifier. */
 	public float attackSpeedMod = 0f;
+
+	/** Knockback modifier. */
 	public float knockbackMod = 0f;
+
+	/** Magic resistance modifier. */
 	public float magicResistMod = 0f;
 
 	private transient int LAST_ATK;

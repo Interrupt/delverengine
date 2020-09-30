@@ -11,18 +11,21 @@ import com.interrupt.dungeoneer.statuseffects.RestoreHealthEffect;
 import com.interrupt.managers.StringManager;
 
 public class Food extends Item {
-	
 	public enum FoodType { food, booze }
-	
+
+	/** Food type. */
 	@EditorProperty
 	public FoodType foodType = FoodType.food;
 
+	/** Food modifier. Scales length of healing. */
 	@EditorProperty
 	public float foodMod = 1.0f;
 
+	/** Sound played when Food is consumed. */
 	@EditorProperty( group = "Audio", type = "FILE_PICKER", params = "audio", include_base = false )
 	private String consumeSound = null;
 
+	/** Description of Food item. */
 	@EditorProperty
 	public String infoText = "items.Food.infoText";
 	

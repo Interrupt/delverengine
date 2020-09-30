@@ -2,30 +2,27 @@ package com.interrupt.dungeoneer.entities.triggers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.editor.EditorMarker;
-import com.interrupt.dungeoneer.entities.DynamicLight;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Light;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.serializers.v2.LevelSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class LevelSwap extends Trigger {
-
+    /** Filename of level to insert when triggered. */
     @EditorProperty
     public String levelFilename;
 
+    /** Update lights after level is inserted? */
     @EditorProperty
     public boolean updateLights = true;
 
-    public LevelSwap() { }
+    private int rotAccumulator = 0;
 
-    int rotAccumulator = 0;
+    public LevelSwap() { }
 
     // triggers can be delayed, fire the actual trigger here
     public void doTriggerEvent(String value) {

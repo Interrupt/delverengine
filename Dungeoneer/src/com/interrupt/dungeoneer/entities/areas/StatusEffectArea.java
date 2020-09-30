@@ -8,15 +8,19 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 
 public class StatusEffectArea extends Area {
+    /** Status effect type. */
     @EditorProperty
     public StatusEffect.StatusEffectType effectType = StatusEffect.StatusEffectType.POISON;
 
+    /** Show particle effect? */
     @EditorProperty
     public boolean showParticleEffect = true;
 
+    /** Status effect duration. */
     @EditorProperty
     public float statusEffectTime = 20f;
 
+    /** Does effect stop when exiting the area? */
     public boolean stopOnExit = false;
 
     public Array<Entity> entitiesEncroaching = new Array<Entity>();

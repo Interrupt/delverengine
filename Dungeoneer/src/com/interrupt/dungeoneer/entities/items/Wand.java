@@ -6,10 +6,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.*;
+import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.Particle;
+import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.spells.MagicMissile;
 import com.interrupt.dungeoneer.entities.spells.Spell;
-import com.interrupt.dungeoneer.entities.spells.SpreadMagicMissile;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -19,26 +20,29 @@ import com.interrupt.managers.StringManager;
 import java.text.MessageFormat;
 
 public class Wand extends Weapon {
-	
-	public Wand() { attackAnimation = "wandAttack"; chargeAnimation = "wandCharge"; equipSound = "/ui/ui_equip_item.mp3"; }
-	
+    /** Spell to cast when fired. */
 	public Spell spell = new MagicMissile();
-	
+
+	/** Current number of charges. */
 	@EditorProperty
 	public int charges = 0;
 
+    /** Require charges to fire? */
 	@EditorProperty
 	public boolean usesCharges = true;
 	
 	private transient int lastComputedChargeValue = 0;
 	private transient String chargeText = "0";
 
+    /** Fire automatically? */
 	@EditorProperty
 	public boolean autoFire = false;
 
+    /** Time between automatic shots in milliseconds. */
 	@EditorProperty
 	public float autoFireTime = 0.1f;
 
+    /** Magic stat scalar for contributing to charge count. */
 	@EditorProperty
 	protected float magicStatBoostMod = 1f;
 
@@ -47,6 +51,8 @@ public class Wand extends Weapon {
 	private Entity fireEffect = null;
 	private transient Particle chargeEffect = null;
 	private float chargeTime = 0f;
+
+    public Wand() { attackAnimation = "wandAttack"; chargeAnimation = "wandCharge"; equipSound = "/ui/ui_equip_item.mp3"; }
 
 	public Wand(float x, float y) {
 		super(x, y, 16, ItemType.wand, StringManager.get("items.Wand.defaultNameText"));

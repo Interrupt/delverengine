@@ -11,6 +11,7 @@ import com.interrupt.dungeoneer.game.Options;
 import java.util.Random;
 
 public class Heal extends Spell {
+    /** Heal amount. */
 	private int heal = 6;
 
 	public Heal() { }

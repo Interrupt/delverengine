@@ -1,0 +1,169 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Level",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.game.Level",
+            "description": "Fully-qualified Java class name."
+        },
+        "dungeonLevel": {
+            "type": "integer",
+            "description": "Depth where level is placed.",
+            "default": 1
+        },
+        "levelName": {
+            "type": "string",
+            "description": "Name of level."
+        },
+        "darkness": {
+            "type": "number",
+            "description": "Unused."
+        },
+        "makeStairsDown": {
+            "type": "boolean",
+            "description": "Should generator create stairs down.",
+            "default": true
+        },
+        "fogStart": {
+            "type": "number",
+            "description": "Starting distance of fog."
+        },
+        "fogEnd": {
+            "type": "number",
+            "description": "Ending distance of fog."
+        },
+        "fogColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Color of fog."
+        },
+        "viewDistance": {
+            "type": "number",
+            "description": "Camera far draw distance.",
+            "default": 15.0
+        },
+        "skyLightColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Color from skybox."
+        },
+        "shadowColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Color of shadows."
+        },
+        "skybox": {
+            "$ref": "../gfx/drawables/DrawableMesh.schema.json",
+            "description": "Skybox mesh."
+        },
+        "generated": {
+            "type": "boolean",
+            "description": "Is the level procedurally generated from room pieces.",
+            "default": false
+        },
+        "roomGeneratorType": {
+            "type": "string",
+            "description": "Name of room generator type to use."
+        },
+        "roomGeneratorChance": {
+            "type": "number",
+            "description": "Chance any given room is procedurally generated."
+        },
+        "defaultWallTex": {
+            "type": "integer",
+            "description": "Default wall texture index.",
+            "default": 0
+        },
+        "defaultCeilTex": {
+            "type": "integer",
+            "description": "Default ceiling texture index.",
+            "default": 1
+        },
+        "defaultFloorTex": {
+            "type": "integer",
+            "description": "Default floor texture index.",
+            "default": 2
+        },
+        "wallPainter": {
+            "$ref": "../generator/TexturePainter.schema.json#/definitions/TextureIndexMapping",
+            "description": "Wall Texture Painter"
+        },
+        "floorPainter": {
+            "$ref": "../generator/TexturePainter.schema.json#/definitions/TextureIndexMapping",
+            "description": "Floor Texture Painter"
+        },
+        "ceilPainter": {
+            "$ref": "../generator/TexturePainter.schema.json#/definitions/TextureIndexMapping",
+            "description": "Ceiling Texture Painter"
+        },
+        "levelFileName": {
+            "type": "string",
+            "description": "Filepath to level file. Used for non-generated levels."
+        },
+        "spawnMonsters": {
+            "type": "boolean",
+            "description": "Are monsters spawned on this level.",
+            "default": true
+        },
+        "theme": {
+            "type": "string",
+            "description": "Theme to apply to level."
+        },
+        "alternateMonsterThemes": {
+            "type": "array",
+            "description": "Array of additional themes to pull monsters from.",
+            "items": {
+                "type": "string",
+                "description": "Theme name."
+            }
+        },
+        "music": {
+            "type": "string",
+            "description": "Comma separated list of mp3 filepaths."
+        },
+        "actionMusic": {
+            "type": "string",
+            "description": "Comma separated list of mp3 filepaths."
+        },
+        "loopMusic": {
+            "type": "boolean",
+            "description": "Play music on a loop."
+        },
+        "ambientSound": {
+            "type": "string",
+            "description": "Ambient sound filepath."
+        },
+        "ambientSoundVolume": {
+            "type": "number",
+            "description": "Ambient sound volume."
+        },
+        "spawnRates": {
+            "$ref": "SpawnRate.schema.json",
+            "description": "Table of spawn rates."
+        },
+        "traps": {
+            "type": "array",
+            "description": "Array of trap prefab names.",
+            "items": {
+                "type": "string",
+                "description": "Prefab name."
+            }
+        },
+        "loadingScreenBackground": {
+            "type": "string",
+            "description": "Loading screen background image filepath."
+        }
+    },
+    "required": [
+        "class",
+        "fogStart",
+        "fogEnd",
+        "theme"
+    ],
+    "default": {
+        "class": "com.interrupt.dungeoneer.game.Level",
+        "levelName": "Level",
+        "fogStart": 10,
+        "fogEnd": 20,
+        "theme": "TEST"
+    }
+}

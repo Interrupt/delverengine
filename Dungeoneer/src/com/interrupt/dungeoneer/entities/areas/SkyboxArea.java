@@ -10,9 +10,11 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 public class SkyboxArea extends Area {
     public SkyboxArea() { hidden = true; spriteAtlas = "editor"; tex = 11; isStatic = false; isDynamic = true; }
 
+    /** Path to mesh file of skybox. */
     @EditorProperty( group = "Visual", type = "FILE_PICKER", params = "meshes")
     public String skyboxMesh = "meshes/sky.obj";
 
+    /** Path to texture file for skybox. */
     @EditorProperty( group = "Visual", type = "FILE_PICKER", params = "")
     public String skyboxTexture = "sky.png";
 

@@ -18,7 +18,8 @@ import java.util.Random;
 public class Potion extends Item {
 	
 	public enum PotionType { health, magic, maxhealth, poison, restore, shield, paralyze }
-	
+
+	/** Potion type. */
 	@EditorProperty
 	public PotionType potionType = PotionType.health;
 	

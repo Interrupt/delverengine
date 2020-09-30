@@ -1,45 +1,39 @@
 package com.interrupt.dungeoneer.entities.items;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.interrupt.dungeoneer.Audio;
-import com.interrupt.dungeoneer.GameApplication;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.entities.DynamicLight;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.projectiles.Missile;
-import com.interrupt.dungeoneer.entities.spells.Beam;
-import com.interrupt.dungeoneer.entities.spells.MagicMissile;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.ui.Hud;
+import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
 
 public class Bow extends Weapon {
-	
+	/** Distance a fully charged shot will travel. */
+	@EditorProperty
+	public int range = 4;
+
+	/** Sound played when Bow is shot. */
+	@EditorProperty
+	public String fireSound = "bow.mp3,bow_02.mp3,bow_03.mp3,bow_04.mp3";
+
 	public Bow() { super(0, 0, 15, ItemType.bow, StringManager.get("items.Bow.defaultName")); this.yOffset = 0.085f; attackAnimation = "bowAttack"; chargeAnimation = "bowCharge"; shadowType = ShadowType.BLOB;  }
 
 	public Bow(float x, float y) {
 		super(x, y, 15, ItemType.bow, StringManager.get("items.Bow.defaultName"));
 	}
 
-	@EditorProperty
-	public int range = 4;
-	
 	public String GetInfoText() {
 		return MessageFormat.format(StringManager.get("items.Bow.rangeText"), this.range) + "\n" + super.GetInfoText();
 	}
-	
-	@EditorProperty
-	public String fireSound = "bow.mp3,bow_02.mp3,bow_03.mp3,bow_04.mp3";
-	
+
 	@Override
 	public void doAttack(Player p, Level lvl, float attackPower) {
 		Missile missile = getAmmo();
@@ -120,7 +114,7 @@ public class Bow extends Weapon {
 				if(stack.count > 0) {
 					stack.count--;
 					if(stack.count == 0) Game.instance.player.removeFromInventory(found);
-					return (Missile)Game.instance.itemManager.Copy(Missile.class, stack.item);
+					return (Missile) ItemManager.Copy(Missile.class, stack.item);
 				}
 			}
 		}

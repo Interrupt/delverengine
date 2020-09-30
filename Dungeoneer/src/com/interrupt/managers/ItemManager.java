@@ -1,45 +1,61 @@
 package com.interrupt.managers;
 
-import java.util.*;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
-import com.interrupt.dungeoneer.entities.ItemSpawner;
-import com.interrupt.dungeoneer.entities.items.Armor;
-import com.interrupt.dungeoneer.entities.items.Decoration;
-import com.interrupt.dungeoneer.entities.items.Food;
-import com.interrupt.dungeoneer.entities.items.Gold;
-import com.interrupt.dungeoneer.entities.items.ItemModification;
-import com.interrupt.dungeoneer.entities.items.Potion;
+import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.entities.items.Potion.PotionType;
-import com.interrupt.dungeoneer.entities.items.Scroll;
-import com.interrupt.dungeoneer.entities.items.Sword;
-import com.interrupt.dungeoneer.entities.items.Wand;
-import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Progression;
 import com.interrupt.dungeoneer.rpg.Stats;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.helpers.LootListHelper;
 
-public class ItemManager {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
+public class ItemManager {
+    /** Mapping of dungeon level to melee weapon table. */
 	public HashMap<String, Array<Sword>> melee;
+
+    /** Mapping of dungeon level to armor table. */
 	public HashMap<String, Array<Armor>> armor;
+
+	/** Mapping of dungeon level to ranged weapon table. */
 	public HashMap<String, Array<Item>> ranged;
+
+	/** Unique item table. */
     public Array<Item> unique;
+
+    /** Wand table. */
 	public Array<Wand> wands;
+
+	/** Potion table. */
 	public Array<Potion> potions;
+
+	/** Food table */
 	public Array<Food> food;
+
+	/** Scroll table */
 	public Array<Scroll> scrolls;
+
+	/** Decoration table */
 	public Array<Decoration> decorations;
+
+	/** Junk table */
 	public Array<Item> junk;
+
+	/** Weapon enchantment table */
 	public Array<ItemModification> weaponEnchantments;
+
+	/** Weapon prefix enchantment table */
     public Array<ItemModification> weaponPrefixEnchantments = null;
 
+	/** Armor enchantment table */
     public Array<ItemModification> armorEnchantments = null;
+
+	/** Armor prefix enchantment table */
     public Array<ItemModification> armorPrefixEnchantments = null;
 
 	public HashMap<String, Item> itemsByName = null;

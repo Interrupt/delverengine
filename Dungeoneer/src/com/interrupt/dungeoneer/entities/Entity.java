@@ -21,27 +21,51 @@ import com.interrupt.dungeoneer.tiles.Tile;
 
 import java.util.Random;
 
+/** Base class for all entities in Delver Engine Levels. */
 public class Entity {
-	
+	/** Id of Entity. */
 	@EditorProperty( group = "General" )
 	public String id;
-	
+
 	@EditorProperty( group = "Visual" )
 	public Drawable drawable;
-	
-	public float x, y, z;
-	public float xa, ya, za;
+
+	/** Position x-component. */
+	public float x;
+
+	/** Position y-component. */
+	public float y;
+
+	/** Position z-component. */
+	public float z;
+
+	/** Velocity x-component. */
+	public float xa;
+
+	/** Velocity y-component. */
+	public float ya;
+
+	/** Velocity z-component. */
+	public float za;
+
+	/** Roll used when drawing the Entity. */
 	public float roll;
-	
+
+	/** Sprite index. */
 	@EditorProperty( group = "Visual", type = "SPRITE_ATLAS_NUM" )
 	public int tex;
-	
+
+	/** Should the Entity be ticked and drawn? */
 	public boolean isActive = true;
+
+	/** Z component of the Entity position last tick. */
 	protected float lastZ;
-	
+
+	/** Vertical offset used when drawing the Entity. */
 	@EditorProperty( group = "Visual" )
 	public float yOffset = 0;
 
+	/** Shader name used to draw the Entity. */
 	@EditorProperty( group = "Visual" )
 	public String shader = null;
 
@@ -52,115 +76,178 @@ public class Entity {
 	public enum EntityType { generic, item, monster };
 	public enum CollidesWith { staticOnly, all, actorsOnly, nonActors };
 	public enum EditorState { none, hovered, picked };
-	public enum DetailLevel { LOW, MEDIUM, HIGH, ULTRA }
-	public enum ShadowType { NONE, BLOB, RECTANGLE }
-	public enum DrawDistance { NEAR, MEDIUM, FAR }
+
+	/** Detail level for Entity. */
+	public enum DetailLevel {
+		/** Low detail level. Always create Entity. */
+		LOW,
+
+		/** Medium detail level. Create Entity if at least medium level of detail. */
+		MEDIUM,
+
+		/** High detail level. Create Entity if at least high level of detail. */
+		HIGH,
+
+		/** Ultra detail level. Only Create Entity if ultra level of detail. */
+		ULTRA
+	}
+
+	/** Shadow for Entity. */
+	public enum ShadowType {
+		/** No shadow. */
+		NONE,
+
+		/** Round shadow. */
+		BLOB,
+
+		/** Rectangular shadow. */
+		RECTANGLE
+	}
+
+	/** Draw distance for Entity */
+	public enum DrawDistance {
+		/** Near draw distance. */
+		NEAR,
+
+		/** Medium draw distance. */
+		MEDIUM,
+
+		/** Far draw distance. */
+		FAR
+	}
 	public enum BlendMode { OPAQUE, ALPHA, ADD }
 	public enum HaloMode { NONE, BOTH, STENCIL_ONLY, CORONA_ONLY }
-	
+
 	public ArtType artType;
 
+	/** Sprite TextureAtlas name. */
 	public String spriteAtlas = null;
-	
+
 	public EntityType type;
-	
-	// whether entities collide with this
+
+	/** Can other entities collide with this Entity? */
 	@EditorProperty( group = "Physics" )
 	public boolean isSolid = false;
-	
+
+	/** Dimensions of Entity bounding box. */
 	@EditorProperty( group = "Physics" )
 	public Vector3 collision = new Vector3(0.125f, 0.125f, 0.25f);
-	
+
 	@EditorProperty( group = "Physics" )
 	public CollidesWith collidesWith = CollidesWith.all;
-	
+
+	/** Scale used when drawing the Entity. */
 	@EditorProperty( group = "Visual" )
 	public float scale = 1f;
-	
+
+	/** Should the Entity not be drawn? */
 	@EditorProperty( group = "Visual" )
 	public boolean hidden = false;
-	
-	// whether this is a physics object
+
+	/** Is this is a physics object? */
 	@EditorProperty( group = "General" )
 	public boolean isDynamic = true;
-	
-	// chance to be created
+
+	/** Chance to be created. */
 	@EditorProperty( group = "General" )
 	public float spawnChance = 1f;
-	
-	// detail level at which to be created
+
+	/** Detail level at which to be created. */
 	@EditorProperty( group = "General" )
 	public DetailLevel detailLevel = DetailLevel.LOW;
 
+	/** Distance at which to be drawn. */
 	@EditorProperty( group = "General" )
 	public DrawDistance drawDistance = DrawDistance.FAR;
+
+	/** Is Entity out of draw distance? */
 	public transient boolean outOfDrawDistance = false;
-	
+
+	/** Can Entity be stepped up on? */
 	public boolean canStepUpOn = true;
-	
+
+	/** Is Entity floating? */
 	@EditorProperty( group = "Physics" )
 	public boolean floating = false;
-	
+
+	/** Mass of Entity. */
 	@EditorProperty( group = "Physics" )
 	public float mass = 1f;
 
+	/** Sound played when Entity hits the floor. */
 	public String dropSound = "drops/drop_soft.mp3";
 
 	@EditorProperty( group = "Visual" )
 	public ShadowType shadowType = ShadowType.NONE;
-	
+
+	/** Does Entity bounce? */
 	public boolean bounces = true;
+
+	/** How high can Entity step up? */
 	public float stepHeight = 0.5f;
 	public float calcStepHeight = stepHeight;
-	
-	// player can move this by bumping into it
+
+	/** Can Entity be pushed. */
 	public boolean pushable = false;
-	
-	// non directional sprite
+
+	/** Non-directional sprite. */
 	public boolean isStatic = false;
-	
+
+	/** Is Entity on the floor? */
 	public boolean isOnFloor = false;
+
+	/** Is Entity on another Entity? */
 	public boolean isOnEntity = false;
+
+	/** Is Entity in water? */
 	public transient boolean inwater = false;
+
+	/** Ignore collision with the Player? */
 	public boolean ignorePlayerCollision = false;
-	
+
 	protected boolean wasOnFloorLast = false;
 	private float lastSplashTime = 0;
-	
+
 	private float tickcount = 0;
-	
+
+	/** Entity tint color. */
 	public Color color = Color.WHITE;
-	
+
+	/** Draw Entity without shading? */
 	@EditorProperty( group = "Physics" )
 	public boolean fullbrite = false;
-	
+
 	public float lavaHurtTimer = 0;
-	
+
 	protected transient Collision hitLoc = new Collision();
-	
-	// whether to save this entity to the level file
+
+	/** Should this Entity be saved to the level file? */
 	public boolean persists = true;
-	
-	// turn off physics when this entity is at rest
+
+	/** Turn off physics when this Entity is at rest. */
 	public transient boolean physicsSleeping = false;
 	public boolean canSleep = false;
-	
+
 	public transient EditorState editorState = EditorState.none;
-	
-	// attachments
+
+	/** Position offset of attached Entities. */
 	protected Vector3 attachmentTransform = null;
+
+	/** Array of attached Entities. */
 	protected Array<Entity> attached = null;
+
+	/** The Entity this Entity is attached to. */
 	public transient Entity owner = null;
 
 	public float slideEffectTimer = 0;
 
 	public transient Float drawUpdateTimer = null;
-	
+
 	public Entity()
 	{
 
 	}
-	
+
 	public Entity(float x, float y, int tex, boolean isDynamic)
 	{
 		this.x = x;
@@ -168,10 +255,10 @@ public class Entity {
 		this.tex = tex;
 		this.isDynamic = isDynamic;
 		artType = ArtType.entity;
-		
+
 		drawable = new DrawableSprite(tex, artType);
 	}
-	
+
 	public void checkAngles(Level level, float delta)
 	{
 		if(level.collidesWithAngles(x + xa * delta, y, collision, this)) xa = 0;
@@ -183,36 +270,36 @@ public class Entity {
 	{
 		// wake up if moving again
 		if(physicsSleeping && Math.abs(xa) > 0.0001f || Math.abs(ya) > 0.0001f || Math.abs(za) > 0.0001f) physicsSleeping = false;
-		
+
 		// sometimes entities don't need to do any physics
 		if(!isDynamic || !isActive || outOfDrawDistance) return;
 		if(physicsSleeping) {
 			tickAttached(level, delta);
 			return;
 		}
-		
+
 		tickcount += delta;
-		
+
 		lastZ = z;
-		
+
 		// check collision
 		float nextx = x + xa * delta;
 		float nexty = y + ya * delta;
 		float nextz = z + za * delta;
-		
+
 		// then check for solid entities
 		boolean didHitX = false;
-		
+
 		// room to move in X?
 		if (level.isFree(nextx, y, z, collision, calcStepHeight, false, hitLoc)) {
 			Entity encroaching = null;
 			if(isSolid) encroaching = level.getHighestEntityCollision(nextx, y, z, collision, this);
-			
+
 			if(encroaching == null || z > encroaching.z + encroaching.collision.z - stepHeight) {
-				// are we touching an entity?
+				// are we touching an Entity?
 				if(encroaching != null) {
 					// maybe we can climb on it
-					if(z > encroaching.z + encroaching.collision.z - stepHeight && 
+					if(z > encroaching.z + encroaching.collision.z - stepHeight &&
 							level.collidesWorldOrEntities(nextx, y, encroaching.z + encroaching.collision.z, collision, this)
 							&& encroaching.canStepUpOn) {
 						stepUp((encroaching.z + encroaching.collision.z) - z);
@@ -221,10 +308,10 @@ public class Entity {
 					}
 					else {
 						didHitX = true;
-						
+
 						encroaching.encroached(this);
 						this.encroached(encroaching);
-						
+
 						if(encroaching.pushable)
 							encroaching.xa = xa * 2;
 					}
@@ -245,7 +332,7 @@ public class Entity {
 				this.sweepCollisionWorld(nextx, nexty, nextz, level, delta);
 			}
 		}
-		
+
 		if(!didHitX) {
 			x += xa * delta;
 		}
@@ -256,14 +343,14 @@ public class Entity {
 					// bounce off of angled walls using bounceFactor * (-2 * (velocity dot normal)*normal + velocity)
 					Vector3 velocity = new Vector3(xa, ya, za);
 					Vector3 tempNormal = new Vector3(hitLoc.colNormal);
-					
+
 					tempNormal = tempNormal.scl(-2f * velocity.dot(hitLoc.colNormal)).add(velocity).scl(0.25f);
-					
+
 					xa = tempNormal.x;
 					ya = tempNormal.y;
 				}
 				else xa = -xa * 0.25f;
-				
+
 				if(Math.abs(xa) > 0.007f) {
 					hitWorld(xa,0,0);
 				}
@@ -271,15 +358,15 @@ public class Entity {
 			else
 				xa = 0;
 		}
-		
+
 		boolean didHitY = false;
 		// room to move in Y?
 		if (level.isFree(x, nexty, z, collision, calcStepHeight, false, hitLoc)) {
 			Entity encroaching = null;
 			if(isSolid) encroaching = level.getHighestEntityCollision(x, nexty, z, collision, this);
-			
+
 			if(encroaching == null || z > encroaching.z + encroaching.collision.z - stepHeight) {
-				// are we touching an entity?
+				// are we touching an Entity?
 				if(encroaching != null) {
 					// maybe we can climb on it
 					if(z > encroaching.z + encroaching.collision.z - stepHeight &&
@@ -291,10 +378,10 @@ public class Entity {
 					}
 					else {
 						didHitY = true;
-						
+
 						encroaching.encroached(this);
 						this.encroached(encroaching);
-						
+
 						if(encroaching.pushable)
 							encroaching.ya = ya * 2;
 					}
@@ -315,7 +402,7 @@ public class Entity {
 				this.sweepCollisionWorld(nextx, nexty, nextz, level, delta);
 			}
 		}
-		
+
 		if(!didHitY) {
 			y += ya * delta;
 		}
@@ -326,14 +413,14 @@ public class Entity {
 					// bounce off of angled walls using bounceFactor * (-2 * (velocity dot normal)*normal + velocity)
 					Vector3 velocity = new Vector3(xa, ya, za);
 					Vector3 tempNormal = new Vector3(hitLoc.colNormal);
-					
+
 					tempNormal = tempNormal.scl(-2f * velocity.dot(hitLoc.colNormal)).add(velocity).scl(0.25f);
-					
+
 					xa = tempNormal.x;
 					ya = tempNormal.y;
 				}
 				else ya = -ya * 0.25f;
-				
+
 				if(Math.abs(ya) > 0.007f) {
 					hitWorld(0,ya,0);
 				}
@@ -341,18 +428,18 @@ public class Entity {
 			else
 				ya = 0;
 		}
-		
+
 		// ceiling collision?
 		if (za > 0 && !level.isFree(x, y, z + za, collision, calcStepHeight, false, null)) {
 			za = 0;
 		}
-		
+
 		// Falling and stepping physics
 		isOnEntity = false;
 		Array<Entity> allStandingOn = level.getEntitiesColliding(x, y, (z + za * delta) - 0.02f, this);
 		Entity standingOn = null;
-		
-		// check which entity standing on is the highest
+
+		// check which Entity standing on is the highest
 		for(Entity on : allStandingOn) {
 			if(!on.isDynamic || (isSolid)) {
 				if(standingOn == null || on.z + on.collision.z > standingOn.z + standingOn.collision.z) {
@@ -361,12 +448,12 @@ public class Entity {
 				}
 			}
 		}
-		
+
 		boolean wasOnFloor = isOnFloor;
-		
+
 		float floorHeight = level.maxFloorHeight(x, y, z, collision.x);
 		isOnFloor = z <= (floorHeight + 0.5f) + 0.035f;
-		
+
 		// floor drop sound
 		if(wasOnFloor == false && isOnFloor == true) {
 			if(Math.abs(za) > 0.03f) {
@@ -377,7 +464,7 @@ public class Entity {
 				hitWorld(0,0,za);
 			}
 		}
-		
+
 		// friction!
 		if((isOnFloor || isOnEntity) && !floating)
 		{
@@ -387,7 +474,7 @@ public class Entity {
 				ya -= (ya - (ya * 0.8f)) * delta;
 			}
 			else {
-				// offset some for the player not clamping to the entity as easily as the floor
+				// offset some for the player not clamping to the Entity as easily as the floor
 				xa -= (xa - (xa * 0.7f)) * delta;
 				ya -= (ya - (ya * 0.7f)) * delta;
 			}
@@ -399,7 +486,7 @@ public class Entity {
 			if (entitySpeed > 0.025f) {
 				onSlide(entitySpeed, delta);
 			}
-			
+
 			// sleep to save collision cycles if not moving very fast
 			if(canSleep && (isOnFloor || (standingOn == null || (!standingOn.isDynamic))) && Math.abs(xa) < 0.0001f && Math.abs(ya) < 0.0001f && Math.abs(za) < 0.0001f) physicsSleeping = true;
 		}
@@ -408,7 +495,7 @@ public class Entity {
 			xa -= (xa - (xa * 0.98)) * delta;
 			ya -= (ya - (ya * 0.98)) * delta;
 		}
-		
+
 		if(!isOnFloor && !isOnEntity && !floating) za -= 0.0035f * delta; // falling; add gravity
 		else
 		{
@@ -429,14 +516,14 @@ public class Entity {
 				}
 			}
 		}
-		
+
 		if(standingOn instanceof Actor || standingOn instanceof Trigger) {
 			// bounce off of actors
 			if(z > standingOn.z) za = 0.002f;
 			xa += (Game.rand.nextFloat() * 0.01f - 0.005f) * delta;
 			ya += (Game.rand.nextFloat() * 0.01f - 0.005f) * delta;
 		}
-		
+
 		// water movement
 		boolean wasInWater = inwater;
 		inwater = false;
@@ -447,7 +534,7 @@ public class Entity {
 			// water friction!
 			xa -= (xa - (xa * 0.8)) * delta;
 			ya -= (ya - (ya * 0.8)) * delta;
-			
+
 			calcStepHeight = stepHeight + (cTile.floorHeight + 0.5f - z);
 			inwater = true;
 
@@ -459,7 +546,7 @@ public class Entity {
 			}
 		}
 		else calcStepHeight = stepHeight;
-		
+
 		// check if this tile hurts
 		if(cTile != null && cTile.data.hurts > 0 && z <= cTile.floorHeight + 0.5f) {
 			lavaHurtTimer -= delta;
@@ -473,7 +560,7 @@ public class Entity {
 		if(cTile != null && cTile.data.applyStatusEffect != null && (this instanceof Actor) && z <= cTile.floorHeight + 0.505f && isOnFloor) {
 			cTile.data.applyStatusEffect((Actor)this);
 		}
-		
+
 		if(!isOnFloor && standingOn != null && !standingOn.isDynamic) isOnFloor = true;
 
 		// dust effect timer
@@ -487,17 +574,17 @@ public class Entity {
 		else {
 			standingOn.encroached(this);
 		}
-		
+
 		tickAttached(level, delta);
 	}
 
 	protected static Array<Entity> attachedToRemove = new Array<Entity>();
 	public void tickAttached(Level level, float delta) {
 		if(attached != null) {
-			
+
 			// let attachments preserve their offsets
 			if(attachmentTransform == null) attachmentTransform = new Vector3(0,0,0);
-			
+
 			for(int i = 0; i < attached.size; i++) {
 				Entity attachment = attached.get(i);
 				attachment.x += x - attachmentTransform.x;
@@ -517,7 +604,7 @@ public class Entity {
 				}
 				attachedToRemove.clear();
 			}
-			
+
 			attachmentTransform.set(x,y,z);
 		}
 	}
@@ -552,7 +639,7 @@ public class Entity {
 		}
 		return null;
 	}
-	
+
 	// Override this to do something useful when hitting the world
 	public void hitWorld(float xSpeed, float ySpeed, float zSpeed) {
 		if(zSpeed != 0) {
@@ -567,24 +654,24 @@ public class Entity {
 
 		makeDustEffect();
 	}
-	
+
 	// only called in the editor
 	public void editorTick(Level level, float delta) { }
 	public void editorStartPreview(Level level) { }
 	public void editorStopPreview(Level level) { }
-	
+
 	protected void splash(Level level, float splashZ, boolean first, Tile tile)
 	{
 		if(tickcount - lastSplashTime < 30 && !first) return;
 		lastSplashTime = tickcount;
-		
+
 		Tile cTile = level.getTile((int)(x), (int)(y));
 		if(z > cTile.floorHeight + 0.5 && !first) return;
-		
+
 		Random r = Game.rand;
 		int particleCount = 10;
 		particleCount *= Options.instance.gfxQuality;
-		
+
 		for(int i = 0; i < particleCount; i++)
 		{
             Particle p = CachePools.getParticle(x, y, splashZ, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * (-za * 0.25f) + 0.015f, tile.data.particleTex, tile.data.particleColor, tile.data.particleFullbrite);
@@ -633,29 +720,29 @@ public class Entity {
 		float volume = Math.min(Math.abs(za) * 2.25f, 0.35f);
 		Audio.playPositionedSound("drops/drop_water_01.mp3,drops/drop_water_02.mp3,drops/drop_water_03.mp3,drops/drop_water_04.mp3", new Vector3(x, y, z), volume * 2f, 1f, 12f);
 	}
-	
+
 	public void use(Player p, float projx, float projy)
 	{
 		// overload this
 	}
-	
+
 	public void hit(float projx, float projy, int damage, float knockback, DamageType damageType, Entity instigator)
 	{
 		// overload this
 	}
-	
-	// touching entity
+
+	// touching Entity
 	public void encroached(Entity hit)
 	{
 		// overload this
 	}
-	
+
 	// touching world
 	public void encroached(float hitx, float hity)
 	{
 		// overload this
 	}
-	
+
 	// touching player
 	public void encroached(Player player)
 	{
@@ -669,24 +756,24 @@ public class Entity {
 	public void steppedOn(Entity e) {
 		// Overload this
 	}
-	
+
 	public void resetTickCount()
 	{
 		tickcount = 0;
 	}
-	
+
 	public float getX() {
 		return x;
 	}
-	
+
 	public float getY() {
 		return y;
 	}
-	
+
 	public float getZ() {
 		return z;
 	}
-	
+
 	// overload this to initialize on level start
 	public void init(Level level, Source source) {
 		updateDrawable();
@@ -697,22 +784,22 @@ public class Entity {
 					t.canNav = false;
 				}
 		}
-		
+
 		// grab a sprite atlas if one hasn't been set yet
 		if(spriteAtlas == null && artType != null) spriteAtlas = artType.toString();
-		
+
 		// convert the hidden artType (deprecated) to the replacement boolean
 		if(artType == ArtType.hidden && !hidden) hidden = true;
-		
+
 		calcStepHeight = stepHeight;
-		
+
 		if(attached != null) {
 			for(int i = 0; i < attached.size; i++) {
 				attached.get(i).init(level, source);
 			}
 		}
 	}
-	
+
 	// overload this to do any cleanup work when unloaded
 	public void onDispose() {
 		if(attached != null) {
@@ -721,7 +808,7 @@ public class Entity {
 			}
 		}
 	}
-	
+
 	public void updateDrawable() {
 		if(drawable != null)
 			drawable.update(this);
@@ -730,14 +817,14 @@ public class Entity {
 			drawable = new DrawableSprite(tex, artType);
 			drawable.update(this);
 		}
-		
+
 		updateAttachedDrawables();
 	}
 
 	public Array<Entity> getAttached() {
 		return attached;
 	}
-	
+
 	public void updateAttachedDrawables() {
 		if(attached != null) {
 			for(int i = 0; i < attached.size; i++) {
@@ -745,7 +832,7 @@ public class Entity {
 			}
 		}
 	}
-	
+
 	public boolean checkDetailLevel() {
 		int gameDetailLevel = Options.instance.graphicsDetailLevel;
 		if(detailLevel == DetailLevel.ULTRA && gameDetailLevel < 4) return false;
@@ -753,16 +840,16 @@ public class Entity {
 		else if(detailLevel == DetailLevel.MEDIUM && gameDetailLevel < 2) return false;
 		else return true;
 	}
-	
+
 	public void onTrigger(Entity instigator, String value) {
 		// overload this to take actions when triggered
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName();
 	}
-	
+
 	public void rotate90() {
 		float temp = collision.x;
 		collision.x = collision.y;
@@ -774,7 +861,7 @@ public class Entity {
 		collision.x = collision.y;
 		collision.y = temp;
 	}
-	
+
 	public void setRotation(float rotX, float rotY, float rotZ) {
 		// override this to do stuff
 	}
@@ -787,7 +874,7 @@ public class Entity {
 		// override this to do stuff
 		return Vector3.Zero;
 	}
-	
+
 	public void setPosition(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
@@ -803,7 +890,7 @@ public class Entity {
 	    y = other.y;
 	    z = other.z;
     }
-	
+
 	public void matchEntity(Entity toMatch) {
 		matchPositionAndVelocity(toMatch);
 		artType = toMatch.artType;
@@ -817,7 +904,7 @@ public class Entity {
 		collidesWith = toMatch.collidesWith;
 		color = new Color(toMatch.color);
 	}
-	
+
 	public void matchPositionAndVelocity(Entity toMatch) {
 		x = toMatch.x;
 		y = toMatch.y;
@@ -827,14 +914,14 @@ public class Entity {
 		za = toMatch.za;
 		yOffset = toMatch.yOffset;
 	}
-	
+
 	public void applyPhysicsImpulse(Vector3 impulse) {
 		xa += impulse.x / mass;
 		ya += impulse.y / mass;
 		za += impulse.z / mass;
 		this.physicsSleeping = false;
 	}
-	
+
 	public boolean canCollide(Entity checking) {
 		if(collidesWith == CollidesWith.all) return true;
 		else if(collidesWith == CollidesWith.staticOnly && !checking.isDynamic) return true;
@@ -846,7 +933,7 @@ public class Entity {
 	public void updateLight(Level level) {
 		// override this to do something
 	}
-	
+
 	public boolean isHidden() {
 		return hidden || artType == ArtType.hidden;
 	}
@@ -894,7 +981,7 @@ public class Entity {
 		}
 	}
 
-	// Generated level chunks need to make entity IDs unique per-chunk, in case of duplicates
+	// Generated level chunks need to make Entity IDs unique per-chunk, in case of duplicates
 	public void makeEntityIdUnique(String idPrefix) {
 		id = makeUniqueIdentifier(id, idPrefix);
 	}

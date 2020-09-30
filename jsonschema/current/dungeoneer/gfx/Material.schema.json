@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Material",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.Material",
+            "description": "Fully-qualified Java class name."
+        },
+        "texAtlas": {
+            "type": "string",
+            "description": "TextureAtlas name.",
+            "default": "t1"
+        },
+        "tex": {
+            "type": "integer",
+            "description": "TextureAtlas index.",
+            "default": 0
+        }
+    }
+}

@@ -1,9 +1,6 @@
 package com.interrupt.dungeoneer.entities.spells;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
-
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.Actor;
@@ -15,23 +12,43 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 
+import java.util.Random;
 
 public class Spell {
+    /** Mana point cost. */
 	public int mpCost = 1;
+
+	/** Base amount of damage to deal. */
 	public int baseDamage = 1;
+
+	//* Random amount of damage to deal. */
 	public int randDamage = 1;
+
+	/** Damage type. */
 	public DamageType damageType = DamageType.MAGIC;
+
+	/** Spell color. */
 	public Color spellColor = Colors.MAGIC;
+
+	/** Sound to play when cast. */
 	public String castSound = "spell-missile-2.mp3,spell-missile-2_02.mp3,spell-missile-2_03.mp3,spell-missile-2_04.mp3";
+
+	/** Spell cast volume. */
 	public float castSoundVolume = 0.5f;
 
+	/** Minimum spell range. */
 	public float minDistanceToTarget = 0f;
+
+	/** Maximum spell range. */
 	public float maxDistanceToTarget = 30f;
 
+	/** Status effect to apply to target. */
 	public StatusEffect applyStatusEffect = null;
 
+	/** Create vfx entity when cast? */
 	public boolean doCastVfx = true;
 
+	/** Entity to spawn when spell is cast. */
 	public Entity castVfx = null;
 	
 	public Spell() { }

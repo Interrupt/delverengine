@@ -1,18 +1,12 @@
 package com.interrupt.dungeoneer.entities.projectiles;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
-import com.interrupt.dungeoneer.entities.Actor;
-import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Particle;
-import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.ProjectedDecal;
+import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -20,30 +14,47 @@ import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.tiles.Tile;
 
+import java.util.Random;
+
 public class Projectile extends Entity {
 	public int origtex;
+
+	/** Projectile speed.  */
 	public float speed = 0.3f;
+
 	public transient Entity owner = null;
+
+	/** Damage amount. */
 	public int damage = 3;
+
+	/** Strength of knockback effect. */
 	public float knockback = 0.1f;
 
+	/** Projectile lifetime in milliseconds. */
 	public Float destroyTimer = null;
+
+	/** Destroy delay. */
 	public Float destroyDelay = null;
-	
+
+	/** Damage type. */
 	public DamageType damageType;
-	
+
+	/** Destroy projectile when it hits something? */
 	public boolean destroyOnEntityHit = true;
 	
 	private transient boolean didCollide = false;
-	
+
+	/** Hit decal. */
 	public ProjectedDecal hitDecal = new ProjectedDecal(ArtType.sprite, 19, 0.6f);
-	
+
+	/** Sound to play when projectile hits something. */
 	public String hitSound = "mg_green_impact_01.mp3,mg_green_impact_02.mp3,mg_green_impact_03.mp3,mg_green_impact_04.mp3";
 	
 	private boolean sweepCollision = true;
 	
 	private transient Array<Entity> hasHit = new Array<Entity>();
-	
+
+	/** Make particles when projectile hits something? */
 	public boolean makeHitParticles = true;
 	
 	public Projectile() { canStepUpOn = false; }
