@@ -66,7 +66,7 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
     }
 
     private boolean canRotateWithArrowKeys() {
-        return !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+        return !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
     }
 
     private boolean inFastMode() {

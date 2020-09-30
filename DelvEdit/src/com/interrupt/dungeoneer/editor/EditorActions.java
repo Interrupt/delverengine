@@ -49,6 +49,8 @@ public class EditorActions {
     public ActionListener yDragMode;
     public ActionListener zDragMode;
     public ActionListener rotateMode;
+    public ActionListener turnLeftAction;
+    public ActionListener turnRightAction;
     public ActionListener flattenFloor;
     public ActionListener flattenCeiling;
     public ActionListener toggleSimulation;
@@ -67,19 +69,19 @@ public class EditorActions {
 
         saveAction = new ActionListener() {
             @Override
-            public void actionPerformed (ActionEvent event) {
+            public void actionPerformed(ActionEvent event) {
                 Editor.app.file.save();
             }
         };
 
         saveAsAction = new ActionListener() {
-            public void actionPerformed (ActionEvent event) {
+            public void actionPerformed(ActionEvent event) {
                 Editor.app.file.saveAs(new SaveAdapter());
             }
         };
 
         openAction = new ActionListener() {
-            public void actionPerformed (ActionEvent event) {
+            public void actionPerformed(ActionEvent event) {
                 Editor.app.file.open();
             }
         };
@@ -338,22 +340,43 @@ public class EditorActions {
 
         xDragMode = new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) { Editor.app.setDragMode(EditorApplication.DragMode.X);
+            public void actionPerformed(ActionEvent actionEvent) {
+                Editor.app.setDragMode(EditorApplication.DragMode.X);
             }
         };
         yDragMode = new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) { Editor.app.setDragMode(EditorApplication.DragMode.Y);
+            public void actionPerformed(ActionEvent actionEvent) {
+                Editor.app.setDragMode(EditorApplication.DragMode.Y);
             }
         };
         zDragMode = new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) { Editor.app.setDragMode(EditorApplication.DragMode.Z);
+            public void actionPerformed(ActionEvent actionEvent) {
+                Editor.app.setDragMode(EditorApplication.DragMode.Z);
             }
         };
+
         rotateMode = new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) { Editor.app.setMoveMode(EditorApplication.MoveMode.ROTATE);
+            public void actionPerformed(ActionEvent actionEvent) {
+                Editor.app.setMoveMode(EditorApplication.MoveMode.ROTATE);
+            }
+        };
+
+        turnLeftAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                Editor.app.turnPickedEntityLeft();
+                Editor.app.refresh();
+            }
+        };
+
+        turnRightAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                Editor.app.turnPickedEntityRight();
+                Editor.app.refresh();
             }
         };
 
