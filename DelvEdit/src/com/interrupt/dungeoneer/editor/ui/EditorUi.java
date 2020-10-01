@@ -264,7 +264,9 @@ public class EditorUi {
                         if (matcher.find()) {
                             String generator = matcher.group(1);
                             if (generator != null) {
-                                generators.add(generator);
+                                if (!generators.contains(generator, false)) {
+                                    generators.add(generator);
+                                }
                             }
                         }
                     }
