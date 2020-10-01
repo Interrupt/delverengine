@@ -23,6 +23,10 @@ import com.interrupt.dungeoneer.generator.RoomGenerator;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EditorUi {
     Stage stage;
@@ -238,11 +242,34 @@ public class EditorUi {
 
                 // Get available generators.
                 Array<String> generators = new Array<String>();
-                // TODO: Load generators from actual game files: /data/room-builders/<generator>_rooms.dat
-                generators.add("dungeon");
-                generators.add("cave");
-                generators.add("sewer");
-                generators.add("temple");
+                Array<String> mods = Game.getModManager().modsFound;
+                for (String mod : mods) {
+                    FileHandle parent = Game.getFile(mod + "/data/room-builders");
+                    if (!parent.exists() || !parent.isDirectory()) {
+                        continue;
+                    }
+
+                    FileHandle[] children = parent.list(new FileFilter() {
+                        @Override
+                        public boolean accept(File file) {
+                            return !file.isDirectory();
+                        }
+                    });
+
+                    for (FileHandle child : children) {
+                        String name = child.nameWithoutExtension().toLowerCase();
+                        Pattern pattern = Pattern.compile("([a-zA-Z0-9]*)_rooms");
+                        Matcher matcher = pattern.matcher(name);
+
+                        if (matcher.find()) {
+                            String generator = matcher.group(1);
+                            if (generator != null) {
+                                generators.add(generator);
+                            }
+                        }
+                    }
+                }
+
                 generators.sort();
 
                 // Make generator entries.
