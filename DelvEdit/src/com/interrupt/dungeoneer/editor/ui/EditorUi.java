@@ -314,6 +314,7 @@ public class EditorUi {
                 item.addSeparator().addItem(new MenuItem("Refresh Listing", smallSkin, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
+                        // TODO: Make sure that the `lastGeneratedRoomType` is still available after the refresh.
                         needsRefresh = true;
                     }
                 }));
