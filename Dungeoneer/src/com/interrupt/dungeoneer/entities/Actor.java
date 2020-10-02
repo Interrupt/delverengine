@@ -17,33 +17,48 @@ import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.helpers.InterpolationHelper;
 import com.interrupt.helpers.InterpolationHelper.InterpolationMode;
 
+/** Class for representing Entities that can attack, bleed, die, and suffer from status effects. */
 public class Actor extends Entity {
-	
+	/** Blood type for Actor. */
 	public enum BloodType {
+		/** Red blood. */
 		Red,
+
+		/** Slime blood. */
 		Slime,
+
+		/** Insect blood. */
 		Insect,
+
+		/** Bone blood. Don't think too hard about it. */
 		Bone;
 	};
-	
+
+	/** Current health. */
 	@EditorProperty
 	public int hp = 1;
-	
+
+	/** Maximum health. */
 	@EditorProperty
 	public int maxHp = 1;
-	
+
+	/** Current mana. */
 	@EditorProperty
 	public int mp = 0;
-	
+
+	/** Maximum mana. */
 	@EditorProperty
 	public int maxMp = 0;
-	
+
+	/** Experience level. */
 	@EditorProperty
 	public int level = 1;
-	
+
+	/** Experience points. */
 	@EditorProperty
 	public int exp = 0;
-	
+
+	/** Armor class. */
 	public int ac = 0;
 	
 	@EditorProperty
@@ -63,17 +78,21 @@ public class Actor extends Entity {
 	
 	@EditorProperty
 	public int INT = 10;
-	
+
+	/** Type of blood particles to emit. */
 	@EditorProperty
 	public BloodType bloodType = BloodType.Red;
-	
+
+	/** Actor stats. */
 	public Stats stats = new Stats();
 
+	/** Is invisibility effect active? */
 	public boolean invisible = false;
 
-	// useful for things like dialogue!
+	/** Useful for things like dialogue! */
 	protected Trigger useTrigger = null;
-	
+
+	/** Array of current status effects. */
 	public Array<StatusEffect> statusEffects;
 	private transient Array<StatusEffect> statusEffectsToRemove = new Array<StatusEffect>();
 
@@ -81,6 +100,7 @@ public class Actor extends Entity {
 	public transient Float stepUpLerp = null;
 	public transient Float stepUpTimer = null;
 
+	/** Strength of drunk effect. */
 	public float drunkMod = 0;
 	
 	public Actor() { shadowType = ShadowType.BLOB; canStepUpOn = false; }

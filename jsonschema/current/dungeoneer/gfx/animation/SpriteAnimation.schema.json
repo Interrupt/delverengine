@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Sprite Animation",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.animation.SpriteAnimation",
+            "description": "Fully-qualified Java class name."
+        },
+        "start": {
+            "type": "integer",
+            "description": "Starting frame sprite index."
+        },
+        "end": {
+            "type": "integer",
+            "description": "Ending frame sprite index."
+        },
+        "speed": {
+            "type": "number",
+            "description": "Animation length in milliseconds."
+        },
+        "nextFrameOffset": {
+            "type": "integer",
+            "default": 1
+        },
+        "done": {
+            "type": "boolean",
+            "description": "Is animation finished?",
+            "default": false
+        },
+        "looping": {
+            "type": "boolean",
+            "description": "Does animation loop?",
+            "default": false
+        },
+        "playing": {
+            "type": "boolean",
+            "description": "Is animation playing?",
+            "default": false
+        },
+        "actions": {
+            "type": "object",
+            "description": "Mapping of animation frame indices to AnimationAction arrays.",
+            "additionalProperties": false,
+            "patternProperties": {
+                "\\d+": {
+                    "type": "array",
+                    "description": "Sprite index.",
+                    "items": {
+                        "type": "object",
+                        "description": "AnimationAction objects."
+                    }
+                }
+            }
+        },
+        "directions": {
+            "type": "integer",
+            "description": "Number of sprite directions.",
+            "default": 1
+        },
+        "flipDirections": {
+            "type": "boolean",
+            "description": "Flip sprite for left/right facing?",
+            "default": true
+        },
+        "directionsOffset": {
+            "type": "integer",
+            "default": 1
+        },
+        "reverseDirectionOrder": {
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

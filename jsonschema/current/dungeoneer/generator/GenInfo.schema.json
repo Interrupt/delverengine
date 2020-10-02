@@ -1,0 +1,122 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Gen Info",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.generator.GenInfo",
+            "description": "Fully-qualified Java class name."
+        },
+        "comment" : {
+            "type": "string",
+            "description": "Used to document GenInfo object.",
+            "default": false
+        },
+        "marker" : {
+            "$ref": "#/definitions/Markers",
+            "description": "Maker to place.",
+            "default": "none"
+        },
+        "wallTex" :{
+            "type": "number",
+            "description": "Only place on tiles with this specific wall texture id."
+        },
+        "floorTex" : {
+            "type": "number",
+            "description": "Only place on tiles with this specific floor texture id."
+        },
+        "ceilTex" :{
+            "type": "number",
+            "description": "Only place on tiles with this specific ceiling texture id."
+        },
+        "textureAtlas" : {
+            "type": "string",
+            "description": "TextureAtlas name for specifying tiles."
+        },
+        "spawns" :{
+            "type": "array",
+            "description": "Array of Entities to create at this tile.",
+            "items": {
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+            }
+        },
+        "clusterCount" : {
+            "type": "integer",
+            "description": "Amount of Entities to create.",
+            "default": 1
+        },
+        "clusterSpread" :{
+            "type": "number",
+            "description": "Maximum radius of random placement."
+        },
+        "attachCeiling" : {
+            "type": "boolean",
+            "description": "Attach Entities to ceiling.",
+            "default": false
+        },
+        "attachWall" :{
+            "type": "boolean",
+            "description": "Attach Entities to wall.",
+            "default": false
+        },
+        "attachFloor" : {
+            "type": "boolean",
+            "description": "Attach Entities to floor.",
+            "default": true
+        },
+        "placeInCorner" :{
+            "$ref": "#/definitions/CornerPlacement",
+            "description": "Behavior for placing Entities in a corner tile.",
+            "default": "sometimes"
+        },
+        "wallOffset" : {
+            "type": "number",
+            "description": "How far to place Entities from wall.",
+            "default": 0
+        },
+        "chance" :{
+            "type": "number",
+            "description": "Spawn chance.",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "performanceControlledClustering" : {
+            "type": "boolean",
+            "description": "Clustering amount controlled by graphics settings.",
+            "default": false
+        }
+    },
+    "required": [
+        "class"
+    ],
+    "definitions": {
+        "Markers": {
+            "type": "string",
+            "enum": [
+                "none",
+                "torch",
+                "loot",
+                "key",
+                "boss",
+                "decor",
+                "decorPile",
+                "door",
+                "stairDown",
+                "stairUp",
+                "playerStart",
+                "exitLocation",
+                "secret"
+            ]
+        },
+        "CornerPlacement": {
+            "type": "string",
+            "enum": [
+                "never",
+                "sometimes",
+                "only"
+            ]
+        }
+    }
+}

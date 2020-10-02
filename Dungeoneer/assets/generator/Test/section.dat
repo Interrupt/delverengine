@@ -1,20 +1,20 @@
 {
-	difficultyLevel: 1,
-	sortOrder: 1,
-	name: "Test",
-	floors: 2,
-	levelTemplates: [
+	"difficultyLevel": 1,
+	"sortOrder": 1,
+	"name": "Test",
+	"floors": 2,
+	"levelTemplates": [
 		{
-			class:com.interrupt.dungeoneer.game.Level,
-			theme:"TEST",
-			fogStart:3.0,
-			fogEnd:30.0,
-			fogColor: { r:0.0, g:0.0, b:0.0 },
-			generated:false,
-			levelFileName:"levels/test-level.bin",
-			ambientSound:"env_indoor.mp3",
-			ambientSoundVolume:"0.15",
-			traps:[]
+			"class": "com.interrupt.dungeoneer.game.Level",
+			"theme":"TEST",
+			"fogStart":3.0,
+			"fogEnd":30.0,
+			"fogColor": { "r":0.0, "g":0.0, "b":0.0 },
+			"generated":false,
+			"levelFileName":"levels/test-level.bin",
+			"ambientSound":"env_indoor.mp3",
+			"ambientSoundVolume": 0.15,
+			"traps":[]
 		}
 	]
 }

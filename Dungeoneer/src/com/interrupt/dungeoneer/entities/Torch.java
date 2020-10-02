@@ -18,33 +18,40 @@ public class Torch extends Light {
 
 	float ticks = 0;
 	float switchtime = 10;
-	
+
+	/** Starting animation frame sprite index. */
 	@EditorProperty
 	public int texAnimStart = 4;
-	
+
+	/** Ending animation frame sprite index. */
 	@EditorProperty
 	public int texAnimEnd = 5;
 
 	public enum TorchAnimateModes { RANDOM, LOOP }
 
+	/** Torch animation mode. */
 	@EditorProperty
 	public TorchAnimateModes torchAnimateMode = TorchAnimateModes.RANDOM;
 
+	/** Animation speed. */
 	@EditorProperty
 	public float animSpeed = 30f;
 
 	protected SpriteAnimation animation = null;
-	
+
 	public ParticleEmitter emitter = null;
 	
 	public Torch() { spriteAtlas = "sprite"; hidden = false; collision.set(0.05f,0.05f,0.2f); fullbrite = true; haloMode = HaloMode.BOTH; haloOffset = 0.8f; }
 
+	/** Looping ambient sound. */
 	@EditorProperty
 	public String audio = "torch.mp3";
 
+	/** Make flies? */
 	@EditorProperty
     public boolean makeFlies = false;
 
+	/** Make ParticleEmitter? */
 	@EditorProperty
 	public boolean makeEmitter = true;
 	

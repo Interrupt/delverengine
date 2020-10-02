@@ -6,12 +6,14 @@ import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 
 public class Armor extends Item {
-
+    /** Base modifiers */
 	public ItemModification baseMods;
-	
+
+	/** Armor point value. */
 	@EditorProperty
 	public int armor;
 
+	/** How durable armor is. */
 	@EditorProperty
 	public int durability = 25;
 	private int currentDurability = 0;

@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Delver Interfaces",
+    "definitions": {
+        "EntityLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/entities/Entity.schema.json"},
+                {"$ref": "dungeoneer/entities/DirectionalEntity.schema.json"},
+                {"$ref": "dungeoneer/entities/Door.schema.json"},
+                {"$ref": "dungeoneer/entities/Explosion.schema.json"},
+                {"$ref": "dungeoneer/entities/Foliage.schema.json"},
+                {"$ref": "dungeoneer/entities/Group.schema.json"},
+                {"$ref": "dungeoneer/entities/Model.schema.json"},
+                {"$ref": "dungeoneer/entities/ParticleEmitter.schema.json"},
+                {"$ref": "dungeoneer/entities/Prefab.schema.json"},
+                {"$ref": "dungeoneer/entities/ProjectedDecal.schema.json"},
+                {"$ref": "dungeoneer/entities/Sprite.schema.json"},
+                {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/BasicTrigger.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ButtonModel.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ButtonDecal.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ConditionalTrigger.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/DamageTrigger.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/LevelSwap.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/LookAtTrigger.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
+                {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/LightLike"}
+            ]
+        },
+        "ActorLike": {
+            "oneOf": [
+                {"$ref":  "dungeoneer/entities/Actor.schema.json"},
+                {"$ref":  "dungeoneer/entities/Monster.schema.json"},
+                {"$ref":  "dungeoneer/entities/Player.schema.json"}
+            ]
+        },
+        "AreaLike": {
+            "oneOf": [
+                {"$ref":  "dungeoneer/entities/areas/Area.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/FogArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/SkyboxArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/SpawnBlockerArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/StatusEffectArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/TeleportArea.schema.json"}
+            ]
+        },
+        "ItemLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/entities/Item.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Armor.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Bow.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Food.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Decoration.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Gun.schema.json"},
+                {"$ref": "dungeoneer/entities/items/ItemStack.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Sword.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Weapon.schema.json"},
+                {"$ref": "dungeoneer/entities/projectiles/Missile.schema.json"},
+                {"$ref": "Interfaces.schema.json#/definitions/PotionLike"}
+            ]
+        },
+        "LightLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/entities/Light.schema.json"},
+                {"$ref": "dungeoneer/entities/Torch.schema.json"}
+            ]
+        },
+        "PotionLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/entities/items/Potion.schema.json"},
+                {"$ref": "dungeoneer/entities/items/Elixer.schema.json"}
+            ]
+        },
+        "SpellLike": {
+            "oneOf": [
+                {"$ref":  "dungeoneer/entities/spells/Spell.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/ApplyStatusEffect.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Beam.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/EnchantArmor.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/EnchantWeapon.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/FillMap.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Heal.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Identifiy.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/MagicMissile.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/SplashExplosion.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/SpreadMagicMissile.schema.json"},
+                {"$ref":  "dungeoneer/entities/spells/Teleport.schema.json"}
+            ]
+        },
+        "StatusEffectLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/statuseffects/StatusEffect.schema.json" }
+            ]
+        }
+    }
+}

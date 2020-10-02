@@ -29,39 +29,60 @@ import java.lang.Math;
 import java.util.Random;
 
 public class Missile extends Item implements Directional {
-	public int damage = 1;
+	/** Damage amount. */
+    public int damage = 1;
+
+    /** Strength of knockback effect. */
 	public float knockback = 0;
+
 	private boolean showHitEffect = false;
+
 	public float trailTimer = 0;
+
+	/** Should missile leave a particle trail? */
 	public boolean leaveTrail = false;
+
+	/** Particle trail spawn interval. */
 	public float trailInterval = 1f;
+
+	/** Particle trail lifetime. */
 	public float effectLifetime = 0f;
+
+	/** Damage type. */
 	public DamageType damageType = DamageType.PHYSICAL;
 
 	private float shakeTimer = 0f;
 	private float bounceTimer = 0f;
 
+	/** Is missile stuck in something? */
 	boolean stuck = false;
+
+	/** Stack type. */
 	public String stackType = "ARROW";
 
+	/** Should missile stick into walls? */
 	@EditorProperty
 	public boolean sticksInWall = true;
 
+	/** Change to break when hitting something. */
 	@EditorProperty
 	public float breakChance = 0.1f;
 
+	/** Missile rotation. */
 	public Vector3 rotation = new Vector3();
+
 	Vector3 t_direction = new Vector3(1, 0, 0);
 	public transient Vector3 dirWork = new Vector3();
 
+	/** Missile initial speed. */
 	@EditorProperty
 	public float initialSpeed = 0f;
 
 	public enum HitEffect { NONE, BULLET, ARROW };
 
+	/** Hit effect. */
 	@EditorProperty
 	public HitEffect hitEffect = HitEffect.ARROW;
-
 
 	public Missile() {
 		super(0, 0, 73, ItemType.thrown, StringManager.get("items.Missile.defaultNameText"));
@@ -102,7 +123,6 @@ public class Missile extends Item implements Directional {
 			this.setRotation(this.rotation.x, this.rotation.y, this.rotation.z);
 		}
 	}
-
 
 	public Missile(int tex, String name) {
 		this();

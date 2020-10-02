@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Lerped Animation",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "description": "Fully-qualified Java class name."
+        },
+        "speed": {
+            "type": "number",
+            "description": "Scale at which animation plays. Can be used to speed up or slow down entire animation.",
+            "default": 1.0
+        },
+        "actionTime": {
+            "type": "number",
+            "description": "Time to perform action in milliseconds.",
+            "default": 6.0
+        },
+        "frames": {
+            "type": "array",
+            "description": "Array of LerpFrame objects.",
+            "items": {
+                "$ref": "LerpFrame.schema.json"
+            }
+        },
+        "startTransform": {
+            "$ref": "../../../../gdx/Vector3.schema.json",
+            "description": "Animation initial position."
+        },
+        "startRotation": {
+            "$ref": "../../../../gdx/Vector3.schema.json",
+            "description": "Animation initial rotation."
+        },
+        "startTexOffset": {
+            "type": "integer",
+            "description": "Starting sprite index. Used for sprite frame based animation.",
+            "default": 0
+        },
+        "endTexOffset": {
+            "type": "integer",
+            "description": "Ending sprite index. Used for sprite frame based animation.",
+            "default": 0
+        }
+    },
+    "required": [
+        "class",
+        "frames"
+    ]
+}

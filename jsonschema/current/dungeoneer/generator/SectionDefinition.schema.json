@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Section Definition",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.generator.SectionDefinition",
+            "description": "Fully-qualified Java class name."
+        },
+        "difficultyLevel": {
+            "type": "integer",
+            "description": "What kind of loot should drop here.",
+            "default": 1
+        },
+        "sortOrder": {
+            "type": "integer",
+            "description": "When should we let this section appear.",
+            "default": 1
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of section.",
+            "default": "My Section"
+        },
+        "floors": {
+            "type": "integer",
+            "description": "Number of levels in this section.",
+            "default": 2
+        },
+        "transitionLevel": {
+            "$ref": "../game/Level.schema.json",
+            "description": "Transition level to use after all floors in this section. If numFloors is 0, just use this level."
+        },
+        "levelTemplates": {
+            "type": "array",
+            "items": {
+                "$ref": "../game/Level.schema.json",
+                "description": "Array of possible level templates to use when making floors."
+            }
+        }
+    }
+}

@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.Entity.CollidesWith;
 import com.interrupt.dungeoneer.entities.items.Bow;
 import com.interrupt.dungeoneer.entities.items.ItemModification;
 import com.interrupt.dungeoneer.entities.items.Weapon;
@@ -30,10 +29,11 @@ import java.util.Random;
 public class Item extends Entity {
 
 	public enum ItemType { key, torch, potion, wand, sword, ring, amulet, junk, armor, quest, scroll, bow, thrown, stack, gold };
+	/** Item type */
 	public ItemType itemType;
-	
+
 	public enum ItemCondition { broken, worn, normal, fine, excellent };
-	
+
 	private static String[] itemConditionText = {
 		"Broken",
 		"Worn",
@@ -49,46 +49,61 @@ public class Item extends Entity {
 			1.2f,
 			1.5f
 	};
-	
+
+	/** Current item condition */
 	@EditorProperty
 	public ItemCondition itemCondition = ItemCondition.normal;
-	
+
+	/** Item enchantment */
 	public ItemModification enchantment = null;
+	/** Item prefx enchantment */
 	public ItemModification prefixEnchantment = null;
-	
+
+	/** Sprite index of item while held */
 	@EditorProperty
 	public Integer heldTex = null;
-	
+
+	/** Sprite index of item while in inventory */
 	@EditorProperty
 	public Integer inventoryTex = null;
-	
+
+	/** Slot to equip item to */
 	@EditorProperty
 	public String equipLoc = "";
-	
+
+	/** Sound played when Item is equipped */
 	@EditorProperty
 	public String equipSound = "";
-	
+
+	/** Sound played when Item is picked up */
 	@EditorProperty
 	public String pickupSound = "pu_gen.mp3";
 
+	/** Is item identified? */
 	@EditorProperty
 	public boolean identified = true;
-	
+
+	/** Amount of gold item is worth */
 	public int cost = 20;
-	
+
 	protected transient Vector3 workVec = new Vector3();
 
+	/** Item's level. Will scale stats */
 	public int itemLevel = 1;
 
+	/** Minimum allowed item level */
     @EditorProperty(type = "Level Scaling")
     public Integer minItemLevel = null;
 
+    /** Maximum allowed item level */
     @EditorProperty(type = "Level Scaling")
     public Integer maxItemLevel = null;
 
+    /** Is item unique? */
 	@EditorProperty
 	public boolean unique = false;
 
+	/** Entity id to send trigger event when picked up */
 	@EditorProperty(type = "Triggers")
 	public String triggersOnPickup = null;
 
@@ -102,8 +117,11 @@ public class Item extends Entity {
 	public String textureFile = "";
 
 	@EditorProperty(group = "Spawning")
+
+    /** Allow enchantments on item when spawned? */
 	public boolean canSpawnEnchanted = true;
 
+	/** Set random condition for item when spawned? */
 	@EditorProperty(group = "Spawning")
 	public boolean randomizeCondition = true;
 
@@ -111,7 +129,7 @@ public class Item extends Entity {
 
 	public transient String lastMeshFile = null;
 	public transient String lastTextureFile = null;
-	
+
 	public Item() {
 		isSolid = true;
 		artType = ArtType.item;
@@ -124,10 +142,12 @@ public class Item extends Entity {
 		canSleep = true;
 		shadowType = ShadowType.BLOB;
 	}
-	
+
+	/** Item name */
 	@EditorProperty
 	public String name;
 
+	/** Item description */
 	@EditorProperty
 	public String description;
 
@@ -139,18 +159,18 @@ public class Item extends Entity {
 
 		return this.name;
 	}
-	
+
 	public Item(float x, float y, int tex, ItemType itemType, String name)
 	{
 		super(x, y, tex, true);
 		artType = ArtType.item;
 		isSolid = true;
 		type = EntityType.item;
-		
+
 		this.itemType = itemType;
 		spriteAtlas = "item";
 		this.name = name;
-		
+
 		canSleep = true;
 	}
 
@@ -215,18 +235,18 @@ public class Item extends Entity {
 			Audio.playSound("hit.mp3,hit_02.mp3,hit_03.mp3,hit_04.mp3", speed * 6f);
 		}
 	}
-	
+
 	public void use(Player player, float projx, float projy)
 	{
 		float pxdir = player.x - x;
 		float pydir = player.y - y;
 		float playerdist = GlRenderer.FastSqrt(pxdir * pxdir + pydir * pydir);
-		
+
 		if(playerdist > 1.1) return;
-		
+
 		pickup(player);
 	}
-	
+
 	public boolean inventoryUse(Player player){
 		//Override this and set to true when item can be used in inventory
         return false;
@@ -235,11 +255,11 @@ public class Item extends Entity {
 	public void tossItem(Level level, float attackPower) {
 		// Override this
 	}
-	
+
 	protected void pickup(Player player)
-	{	
+	{
 		if(Math.abs(xa) >= 0.01f || Math.abs(ya) >= 0.01f || Math.abs(za) >= 0.01f) return;
-		
+
 		if(Game.instance.player.addToInventory(this))
 		{
 			isActive = false;
@@ -252,7 +272,7 @@ public class Item extends Entity {
 			isOnFloor = false;
 			wasOnFloorLast = false;
 			resetTickCount();
-			
+
 			Audio.playSound(pickupSound, 0.3f, 1f);
 
 			if(triggersOnPickup != null && !triggersOnPickup.isEmpty()) {
@@ -295,7 +315,7 @@ public class Item extends Entity {
 
 	@Override
 	public void tick(Level level, float delta)
-	{	
+	{
 		workVec.set(xa, ya, za);
 		collidesWith = (workVec.len() > 0.1f) ? CollidesWith.all : CollidesWith.nonActors;
 
@@ -330,14 +350,14 @@ public class Item extends Entity {
 		if(isOnFloor) isSolid = true;
 		wasOnEntity = isOnEntity;
 	}
-	
+
 	public void tickEquipped(Player player, Level level, float delta, String equipLoc) {
 		// only tick some attachments when held offhand, not all
 		if(attached != null) {
-			
+
 			// let attachments preserve their offsets
 			if(attachmentTransform == null) attachmentTransform = new Vector3(0,0,0);
-			
+
 			for(int i = 0; i < attached.size; i++) {
 				Entity attachment = attached.get(i);
 				attachment.x += x - attachmentTransform.x;
@@ -345,7 +365,7 @@ public class Item extends Entity {
 				attachment.z += z - attachmentTransform.z;
 				attachment.owner = this;
 				attachment.isSolid = false;	// attachments are always non solid
-				
+
 				if(attachment instanceof DynamicLight) {
 					DynamicLight light = (DynamicLight)attachment;
 					light.updateLightColor(delta);
@@ -358,7 +378,7 @@ public class Item extends Entity {
 					attachment.tick(level, delta);
 				}
 			}
-			
+
 			attachmentTransform.set(x,y,z);
 		}
 	}
@@ -409,7 +429,7 @@ public class Item extends Entity {
 
 		return Color.WHITE;
 	}
-	
+
 	public String GetInfoText() {
 		String infoText = GetItemText();
 
@@ -474,7 +494,7 @@ public class Item extends Entity {
 
 		return newLineOrNone + modName + ": " + (modAmountPercent > 0 ? "+" : "") + amount;
 	}
-	
+
 	public void updateDrawable() {
 		updateDrawableInternal(false);
 	}
@@ -513,21 +533,21 @@ public class Item extends Entity {
 			drawable.update(this);
 		}
 	}
-	
+
 	public Integer getHeldTex() {
 		if(heldTex != null) return heldTex;
 		return tex;
 	}
-	
+
 	public String GetEquipLoc() {
 		return equipLoc;
 	}
-	
+
 	public Integer getInventoryTex() {
 		if (inventoryTex != null) return inventoryTex;
 		return tex;
 	}
-	
+
 	@Override
 	public void hit(float projx, float projy, int damage, float knockback, DamageType damageType, Entity instigator) {
 		super.hit(projx, projy, damage, knockback, damageType, instigator);
@@ -606,7 +626,7 @@ public class Item extends Entity {
 			damageItem((int)(damageVector.len() * 30f), DamageType.PHYSICAL);
 		}
 	}
-	
+
 	public String getConditionText() {
 		String condition = itemConditionText[itemCondition.ordinal()];
 		String form = StringManager.form(this.name);
@@ -623,17 +643,17 @@ public class Item extends Entity {
 		String form = StringManager.form(this.name);
 		return StringManager.get(this.prefixEnchantment.name, form);
 	}
-	
+
 	public TextureRegion getInventoryTextureRegion() {
 		TextureAtlas atlas = getTextureAtlas();
 		return atlas.getSprite(getInventoryTex());
 	}
-	
+
 	public TextureRegion getHeldInventoryTextureRegion(int offset) {
 		TextureAtlas atlas = getTextureAtlas();
 		return atlas.getSprite(getHeldTex() + offset);
 	}
-	
+
 	public TextureAtlas getTextureAtlas() {
 		TextureAtlas atlas = TextureAtlas.cachedAtlases.get(spriteAtlas);
 		if(atlas == null) atlas = TextureAtlas.cachedAtlases.get(artType.toString());

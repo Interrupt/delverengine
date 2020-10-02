@@ -1,44 +1,46 @@
 package com.interrupt.dungeoneer.entities;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableProjectedDecal;
 
 public class ProjectedDecal extends DirectionalEntity {
-	
+	/** Direction to orient decal */
 	@EditorProperty
 	public Vector3 direction = new Vector3(0,0,0);
 	
 	public transient Camera perspective;
-	
+
+	/** Is projection orthographic? */
 	@EditorProperty
 	public boolean isOrtho = true;
 	public transient boolean wasOrtho = true;
-	
+
+	/** Near clipping plane of projection. */
 	@EditorProperty
 	public float start = 0.2f;
-	
+
+	/** Far clipping plane of projection. */
 	@EditorProperty
 	public float end = 10f;
-	
+
+	/** Field of view for projection. */
 	@EditorProperty
 	public float fieldOfView = 20f;
-	
+
+	/** Width of decal. */
 	@EditorProperty
 	public float decalWidth = 0.99f;
+
+	/** Height of decal. */
 	@EditorProperty
 	public float decalHeight = 0.99f;
 	

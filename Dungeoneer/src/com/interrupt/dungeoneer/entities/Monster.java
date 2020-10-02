@@ -11,7 +11,10 @@ import com.interrupt.dungeoneer.entities.Door.DoorType;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
-import com.interrupt.dungeoneer.game.*;
+import com.interrupt.dungeoneer.game.CachePools;
+import com.interrupt.dungeoneer.game.Colors;
+import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.animation.AnimationAction;
@@ -21,10 +24,8 @@ import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.interfaces.Directional;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
-import com.interrupt.dungeoneer.statuseffects.PoisonEffect;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.Tile;
-import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 import com.interrupt.managers.EntityManager;
 
 import java.util.Random;
@@ -33,44 +34,55 @@ public class Monster extends Actor implements Directional {
 	
 	public Integer origtex = null;
 	private float tickcount = 0;
-	
+
+	/** Is monster hostile towards the player? */
 	@EditorProperty
 	public boolean hostile = true;
-	
+
+	/** Distance which monster can hit. */
 	@EditorProperty
 	public float reach = 0.6f;
-	
+
+	/** Distance which monster begins attacking. */
 	@EditorProperty
 	public float attackStartDistance = 0.6f;
-	
+
+	/** Minimum level monster is allowed to be. */
 	public int baseLevel = 0;
 
+	/** Move speed. */
 	@EditorProperty
 	public float speed;
 	
 	public float targetx, targety, targetz;
 	public float last_targetx, last_targety;
 	public float last_picked_targetx, last_picked_targety;
-	
+
+	/** Does monster wander around? */
 	@EditorProperty
 	public boolean wanders = true;
 	
 	public transient boolean canSafelyNavigateToTarget = true;
 	
 	private transient float nextTargetf = 0f;
-	
+
+	/** Time interval between monster attacks. */
 	@EditorProperty
 	private float attackTime = 60;
 
+	/** Time interval between monster projectile attacks. */
 	@EditorProperty
 	private float projectileAttackTime = 100;
 
+	/** Maximum distance monster can perform a projectile attack. */
 	@EditorProperty
 	public float projectileAttackMaxDistance = 30f;
 
+	/** Minimum distance monster can perform a projectile attack. */
 	@EditorProperty
 	public float projectileAttackMinDistance = 0f;
 
+	/** Vertical offset for projectile. */
 	@EditorProperty
 	public float projectileOffset = 0f;
 	
@@ -78,74 +90,99 @@ public class Monster extends Actor implements Directional {
 	private float regenManaTimer = 0;
 	
 	private float stuntime = 0;
-	
+
+	/** Is monster alerted to player's presence? */
 	public boolean alerted = false;
+
+	/** Is monster fleeing from the player? */
 	public boolean fleeing = false;
+
+	/** Does monster attempt to keep distance between themselves and the player? */
 	public boolean keepDistance = false;
 	
 	private int lastWander = 0;
 	private boolean waiting = false;
 	
 	private float bleedTimer = 0;
-	
+
+	/** Monster name. */
 	public String name = "";
-	
+
+	/** Does monster chase after it's target? */
 	@EditorProperty
 	public Boolean chasetarget = true;
 	
 	public boolean ranged = false;
-	
+
+	/** Does monster have an attack animation? */
 	@EditorProperty
 	public boolean hasAttackAnim = true;
-	
+
+	/** Type of damage monster deals. */
 	@EditorProperty
 	private DamageType damageType = DamageType.PHYSICAL;
-	
+
+	/** Can monster open doors? */
 	@EditorProperty
 	private boolean canOpenDoors = true;
-	
+
+	/** Sound played when monster attacks. */
 	@EditorProperty
 	private String attackSound = null;
-	
+
+	/** Sound played when monster attacks. */
 	@EditorProperty
 	private String attackSwingSound = "enemy_swipes_01.mp3,enemy_swipes_02.mp3,enemy_swipes_03.mp3,enemy_swipes_04.mp3";
-	
+
+	/** Sound played when monster is hit. */
 	@EditorProperty
 	private String hitSound = "hit.mp3,hit_02.mp3,hit_03.mp3,hit_04.mp3";
-	
+
+	/** Sound played when monster is hurt. */
 	@EditorProperty
 	private String hurtSound = null;
-	
+
+	/** Sound played when monster first sees player. */
 	@EditorProperty
 	private String alertSound = null;
-	
+
+	/** Sound played when monster dies. */
 	@EditorProperty
 	private String dieSound = null;
-	
+
+	/** Sound played when monster starts fleeing player. */
 	@EditorProperty
 	private String fleeSound = null;
-	
+
+	/** Sound played while monster is idle. */
 	@EditorProperty
 	private String idleSound = null;
-	
+
+	/** Sound played while monster is walking. */
 	@EditorProperty
 	private String walkSound = null;
 
+	/** Does monster have a chance to spawn random loot when it dies? */
 	@EditorProperty(group = "Loot")
 	private boolean spawnsLoot = true;
 
+	/** Can dropped loot potentially be gold? */
 	@EditorProperty(group = "Loot")
 	private boolean lootCanBeGold = true;
 
+	/** Percent chance to play pain animation when monster takes damage. */
 	@EditorProperty
 	private float painChance = 0.75f;
 
+	/** Entity to send trigger event when monster dies. */
 	@EditorProperty(group = "Triggers")
 	private String triggersOnDeath = null;
 
+	/** Entity to send trigger event when monster takes damage. */
 	@EditorProperty(group = "Triggers")
 	private String triggersWhenHurt = null;
 
+	/** Monster rotation. */
 	public Vector3 rotation = new Vector3(Vector3.X);
 	
 	private float soundVolume = 0.45f;
@@ -156,17 +193,31 @@ public class Monster extends Actor implements Directional {
 
 	private float stuckTime = 0f;
 	private float stuckWanderTimer = 0f;
-	
+
+	/** Monster walk animation. */
 	private SpriteAnimation walkAnimation = null;
+
+	/** Monster attack animation. */
 	private SpriteAnimation attackAnimation = null;
+
+	/** Monster cast animation. */
 	private SpriteAnimation castAnimation = null;
+
+	/** Monster hurt animation. */
 	private SpriteAnimation hurtAnimation = null;
+
+	/** Monster death animation. */
 	protected SpriteAnimation dieAnimation = null;
+
+	/** Monster dodge animation. */
 	private SpriteAnimation dodgeAnimation = null;
-	
+
 	private transient AmbientSound walkAmbientSound = null;
-	
+
+	/** Decal to place when monster dies. */
 	protected ProjectedDecal bloodPoolDecal = new ProjectedDecal(ArtType.sprite, 16, 0.8f);
+
+	/** Decal to place when monster is hurt. */
 	protected ProjectedDecal bloodSplatterDecal = new ProjectedDecal(ArtType.sprite, 17, 0.5f);
 	
 	private transient float targetdist;
@@ -179,23 +230,43 @@ public class Monster extends Actor implements Directional {
 	private transient float tya;
 	private transient float tza;
 	private transient float length;
-	
+
+	/** List of spells monster can cast. */
 	public Array<Spell> spells;
+
+	/** List of items monster will always drop when they die. */
 	public Array<Item> loot;
+
+	/** Entity that monster will throw/fire at player. */
 	public Entity projectile = null;
 
+	/** Scales how much arc the monster gives to projectile. */
 	protected float projectileBallisticsMod = 0.1f;
+
+	/** Initial velocity of projectile. */
 	protected float projectileSpeed = 0.15f;
 
 	private transient Float idleSoundTimer = null;
 
+	/** Does monster award experience points when slain? */
 	public boolean givesExp = true;
 
+	/** List of random Entities to spawn when monster dies. */
 	Array<Entity> spawns = new Array<Entity>();
+
+	/** Number of spawns to create. */
 	int spawnsCount = 1;
+
+	/** Spawn initial velocity. */
 	public Vector3 spawnVelocity = new Vector3(0.0f, 0.0f, 0.0625f);
+
+	/** Spawn initial random velocity. */
 	public Vector3 spawnRandomVelocity = new Vector3(0.125f, 0.125f, 0.0625f);
+
+	/** Size of volume where spawns will be created. */
 	public Vector3 spawnSpread = new Vector3(0.125f, 0.125f, 0.0f);
+
+	/** Percent of parent speed to inherit. */
 	public float spawnMomentumTransfer = 1.0f;
 
 	private transient Entity attackTarget = null;

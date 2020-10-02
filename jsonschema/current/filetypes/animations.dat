@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Lerped Animation HashMap",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "animations": {
+            "type": "object",
+            "description": "Dictionary providing a mapping of animation names to animations.",
+            "patternProperties": {
+                ".*": {
+                    "$ref": "../dungeoneer/gfx/animation/lerp3d/LerpedAnimation.schema.json"
+                }
+            }
+        }
+    },
+    "required": [
+        "animations"
+    ]
+}
