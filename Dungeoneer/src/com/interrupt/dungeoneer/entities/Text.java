@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableText;
 import com.interrupt.dungeoneer.ui.FontBounds;
@@ -53,5 +52,14 @@ public class Text extends DirectionalEntity {
             y += adjustment.y * bounds.width / 2.0 * scale * 0.025f;
             z += 0.4f; // Match offset to the new one of
         }
+    }
+
+    @Override
+    public void onTrigger(Entity instigator, String value) {
+        if (value == null || value.equals("")) {
+            return;
+        }
+
+        this.text = value;
     }
 }
