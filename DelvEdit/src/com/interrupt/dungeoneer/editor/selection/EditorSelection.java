@@ -51,4 +51,8 @@ public class EditorSelection {
     public boolean isSelected(Entity e) {
         return selected.contains(e, true);
     }
+
+    public boolean isPickedOrSelected(Entity e) {
+        return selected.contains(e, true) || picked == e;
+    }
 }

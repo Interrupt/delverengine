@@ -22,7 +22,9 @@ import com.interrupt.dungeoneer.entities.Stairs.StairDirection;
 import com.interrupt.dungeoneer.entities.items.Gold;
 import com.interrupt.dungeoneer.entities.items.Key;
 import com.interrupt.dungeoneer.entities.items.QuestItem;
+import com.interrupt.dungeoneer.entities.triggers.BasicTrigger;
 import com.interrupt.dungeoneer.entities.triggers.ButtonDecal;
+import com.interrupt.dungeoneer.entities.triggers.ButtonModel;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo;
@@ -211,6 +213,18 @@ public class Level {
 	private transient Array<Entity> triggerCache = new Array<Entity>();
 	private transient Array<Entity> collisionCache = new Array<Entity>();
 	private transient Ray calcRay = new Ray(new Vector3(), new Vector3());
+
+	private transient final Array<Entity> cachedEntityResult = new Array<>();
+	public Iterable<Entity> allEntities = () -> {
+		Array<Entity> result = cachedEntityResult;
+		result.clear();
+
+		result.addAll(entities);
+		result.addAll(static_entities);
+		result.addAll(non_collidable_entities);
+
+		return result.iterator();
+	};
 
 	public String objectivePrefab = null;
 
@@ -3541,6 +3555,44 @@ public class Level {
 
 		return entitiesToFind;
 	}
+
+	public Array<Entity> getTriggersThatTargetId(String id) {
+		Array<Entity> results = triggerCache;
+		results.clear();
+
+		if (id == null || id.isEmpty()) {
+			return results;
+		}
+
+		String[] ids = id.split(",");
+
+		for (Entity e : allEntities) {
+			for (String lookForid: ids) {
+				if (e instanceof Trigger) {
+					Trigger t = (Trigger) e;
+					if (t.triggersId.equals(lookForid)) {
+						if (!results.contains(e, true)) results.add(e);
+					}
+				}
+				else if (e instanceof BasicTrigger) {
+					BasicTrigger t = (BasicTrigger) e;
+					if (t.triggersId.equals(lookForid)) {
+						if (!results.contains(e, true)) results.add(e);
+					}
+				}
+				else if (e instanceof ButtonModel) {
+					ButtonModel t = (ButtonModel) e;
+					if (t.triggersId.equals(lookForid)) {
+						if (!results.contains(e, true)) results.add(e);
+					}
+				}
+			}
+		}
+
+		return results;
+	}
+
+
 
 	public Array<Entity> findEntities(Class typeOf, Vector2 position, float range, boolean dynamicEntities, boolean staticEntities, boolean nonCollidingEntities) {
 		Array<Entity> toReturn = new Array<Entity>();

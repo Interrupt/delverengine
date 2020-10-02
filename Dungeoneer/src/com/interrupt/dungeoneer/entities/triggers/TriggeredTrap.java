@@ -2,7 +2,6 @@ package com.interrupt.dungeoneer.entities.triggers;
 
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.Trap.TrapType;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.spells.SplashExplosion;
 import com.interrupt.dungeoneer.entities.spells.Teleport;
@@ -15,7 +14,7 @@ public class TriggeredTrap extends Trigger {
 	public enum TrapType { explosion, teleport, poison, random };
 	@EditorProperty public TrapType trapType = TrapType.explosion;
 
-	public TriggeredTrap() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public TriggeredTrap() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 	
 	@Override
 	public void init(Level level, Source source) {

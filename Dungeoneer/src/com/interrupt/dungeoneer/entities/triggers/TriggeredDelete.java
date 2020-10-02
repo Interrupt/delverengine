@@ -11,7 +11,7 @@ public class TriggeredDelete extends Trigger {
 	@EditorProperty
 	public String deleteId = "ENTITY_TO_DELETE";
 
-	public TriggeredDelete() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public TriggeredDelete() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 	
 	@Override
 	public void doTriggerEvent(String value) {

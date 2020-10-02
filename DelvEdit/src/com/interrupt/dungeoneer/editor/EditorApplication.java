@@ -1468,7 +1468,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 
 		Gdx.gl.glDisable(GL20.GL_BLEND);
-		renderTriggerLines();
+		//renderTriggerLines();
 
 		if (showGizmos) {
 			drawAllGizmos();
@@ -1489,8 +1489,8 @@ public class EditorApplication implements ApplicationListener {
 
 	/** Draw Gizmos for all Entities in the level. */
 	private void drawAllGizmos() {
-		for (Entity entity : level.entities) {
-			drawGizmo(entity);
+		for (int i=0; i < level.entities.size; i++) {
+			drawGizmo(level.entities.get(i));
 		}
 	}
 

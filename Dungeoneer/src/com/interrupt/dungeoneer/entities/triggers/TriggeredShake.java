@@ -15,7 +15,7 @@ public class TriggeredShake extends Trigger {
 	@EditorProperty
 	public float shakeRange = 1000f;
 
-	public TriggeredShake() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public TriggeredShake() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 	
 	@Override
 	public void doTriggerEvent(String value) {

@@ -13,7 +13,7 @@ public class TriggeredFlash extends Trigger {
 	@EditorProperty
 	public int flashTime = 100;
 
-	public TriggeredFlash() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public TriggeredFlash() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 	
 	@Override
 	public void doTriggerEvent(String value) {

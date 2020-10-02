@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableText;
 import com.interrupt.dungeoneer.ui.FontBounds;

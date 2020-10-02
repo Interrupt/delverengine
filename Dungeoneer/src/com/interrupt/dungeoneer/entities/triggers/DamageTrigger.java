@@ -14,7 +14,7 @@ public class DamageTrigger extends BasicTrigger {
 	@EditorProperty
 	public String triggersOnFail = null;
 
-	public DamageTrigger() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public DamageTrigger() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 
 	@Override
 	public void doTriggerEvent(String value) { }

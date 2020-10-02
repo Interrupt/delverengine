@@ -71,7 +71,7 @@ public class BasicTrigger extends Entity {
     private float triggerTime = 0;
 
     public BasicTrigger() {
-        hidden = true; spriteAtlas = "editor"; tex = 11; floating = true;
+        hidden = true; spriteAtlas = "editor"; tex = 20; floating = true;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class TriggeredInventoryCheck extends Trigger {
 
 	private transient Array<Item> foundItems = new Array<Item>();
 
-	public TriggeredInventoryCheck() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public TriggeredInventoryCheck() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 	
 	@Override
 	public void doTriggerEvent(String value) {

@@ -14,6 +14,10 @@ public class Handles {
     private static Camera camera;
     private static Color color = Color.WHITE;
 
+    // Work vectors
+    private static final Vector3 v0 = new Vector3();
+    private static final Vector3 v1 = new Vector3();
+
     public static void setColor(Color color) {
         Handles.color = color;
     }
@@ -40,6 +44,18 @@ public class Handles {
         begin();
         drawWireFrustumInternal(frustum);
         end();
+    }
+
+    public static void drawLine(Vector3 p0, Vector3 p1) {
+        begin();
+        drawLineInternal(p0, p1);
+        end();
+    }
+
+    public static void drawLine(float x0, float y0, float z0, float x1, float y1, float z1) {
+        v0.set(x0, y0, z0);
+        v1.set(x1, y1, z1);
+        drawLine(v0, v1);
     }
 
     private static void begin() {
@@ -176,5 +192,9 @@ public class Handles {
 
 			renderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
 		}
+    }
+
+    private static void drawLineInternal(Vector3 p0, Vector3 p1) {
+        renderer.line(p0, p1);
     }
 }

@@ -21,7 +21,7 @@ public class LookAtTrigger extends BasicTrigger {
 
 	private final transient Vector3 t_checkDistance = new Vector3();
 
-	public LookAtTrigger() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public LookAtTrigger() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 	
 	@Override
 	public void doTriggerEvent(String value) { }

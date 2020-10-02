@@ -32,7 +32,7 @@ public class TriggeredElevator extends Trigger {
 	protected float deltaBuffer = 0;
 	protected ElevatorState state = ElevatorState.NONE;
 
-	public TriggeredElevator() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public TriggeredElevator() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 
 	boolean elevatorMoving = false;
 	

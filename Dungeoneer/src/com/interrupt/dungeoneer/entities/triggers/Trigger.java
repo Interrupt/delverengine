@@ -10,9 +10,8 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.input.Actions;
-import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
-import com.interrupt.helpers.PlayerHistory;
+import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -92,7 +91,7 @@ public class Trigger extends Entity {
 	private float triggerTime = 0;
 	
 	public Trigger() {
-		hidden = true; spriteAtlas = "editor"; tex = 11;
+		hidden = true; spriteAtlas = "editor"; tex = 20;
 	}
 	
 	public Trigger(String triggers) {

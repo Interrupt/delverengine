@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.entities.triggers;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
@@ -14,8 +12,10 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
 
+import java.util.Random;
+
 public class TriggeredTeleportPlayer extends Trigger {
-	public TriggeredTeleportPlayer() { hidden = true; spriteAtlas = "editor"; tex = 11; }
+	public TriggeredTeleportPlayer() { hidden = true; spriteAtlas = "editor"; tex = 20; }
 	
 	@EditorProperty
 	boolean doEffects=false;
