@@ -40,6 +40,7 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
+import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
 import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
@@ -320,6 +321,8 @@ public class EditorApplication implements ApplicationListener {
 
 	private TileSelection entireLevelSelection;
 
+	public GeneratorInfo generatorInfo;
+
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
@@ -405,11 +408,12 @@ public class EditorApplication implements ApplicationListener {
 			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
 		}
 
-        Gdx.input.setCursorCatched(false);
+		Gdx.input.setCursorCatched(false);
+		generatorInfo = new GeneratorInfo();
         initTextures();
 
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
-                TextureAtlas.cachedRepeatingAtlases.firstKey();
+				TextureAtlas.cachedRepeatingAtlases.firstKey();
 
 		createEmptyLevel(17, 17);
 	}

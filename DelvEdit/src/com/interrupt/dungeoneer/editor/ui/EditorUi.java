@@ -16,17 +16,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.editor.*;
 import com.interrupt.dungeoneer.editor.ui.menu.*;
+import com.interrupt.dungeoneer.editor.ui.menu.generator.RoomGeneratorMenuItem;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.generator.RoomGenerator;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileFilter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class EditorUi {
     Stage stage;
@@ -221,149 +217,6 @@ public class EditorUi {
             }
         });
 
-        MenuItem generateRoomMenuItem = new DynamicMenuItem("Generate Room", smallSkin, new DynamicMenuItemAction() {
-            private String lastGeneratedRoomType = null;
-            private boolean needsRefresh = false;
-
-            @Override
-            public boolean isDirty() {
-                return needsRefresh;
-            }
-
-            @Override
-            public void updateMenuItem(MenuItem item) {
-                // Reset isDirty criteria.
-                needsRefresh = false;
-
-                // Remove existing generator entries.
-                if (item.subMenu != null) {
-                    item.subMenu.items.clear();
-                }
-
-                // Get available generators.
-                Array<String> generators = new Array<String>();
-                Array<String> mods = Game.getModManager().modsFound;
-                for (String mod : mods) {
-                    FileHandle parent = Game.getFile(mod + "/data/room-builders");
-                    if (!parent.exists() || !parent.isDirectory()) {
-                        continue;
-                    }
-
-                    FileHandle[] children = parent.list(new FileFilter() {
-                        @Override
-                        public boolean accept(File file) {
-                            return !file.isDirectory();
-                        }
-                    });
-
-                    for (FileHandle child : children) {
-                        String name = child.nameWithoutExtension().toLowerCase();
-                        Pattern pattern = Pattern.compile("([a-zA-Z0-9]*)_rooms");
-                        Matcher matcher = pattern.matcher(name);
-
-                        if (matcher.find()) {
-                            String generator = matcher.group(1);
-                            if (generator != null) {
-                                if (!generators.contains(generator, false)) {
-                                    generators.add(generator);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                generators.sort();
-
-                // Make generator entries.
-                if (generators.size > 0) {
-                    for (String generator : generators) {
-                        String label = generator.substring(0, 1).toUpperCase() + generator.substring(1) + " Room";
-                        String generatorType = generator.toUpperCase() + "_ROOMS";
-
-                        item.addItem(new MenuItem(label, smallSkin, makeRoomGeneratorAction(generatorType)));
-                    }
-                } else {
-                    MenuItem emptyItem = new MenuItem("No generators found in /data/room-builders/", smallSkin);
-                    emptyItem.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
-                    item.addItem(emptyItem);
-                }
-
-                // Make re-generate entry.
-                if (generators.size > 0) {
-                    item.addSeparator();
-
-                    String generatorName = lastGeneratedRoomType != null
-                            ? (" (" + lastGeneratedRoomType.substring(0, 1)
-                                    + lastGeneratedRoomType.substring(1, lastGeneratedRoomType.indexOf("_"))
-                                            .toLowerCase()
-                                    + ")")
-                            : "";
-                    MenuItem menuItem = new MenuItem("Re-Generate Room" + generatorName, smallSkin,
-                            lastGeneratedRoomType != null ? makeRoomGeneratorAction() : makeEmptyAction())
-                                    .setAccelerator(new MenuAccelerator(Keys.G, false, true));
-
-                    if (lastGeneratedRoomType == null) {
-                        menuItem.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
-                        // TODO: Change color of accelerator label.
-                    }
-
-                    item.addItem(menuItem);
-                }
-
-                // Make refresh entry.
-                item.addSeparator().addItem(new MenuItem("Refresh Listing", smallSkin, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        // TODO: Make sure that the `lastGeneratedRoomType` is still available after the refresh.
-                        needsRefresh = true;
-                    }
-                }));
-            }
-
-            private ActionListener makeRoomGeneratorAction(final String generatorType) {
-                return new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        Editor.app.getLevel().editorMarkers.clear();
-                        Editor.app.getLevel().entities.clear();
-
-                        Level generatedLevel = new Level(17, 17);
-                        generatedLevel.roomGeneratorType = generatorType;
-
-                        RoomGenerator generator = new RoomGenerator(generatedLevel, generatorType);
-                        generator.generate(true, true, true, true);
-
-                        Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
-                        Editor.app.getLevel().paste(generatedLevel, 0, 0);
-
-                        Editor.app.refresh();
-
-                        if (lastGeneratedRoomType != generatorType) {
-                            needsRefresh = true;
-                        }
-
-                        lastGeneratedRoomType = generatorType;
-                    }
-                };
-            }
-
-            private ActionListener makeRoomGeneratorAction() {
-                return new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        makeRoomGeneratorAction(lastGeneratedRoomType).actionPerformed(actionEvent);
-                    }
-                };
-            }
-
-            private ActionListener makeEmptyAction() {
-                return new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {}
-                };
-            }
-        });
-
         // make the menu bar
         menuBar = new Scene2dMenuBar(smallSkin);
         menuBar.addItem(new MenuItem("File", smallSkin)
@@ -467,7 +320,7 @@ public class EditorUi {
                 .addItem(new MenuItem("Set Theme", smallSkin, setThemeAction))
                 .addItem(new MenuItem("Set Fog Settings", smallSkin, setFogSettingsAction))
                 .addSeparator()
-                .addItem(generateRoomMenuItem)
+                .addItem(new RoomGeneratorMenuItem(smallSkin))
                 .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction())
                     .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS")))
                     .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS")))
