@@ -73,6 +73,8 @@ import com.noise.PerlinNoise;
 
 import javax.swing.*;
 import java.util.HashMap;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class EditorApplication implements ApplicationListener {
 	public JFrame frame;
@@ -409,7 +411,15 @@ public class EditorApplication implements ApplicationListener {
 		}
 
 		Gdx.input.setCursorCatched(false);
+
 		generatorInfo = new GeneratorInfo();
+		liveReload.addListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generatorInfo.refresh();
+			}
+		});
+
         initTextures();
 
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =

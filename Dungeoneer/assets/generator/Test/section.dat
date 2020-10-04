@@ -6,13 +6,27 @@
 	"levelTemplates": [
 		{
 			"class": "com.interrupt.dungeoneer.game.Level",
-			"theme":"TEST",
-			"fogStart":3.0,
-			"fogEnd":30.0,
+			"theme": "TEST",
+			"fogStart": 3.0,
+			"fogEnd": 30.0,
 			"fogColor": { "r":0.0, "g":0.0, "b":0.0 },
-			"generated":false,
-			"levelFileName":"levels/test-level.bin",
-			"ambientSound":"env_indoor.mp3",
+			"generated": false,
+			"levelFileName": "levels/test-level.bin",
+			"ambientSound": "env_indoor.mp3",
+			"ambientSoundVolume": 0.15,
+			"traps": []
+		},
+		{
+			"class": "com.interrupt.dungeoneer.game.Level",
+			"theme": "TEST",
+			"fogStart": 3.0,
+			"fogEnd": 30.0,
+			"fogColor": { "r":0.0, "g":0.0, "b":0.0 },
+			"generated": true,
+			"roomGeneratorType": "TEST_ROOMS",
+			"roomGeneratorChance": 0.075,
+			"levelFileName": "levels/test-level.bin",
+			"ambientSound": "env_indoor.mp3",
 			"ambientSoundVolume": 0.15,
 			"traps":[]
 		}

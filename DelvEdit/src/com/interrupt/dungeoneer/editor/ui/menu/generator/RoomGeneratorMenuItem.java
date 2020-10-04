@@ -18,6 +18,7 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
     public RoomGeneratorMenuItem(Skin skin) {
         super("Generate Room", skin, new DynamicMenuItemAction() {
             private boolean needsRefresh = false;
+            private int refreshCount = 0;
 
             @Override
             public boolean isDirty() {
@@ -25,12 +26,25 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
             }
 
             @Override
+            public void initMenuItem(MenuItem menuItem) {
+                Editor.app.generatorInfo.addListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        needsRefresh = true;
+                    }
+                });
+            }
+
+            @Override
             public void updateMenuItem(MenuItem menuItem) {
                 needsRefresh = false;
+                refreshCount += 1;
 
                 if (menuItem.subMenu != null) {
                     menuItem.subMenu.items.clear();
                 }
+
+                menuItem.addItem(new MenuItem("Refreshed: " + Integer.toString(refreshCount), skin));
 
                 Array<String> roomGenerators = Editor.app.generatorInfo.getRoomGenerators();
 

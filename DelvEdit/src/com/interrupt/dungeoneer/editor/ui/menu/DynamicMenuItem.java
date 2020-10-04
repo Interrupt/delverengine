@@ -16,6 +16,7 @@ public class DynamicMenuItem extends MenuItem {
     public DynamicMenuItem (CharSequence text, Skin skin, DynamicMenuItemAction action) {
         super(text, skin);
         this.action = action;
+        this.action.initMenuItem(this);
         this.action.updateMenuItem(this);
     }
 

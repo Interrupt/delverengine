@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.editor.*;
 import com.interrupt.dungeoneer.editor.ui.menu.*;
+import com.interrupt.dungeoneer.editor.ui.menu.generator.LevelGeneratorMenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.generator.RoomGeneratorMenuItem;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
@@ -163,6 +164,9 @@ public class EditorUi {
 
                 return !first.equals(mostRecentFile);
             }
+
+            @Override
+            public void initMenuItem(MenuItem item) {}
 
             @Override
             public void updateMenuItem(MenuItem item) {
@@ -321,12 +325,13 @@ public class EditorUi {
                 .addItem(new MenuItem("Set Fog Settings", smallSkin, setFogSettingsAction))
                 .addSeparator()
                 .addItem(new RoomGeneratorMenuItem(smallSkin))
-                .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction())
-                    .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS")))
-                    .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS")))
-                    .addItem(new MenuItem("Sewer", smallSkin, makeLevelGeneratorAction("SEWER", "SEWER_ROOMS")))
-                    .addItem(new MenuItem("Temple", smallSkin, makeLevelGeneratorAction("UNDEAD", "TEMPLE_ROOMS")))
-                )
+                .addItem(new LevelGeneratorMenuItem(smallSkin))
+                // .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction())
+                //     .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS")))
+                //     .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS")))
+                //     .addItem(new MenuItem("Sewer", smallSkin, makeLevelGeneratorAction("SEWER", "SEWER_ROOMS")))
+                //     .addItem(new MenuItem("Temple", smallSkin, makeLevelGeneratorAction("UNDEAD", "TEMPLE_ROOMS")))
+                // )
         );
 
         if(SteamApi.api.isAvailable()) {
