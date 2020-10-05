@@ -166,9 +166,6 @@ public class EditorUi {
             }
 
             @Override
-            public void initMenuItem(MenuItem item) {}
-
-            @Override
             public void updateMenuItem(MenuItem item) {
                 // Update most recent file. Used for isDirty check.
                 if (Editor.options.recentlyOpenedFiles.size > 0) {

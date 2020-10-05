@@ -18,9 +18,6 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
             }
 
             @Override
-            public void initMenuItem(MenuItem item) {}
-
-            @Override
             public void updateMenuItem(MenuItem menuItem) {
                 needsRefresh = false;
 

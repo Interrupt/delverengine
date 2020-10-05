@@ -5,16 +5,12 @@ import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorArt;
 
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /** Subsystem for live reloading art assets. */
 public class LiveReload {
@@ -27,8 +23,6 @@ public class LiveReload {
     public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
 
     private final List<String> watchedExtensions = Arrays.asList("dat", "obj", "png", "frag", "vert");
-
-	private List<ActionListener> listeners = new ArrayList<ActionListener>();
 
     public LiveReload() {
     	if (LiveReload.created) {
@@ -88,11 +82,9 @@ public class LiveReload {
 	public void tick() {
         if (needToReloadAssets.compareAndSet(true, false)) {
 			Gdx.app.log("LiveReload", "Reloading assets");
-			// TODO: Maybe send along list of changed assets.
-			notifyListeners(null);
-
-			// TODO: Use listeners for the events below.
-            EditorArt.refresh();
+			// TODO: Use ActionListener event handling instead.
+			EditorArt.refresh();
+			Editor.app.generatorInfo.refresh();
             Editor.app.initTextures();
 		}	
     }
@@ -104,23 +96,5 @@ public class LiveReload {
 		}
 
     	return "";
-	}
-
-	public void addListener(ActionListener listener) {
-		if (listener != null && !listeners.contains(listener)) {
-			listeners.add(listener);
-		}
-	}
-
-	public void removeListener(ActionListener listener) {
-		if (listener != null) {
-			listeners.remove(listener);
-		}
-	}
-
-	private void notifyListeners(ActionEvent event) {
-		for (ActionListener listener : listeners) {
-			listener.actionPerformed(event);
-		}
 	}
 }

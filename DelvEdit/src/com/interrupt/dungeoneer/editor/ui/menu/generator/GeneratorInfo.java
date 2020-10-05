@@ -2,10 +2,6 @@ package com.interrupt.dungeoneer.editor.ui.menu.generator;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.List;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
@@ -25,8 +21,6 @@ public class GeneratorInfo {
     private Array<LevelGeneratorInfo> levelGenerators = new Array<LevelGeneratorInfo>();
 
     public String lastGeneratedRoomType;
-
-    private List<ActionListener> listeners = new ArrayList<ActionListener>();
 
     public GeneratorInfo() {
         refresh();
@@ -94,8 +88,6 @@ public class GeneratorInfo {
         themes.sort();
         roomGenerators.sort();
         levelGenerators.sort();
-
-        notifyListeners(null);
     }
 
     public Array<String> getThemes() {
@@ -109,22 +101,4 @@ public class GeneratorInfo {
     public Array<LevelGeneratorInfo> getLevelGenerators() {
         return levelGenerators;
     }
-
-    public void addListener(ActionListener listener) {
-		if (listener != null && !listeners.contains(listener)) {
-			listeners.add(listener);
-		}
-	}
-
-	public void removeListener(ActionListener listener) {
-		if (listener != null) {
-			listeners.remove(listener);
-		}
-	}
-
-	private void notifyListeners(ActionEvent event) {
-		for (ActionListener listener : listeners) {
-			listener.actionPerformed(event);
-		}
-	}
 }
