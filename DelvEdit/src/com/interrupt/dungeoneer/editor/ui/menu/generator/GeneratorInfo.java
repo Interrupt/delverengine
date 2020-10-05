@@ -66,6 +66,7 @@ public class GeneratorInfo {
 
                     LevelGeneratorInfo levelGeneratorInfo = new LevelGeneratorInfo();
                     levelGeneratorInfo.name = sectionDefinition.name;
+                    levelGeneratorInfo.sortOrder = sectionDefinition.sortOrder;
 
                     Array<LevelTemplateInfo> levelTemplateInfos = new Array<LevelTemplateInfo>();
 
