@@ -16,6 +16,14 @@
                 {"$ref": "dungeoneer/entities/ProjectedDecal.schema.json"},
                 {"$ref": "dungeoneer/entities/Sprite.schema.json"},
                 {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
+                {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
+                {"$ref": "Interfaces.schema.json#/definitions/LightLike"}
+            ]
+        },
+        "TriggerLike": {
+            "oneOf": [
                 {"$ref": "dungeoneer/entities/triggers/BasicTrigger.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/ButtonModel.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/ButtonDecal.schema.json"},
@@ -23,11 +31,7 @@
                 {"$ref": "dungeoneer/entities/triggers/DamageTrigger.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/LevelSwap.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/LookAtTrigger.schema.json"},
-                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
-                {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
-                {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},
-                {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
-                {"$ref": "Interfaces.schema.json#/definitions/LightLike"}
+                {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"}
             ]
         },
         "ActorLike": {
