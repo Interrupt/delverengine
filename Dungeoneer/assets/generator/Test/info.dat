@@ -1,5 +1,4 @@
 {
-	"$schema": "../../../../jsonschema/current/filetypes/info.dat",
     "chunkTiles": 17,
     "mapChunks": 4,
     "mapComplexity": 5,
