@@ -50,9 +50,9 @@ public class GeneratorInfo {
 
             for (FileHandle child : children) {
                 // Check for theme definition.
-                FileHandle info = Game.getFile(child.path() + "/info.dat");
+                FileHandle info = Game.getFile(mod + "/generator/" + child.name() + "/info.dat");
                 if (info.exists()) {
-                    String theme = child.nameWithoutExtension().toUpperCase();
+                    String theme = child.name().toUpperCase();
                     
                     if (!themes.contains(theme, false)) {
                         themes.add(theme);
@@ -60,7 +60,7 @@ public class GeneratorInfo {
                 }
 
                 // Check for room/level definition.
-                FileHandle section = Game.getFile(child.path() + "/section.dat");
+                FileHandle section = Game.getFile(mod + "/generator/" + child.name() + "/section.dat");
                 if (section.exists()) {
                     SectionDefinition sectionDefinition = Game.fromJson(SectionDefinition.class, section);
 
