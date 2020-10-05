@@ -413,7 +413,7 @@ public class EditorApplication implements ApplicationListener {
         initTextures();
 
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
-			TextureAtlas.cachedRepeatingAtlases.firstKey();
+		TextureAtlas.cachedRepeatingAtlases.firstKey();
 
 		createEmptyLevel(17, 17);
 	}

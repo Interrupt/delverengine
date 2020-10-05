@@ -86,7 +86,7 @@ public class LiveReload {
 			EditorArt.refresh();
 			Editor.app.generatorInfo.refresh();
             Editor.app.initTextures();
-		}	
+		}
     }
 
 	private String getFileExtension(String filename) {
