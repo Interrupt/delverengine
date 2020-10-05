@@ -290,12 +290,6 @@ public class EditorUi {
                 .addSeparator()
                 .addItem(new RoomGeneratorMenuItem(smallSkin))
                 .addItem(new LevelGeneratorMenuItem(smallSkin))
-                // .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction())
-                //     .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS")))
-                //     .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS")))
-                //     .addItem(new MenuItem("Sewer", smallSkin, makeLevelGeneratorAction("SEWER", "SEWER_ROOMS")))
-                //     .addItem(new MenuItem("Temple", smallSkin, makeLevelGeneratorAction("UNDEAD", "TEMPLE_ROOMS")))
-                // )
         );
 
         if(SteamApi.api.isAvailable()) {
