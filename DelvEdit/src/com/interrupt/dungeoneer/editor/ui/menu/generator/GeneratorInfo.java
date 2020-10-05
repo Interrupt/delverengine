@@ -21,6 +21,8 @@ public class GeneratorInfo {
     private Array<LevelGeneratorInfo> levelGenerators = new Array<LevelGeneratorInfo>();
 
     public String lastGeneratedRoomType;
+    public String lastGeneratedLevelType;
+    public String lastGeneratedLevelRoomType;
 
     public GeneratorInfo() {
         refresh();
@@ -68,6 +70,11 @@ public class GeneratorInfo {
                     Array<LevelTemplateInfo> levelTemplateInfos = new Array<LevelTemplateInfo>();
 
                     for (Level level : sectionDefinition.levelTemplates) {
+                        // TODO: Also display static levels.
+                        if (!level.generated) {
+                            continue;
+                        }
+                        
                         if (level.roomGeneratorType != null && !roomGenerators.contains(level.roomGeneratorType, false)) {
                             roomGenerators.add(level.roomGeneratorType);
                         }
@@ -88,6 +95,8 @@ public class GeneratorInfo {
         themes.sort();
         roomGenerators.sort();
         levelGenerators.sort();
+
+        // TODO: Make sure to adjust the lastGenerated* values when underlying data changed.
     }
 
     public Array<String> getThemes() {

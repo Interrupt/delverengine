@@ -20,7 +20,6 @@ import com.interrupt.dungeoneer.editor.ui.menu.generator.LevelGeneratorMenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.generator.RoomGeneratorMenuItem;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,38 +54,6 @@ public class EditorUi {
     private float rightClickTime;
 
     Viewport viewport;
-
-    private ActionListener makeLevelGeneratorAction(final String theme, final String roomGenerator) {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.getLevel().editorMarkers.clear();
-                Editor.app.getLevel().entities.clear();
-                Editor.app.getLevel().theme = theme;
-                Editor.app.getLevel().generated = true;
-                Editor.app.getLevel().dungeonLevel = 0;
-                Editor.app.getLevel().crop(0, 0, 17 * 5, 17 * 5);
-                Editor.app.getLevel().roomGeneratorChance = 0.4f;
-                Editor.app.getLevel().roomGeneratorType = roomGenerator;
-                Editor.app.getLevel().generate(Level.Source.EDITOR);
-                Editor.app.refresh();
-
-                lastGeneratedLevelType = theme;
-                lastGeneratedLevelRoomType = roomGenerator;
-            }
-        };
-    }
-
-    private static String lastGeneratedLevelType = "DUNGEON";
-    private static String lastGeneratedLevelRoomType = "DUNGEON_ROOMS";
-    private ActionListener makeAnotherLevelGeneratorAction() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                makeLevelGeneratorAction(lastGeneratedLevelType, lastGeneratedLevelRoomType).actionPerformed(actionEvent);
-            }
-        };
-    }
 
     public EditorUi() {
         defaultSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.json"),

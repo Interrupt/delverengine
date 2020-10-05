@@ -25,7 +25,6 @@
 			"generated": true,
 			"roomGeneratorType": "TEST_ROOMS",
 			"roomGeneratorChance": 0.075,
-			"levelFileName": "levels/test-level.bin",
 			"ambientSound": "env_indoor.mp3",
 			"ambientSoundVolume": 0.15,
 			"traps":[]

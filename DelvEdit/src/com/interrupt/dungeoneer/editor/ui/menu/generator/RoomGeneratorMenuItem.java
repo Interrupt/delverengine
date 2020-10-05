@@ -44,7 +44,7 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                             ? " (" + Editor.app.generatorInfo.lastGeneratedRoomType + ")"
                             : "");
                     MenuItem item = new MenuItem(label, skin, makeRoomGeneratorAction())
-                            .setAccelerator(new MenuAccelerator(Keys.G, false, true));
+                            .setAccelerator(new MenuAccelerator(Keys.R, false, true));
 
                     if (Editor.app.generatorInfo.lastGeneratedRoomType == null) {
                         item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
@@ -63,25 +63,27 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                 return new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
-                        Editor.app.getLevel().editorMarkers.clear();
-                        Editor.app.getLevel().entities.clear();
-
-                        Level generatedLevel = new Level(17, 17);
-                        generatedLevel.roomGeneratorType = generatorType;
-
-                        RoomGenerator generator = new RoomGenerator(generatedLevel, generatorType);
-                        generator.generate(true, true, true, true);
-
-                        Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
-                        Editor.app.getLevel().paste(generatedLevel, 0, 0);
-
-                        Editor.app.refresh();
-
-                        if (Editor.app.generatorInfo.lastGeneratedRoomType != generatorType) {
-                            needsRefresh = true;
+                        if (generatorType != null) {
+                            Editor.app.getLevel().editorMarkers.clear();
+                            Editor.app.getLevel().entities.clear();
+    
+                            Level generatedLevel = new Level(17, 17);
+                            generatedLevel.roomGeneratorType = generatorType;
+    
+                            RoomGenerator generator = new RoomGenerator(generatedLevel, generatorType);
+                            generator.generate(true, true, true, true);
+    
+                            Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
+                            Editor.app.getLevel().paste(generatedLevel, 0, 0);
+    
+                            Editor.app.refresh();
+    
+                            if (Editor.app.generatorInfo.lastGeneratedRoomType != generatorType) {
+                                needsRefresh = true;
+                            }
+    
+                            Editor.app.generatorInfo.lastGeneratedRoomType = generatorType;
                         }
-
-                        Editor.app.generatorInfo.lastGeneratedRoomType = generatorType;
                     }
                 };
             }
