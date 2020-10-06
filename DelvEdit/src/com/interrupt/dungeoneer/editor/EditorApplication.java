@@ -230,8 +230,6 @@ public class EditorApplication implements ApplicationListener {
 
     protected EntityManager entityManager;
 
-	boolean readRotate;
-
 	Mesh cubeMesh;
     Mesh gridMesh;
 
@@ -1611,6 +1609,26 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
+	public void turnPickedEntityLeft() {
+		if(Editor.selection.picked != null) {
+			Editor.selection.picked.rotate90();
+			for(Entity e : Editor.selection.selected) {
+				e.rotate90();
+			}
+			refreshEntity(Editor.selection.picked);
+		}
+	}
+
+	public void turnPickedEntityRight() {
+		if(Editor.selection.picked != null) {
+			Editor.selection.picked.rotate90Reversed();
+			for(Entity e : Editor.selection.selected) {
+				e.rotate90Reversed();
+			}
+			refreshEntity(Editor.selection.picked);
+		}
+	}
+
 	public void setPickedWallTexture(int tex, String wallTexAtlas) {
 		pickedWallTexture = tex;
         pickedWallTextureAtlas = wallTexAtlas != null ? wallTexAtlas : TextureAtlas.cachedRepeatingAtlases.firstKey();
@@ -1990,20 +2008,6 @@ public class EditorApplication implements ApplicationListener {
 			else if(Gdx.input.isKeyPressed(Keys.NUM_2)) {
 				pickTextureAtSurface();
 			}
-		}
-		else {
-			// rotate entity by 90 degrees
-			if(Gdx.input.isKeyPressed(Keys.T)) {
-				if(!readRotate) {
-					readRotate = true;
-					Editor.selection.picked.rotate90();
-					for(Entity e : Editor.selection.selected) {
-						e.rotate90();
-					}
-					refreshEntity(Editor.selection.picked);
-				}
-			}
-			else readRotate = false;
 		}
 
 		if(player != null) {
