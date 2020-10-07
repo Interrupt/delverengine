@@ -62,6 +62,15 @@ public class Breakable extends Model {
 	@EditorProperty
 	public float shakeAmount = 4f;
 
+	@EditorProperty
+	public boolean canBePushed = false;
+
+	@EditorProperty
+	public boolean canBreak = true;
+
+	public Vector3 pushVel = new Vector3();
+	public float pushTime = 0;
+
 	public transient float shakeTimer = 0f;
 
 	public Array<Entity> spawns = new Array<Entity>();
@@ -72,6 +81,22 @@ public class Breakable extends Model {
 		isSolid = true;
 		stepHeight = 0f;
 	}
+
+	// touching player
+	@Override
+	public void encroached(Player player)
+	{
+		if(canBePushed) {
+			pushVel.x = player.xa;
+			pushVel.y = player.ya;
+			pushVel.nor().scl(0.025f / mass);
+
+			// Pushing should last longer than the initial contact
+			pushTime = 25;
+
+			physicsSleeping = false;
+		}
+	}
 	
 	@Override
 	public void hit(float projx, float projy, int damage, float knockback, DamageType damageType, Entity instigator) {
@@ -80,8 +105,13 @@ public class Breakable extends Model {
 		}
 
 		super.hit(projx, projy, damage, knockback, damageType, instigator);
-		if(pushable) this.applyPhysicsImpulse(new Vector3(projx,projy,0).scl(knockback));
-		
+
+		if(canBePushed)
+			this.applyPhysicsImpulse(new Vector3(projx,projy,0).scl(knockback));
+
+		if(!canBreak)
+			return;
+
 		hp -= damage;
 
 		shakeTimer = 50f;
@@ -169,7 +199,13 @@ public class Breakable extends Model {
 		// if it's not pushable, this can't move so don't tick physics
 		super.tick(level, delta);
 
-		physicsSleeping = isOnFloor && !pushable;
+		pushTime -= delta;
+		if(pushTime <= 0) {
+			pushVel.set(0, 0, 0);
+		} else {
+			xa = pushVel.x;
+			ya = pushVel.y;
+		}
 
 		if(shakeTimer > 0 && Game.instance != null) {
 			shakeTimer -= delta;
@@ -178,6 +214,9 @@ public class Breakable extends Model {
 
 			if(shakeTimer <= 0) shakeTimer = 0;
 		}
+
+		// Make sure non pushable breakables go to sleep right away
+		physicsSleeping = isOnFloor && !canBePushed;
 	}
 	
 	public void gib(Level level, Vector3 gibVel) {
@@ -211,10 +250,10 @@ public class Breakable extends Model {
 	
 	@Override
 	public void applyPhysicsImpulse(Vector3 impulse) {
-		float magnitude = impulse.len();
-		if (magnitude >= 1f) {
-			this.hit(impulse.x, impulse.y, (int)magnitude, magnitude, DamageType.PHYSICAL, null);
-		}
+		xa += impulse.x / mass;
+		ya += impulse.y / mass;
+		za += impulse.z / mass;
+		this.physicsSleeping = false;
 	}
 	
 	// never draw as a static mesh

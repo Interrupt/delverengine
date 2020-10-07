@@ -401,10 +401,10 @@ public class Player extends Actor {
 						encroaching.steppedOn(this);
 					}
 					else {
-						xa = 0;
 						if(!inEditor) {
 							encroaching.encroached(this);
 						}
+						xa = 0;
 					}
 				}
 				else {
@@ -412,10 +412,10 @@ public class Player extends Actor {
 				}
 			}
 			else {
-				xa = 0;
 				if(!inEditor) {
 					encroaching.encroached(this);
 				}
+				xa = 0;
 			}
 		}
 		else {
@@ -444,10 +444,10 @@ public class Player extends Actor {
 						encroaching.steppedOn(this);
 					}
 					else {
-						ya = 0;
 						if(!inEditor) {
 							encroaching.encroached(this);
 						}
+						ya = 0;
 					}
 				}
 				else {
@@ -455,10 +455,10 @@ public class Player extends Actor {
 				}
 			}
 			else {
-				ya = 0;
 				if(!inEditor) {
 					encroaching.encroached(this);
 				}
+				ya = 0;
 			}
 		}
 		else {

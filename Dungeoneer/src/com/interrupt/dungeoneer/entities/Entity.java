@@ -187,7 +187,7 @@ public class Entity {
 	public float stepHeight = 0.5f;
 	public float calcStepHeight = stepHeight;
 
-	/** Can Entity be pushed. */
+	@Deprecated
 	public boolean pushable = false;
 
 	/** Non-directional sprite. */
@@ -311,9 +311,6 @@ public class Entity {
 
 						encroaching.encroached(this);
 						this.encroached(encroaching);
-
-						if(encroaching.pushable)
-							encroaching.xa = xa * 2;
 					}
 				}
 			}
@@ -381,9 +378,6 @@ public class Entity {
 
 						encroaching.encroached(this);
 						this.encroached(encroaching);
-
-						if(encroaching.pushable)
-							encroaching.ya = ya * 2;
 					}
 				}
 			}
@@ -747,10 +741,6 @@ public class Entity {
 	public void encroached(Player player)
 	{
 		// overload this
-		if(pushable) {
-			xa += player.xa * 0.1f;
-			ya += player.ya * 0.1f;
-		}
 	}
 
 	public void steppedOn(Entity e) {
