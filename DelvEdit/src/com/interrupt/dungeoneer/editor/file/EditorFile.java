@@ -224,13 +224,22 @@ public class EditorFile {
     }
 
     private void promptOpenFile() {
-        class WSFilter implements FileFilter {
+        class DefaultFileFilter implements FileFilter {
             @Override
             public boolean accept(File path) {
                 return hasValidLoadableExtension(path.getName());
             }
         }
-        FileFilter wsFilter = new WSFilter();
+        FileFilter defaultFileFilter = new DefaultFileFilter();
+
+        class LegacyFileFilter implements FileFilter {
+            @Override
+            public boolean accept(File path) {
+                String name = path.getName();
+                return (hasValidLoadableExtension(name) || hasValidLoadableLegacyExtension(name));
+            }
+        }
+        FileFilter legacyFileFilter = new LegacyFileFilter();
 
         if(Editor.app.file.directory() == null) {
             Editor.app.file = new EditorFile(new FileHandle("."));
@@ -240,7 +249,8 @@ public class EditorFile {
         picker.setFileNameEnabled(true);
         picker.setNewFolderEnabled(false);
         if(Editor.app.file.name() != null) picker.setFileName(Editor.app.file.name());
-        picker.setFilter(wsFilter);
+        picker.setFilter(defaultFileFilter);
+        picker.enableLegacyFormatDisplayToggle(defaultFileFilter, legacyFileFilter);
 
         picker.setResultListener(new FilePicker.ResultListener() {
             @Override
@@ -365,7 +375,11 @@ public class EditorFile {
     }
 
     private boolean hasValidLoadableExtension(String fileName) {
-        return (fileName.endsWith(".dat") || fileName.endsWith(".bin") || fileName.endsWith(".png"));
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin"));
+    }
+
+    private boolean hasValidLoadableLegacyExtension(String fileName) {
+        return fileName.endsWith(".png");
     }
 
     public long getMillisSinceLastSave() {
