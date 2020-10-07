@@ -104,7 +104,7 @@
             "default": false
         },
         "useTrigger": {
-            "$ref": "../../Interfaces.schema.json#/definitions/TriggerLike",
+            "$ref": "triggers/Trigger.schema.json",
             "description": "Trigger to target for use action.",
             "baseClass": "Actor"
         },
