@@ -90,6 +90,9 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                             if (level != null) {
                                 level.editorMarkers.clear();
                                 level.entities.clear();
+                                level.non_collidable_entities.clear();
+                                level.static_entities.clear();
+
                                 level.theme = template.theme;
                                 level.generated = true;
                                 level.dungeonLevel = 0;

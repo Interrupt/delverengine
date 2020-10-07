@@ -88,6 +88,8 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                         if (template != null) {
                             Editor.app.getLevel().editorMarkers.clear();
                             Editor.app.getLevel().entities.clear();
+                            Editor.app.getLevel().non_collidable_entities.clear();
+                            Editor.app.getLevel().static_entities.clear();
 
                             // TODO: This is configurable?!
                             Level generatedLevel = new Level(17, 17);
