@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.entities.spells;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
@@ -12,6 +10,8 @@ import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.statuseffects.RestoreHealthEffect;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
+
+import java.util.Random;
 
 public class ApplyStatusEffect extends Spell {
 	
@@ -32,16 +32,11 @@ public class ApplyStatusEffect extends Spell {
 
 	@Override
 	protected void doCastEffect(Vector3 pos, Level level, Entity owner) {
-
 		pos.x = owner.x;
 		pos.y = owner.y;
 		pos.z = owner.z;
 
 		// adjust effect position a bit
-		if(owner instanceof Player) {
-			pos.x += 0.5f;
-			pos.y += 0.5f;
-		}
 		pos.z -= 0.275f;
 
 		Random r = Game.rand;

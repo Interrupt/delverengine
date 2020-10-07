@@ -330,6 +330,9 @@ public class EditorUi {
                     .addItem(new MenuItem("Constrain to Z-axis", smallSkin, actions.zDragMode).setAccelerator(new MenuAccelerator(Keys.Z, false, false)))
                 )
                 .addItem(new MenuItem("Rotate", smallSkin, actions.rotateMode).setAccelerator(new MenuAccelerator(Keys.R, false, false)))
+                .addItem(new MenuItem("Turn", smallSkin)
+                        .addItem(new MenuItem("Clockwise", smallSkin, actions.turnLeftAction).setAccelerator(new MenuAccelerator(Keys.LEFT, true, false)))
+                        .addItem(new MenuItem("Counter-clockwise", smallSkin, actions.turnRightAction).setAccelerator(new MenuAccelerator(Keys.RIGHT, true, false))))
         );
 
         menuBar.addItem(
@@ -347,7 +350,7 @@ public class EditorUi {
                 .addSeparator()
                 .addItem(new MenuItem("Rotate Level", smallSkin)
                     .addItem(new MenuItem("Clockwise", smallSkin, actions.rotateLeftAction))
-                    .addItem(new MenuItem("Counter-Clockwise", smallSkin, actions.rotateRightAction)))
+                    .addItem(new MenuItem("Counter-clockwise", smallSkin, actions.rotateRightAction)))
                 .addItem(new MenuItem("Resize Level", smallSkin, resizeWindowAction))
                 .addSeparator()
                 .addItem(new MenuItem("Set Theme", smallSkin, setThemeAction))
@@ -609,6 +612,12 @@ public class EditorUi {
                         Editor.app.getIntersection().y,
                         Editor.app.getLevel()));
             }
+        }
+    }
+
+    public void touchDown(int x, int y, int pointer, int button) {
+        if (button == Input.Buttons.RIGHT) {
+            hideContextMenu();
         }
     }
 }

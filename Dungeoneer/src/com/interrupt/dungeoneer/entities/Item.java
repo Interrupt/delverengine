@@ -19,6 +19,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.managers.StringManager;
 
@@ -26,12 +27,13 @@ import java.text.MessageFormat;
 import java.util.Random;
 
 public class Item extends Entity {
+
 	public enum ItemType { key, torch, potion, wand, sword, ring, amulet, junk, armor, quest, scroll, bow, thrown, stack, gold };
 	/** Item type */
 	public ItemType itemType;
-	
+
 	public enum ItemCondition { broken, worn, normal, fine, excellent };
-	
+
 	private static String[] itemConditionText = {
 		"Broken",
 		"Worn",
@@ -83,7 +85,7 @@ public class Item extends Entity {
 
 	/** Amount of gold item is worth */
 	public int cost = 20;
-	
+
 	protected transient Vector3 workVec = new Vector3();
 
 	/** Item's level. Will scale stats */
@@ -105,8 +107,18 @@ public class Item extends Entity {
 	@EditorProperty(type = "Triggers")
 	public String triggersOnPickup = null;
 
-	/** Allow enchantments on item when spawned? */
+	@EditorProperty( group = "Visual - Model", type = "FILE_PICKER", params = "meshes")
+	public String meshFile = null;
+
+	@EditorProperty( group = "Visual - Model", type = "FILE_PICKER", params = "meshes")
+	public String viewMeshFile = null;
+
+	@EditorProperty( group = "Visual - Model", type = "FILE_PICKER", params = "")
+	public String textureFile = "";
+
 	@EditorProperty(group = "Spawning")
+
+    /** Allow enchantments on item when spawned? */
 	public boolean canSpawnEnchanted = true;
 
 	/** Set random condition for item when spawned? */
@@ -114,7 +126,10 @@ public class Item extends Entity {
 	public boolean randomizeCondition = true;
 
 	public boolean wasOnEntity = true;
-	
+
+	public transient String lastMeshFile = null;
+	public transient String lastTextureFile = null;
+
 	public Item() {
 		isSolid = true;
 		artType = ArtType.item;
@@ -144,18 +159,18 @@ public class Item extends Entity {
 
 		return this.name;
 	}
-	
+
 	public Item(float x, float y, int tex, ItemType itemType, String name)
 	{
 		super(x, y, tex, true);
 		artType = ArtType.item;
 		isSolid = true;
 		type = EntityType.item;
-		
+
 		this.itemType = itemType;
 		spriteAtlas = "item";
 		this.name = name;
-		
+
 		canSleep = true;
 	}
 
@@ -166,10 +181,12 @@ public class Item extends Entity {
 		if(source == Level.Source.LEVEL_START) {
 			if (this instanceof Bow) {
 				roll = 135;
-				((DrawableSprite) drawable).drawOffset.z = 0.0f;
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z = 0.0f;
 			} else if (this instanceof Weapon) {
 				roll = 45f;
-				((DrawableSprite) drawable).drawOffset.z -= 0.15f;
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z -= 0.15f;
 			} else {
 				roll = 0f;
 			}
@@ -218,18 +235,18 @@ public class Item extends Entity {
 			Audio.playSound("hit.mp3,hit_02.mp3,hit_03.mp3,hit_04.mp3", speed * 6f);
 		}
 	}
-	
+
 	public void use(Player player, float projx, float projy)
 	{
 		float pxdir = player.x - x;
 		float pydir = player.y - y;
 		float playerdist = GlRenderer.FastSqrt(pxdir * pxdir + pydir * pydir);
-		
+
 		if(playerdist > 1.1) return;
-		
+
 		pickup(player);
 	}
-	
+
 	public boolean inventoryUse(Player player){
 		//Override this and set to true when item can be used in inventory
         return false;
@@ -238,11 +255,11 @@ public class Item extends Entity {
 	public void tossItem(Level level, float attackPower) {
 		// Override this
 	}
-	
+
 	protected void pickup(Player player)
-	{	
+	{
 		if(Math.abs(xa) >= 0.01f || Math.abs(ya) >= 0.01f || Math.abs(za) >= 0.01f) return;
-		
+
 		if(Game.instance.player.addToInventory(this))
 		{
 			isActive = false;
@@ -255,7 +272,7 @@ public class Item extends Entity {
 			isOnFloor = false;
 			wasOnFloorLast = false;
 			resetTickCount();
-			
+
 			Audio.playSound(pickupSound, 0.3f, 1f);
 
 			if(triggersOnPickup != null && !triggersOnPickup.isEmpty()) {
@@ -298,7 +315,7 @@ public class Item extends Entity {
 
 	@Override
 	public void tick(Level level, float delta)
-	{	
+	{
 		workVec.set(xa, ya, za);
 		collidesWith = (workVec.len() > 0.1f) ? CollidesWith.all : CollidesWith.nonActors;
 
@@ -315,10 +332,14 @@ public class Item extends Entity {
 		else {
 			if (this instanceof Bow) {
 				roll = Interpolation.linear.apply(roll, 135, 0.3f);
-				((DrawableSprite) drawable).drawOffset.z = 0.0f;
+
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z = 0.0f;
 			} else if (this instanceof Weapon) {
 				roll = Interpolation.linear.apply(roll, 45, 0.3f);
-				((DrawableSprite) drawable).drawOffset.z -= 0.15f;
+
+				if(drawable instanceof DrawableSprite)
+					((DrawableSprite) drawable).drawOffset.z -= 0.15f;
 			}
 			else {
 				roll = Interpolation.linear.apply(roll, 0, 0.3f);
@@ -329,14 +350,14 @@ public class Item extends Entity {
 		if(isOnFloor) isSolid = true;
 		wasOnEntity = isOnEntity;
 	}
-	
+
 	public void tickEquipped(Player player, Level level, float delta, String equipLoc) {
 		// only tick some attachments when held offhand, not all
 		if(attached != null) {
-			
+
 			// let attachments preserve their offsets
 			if(attachmentTransform == null) attachmentTransform = new Vector3(0,0,0);
-			
+
 			for(int i = 0; i < attached.size; i++) {
 				Entity attachment = attached.get(i);
 				attachment.x += x - attachmentTransform.x;
@@ -344,7 +365,7 @@ public class Item extends Entity {
 				attachment.z += z - attachmentTransform.z;
 				attachment.owner = this;
 				attachment.isSolid = false;	// attachments are always non solid
-				
+
 				if(attachment instanceof DynamicLight) {
 					DynamicLight light = (DynamicLight)attachment;
 					light.updateLightColor(delta);
@@ -357,7 +378,7 @@ public class Item extends Entity {
 					attachment.tick(level, delta);
 				}
 			}
-			
+
 			attachmentTransform.set(x,y,z);
 		}
 	}
@@ -408,7 +429,7 @@ public class Item extends Entity {
 
 		return Color.WHITE;
 	}
-	
+
 	public String GetInfoText() {
 		String infoText = GetItemText();
 
@@ -473,8 +494,37 @@ public class Item extends Entity {
 
 		return newLineOrNone + modName + ": " + (modAmountPercent > 0 ? "+" : "") + amount;
 	}
-	
+
 	public void updateDrawable() {
+		updateDrawableInternal(false);
+	}
+
+	public void updateHeldDrawable() {
+		updateDrawableInternal(true);
+	}
+
+	protected void updateDrawableInternal(boolean held) {
+		String meshToUse = getMeshToUse(held);
+		if(meshToUse != null && (((lastMeshFile != meshToUse)) || (textureFile == null || (lastTextureFile != textureFile)))) {
+			String pickedMeshFile = meshToUse;
+			if(meshToUse.contains(",")) {
+				String[] files = meshToUse.split(",");
+				pickedMeshFile = files[Game.rand.nextInt(files.length)];
+			}
+
+			String pickedTextureFile = textureFile;
+			if(textureFile.contains(",")) {
+				String[] files = textureFile.split(",");
+				pickedTextureFile = files[Game.rand.nextInt(files.length)];
+			}
+
+			drawable = new DrawableMesh(pickedMeshFile, pickedTextureFile);
+		} else {
+			// Make sure we stop using the mesh version when done
+			if(drawable instanceof DrawableMesh)
+				drawable = null;
+		}
+
 		if(drawable != null) {
 			drawable.update(this);
 		}
@@ -483,21 +533,21 @@ public class Item extends Entity {
 			drawable.update(this);
 		}
 	}
-	
+
 	public Integer getHeldTex() {
 		if(heldTex != null) return heldTex;
 		return tex;
 	}
-	
+
 	public String GetEquipLoc() {
 		return equipLoc;
 	}
-	
+
 	public Integer getInventoryTex() {
 		if (inventoryTex != null) return inventoryTex;
 		return tex;
 	}
-	
+
 	@Override
 	public void hit(float projx, float projy, int damage, float knockback, DamageType damageType, Entity instigator) {
 		super.hit(projx, projy, damage, knockback, damageType, instigator);
@@ -576,7 +626,7 @@ public class Item extends Entity {
 			damageItem((int)(damageVector.len() * 30f), DamageType.PHYSICAL);
 		}
 	}
-	
+
 	public String getConditionText() {
 		String condition = itemConditionText[itemCondition.ordinal()];
 		String form = StringManager.form(this.name);
@@ -593,17 +643,17 @@ public class Item extends Entity {
 		String form = StringManager.form(this.name);
 		return StringManager.get(this.prefixEnchantment.name, form);
 	}
-	
+
 	public TextureRegion getInventoryTextureRegion() {
 		TextureAtlas atlas = getTextureAtlas();
 		return atlas.getSprite(getInventoryTex());
 	}
-	
+
 	public TextureRegion getHeldInventoryTextureRegion(int offset) {
 		TextureAtlas atlas = getTextureAtlas();
 		return atlas.getSprite(getHeldTex() + offset);
 	}
-	
+
 	public TextureAtlas getTextureAtlas() {
 		TextureAtlas atlas = TextureAtlas.cachedAtlases.get(spriteAtlas);
 		if(atlas == null) atlas = TextureAtlas.cachedAtlases.get(artType.toString());
@@ -633,4 +683,21 @@ public class Item extends Entity {
 
 	// override this to take action when picked up
 	public void onPickup() { }
+
+	public boolean shouldUseMesh(boolean held) {
+		String mesh = getMeshToUse(held);
+		return mesh != null;
+	}
+
+	private String getMeshToUse(boolean held) {
+		if(held) {
+			if(viewMeshFile != null && !viewMeshFile.isEmpty())
+				return viewMeshFile;
+		}
+
+		if(meshFile != null && !meshFile.isEmpty())
+			return meshFile;
+
+		return null;
+	}
 }

@@ -32,7 +32,7 @@ public class EditorFile {
     final Date lastSaveDate;
     byte[] historyMarker;
 
-    public static final String defaultName = "New Level";
+    public static final String defaultName = "New Level.bin";
     public static final String defaultDirectory = ".";
 
     public EditorFile() {
@@ -87,7 +87,7 @@ public class EditorFile {
         class WSFilter implements FileFilter {
             @Override
             public boolean accept(File pathname) {
-                return (pathname.getName().endsWith(".bin") || pathname.getName().endsWith(".dat"));
+                return hasValidSavableExtension(pathname.getName());
             }
         }
 
@@ -104,6 +104,7 @@ public class EditorFile {
             public boolean result(boolean success, FileHandle result) {
                 if(success) {
                     try {
+                        result = addDefaultExtension(result);
                         Editor.app.file = new EditorFile(result);
                         Editor.app.file.saveInternal();
                     }
@@ -223,14 +224,22 @@ public class EditorFile {
     }
 
     private void promptOpenFile() {
-        class WSFilter implements FileFilter {
+        class DefaultFileFilter implements FileFilter {
+            @Override
+            public boolean accept(File path) {
+                return hasValidLoadableExtension(path.getName());
+            }
+        }
+        FileFilter defaultFileFilter = new DefaultFileFilter();
+
+        class LegacyFileFilter implements FileFilter {
             @Override
             public boolean accept(File path) {
                 String name = path.getName();
-                return (name.endsWith(".dat") || name.endsWith(".png") || name.endsWith(".bin"));
+                return (hasValidLoadableExtension(name) || hasValidLoadableLegacyExtension(name));
             }
         }
-        FileFilter wsFilter = new WSFilter();
+        FileFilter legacyFileFilter = new LegacyFileFilter();
 
         if(Editor.app.file.directory() == null) {
             Editor.app.file = new EditorFile(new FileHandle("."));
@@ -240,7 +249,8 @@ public class EditorFile {
         picker.setFileNameEnabled(true);
         picker.setNewFolderEnabled(false);
         if(Editor.app.file.name() != null) picker.setFileName(Editor.app.file.name());
-        picker.setFilter(wsFilter);
+        picker.setFilter(defaultFileFilter);
+        picker.enableLegacyFormatDisplayToggle(defaultFileFilter, legacyFileFilter);
 
         picker.setResultListener(new FilePicker.ResultListener() {
             @Override
@@ -349,21 +359,27 @@ public class EditorFile {
     }
 
     private void createInternal(int width, int height) {
-        Editor.app.history = new EditorHistory();
-        Editor.app.file = new EditorFile();
+        Editor.app.createEmptyLevel(width, height);
+    }
 
-        Editor.app.level = new Level(width,height);
-        Editor.app.refresh();
+    private FileHandle addDefaultExtension(FileHandle fileHandle) {
+        if (hasValidSavableExtension(fileHandle.name())) {
+            return fileHandle;
+        }
 
-        Editor.app.history.saveState(Editor.app.level);
-        Editor.app.file.markClean();
+        return new FileHandle(fileHandle.path() + ".bin");
+    }
 
-        Editor.app.cameraController.setPosition(
-                Editor.app.level.width / 2f,
-                Editor.app.level.height / 2f,
-                4.5f
-        );
-        Editor.app.viewSelected();
+    private boolean hasValidSavableExtension(String fileName) {
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin"));
+    }
+
+    private boolean hasValidLoadableExtension(String fileName) {
+        return (fileName.endsWith(".dat") || fileName.endsWith(".bin"));
+    }
+
+    private boolean hasValidLoadableLegacyExtension(String fileName) {
+        return fileName.endsWith(".png");
     }
 
     public long getMillisSinceLastSave() {

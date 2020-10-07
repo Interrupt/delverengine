@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -36,6 +35,7 @@ import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
+import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
@@ -230,8 +230,6 @@ public class EditorApplication implements ApplicationListener {
 
     protected EntityManager entityManager;
 
-	boolean readRotate;
-
 	Mesh cubeMesh;
     Mesh gridMesh;
 
@@ -317,6 +315,8 @@ public class EditorApplication implements ApplicationListener {
 	Vector3 rayOutVector = new Vector3();
 
 	private LiveReload liveReload;
+
+	private TileSelection entireLevelSelection;
 
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
@@ -409,18 +409,26 @@ public class EditorApplication implements ApplicationListener {
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
                 TextureAtlas.cachedRepeatingAtlases.firstKey();
 
-        level = new Level(17,17);
-        Tile t = new Tile();
-        t.floorHeight = -0.5f;
-        t.ceilHeight = 0.5f;
-        level.setTile(7, 7, t);
+		createEmptyLevel(17, 17);
+	}
 
-        history = new EditorHistory();
-        file = new EditorFile();
-        history.saveState(Editor.app.level);
-        file.markClean();
+	public void createEmptyLevel(int width, int height) {
+		level = new Level(width, height);
+		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
+		refresh();
+		
+		history = new EditorHistory();
+		file = new EditorFile();
+		
+		Tile t = new Tile();
+		t.floorHeight = -0.5f;
+		t.ceilHeight = 0.5f;
+		level.setTile(width / 2, height / 2, t);
 
-        gridMesh = genGrid(level.width,level.height);
+		history.saveState(level);
+		file.markClean();
+
+		cameraController.setDefaultPositionAndRotation();
 	}
 
 	@Override
@@ -495,7 +503,7 @@ public class EditorApplication implements ApplicationListener {
 				float z = Game.instance.player.z + Game.instance.player.eyeHeight;
 				float y = Game.instance.player.y;
 
-				float rotationX = Game.instance.player.rot + 3.14159265f;
+				float rotationX = Game.instance.player.rot;
 				float rotationY = -Game.instance.player.yrot;
 
 				cameraController.setPosition(x, y, z);
@@ -525,6 +533,7 @@ public class EditorApplication implements ApplicationListener {
         if(stage != null) {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
+
         }
 	}
 
@@ -726,6 +735,8 @@ public class EditorApplication implements ApplicationListener {
 			shouldDrawBox = false;
 		}
 
+		shouldDrawBox = ui.isShowingModal() ? false : shouldDrawBox;
+
 		if(Editor.selection.picked == null && Editor.selection.hovered == null || tileDragging) {
 			if(!selected || (!(pickedControlPoint != null || movingControlPoint) &&
                     editorInput.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.justTouched())) {
@@ -737,17 +748,11 @@ public class EditorApplication implements ApplicationListener {
 
 				end = ray.getEndPoint(rayOutVector, distance + 0.005f);
 
-						// Tile selection bounding
-				Editor.selection.tiles.x = (int)end.x;
-				Editor.selection.tiles.y = (int)end.z;
+				// Tile selection bounding
+				Editor.selection.tiles.x = Math.min(level.width - 1, Math.max(0, (int)end.x));
+				Editor.selection.tiles.y = Math.min(level.height - 1, Math.max(0, (int)end.z));
+				shouldDrawBox &= entireLevelSelection.contains((int)end.x, (int)end.z);
 
-				if(Editor.selection.tiles.x < 0) Editor.selection.tiles.x = 0;
-				if(Editor.selection.tiles.x >= level.width) Editor.selection.tiles.x = level.width - 1;
-
-				if(Editor.selection.tiles.y < 0) Editor.selection.tiles.y = 0;
-				if(Editor.selection.tiles.y >= level.height) Editor.selection.tiles.y = level.height - 1;
-
-                Editor.selection.tiles.width = Editor.selection.tiles.height = 1;
 				selStartX = Editor.selection.tiles.x;
 				selStartY = Editor.selection.tiles.y;
 				controlPoints.clear();
@@ -824,17 +829,11 @@ public class EditorApplication implements ApplicationListener {
 
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
-		if(Editor.selection.picked instanceof ProjectedDecal) {
-			renderProjection(((ProjectedDecal) Editor.selection.picked).perspective);
-		}
-		else if(Editor.selection.picked instanceof Mover) {
+		if(Editor.selection.picked instanceof Mover) {
 			renderMoverVizualization((Mover) Editor.selection.picked);
 		}
 		for(Entity selectedEntity : Editor.selection.selected) {
-			if(selectedEntity instanceof ProjectedDecal) {
-				renderProjection(((ProjectedDecal)selectedEntity).perspective);
-			}
-			else if(selectedEntity instanceof Mover) {
+			if(selectedEntity instanceof Mover) {
 				renderMoverVizualization((Mover)selectedEntity);
 			}
 		}
@@ -1319,15 +1318,14 @@ public class EditorApplication implements ApplicationListener {
 						Editor.selection.picked.z = dragStart.z;
 					}
 					if(dragMode == DragMode.Y) {
-						Editor.selection.picked.z = dragStart.z;
-						Editor.selection.picked.y = dragStart.y;
+                        Editor.selection.picked.x = dragStart.x;
 					}
 					else if(dragMode == DragMode.Z) {
 						Editor.selection.picked.x = dragStart.x;
 						Editor.selection.picked.y = dragStart.y;
 					}
 					else if(dragMode == DragMode.X) {
-						Editor.selection.picked.x = dragStart.x;
+                        Editor.selection.picked.y = dragStart.y;
 					}
 
 					if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
@@ -1400,23 +1398,23 @@ public class EditorApplication implements ApplicationListener {
 						this.drawLine(startLine, endLine, 2, EditorColors.Z_AXIS);
 					}
 					else if(dragMode == DragMode.X) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y - 10f);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
 						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 					}
 					else if(dragMode == DragMode.Y) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
+						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y -10f);
+						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
 						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 					}
 					else if(dragMode == DragMode.XY || (!movingEntity && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))) {
 						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y - 10f);
 						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
-						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
+						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
 
 						startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
 						endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
+						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
 					}
 				}
 			}
@@ -1462,8 +1460,8 @@ public class EditorApplication implements ApplicationListener {
 
 		if(player == null) {
 			lineRenderer.begin(ShapeType.Line);
-			drawLine(xGridStart, xGridEnd, 2f, EditorColors.Y_AXIS_DARK);
-			drawLine(yGridStart, yGridEnd, 2f, EditorColors.X_AXIS_DARK);
+			drawLine(xGridStart, xGridEnd, 2f, EditorColors.X_AXIS_DARK);
+			drawLine(yGridStart, yGridEnd, 2f, EditorColors.Y_AXIS_DARK);
 			lineRenderer.end();
 		}
 
@@ -1560,14 +1558,20 @@ public class EditorApplication implements ApplicationListener {
 		renderer.Tesselate(level);
 		renderer.renderWorld(level);
 
-		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
+		// Pull the vertices a bit closer to the camera this time around, to stop z-fighting with the depth of
+		// previously drawn objects.
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_POLYGON_OFFSET_FILL);
+		Gdx.gl.glPolygonOffset(-0.15f, 1);
 
 		// LEQUAL
 		Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
 
 		renderer.renderEntitiesForPicking(level);
 		pickerFrameBuffer.end();
+
+		// Put things back to normal
+		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 	}
 
 	private void refreshTriangleSpatialHash() {
@@ -1582,6 +1586,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 		else if(theEntity instanceof ProjectedDecal) {
 			((ProjectedDecal)theEntity).refresh();
+			((ProjectedDecal)theEntity).updateDrawable();
 		}
 		else if(theEntity instanceof Model) {
 			Model m = (Model)theEntity;
@@ -1601,6 +1606,26 @@ public class EditorApplication implements ApplicationListener {
 			for(int i = 0; i < contains.size; i++) {
 				refreshEntity(contains.get(i));
 			}
+		}
+	}
+
+	public void turnPickedEntityLeft() {
+		if(Editor.selection.picked != null) {
+			Editor.selection.picked.rotate90();
+			for(Entity e : Editor.selection.selected) {
+				e.rotate90();
+			}
+			refreshEntity(Editor.selection.picked);
+		}
+	}
+
+	public void turnPickedEntityRight() {
+		if(Editor.selection.picked != null) {
+			Editor.selection.picked.rotate90Reversed();
+			for(Entity e : Editor.selection.selected) {
+				e.rotate90Reversed();
+			}
+			refreshEntity(Editor.selection.picked);
 		}
 	}
 
@@ -1669,36 +1694,6 @@ public class EditorApplication implements ApplicationListener {
 		lineRenderer.line(e.x - e.collision.x, zStart, e.y - e.collision.y, e.x - e.collision.x, zEnd, e.y - e.collision.y);
 		lineRenderer.line(e.x + e.collision.x, zStart, e.y + e.collision.y, e.x + e.collision.x, zEnd, e.y + e.collision.y);
 		lineRenderer.line(e.x + e.collision.x, zStart, e.y - e.collision.y, e.x + e.collision.x, zEnd, e.y - e.collision.y);
-	}
-
-	public void renderProjection(Camera perspective) {
-		if(perspective == null) return;
-
-		for(int i = 0; i < 4; i++) {
-			Vector3 startPoint = perspective.frustum.planePoints[i];
-			Vector3 endPoint = i != 3 ? perspective.frustum.planePoints[i + 1] : perspective.frustum.planePoints[0];
-
-			lineRenderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
-		}
-
-		for(int i = 0; i < 4; i++) {
-			Vector3 startPoint = perspective.frustum.planePoints[i];
-			Vector3 endPoint = perspective.frustum.planePoints[i + 4];
-
-			lineRenderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
-		}
-
-		for(int i = 4; i < 8; i++) {
-			Vector3 startPoint = perspective.frustum.planePoints[i];
-			Vector3 endPoint = i != 7 ? perspective.frustum.planePoints[i + 1] : perspective.frustum.planePoints[4];
-
-			lineRenderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
-		}
-
-		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-		Gdx.gl.glLineWidth(1f);
-		lineRenderer.setColor(Color.CYAN);
-		lineRenderer.flush();
 	}
 
 	public void renderMoverVizualization(Mover e) {
@@ -2014,20 +2009,6 @@ public class EditorApplication implements ApplicationListener {
 				pickTextureAtSurface();
 			}
 		}
-		else {
-			// rotate entity by 90 degrees
-			if(Gdx.input.isKeyPressed(Keys.T)) {
-				if(!readRotate) {
-					readRotate = true;
-					Editor.selection.picked.rotate90();
-					for(Entity e : Editor.selection.selected) {
-						e.rotate90();
-					}
-					refreshEntity(Editor.selection.picked);
-				}
-			}
-			else readRotate = false;
-		}
 
 		if(player != null) {
 			player.inEditor = true;
@@ -2153,7 +2134,7 @@ public class EditorApplication implements ApplicationListener {
 		Game.instance.player.x = cameraPosition.x;
 		Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
 		Game.instance.player.z = cameraPosition.z;
-		Game.instance.player.rot = cameraRotation.x - 3.14159265f;
+		Game.instance.player.rot = cameraRotation.x;
 		Game.instance.player.yrot = -cameraRotation.y;
 		Game.isDebugMode = true;
 	}
@@ -2472,7 +2453,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
+	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
 		float tau = (float)Math.PI * 2;
@@ -2490,7 +2471,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
+	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
 		lineRenderer.setColor(color);
 
 		float tau = (float)Math.PI * 2;
@@ -2656,10 +2637,12 @@ public class EditorApplication implements ApplicationListener {
     }
 
 	public void refresh() {
-		gridMesh.dispose();
-		gridMesh = null;
+		if (gridMesh != null) {
+			gridMesh.dispose();
+			gridMesh = null;
+		}
 
-		gridMesh = genGrid(level.width,level.height);
+		gridMesh = genGrid(level.width, level.height);
 
 		refreshLights();
 	}
@@ -2962,7 +2945,7 @@ public class EditorApplication implements ApplicationListener {
 
             Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
             if(copyAt != null) {
-                copy.z += copyAt.getFloorHeight(0.5f, 0.5f);
+                copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
             }
 
             addEntity(copy);

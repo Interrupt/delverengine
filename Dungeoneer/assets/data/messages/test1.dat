@@ -2,6 +2,8 @@
 	"repeats": true,
 	"messages": [
 		["Welcome to the Delver Engine!","This is a message trigger, this text is in the data file messages/test1.dat"],
-		["Solid triggers that are set to useable can be interacted with."]
+		["Triggers can be used to interact with other objects in the level, and can even be chained together."],
+		["Solid triggers that are set to useable can be interacted with.", "Triggers that are non-solid are triggered by touching their volume."],
+        ["Triggers can be used to turn lights on or off, show messages and dialog boxes, spawn items and monsters, toggle doors or elevators, and more."]
 	]
 }
