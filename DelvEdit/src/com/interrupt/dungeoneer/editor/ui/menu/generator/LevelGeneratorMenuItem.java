@@ -12,6 +12,7 @@ import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.generator.SectionDefinition;
 
 public class LevelGeneratorMenuItem extends DynamicMenuItem {
     public LevelGeneratorMenuItem(Skin skin) {
@@ -31,17 +32,22 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                     menuItem.subMenu.items.clear();
                 }
 
-                Array<LevelGeneratorInfo> levelGenerators = Editor.app.generatorInfo.getLevelGenerators();
+                Array<SectionDefinition> sectionDefinitions = Editor.app.generatorInfo.getSectionDefinitions();
 
-                if (levelGenerators.size > 0) {
-                    for (LevelGeneratorInfo generator : levelGenerators) {
-                        MenuItem parent = new MenuItem(generator.name.toUpperCase(), skin);
+                if (sectionDefinitions.size > 0) {
+                    for (SectionDefinition sectionDefinition : sectionDefinitions) {
+                        MenuItem parent = new MenuItem(sectionDefinition.name.toUpperCase(), skin);
 
-                        if (generator.templates.size > 0) {
-                            for (LevelTemplateInfo template : generator.templates) {
-                                String label = template.roomGeneratorType + " (" + template.theme + ")";
-                                parent.addItem(new MenuItem(label, skin,
-                                        makeLevelGeneratorAction(template.theme, template.roomGeneratorType)));
+                        if (sectionDefinition.levelTemplates.size > 0) {
+                            for (Level template : sectionDefinition.levelTemplates) {
+                                if (template.generated) {
+                                    String label = template.roomGeneratorType + " (" + template.theme + ")";
+                                    parent.addItem(new MenuItem(label, skin, makeLevelGeneratorAction(template)));
+                                } else {
+                                    MenuItem item = new MenuItem("No templates found", skin);
+                                    item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
+                                    parent.addItem(item);
+                                }
                             }
                         } else {
                             MenuItem item = new MenuItem("No templates found", skin);
@@ -53,13 +59,15 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                     }
 
                     menuItem.addSeparator();
-                    String label = "Re-Generate Level" + (Editor.app.generatorInfo.lastGeneratedLevelType != null
-                            ? " (" + Editor.app.generatorInfo.lastGeneratedLevelType + ", " + Editor.app.generatorInfo.lastGeneratedLevelRoomType + ")"
-                            : "");
-                    MenuItem item = new MenuItem(label, skin, makeAnotherLevelGeneratorAction())
+                    String label = "Re-Generate Level"
+                            + (Editor.app.generatorInfo.lastGeneratedLevelTemplate != null
+                                    ? " (" + Editor.app.generatorInfo.lastGeneratedLevelTemplate.roomGeneratorType
+                                            + ", " + Editor.app.generatorInfo.lastGeneratedLevelTemplate.theme + ")"
+                                    : "");
+                    MenuItem item = new MenuItem(label, skin, makeLevelGeneratorAction())
                             .setAccelerator(new MenuAccelerator(Keys.L, false, true));
 
-                    if (Editor.app.generatorInfo.lastGeneratedLevelType == null) {
+                    if (Editor.app.generatorInfo.lastGeneratedLevelTemplate == null) {
                         item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
                         // TODO: Change color of accelerator label.
                     }
@@ -72,44 +80,44 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                 }
             }
 
-            private ActionListener makeLevelGeneratorAction(String theme, String roomGenerator) {
+            private ActionListener makeLevelGeneratorAction(Level template) {
                 return new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (theme != null || roomGenerator != null) {
+                        if (template != null) {
                             Level level = Editor.app.getLevel();
 
                             if (level != null) {
                                 level.editorMarkers.clear();
                                 level.entities.clear();
-                                level.theme = theme;
+                                level.theme = template.theme;
                                 level.generated = true;
                                 level.dungeonLevel = 0;
                                 // TODO: This is configurable?!
                                 level.crop(0, 0, 17 * 5, 17 * 5);
                                 level.roomGeneratorChance = 0.4f;
-                                level.roomGeneratorType = roomGenerator;
+                                level.roomGeneratorType = template.roomGeneratorType;
                                 level.generate(Level.Source.EDITOR);
                                 Editor.app.refresh();
 
-                                if (Editor.app.generatorInfo.lastGeneratedLevelType != theme || Editor.app.generatorInfo.lastGeneratedLevelRoomType != roomGenerator) {
+                                if (Editor.app.generatorInfo.lastGeneratedLevelTemplate == null
+                                        || Editor.app.generatorInfo.lastGeneratedLevelTemplate.theme != template.theme
+                                        || Editor.app.generatorInfo.lastGeneratedLevelTemplate.roomGeneratorType != template.roomGeneratorType) {
+                                    Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
                                     needsRefresh = true;
                                 }
-        
-                                Editor.app.generatorInfo.lastGeneratedLevelType = theme;
-                                Editor.app.generatorInfo.lastGeneratedLevelRoomType = roomGenerator;
                             }
                         }
                     }
                 };
             }
 
-            private ActionListener makeAnotherLevelGeneratorAction() {
+            private ActionListener makeLevelGeneratorAction() {
                 return new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        makeLevelGeneratorAction(Editor.app.generatorInfo.lastGeneratedLevelType,
-                                Editor.app.generatorInfo.lastGeneratedLevelRoomType).actionPerformed(e);
+                        makeLevelGeneratorAction(Editor.app.generatorInfo.lastGeneratedLevelTemplate)
+                                .actionPerformed(e);
                     }
                 };
             }

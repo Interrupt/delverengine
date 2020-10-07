@@ -13,6 +13,7 @@ import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.generator.RoomGenerator;
+import com.interrupt.dungeoneer.generator.SectionDefinition;
 
 public class RoomGeneratorMenuItem extends DynamicMenuItem {
     public RoomGeneratorMenuItem(Skin skin) {
@@ -32,57 +33,81 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                     menuItem.subMenu.items.clear();
                 }
 
-                Array<String> roomGenerators = Editor.app.generatorInfo.getRoomGenerators();
+                Array<SectionDefinition> sectionDefinitions = Editor.app.generatorInfo.getSectionDefinitions();
 
-                if (roomGenerators.size > 0) {
-                    for (String generator : roomGenerators) {
-                        menuItem.addItem(new MenuItem(generator, skin, makeRoomGeneratorAction(generator)));
+                if (sectionDefinitions.size > 0) {
+                    for (SectionDefinition sectionDefinition : sectionDefinitions) {
+                        MenuItem parent = new MenuItem(sectionDefinition.name.toUpperCase(), skin);
+
+                        if (sectionDefinition.levelTemplates.size > 0) {
+                            for (Level template : sectionDefinition.levelTemplates) {
+                                if (template.generated) {
+                                    String label = template.roomGeneratorType + " (" + template.theme + ")";
+                                    parent.addItem(new MenuItem(label, skin, makeRoomGeneratorAction(template)));
+                                } else {
+                                    MenuItem item = new MenuItem("No templates found", skin);
+                                    item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
+                                    parent.addItem(item);
+                                }
+                            }
+                        } else {
+                            MenuItem item = new MenuItem("No templates found", skin);
+                            item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
+                            parent.addItem(item);
+                        }
+
+                        menuItem.addItem(parent);
                     }
 
                     menuItem.addSeparator();
-                    String label = "Re-Generate Room" + (Editor.app.generatorInfo.lastGeneratedRoomType != null
-                            ? " (" + Editor.app.generatorInfo.lastGeneratedRoomType + ")"
-                            : "");
+                    String label = "Re-Generate Room"
+                            + (Editor.app.generatorInfo.lastGeneratedRoomTemplate != null
+                                    ? " (" + Editor.app.generatorInfo.lastGeneratedRoomTemplate.roomGeneratorType + ", "
+                                            + Editor.app.generatorInfo.lastGeneratedRoomTemplate.theme + ")"
+                                    : "");
                     MenuItem item = new MenuItem(label, skin, makeRoomGeneratorAction())
                             .setAccelerator(new MenuAccelerator(Keys.R, false, true));
 
-                    if (Editor.app.generatorInfo.lastGeneratedRoomType == null) {
+                    if (Editor.app.generatorInfo.lastGeneratedRoomTemplate == null) {
                         item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
                         // TODO: Change color of accelerator label.
                     }
 
                     menuItem.addItem(item);
                 } else {
-                    MenuItem item = new MenuItem("No generators found", skin);
+                    MenuItem item = new MenuItem("No rooms found", skin);
                     item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
                     menuItem.addItem(item);
                 }
             }
 
-            private ActionListener makeRoomGeneratorAction(String generatorType) {
+            private ActionListener makeRoomGeneratorAction(Level template) {
                 return new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
-                        if (generatorType != null) {
+                        if (template != null) {
                             Editor.app.getLevel().editorMarkers.clear();
                             Editor.app.getLevel().entities.clear();
-    
+
+                            // TODO: This is configurable?!
                             Level generatedLevel = new Level(17, 17);
-                            generatedLevel.roomGeneratorType = generatorType;
-    
-                            RoomGenerator generator = new RoomGenerator(generatedLevel, generatorType);
+                            generatedLevel.roomGeneratorType = template.roomGeneratorType;
+
+                            RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
                             generator.generate(true, true, true, true);
-    
+
                             Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
                             Editor.app.getLevel().paste(generatedLevel, 0, 0);
-    
+                            Editor.app.getLevel().theme = template.theme;
+
                             Editor.app.refresh();
-    
-                            if (Editor.app.generatorInfo.lastGeneratedRoomType != generatorType) {
+
+                            if (Editor.app.generatorInfo.lastGeneratedRoomTemplate == null
+                                    || Editor.app.generatorInfo.lastGeneratedRoomTemplate.theme != template.theme
+                                    || Editor.app.generatorInfo.lastGeneratedRoomTemplate.roomGeneratorType != template.roomGeneratorType) {
+                                Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
                                 needsRefresh = true;
                             }
-    
-                            Editor.app.generatorInfo.lastGeneratedRoomType = generatorType;
                         }
                     }
                 };
@@ -92,10 +117,8 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                 return new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
-                        if (Editor.app.generatorInfo.lastGeneratedRoomType != null) {
-                            makeRoomGeneratorAction(Editor.app.generatorInfo.lastGeneratedRoomType)
-                                    .actionPerformed(actionEvent);
-                        }
+                        makeRoomGeneratorAction(Editor.app.generatorInfo.lastGeneratedRoomTemplate)
+                                .actionPerformed(actionEvent);
                     }
                 };
             }
