@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Lerped Frame",
+    "type": "object",
+    "description": "Class for representing 3D vectors and points.",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.badlogic.gdx.math.Vector3",
+            "description": "Fully-qualified Java class name."
+        },
+        "x": {
+            "type": "number",
+            "description": "Vector x-component.",
+            "default": 0.0
+        },
+        "y": {
+            "type": "number",
+            "description": "Vector y-component.",
+            "default": 0.0
+        },
+        "z": {
+            "type": "number",
+            "description": "Vector z-component",
+            "default": 0.0
+        }
+    },
+    "default": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    }
+}

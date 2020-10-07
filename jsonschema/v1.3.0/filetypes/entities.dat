@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Entity Definitions",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "entities": {
+            "type": "object",
+            "description": "Dictionary providing a mapping of category names to entities.",
+            "patternProperties": {
+                ".*": {
+                    "description": "Prefab category.",
+                    "patternProperties": {
+                        ".*": {
+                            "$ref": "../Interfaces.schema.json#/definitions/EntityLike"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "entities"
+    ]
+}

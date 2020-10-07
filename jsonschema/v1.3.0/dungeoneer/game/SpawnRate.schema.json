@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Spawn Rate",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.game.SpawnRate",
+            "description": "Fully-qualified Java class name."
+        },
+        "monsters": {
+            "type": "number",
+            "description": "Monster spawn rate.",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "lights": {
+            "type": "number",
+            "description": "Light spawn rate.",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "loot": {
+            "type": "number",
+            "description": "Loot spawn rate.",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "decor": {
+            "type": "number",
+            "description": "Decor spawn rate.",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        }
+    }
+}

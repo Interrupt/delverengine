@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "SpreadMagicMissile",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.entities.spells.SpreadMagicMissile",
+            "description": "Fully-qualified Java class name.",
+            "baseClass": "SpreadMagicMissile"
+        },
+        "numProjectiles": {
+            "type": "integer",
+            "description": "Projectile count.",
+            "baseClass": "SpreadMagicMissile",
+            "default": 5
+        },
+        "xSpread": {
+            "type": "integer",
+            "description": "Horizontal spread distance.",
+            "baseClass": "SpreadMagicMissile",
+            "default": 5
+        },
+        "ySpread": {
+            "type": "integer",
+            "description": "Vertical spread distance.",
+            "baseClass": "SpreadMagicMissile",
+            "default": 5
+        },
+        "hitSound": {
+            "type": "string",
+            "description": "Sound to play on hit.",
+            "baseClass": "MagicMissile"
+        },
+        "appearance": {
+            "$ref": "../../gfx/Material.schema.json",
+            "description": "Spell sprite.",
+            "baseClass": "MagicMissile"
+        },
+        "explosion": {
+            "$ref": "../Explosion.schema.json",
+            "description": "Spell explosion.",
+            "baseClass": "MagicMissile"
+        },
+        "speed": {
+            "type": "number",
+            "description": "Spell projectile speed.",
+            "baseClass": "MagicMissile",
+            "default": 0.17
+        },
+        "trailInterval": {
+            "type": "number",
+            "description": "Particle trail spawn interval.",
+            "baseClass": "MagicMissile",
+            "default": 1
+        },
+        "splashForce": {
+            "type": "number",
+            "description": "Force of spell splash damage.",
+            "baseClass": "MagicMissile",
+            "default": 0.1
+        },
+        "splashRadius": {
+            "type": "number",
+            "description": "Radius of spell splash.",
+            "baseClass": "MagicMissile",
+            "default": 3
+        },
+        "splashDamage": {
+            "type": "boolean",
+            "description": "Does spell cause splash damage?",
+            "baseClass": "MagicMissile",
+            "default": false
+        },
+        "floating": {
+            "type": "boolean",
+            "description": "Does spell projectile float?",
+            "baseClass": "MagicMissile",
+            "default": true
+        },
+        "shotAccuracy": {
+            "type": "number",
+            "description": "Spell aim accuracy.",
+            "baseClass": "MagicMissile",
+            "default": 1
+        },
+        "magicMissileProjectile": {
+            "$ref": "../projectiles/MagicMissileProjectile.schema.json",
+            "description": "Spell projectile.",
+            "baseClass": "MagicMissile"
+        },
+        "mpCost": {
+            "type": "integer",
+            "description": "Mana point cost.",
+            "baseClass": "Spell",
+            "default": 1
+        },
+        "baseDamage": {
+            "type": "integer",
+            "description": "Base amount of damage to deal.",
+            "baseClass": "Spell",
+            "default": 1
+        },
+        "randDamage": {
+            "type": "integer",
+            "description": "Random amount of damage to deal.",
+            "baseClass": "Spell",
+            "default": 1
+        },
+        "damageType": {
+            "$ref": "../items/Weapon.schema.json#/definitions/DamageType",
+            "description": "Damage type.",
+            "baseClass": "Spell",
+            "default": "MAGIC"
+        },
+        "spellColor": {
+            "$ref": "../../../gdx/Color.schema.json",
+            "description": "Spell color.",
+            "baseClass": "Spell",
+            "default": {
+                "r": 0.6172,
+                "g": 0.0937,
+                "b": 0.7695,
+                "a": 1.0
+            }
+        },
+        "castSound": {
+            "type": "string",
+            "description": "Sound to play when cast.",
+            "baseClass": "Spell",
+            "default": "spell-missile-2.mp3,spell-missile-2_02.mp3,spell-missile-2_03.mp3,spell-missile-2_04.mp3"
+        },
+        "castSoundVolume": {
+            "type": "number",
+            "description": "Spell cast volume.",
+            "baseClass": "Spell",
+            "default": 0.5
+        },
+        "minDistanceToTarget": {
+            "type": "number",
+            "description": "Minimum spell range.",
+            "baseClass": "Spell",
+            "default": 0
+        },
+        "maxDistanceToTarget": {
+            "type": "number",
+            "description": "Maximum spell range.",
+            "baseClass": "Spell",
+            "default": 30
+        },
+        "applyStatusEffect": {
+            "$ref": "../../../Interfaces.schema.json#/definitions/StatusEffectLike",
+            "description": "Status effect to apply to target.",
+            "baseClass": "Spell"
+        },
+        "doCastVfx": {
+            "type": "boolean",
+            "description": "Create vfx entity when cast?",
+            "baseClass": "Spell",
+            "default": true
+        },
+        "castVfx": {
+            "$ref": "../../../Interfaces.schema.json#/definitions/EntityLike",
+            "description": "Entity to spawn when spell is cast.",
+            "baseClass": "Spell"
+        }
+    }
+}

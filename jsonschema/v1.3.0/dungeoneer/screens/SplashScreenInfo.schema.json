@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Splash Screen Info",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.screens.SplashScreenInfo",
+            "description": "Fully-qualified Java class name."
+        },
+        "backgroundLevel": {
+            "type": "string",
+            "description": "Background level filepath.",
+            "default": "levels/temple-splash.bin"
+        },
+        "backgroundImage": {
+            "type": "string",
+            "description": "Background image filepath.",
+            "default": "splash/Delver-Menu-BG.png"
+        },
+        "logoImage": {
+            "type": "string",
+            "description": "Splash screen logo filepath.",
+            "default": "splash/Delver-Logo.png"
+        },
+        "music": {
+            "type": "string",
+            "description": "Splash screen music filepath.",
+            "default": "title.mps"
+        },
+        "fogStart": {
+            "type": "number",
+            "description": "Fog start distance for background level.",
+            "default": 3
+        },
+        "fogEnd": {
+            "type": "number",
+            "description": "Fog ending distance for background level.",
+            "default": 15
+        }
+    }
+}

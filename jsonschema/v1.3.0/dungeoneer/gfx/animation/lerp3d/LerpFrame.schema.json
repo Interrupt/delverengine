@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Lerped Frame",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpFrame",
+            "description": "Fully-qualified Java class name."
+        },
+        "transform": {
+            "$ref": "../../../../gdx/Vector3.schema.json",
+            "description": "Position."
+        },
+        "rotation": {
+            "$ref": "../../../../gdx/Vector3.schema.json",
+            "description": "Rotation."
+        },
+        "length": {
+            "type": "number",
+            "description": "Length of frame in milliseconds.",
+            "default": 1.0
+        }
+    },
+    "required": [
+        "transform",
+        "rotation"
+    ]
+}
