@@ -69,7 +69,6 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
 
                     if (Editor.app.generatorInfo.lastGeneratedLevelTemplate == null) {
                         item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
-                        // TODO: Change color of accelerator label.
                     }
 
                     menuItem.addItem(item);
@@ -96,7 +95,6 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                                 level.theme = template.theme;
                                 level.generated = true;
                                 level.dungeonLevel = 0;
-                                // TODO: This is configurable?!
                                 level.crop(0, 0, 17 * 5, 17 * 5);
                                 level.roomGeneratorChance = 0.4f;
                                 level.roomGeneratorType = template.roomGeneratorType;

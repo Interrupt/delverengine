@@ -64,9 +64,6 @@ public class GeneratorInfo {
         }
 
         themes.sort();
-
-        // TODO: Make sure to adjust the lastGenerated* values when underlying data
-        // changed.
     }
 
     public Array<String> getThemes() {

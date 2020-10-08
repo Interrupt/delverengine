@@ -82,7 +82,6 @@ public class LiveReload {
 	public void tick() {
         if (needToReloadAssets.compareAndSet(true, false)) {
 			Gdx.app.log("LiveReload", "Reloading assets");
-			// TODO: Use ActionListener event handling instead.
 			EditorArt.refresh();
 			Editor.app.generatorInfo.refresh();
             Editor.app.initTextures();

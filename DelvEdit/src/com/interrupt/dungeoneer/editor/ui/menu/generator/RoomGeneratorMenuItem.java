@@ -70,7 +70,6 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
 
                     if (Editor.app.generatorInfo.lastGeneratedRoomTemplate == null) {
                         item.getLabel().setColor(0.5f, 0.5f, 0.5f, 1);
-                        // TODO: Change color of accelerator label.
                     }
 
                     menuItem.addItem(item);
@@ -91,7 +90,6 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                             Editor.app.getLevel().non_collidable_entities.clear();
                             Editor.app.getLevel().static_entities.clear();
 
-                            // TODO: This is configurable?!
                             Level generatedLevel = new Level(17, 17);
                             generatedLevel.roomGeneratorType = template.roomGeneratorType;
 
