@@ -76,6 +76,7 @@ public class Entity {
 	public enum EntityType { generic, item, monster };
 	public enum CollidesWith { staticOnly, all, actorsOnly, nonActors };
 	public enum EditorState { none, hovered, picked };
+	public enum CollisionAxis { X, Y };
 
 	/** Detail level for Entity. */
 	public enum DetailLevel {
@@ -187,7 +188,7 @@ public class Entity {
 	public float stepHeight = 0.5f;
 	public float calcStepHeight = stepHeight;
 
-	/** Can Entity be pushed. */
+	@Deprecated
 	public boolean pushable = false;
 
 	/** Non-directional sprite. */
@@ -242,6 +243,8 @@ public class Entity {
 	public float slideEffectTimer = 0;
 
 	public transient Float drawUpdateTimer = null;
+
+	public transient boolean skipTick = false;
 
 	public Entity()
 	{
@@ -311,9 +314,6 @@ public class Entity {
 
 						encroaching.encroached(this);
 						this.encroached(encroaching);
-
-						if(encroaching.pushable)
-							encroaching.xa = xa * 2;
 					}
 				}
 			}
@@ -381,9 +381,6 @@ public class Entity {
 
 						encroaching.encroached(this);
 						this.encroached(encroaching);
-
-						if(encroaching.pushable)
-							encroaching.ya = ya * 2;
 					}
 				}
 			}
@@ -747,10 +744,12 @@ public class Entity {
 	public void encroached(Player player)
 	{
 		// overload this
-		if(pushable) {
-			xa += player.xa * 0.1f;
-			ya += player.ya * 0.1f;
-		}
+	}
+
+	// player is pushing
+	public void push(Player player, Level level, float delta, CollisionAxis collisionAxis)
+	{
+		// Overload this
 	}
 
 	public void steppedOn(Entity e) {
