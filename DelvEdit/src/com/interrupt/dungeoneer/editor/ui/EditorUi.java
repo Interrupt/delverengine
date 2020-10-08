@@ -346,7 +346,10 @@ public class EditorUi {
 
         menuBar.addItem(
             new MenuItem("Level", smallSkin)
-                .addItem(new MenuItem("Test Level", smallSkin, actions.playAction).setAccelerator(new MenuAccelerator(Keys.P, false, false)))
+                        .addItem(new MenuItem("Test Level From Camera", smallSkin, actions.playFromCameraAction)
+                                .setAccelerator(new MenuAccelerator(Keys.P, false, false)))
+                        .addItem(new MenuItem("Test Level From Start", smallSkin, actions.playFromStartAction)
+                                .setAccelerator(new MenuAccelerator(Keys.P, false, true)))
                 .addSeparator()
                 .addItem(new MenuItem("Rotate Level", smallSkin)
                     .addItem(new MenuItem("Clockwise", smallSkin, actions.rotateLeftAction))
@@ -383,7 +386,7 @@ public class EditorUi {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (event.getType().name().equals("touchUp")) {
-                    Editor.app.testLevel();
+                    Editor.app.testLevel(false);
                 }
             }
         });
