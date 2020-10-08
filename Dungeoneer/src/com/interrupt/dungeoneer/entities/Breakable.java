@@ -233,7 +233,9 @@ public class Breakable extends Model {
 		// move any entities standing on us
 		entityStandingOnUsCache.addAll(level.getEntitiesColliding(x, y, z + 0.06f, this));
 
-		for(Entity e : entityStandingOnUsCache) {
+		for(int i = 0; i < entityStandingOnUsCache.size; i++) {
+			Entity e = entityStandingOnUsCache.get(i);
+
 			if(e.isDynamic) {
 				e.physicsSleeping = false;
 
@@ -242,8 +244,10 @@ public class Breakable extends Model {
 				e.ya += (y - yBefore) * 0.3f;
 
 				// Tick this entity now, so it can tick any entities on top of itself
-				e.tick(level, delta);
-				e.skipTick = true;
+				if(!e.skipTick) {
+					e.skipTick = true;
+					e.tick(level, delta);
+				}
 			}
 		}
 
