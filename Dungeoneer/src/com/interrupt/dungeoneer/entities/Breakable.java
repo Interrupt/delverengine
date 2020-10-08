@@ -70,6 +70,8 @@ public class Breakable extends Model {
 
 	public transient float shakeTimer = 0f;
 
+	private transient Array<Entity> entityStandingOnUsCache = new Array<>();
+
 	public Array<Entity> spawns = new Array<Entity>();
 	
 	public Breakable(String meshFile, String textureFile) {
@@ -202,12 +204,17 @@ public class Breakable extends Model {
 				level.trigger(this, triggerWhenBreaks, "");
 			}
 	}
-	
+
 	public void tick(Level level, float delta) {
-		super.tick(level, delta);
+
+		// Might need to keep track of how much we moved
+		float xBefore = x;
+		float yBefore = y;
 
 		if(canBePushed)
 			stepHeight = 0.1f;
+
+		super.tick(level, delta);
 
 		if(shakeTimer > 0 && Game.instance != null) {
 			shakeTimer -= delta;
@@ -219,6 +226,28 @@ public class Breakable extends Model {
 
 		// Make sure non pushable breakables go to sleep right away
 		physicsSleeping = isOnFloor && !canBePushed;
+
+		if(!canBePushed)
+			return; // Can't be pushed, so can stop here
+
+		// move any entities standing on us
+		entityStandingOnUsCache.addAll(level.getEntitiesColliding(x, y, z + 0.06f, this));
+
+		for(Entity e : entityStandingOnUsCache) {
+			if(e.isDynamic) {
+				e.physicsSleeping = false;
+
+				// Update the velocity, accounting for some friction. (0.3 seems to be the magic value)
+				e.xa += (x - xBefore) * 0.3f;
+				e.ya += (y - yBefore) * 0.3f;
+
+				// Tick this entity now, so it can tick any entities on top of itself
+				e.tick(level, delta);
+				e.skipTick = true;
+			}
+		}
+
+		entityStandingOnUsCache.clear();
 	}
 	
 	public void gib(Level level, Vector3 gibVel) {
