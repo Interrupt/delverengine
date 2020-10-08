@@ -204,10 +204,10 @@ public class Breakable extends Model {
 	}
 	
 	public void tick(Level level, float delta) {
-		// if it's not pushable, this can't move so don't tick physics
 		super.tick(level, delta);
 
-		stepHeight = 0.1f;
+		if(canBePushed)
+			stepHeight = 0.1f;
 
 		if(shakeTimer > 0 && Game.instance != null) {
 			shakeTimer -= delta;
