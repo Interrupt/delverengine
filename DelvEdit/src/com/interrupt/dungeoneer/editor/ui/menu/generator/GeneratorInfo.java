@@ -78,13 +78,7 @@ public class GeneratorInfo {
         sortedSectionDefinitions.sort(new Comparator<SectionDefinition>() {
             @Override
             public int compare(SectionDefinition o1, SectionDefinition o2) {
-                if (o1.sortOrder > o2.sortOrder) {
-                    return 1;
-                } else if (o1.sortOrder > o2.sortOrder) {
-                    return -1;
-                } else {
-                    return 0;
-                }
+                return Integer.signum(o1.sortOrder - o2.sortOrder);
             }
         });
 
