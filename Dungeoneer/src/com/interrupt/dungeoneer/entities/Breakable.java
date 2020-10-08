@@ -68,9 +68,6 @@ public class Breakable extends Model {
 	@EditorProperty
 	public boolean canBreak = true;
 
-	public Vector3 pushVel = new Vector3();
-	public float pushTime = 0;
-
 	public transient float shakeTimer = 0f;
 
 	public Array<Entity> spawns = new Array<Entity>();
@@ -82,20 +79,31 @@ public class Breakable extends Model {
 		stepHeight = 0f;
 	}
 
-	// touching player
+	// player is pushing
 	@Override
-	public void encroached(Player player)
+	public void push(Player player, Level level, float delta, CollisionAxis collisionAxis)
 	{
-		if(canBePushed) {
-			pushVel.x = player.xa;
-			pushVel.y = player.ya;
-			pushVel.nor().scl(0.025f / mass);
+		float massModPrimary = 1.0f - (mass * 0.1f);
+		float massModSecondary = 1.0f - (mass * 0.05f);
 
-			// Pushing should last longer than the initial contact
-			pushTime = 25;
-
-			physicsSleeping = false;
+		if(collisionAxis == CollisionAxis.X) {
+			player.xa *= massModPrimary;
+			player.ya *= massModSecondary;
+			xa = player.xa;
+			ya = player.ya;
 		}
+		else if(collisionAxis == CollisionAxis.Y) {
+			player.ya *= massModPrimary;
+			player.xa *= massModSecondary;
+			ya = player.ya;
+			xa = player.xa;
+		}
+
+		// Move this breakable now to allow the player room to move
+		tick(level, delta);
+
+		// Skip the next tick, since we already moved
+		skipTick = true;
 	}
 	
 	@Override
@@ -199,13 +207,7 @@ public class Breakable extends Model {
 		// if it's not pushable, this can't move so don't tick physics
 		super.tick(level, delta);
 
-		pushTime -= delta;
-		if(pushTime <= 0) {
-			pushVel.set(0, 0, 0);
-		} else {
-			xa = pushVel.x;
-			ya = pushVel.y;
-		}
+		stepHeight = 0.1f;
 
 		if(shakeTimer > 0 && Game.instance != null) {
 			shakeTimer -= delta;

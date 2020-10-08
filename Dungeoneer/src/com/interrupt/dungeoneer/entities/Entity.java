@@ -76,6 +76,7 @@ public class Entity {
 	public enum EntityType { generic, item, monster };
 	public enum CollidesWith { staticOnly, all, actorsOnly, nonActors };
 	public enum EditorState { none, hovered, picked };
+	public enum CollisionAxis { X, Y };
 
 	/** Detail level for Entity. */
 	public enum DetailLevel {
@@ -242,6 +243,8 @@ public class Entity {
 	public float slideEffectTimer = 0;
 
 	public transient Float drawUpdateTimer = null;
+
+	public transient boolean skipTick = false;
 
 	public Entity()
 	{
@@ -741,6 +744,12 @@ public class Entity {
 	public void encroached(Player player)
 	{
 		// overload this
+	}
+
+	// player is pushing
+	public void push(Player player, Level level, float delta, CollisionAxis collisionAxis)
+	{
+		// Overload this
 	}
 
 	public void steppedOn(Entity e) {
