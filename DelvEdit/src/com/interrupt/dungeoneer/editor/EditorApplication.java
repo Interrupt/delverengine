@@ -2117,6 +2117,8 @@ public class EditorApplication implements ApplicationListener {
     }
 
 	public void testLevel(boolean useCameraPosition) {
+		editorInput.resetKeys();
+
 		gameApp = new GameApplication();
 		GameApplication.editorRunning = true;
 
