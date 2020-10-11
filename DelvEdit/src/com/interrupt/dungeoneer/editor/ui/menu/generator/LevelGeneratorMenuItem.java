@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.ui.WarningDialog;
 import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
@@ -84,28 +85,34 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (template != null) {
-                            Level level = Editor.app.getLevel();
-
-                            if (level != null) {
-                                level.editorMarkers.clear();
-                                level.entities.clear();
-                                level.non_collidable_entities.clear();
-                                level.static_entities.clear();
-
-                                level.theme = template.theme;
-                                level.generated = true;
-                                level.dungeonLevel = 0;
-                                level.crop(0, 0, 17 * 5, 17 * 5);
-                                level.roomGeneratorChance = 0.4f;
-                                level.roomGeneratorType = template.roomGeneratorType;
-                                level.generate(Level.Source.EDITOR);
-                                Editor.app.refresh();
-
-                                if (Editor.app.generatorInfo.lastGeneratedLevelTemplate == null
-                                        || Editor.app.generatorInfo.lastGeneratedLevelTemplate.theme != template.theme
-                                        || Editor.app.generatorInfo.lastGeneratedLevelTemplate.roomGeneratorType != template.roomGeneratorType) {
-                                    Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
-                                    needsRefresh = true;
+                            if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
+                                WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this level generator. Make sure it exists.");
+                                warningDialog.show(Editor.app.ui.getStage());
+                            }
+                            else {
+                                Level level = Editor.app.getLevel();
+    
+                                if (level != null) {
+                                    level.editorMarkers.clear();
+                                    level.entities.clear();
+                                    level.non_collidable_entities.clear();
+                                    level.static_entities.clear();
+    
+                                    level.theme = template.theme;
+                                    level.generated = true;
+                                    level.dungeonLevel = 0;
+                                    level.crop(0, 0, 17 * 5, 17 * 5);
+                                    level.roomGeneratorChance = 0.4f;
+                                    level.roomGeneratorType = template.roomGeneratorType;
+                                    level.generate(Level.Source.EDITOR);
+                                    Editor.app.refresh();
+    
+                                    if (Editor.app.generatorInfo.lastGeneratedLevelTemplate == null
+                                            || Editor.app.generatorInfo.lastGeneratedLevelTemplate.theme != template.theme
+                                            || Editor.app.generatorInfo.lastGeneratedLevelTemplate.roomGeneratorType != template.roomGeneratorType) {
+                                        Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
+                                        needsRefresh = true;
+                                    }
                                 }
                             }
                         }

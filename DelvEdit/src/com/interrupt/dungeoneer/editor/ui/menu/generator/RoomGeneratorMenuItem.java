@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.ui.WarningDialog;
 import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
@@ -85,28 +86,34 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
                         if (template != null) {
-                            Editor.app.getLevel().editorMarkers.clear();
-                            Editor.app.getLevel().entities.clear();
-                            Editor.app.getLevel().non_collidable_entities.clear();
-                            Editor.app.getLevel().static_entities.clear();
-
-                            Level generatedLevel = new Level(17, 17);
-                            generatedLevel.roomGeneratorType = template.roomGeneratorType;
-
-                            RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
-                            generator.generate(true, true, true, true);
-
-                            Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
-                            Editor.app.getLevel().paste(generatedLevel, 0, 0);
-                            Editor.app.getLevel().theme = template.theme;
-
-                            Editor.app.refresh();
-
-                            if (Editor.app.generatorInfo.lastGeneratedRoomTemplate == null
-                                    || Editor.app.generatorInfo.lastGeneratedRoomTemplate.theme != template.theme
-                                    || Editor.app.generatorInfo.lastGeneratedRoomTemplate.roomGeneratorType != template.roomGeneratorType) {
-                                Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
-                                needsRefresh = true;
+                            if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
+                                WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this room generator. Make sure it exists.");
+                                warningDialog.show(Editor.app.ui.getStage());
+                            }
+                            else {
+                                Editor.app.getLevel().editorMarkers.clear();
+                                Editor.app.getLevel().entities.clear();
+                                Editor.app.getLevel().non_collidable_entities.clear();
+                                Editor.app.getLevel().static_entities.clear();
+    
+                                Level generatedLevel = new Level(17, 17);
+                                generatedLevel.roomGeneratorType = template.roomGeneratorType;
+    
+                                RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
+                                generator.generate(true, true, true, true);
+    
+                                Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
+                                Editor.app.getLevel().paste(generatedLevel, 0, 0);
+                                Editor.app.getLevel().theme = template.theme;
+    
+                                Editor.app.refresh();
+    
+                                if (Editor.app.generatorInfo.lastGeneratedRoomTemplate == null
+                                        || Editor.app.generatorInfo.lastGeneratedRoomTemplate.theme != template.theme
+                                        || Editor.app.generatorInfo.lastGeneratedRoomTemplate.roomGeneratorType != template.roomGeneratorType) {
+                                    Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
+                                    needsRefresh = true;
+                                }
                             }
                         }
                     }

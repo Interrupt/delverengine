@@ -81,4 +81,12 @@ public class GeneratorInfo {
 
         return sortedSectionDefinitions;
     }
+
+    public boolean isLevelTemplateValid(Level template) {
+        if (!themes.contains(template.theme, false)) {
+            return false;
+        }
+
+        return true;
+    }
 }
