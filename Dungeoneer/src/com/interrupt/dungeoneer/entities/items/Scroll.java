@@ -31,5 +31,10 @@ public class Scroll extends Item {
 		Read(player);
         return true;
 	}
-	
+
+	@Override
+	public void doPickup(Player player) {
+		super.doPickup(player);
+		Read(player);
+	}
 }
