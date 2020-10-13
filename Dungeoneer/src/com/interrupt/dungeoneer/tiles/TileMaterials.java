@@ -47,16 +47,4 @@ public class TileMaterials {
     public void setBottomSurface(TileEdges dir, TileSurface s) {
         bottomSurfaces.put(dir, s);
     }
-
-    public void offsetBottomSurfaces(float moving) {
-        for(int i = 0; i < bottomSurfaces.size; i++) {
-            bottomSurfaces.getValueAt(i).yOffset += moving;
-        }
-    }
-
-    public void offsetTopSurfaces(float moving) {
-        for(int i = 0; i < topSurfaces.size; i++) {
-            topSurfaces.getValueAt(i).yOffset += moving;
-        }
-    }
 }

@@ -1049,7 +1049,7 @@ public class Tile implements Serializable {
 		return found;
 	}
 
-	public void setWallYOffset(TileEdges dir, float val) {
+	public void offsetTopWallSurfaces(TileEdges dir, float val) {
 		if(materials == null)
 			return;
 
@@ -1059,7 +1059,7 @@ public class Tile implements Serializable {
 			materials.setTopSurface(dir, s);
 		}
 
-		s.yOffset = val;
+		s.yOffset += val;
 	}
 
 	public float getBottomWallYOffset(TileEdges dir) {
@@ -1079,7 +1079,7 @@ public class Tile implements Serializable {
 		return found;
 	}
 
-	public void setBottomWallYOffset(TileEdges dir, float val) {
+	public void offsetBottomWallSurfaces(TileEdges dir, float val) {
 		if(materials == null)
 			return;
 
@@ -1089,7 +1089,7 @@ public class Tile implements Serializable {
 			materials.setBottomSurface(dir, s);
 		}
 
-		s.yOffset = val;
+		s.yOffset += val;
 	}
 
 	public void offsetTopWallSurfaces(float amount) {
