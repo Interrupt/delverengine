@@ -1625,6 +1625,9 @@ public class Level {
 	public void setTile(int x, int y, Tile t) {
 		if(x >= 0 && x < width && y >= 0 && y < height) {
 			tiles[x + y * width] = t;
+
+			if(t != null)
+				tileMaterials[x + y * width] = t.materials;
 		}
 		
 		if(t != null) {
@@ -1637,6 +1640,9 @@ public class Level {
 			Tile existing = tiles[x + y * width];
 			if(existing == null || !existing.isLocked) {
 				tiles[x + y * width] = t;
+
+				if(t != null)
+					tileMaterials[x + y * width] = t.materials;
 			}
 		}
 
