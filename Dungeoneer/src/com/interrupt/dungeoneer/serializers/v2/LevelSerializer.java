@@ -48,7 +48,6 @@ public class LevelSerializer {
 		kryo.register(Array.class);
 
 		// register some serializers
-		kryo.register(Level.class, new LevelFieldSerializer(kryo, Level.class));
 		kryo.register(Prefab.class, new PrefabSerializer());
 		kryo.register(ArrayIterator.class, new LibGdxArrayIteratorSerializer());
 		kryo.register(Tile.class, new TileSerializer());
@@ -62,6 +61,7 @@ public class LevelSerializer {
 		Input input = new Input(file.read());
 		Level level = kryo.readObject(input, Level.class);
 		input.close();
+		level.postLoad();
 		return level;
 	}
 	
@@ -70,6 +70,7 @@ public class LevelSerializer {
 			Input input = new Input(new FileInputStream(file));
 			Level level = kryo.readObject(input, Level.class);
 			input.close();
+			level.postLoad();
 			return level;
 		}
 		catch (Exception ex) {
@@ -81,6 +82,7 @@ public class LevelSerializer {
 		Input input = new Input(bytes);
 		Level level = kryo.readObject(input, Level.class);
 		input.close();
+		level.postLoad();
 		return level;
 	}
 
@@ -88,6 +90,7 @@ public class LevelSerializer {
 		Input input = new Input(file.read());
 		OverworldLevel level = kryo.readObject(input, OverworldLevel.class);
 		input.close();
+		level.postLoad();
 		return level;
 	}
 	

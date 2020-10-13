@@ -45,7 +45,6 @@ public class ThreadSafeLevelSerializer {
         kryo.register(Array.class);
 
         // register some serializers
-        kryo.register(Level.class, new LevelFieldSerializer(kryo, Level.class));
         kryo.register(Prefab.class, new PrefabSerializer());
         kryo.register(Array.ArrayIterator.class, new LibGdxArrayIteratorSerializer());
         kryo.register(Tile.class, new TileSerializer());

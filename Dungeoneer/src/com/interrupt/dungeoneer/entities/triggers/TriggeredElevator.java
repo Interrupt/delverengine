@@ -106,13 +106,17 @@ public class TriggeredElevator extends Trigger {
 					if(t != null) {
 						if (elevatorType == ElevatorType.FLOOR || elevatorType == ElevatorType.BOTH) {
 							t.floorHeight += moving;
+							t.offsetBottomWallSurfaces(moving);
 						}
 						if (elevatorType == ElevatorType.CEILING || elevatorType == ElevatorType.BOTH) {
 							t.ceilHeight += moving;
+							t.offsetTopWallSurfaces(moving);
 						}
 						if (elevatorType == ElevatorType.OPPOSITE) {
 							t.floorHeight += moving;
 							t.ceilHeight -= moving;
+							t.offsetTopWallSurfaces(-moving);
+							t.offsetBottomWallSurfaces(moving);
 						}
 
 						// Make this tile totally solid when fully closed

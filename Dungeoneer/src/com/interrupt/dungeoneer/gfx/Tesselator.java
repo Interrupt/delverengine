@@ -800,9 +800,9 @@ public class Tesselator {
 					        		float v;
 
 					        		if(bottomWallIndex != null && bottomWallIndex >= i) {
-										v = reg.getV() + checkDir.getBottomWallYOffset(dir) * 0.0625f;
+										v = reg.getV() + checkDir.getBottomWallYOffset(dir);
 									} else {
-										v = reg.getV() + checkDir.getWallYOffset(dir) * 0.0625f;
+										v = reg.getV() + checkDir.getWallYOffset(dir);
 									}
 
 					        		// This is ugly!

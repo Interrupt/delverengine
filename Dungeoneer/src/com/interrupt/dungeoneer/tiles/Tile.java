@@ -24,7 +24,7 @@ import com.interrupt.managers.TileManager;
 public class Tile implements Serializable {
 	private static final long serialVersionUID = 7907569533774959788L;
 
-    public enum TileSpaceType { EMPTY, SOLID, OPEN_NW, OPEN_NE, OPEN_SW, OPEN_SE };
+	public enum TileSpaceType { EMPTY, SOLID, OPEN_NW, OPEN_NE, OPEN_SW, OPEN_SE };
 	public TileSpaceType tileSpaceType = TileSpaceType.EMPTY;
 	public transient boolean drawCeiling = true;
 	public transient boolean drawWalls = true;
@@ -1032,8 +1032,8 @@ public class Tile implements Serializable {
         return null;
     }
 
-    public byte getWallYOffset(TileEdges dir) {
-		Byte found = null;
+    public float getWallYOffset(TileEdges dir) {
+		Float found = null;
 
 		if(materials != null) {
 			TileSurface s = materials.getTopSurface(dir);
@@ -1049,7 +1049,7 @@ public class Tile implements Serializable {
 		return found;
 	}
 
-	public void setWallYOffset(TileEdges dir, byte val) {
+	public void setWallYOffset(TileEdges dir, float val) {
 		if(materials == null) {
 			materials = new TileMaterials();
 		}
@@ -1063,8 +1063,8 @@ public class Tile implements Serializable {
 		s.yOffset = val;
 	}
 
-	public byte getBottomWallYOffset(TileEdges dir) {
-		Byte found = null;
+	public float getBottomWallYOffset(TileEdges dir) {
+		Float found = null;
 
 		if(materials != null) {
 			TileSurface s = materials.getBottomSurface(dir);
@@ -1080,7 +1080,7 @@ public class Tile implements Serializable {
 		return found;
 	}
 
-	public void setBottomWallYOffset(TileEdges dir, byte val) {
+	public void setBottomWallYOffset(TileEdges dir, float val) {
 		if(materials == null) {
 			materials = new TileMaterials();
 		}
@@ -1092,6 +1092,30 @@ public class Tile implements Serializable {
 		}
 
 		s.yOffset = val;
+	}
+
+	public void offsetTopWallSurfaces(float amount) {
+		for(int i = 0; i < TileEdges.values().length; i++) {
+			TileEdges edge = TileEdges.values()[i];
+			TileSurface surface = materials.getTopSurface(edge);
+			if(surface == null) {
+				surface = new TileSurface();
+				materials.setTopSurface(edge, surface);
+			}
+			surface.yOffset += amount;
+		}
+	}
+
+	public void offsetBottomWallSurfaces(float amount) {
+		for(int i = 0; i < TileEdges.values().length; i++) {
+			TileEdges edge = TileEdges.values()[i];
+			TileSurface surface = materials.getBottomSurface(edge);
+			if(surface == null) {
+				surface = new TileSurface();
+				materials.setBottomSurface(edge, surface);
+			}
+			surface.yOffset += amount;
+		}
 	}
 
     public void setWallTexture(TileEdges dir, byte tex, String atlas) {

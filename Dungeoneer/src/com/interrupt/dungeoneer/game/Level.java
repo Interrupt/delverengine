@@ -68,9 +68,7 @@ public class Level {
 	
 	public int width, height;
 	public Tile[] tiles;
-
-	// Used to store tile materials when saving / loading levels
-	public TileMaterials[] savedTileMaterials;
+	public TileMaterials[] tileMaterials;
 
 	public Array<Entity> entities;
 	public Array<Entity> non_collidable_entities;
@@ -243,6 +241,8 @@ public class Level {
 		version = CURRENT_VERSION;
 		
 		tiles = new Tile[width * height];
+		tileMaterials = new TileMaterials[width * height];
+
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
@@ -392,6 +392,8 @@ public class Level {
 			width = generated.width;
 			height = generated.height;
 			tiles = generated.tiles;
+			tileMaterials = generated.tileMaterials;
+
 			editorMarkers = generated.editorMarkers;
 			genTheme = generated.genTheme;
 
@@ -517,6 +519,17 @@ public class Level {
 		}
 	}
 
+	// Called after a level was unserialized from bytes or a file
+	public void postLoad() {
+		// Make sure the tile materials array matches the size of the tiles, and is filled
+		if(tileMaterials == null || tileMaterials.length != tiles.length) {
+			tileMaterials = new TileMaterials[tiles.length];
+			for(int i = 0; i < tiles.length; i++) {
+				tileMaterials[i] = new TileMaterials();
+			}
+		}
+	}
+
 	public void load() {
 		load(Source.LEVEL_START);
 	}
@@ -545,6 +558,8 @@ public class Level {
 			width = openLevel.width;
 			height = openLevel.height;
 			tiles = openLevel.tiles;
+			tileMaterials = openLevel.tileMaterials;
+
 			editorMarkers = openLevel.editorMarkers;
 			genTheme = DungeonGenerator.GetGenData(theme);
 
@@ -606,6 +621,8 @@ public class Level {
 				width = generated.width;
 				height = generated.height;
 				tiles = generated.tiles;
+				tileMaterials = generated.tileMaterials;
+
 				editorMarkers = generated.editorMarkers;
 				genTheme = generated.genTheme;
 				
@@ -1552,9 +1569,14 @@ public class Level {
 		}
 		
 		// initialize tiles
-		for(Tile tile : tiles) {
-			if(tile != null)
-				tile.init(source);
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] != null) {
+				tiles[i].init(source);
+
+				// attach the tile materials to the Tile
+				if(tileMaterials != null && i < tileMaterials.length)
+					tiles[i].materials = tileMaterials[i];
+			}
 		}
 		
 		// init the drawables
