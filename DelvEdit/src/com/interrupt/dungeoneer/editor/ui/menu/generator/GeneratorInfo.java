@@ -12,6 +12,7 @@ import com.interrupt.dungeoneer.generator.SectionDefinition;
 
 public class GeneratorInfo {
     private Array<String> themes = new Array<String>();
+    private Array<String> builders = new Array<String>();
 
     private Array<SectionDefinition> sectionDefinitions = new Array<SectionDefinition>();
 
@@ -28,42 +29,70 @@ public class GeneratorInfo {
 
         Array<String> mods = Game.getModManager().modsFound;
         for (String mod : mods) {
-            FileHandle parent = Game.getInternal(mod + "/generator");
-            if (!parent.exists() || !parent.isDirectory()) {
-                continue;
-            }
-
-            FileHandle[] children = parent.list(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    return file.isDirectory();
-                }
-            });
-
-            for (FileHandle child : children) {
-                // Check for theme definition.
-                FileHandle info = Game.getInternal(mod + "/generator/" + child.name() + "/info.dat");
-                if (info.exists()) {
-                    String theme = child.name().toUpperCase();
-
-                    if (!themes.contains(theme, false)) {
-                        themes.add(theme);
-                    }
-                }
-
-                // Check for room/level definition.
-                FileHandle section = Game.getInternal(mod + "/generator/" + child.name() + "/section.dat");
-                if (section.exists()) {
-                    SectionDefinition sectionDefinition = Game.fromJson(SectionDefinition.class, section);
-
-                    if (!sectionDefinitions.contains(sectionDefinition, false)) {
-                        sectionDefinitions.add(sectionDefinition);
-                    }
-                }
-            }
+            refreshGenerator(mod);
+            refreshData(mod);
         }
 
         themes.sort();
+    }
+
+    private void refreshGenerator(String mod) {
+        FileHandle parent = Game.getInternal(mod + "/generator");
+        if (!parent.exists() || !parent.isDirectory()) {
+            return;
+        }
+
+        FileHandle[] children = parent.list(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.isDirectory();
+            }
+        });
+
+        for (FileHandle child : children) {
+            // Check for theme definition.
+            FileHandle info = Game.getInternal(mod + "/generator/" + child.name() + "/info.dat");
+            if (info.exists()) {
+                String theme = child.name().toUpperCase();
+
+                if (!themes.contains(theme, false)) {
+                    themes.add(theme);
+                }
+            }
+
+            // Check for room/level definition.
+            FileHandle section = Game.getInternal(mod + "/generator/" + child.name() + "/section.dat");
+            if (section.exists()) {
+                SectionDefinition sectionDefinition = Game.fromJson(SectionDefinition.class, section);
+
+                if (!sectionDefinitions.contains(sectionDefinition, false)) {
+                    sectionDefinitions.add(sectionDefinition);
+                }
+            }
+        }
+    }
+
+    private void refreshData(String mod) {
+        FileHandle parent = Game.getInternal(mod + "/data/room-builders");
+        if (!parent.exists() || !parent.isDirectory()) {
+            return;
+        }
+
+        FileHandle[] children = parent.list(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return !file.isDirectory();
+            }
+        });
+
+        for (FileHandle child : children) {
+            // Check for room builders.
+            String builder = child.nameWithoutExtension().toUpperCase();
+
+            if (!builders.contains(builder, false)) {
+                builders.add(builder);
+            }
+        }
     }
 
     public Array<String> getThemes() {
@@ -84,6 +113,10 @@ public class GeneratorInfo {
 
     public boolean isLevelTemplateValid(Level template) {
         if (!themes.contains(template.theme, false)) {
+            return false;
+        }
+
+        if (!builders.contains(template.roomGeneratorType, false)) {
             return false;
         }
 
