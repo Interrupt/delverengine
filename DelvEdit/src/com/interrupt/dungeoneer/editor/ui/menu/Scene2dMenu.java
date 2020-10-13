@@ -66,7 +66,7 @@ public class Scene2dMenu extends Group {
         }
 
         if(!hasParent) {
-            if(menuTable != null) {
+            if(menuTable != null && getStage() != null) {
                 // make sure the menu doesn't go up off of the screen
                 if(getY() + menuTable.getHeight() > getStage().getHeight()) setY(getStage().getHeight() - menuTable.getHeight());
             }
@@ -107,6 +107,10 @@ public class Scene2dMenu extends Group {
         if(menuTable != null) {
             menuTable.pack();
         }
+    }
+
+    public void refresh() {
+        refreshDrawables();
     }
 
     protected void refreshDrawables() {

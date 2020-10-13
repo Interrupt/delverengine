@@ -11,10 +11,10 @@ import com.interrupt.dungeoneer.entities.Prefab;
 import com.interrupt.dungeoneer.game.Game;
 
 public class JsonViewer extends JPanel {
-	public JsonViewer(final Entity entity, final EditorFrame editor) {
+	public JsonViewer(final Entity entity) {
 		JTextArea textArea = new JTextArea(5, 20);
 
-        Entity copy = editor.entityManager.Copy(entity);
+        Entity copy = Editor.app.entityManager.Copy(entity);
 
         if(copy instanceof Group) {
             Group g = (Group)copy;

@@ -26,10 +26,12 @@ public class Door extends Entity {
     public enum DoorOpenType {SLIDE, SLIDE_UP, ROTATE, ROTATE_UP};
     public enum DoorDirection {NORTH, SOUTH, EAST, WEST};
     public enum DoorType {NORMAL, TRAPDOOR};
-    
+
+    /** Door mesh filepath. */
     @EditorProperty(type = "FILE_PICKER", params = "meshes")
     public String doorMesh = "meshes/door_0.obj";
-    
+
+    /** Door texture filepath. */
     @EditorProperty(type = "FILE_PICKER")
     public String doorTexture = "door.png";
 	
@@ -41,75 +43,100 @@ public class Door extends Entity {
 	
 	private float animateTime = speed;
 	private float lastAnimateTime = animateTime;
-	
+
+	/** Current DoorState. */
 	@EditorProperty
 	public DoorState doorState = DoorState.CLOSED;
-	
+
+	/** How does door open. */
 	@EditorProperty
 	public DoorOpenType doorOpenType = DoorOpenType.ROTATE;
-	
+
+	/** Door's cardinal direction. */
 	@EditorProperty
 	public DoorDirection doorDirection = DoorDirection.NORTH;
-	
+
+	/** Door's type. */
 	@EditorProperty
 	public DoorType doorType = DoorType.NORMAL;
-	
+
+	/** Flip door open direction? */
 	@EditorProperty
 	public boolean doorInvertOpen = false;
-	
+
+	/** Is door locked? */
 	@EditorProperty
 	public boolean isLocked = false;
 
+	/** Can door be unlocked with a key? */
 	@EditorProperty
 	public boolean takesKey = false;
-	
+
+	/** Does door stay open? */
 	@EditorProperty
     public boolean getsStuckOpen = false;
-	
+
+	/** Id to trigger on open/close. */
 	@EditorProperty
 	public String triggersId = "";
-	
+
+	/** Filepath of sound to play on door open. */
 	@EditorProperty
 	public String openSound = "wood-door-open.mp3";
-	
+
+	/** Filepath of sound to play while door closing. */
 	@EditorProperty
 	public String closingSound = "wood-door-close.mp3";
-	
+
+	/** Filepath of sound to play when door done closing. */
 	@EditorProperty
 	public String closedSound = "wood-door-close-click.mp3";
-	
+
+	/** Can door be destroyed? */
 	@EditorProperty
 	public boolean breakable = true;
-	
+
+	/** Door maximum hit points. */
 	@EditorProperty
 	public int hp = 5;
-	
+
+	/** Door gib range starting sprite index. */
 	@EditorProperty
 	public int gibSpriteTexStart = 40;
-	
+
+	/** Door gib range ending sprite index. */
 	@EditorProperty
 	public int gibSpriteTexEnd = 42;
-	
+
+	/** Number of gibs to create when destroyed. */
 	@EditorProperty
 	public int gibNum = 14;
-	
+
+	/** Chance door is stuck closed. */
 	@EditorProperty
 	public float stuckChance = 0;
-	
+
+	/** Filepath of sound to play when door is destroyed. */
 	@EditorProperty
 	public String breakSound = null;
 
 	public enum DoorTriggerMode {OPEN_CLOSE, LOCK_UNLOCK};
 
+	/** Which action triggers door event. */
 	@EditorProperty
 	public DoorTriggerMode triggerMode = DoorTriggerMode.OPEN_CLOSE;
 
+	/** Amount to shake when hit/stuck. */
 	public float shakeAmount = 4f;
+
 	public float shakeTimer = 0f;
-	
+
+	/** Random velocity range to apply to gibs. */
 	public Vector3 gibVelocity = new Vector3(0.02f,0.02f,0.04f);
-	
+
+	/** Door collision origin. */
 	public Vector3 startLoc = null;
+
 	private float rot = 0;
 	
 	private transient float rotateAnimSolidPoint = 0.8f;
@@ -536,6 +563,9 @@ public class Door extends Entity {
 			drawable.dir.rotate(Vector3.Y, 90f);
 		}
 		else if(doorDirection == DoorDirection.SOUTH) {
+			drawable.dir.rotate(Vector3.Y, 0f);
+		}
+		else if(doorDirection == DoorDirection.NORTH) {
 			drawable.dir.rotate(Vector3.Y, 180f);
 		}
 		else if(doorDirection == DoorDirection.WEST) {
@@ -544,7 +574,7 @@ public class Door extends Entity {
 		
 		if(rot != 0) {
 			if(doorType == DoorType.NORMAL)
-				drawable.dir.rotate(Vector3.Y, rot);
+				drawable.dir.rotate(Vector3.Y, -rot);
 			else if(doorType == DoorType.TRAPDOOR)
 				drawable.dir.rotate(Vector3.X, -rot);
 		}

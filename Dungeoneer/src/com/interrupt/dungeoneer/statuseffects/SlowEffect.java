@@ -43,11 +43,9 @@ public class SlowEffect extends StatusEffect {
 			return;
 		}
 
-		float positionOffset = 0f;
 		float spreadMod = 1f;
 		float zMod = 0f;
 		if(owner instanceof Player) {
-			positionOffset = 0.5f;
 			spreadMod = 2.75f;
 			zMod = -0.3f;
 		}
@@ -61,8 +59,8 @@ public class SlowEffect extends StatusEffect {
 		p.floating = true;
 		p.startScale = 1.0f;
 		p.endScale = 0.125f;
-		p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod + positionOffset;
-		p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod + positionOffset;
+		p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+		p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
 		p.z = owner.z + zMod;
 
 		p.turbulenceAmount = 0.025f;

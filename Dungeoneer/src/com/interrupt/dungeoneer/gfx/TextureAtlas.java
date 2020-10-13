@@ -12,18 +12,33 @@ import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.managers.ShaderManager;
 
+/** Class for working with texture atlases. */
 public class TextureAtlas {
+	/** Size of sprite in pixels. */
 	public int spriteSize = 16;
+
+	/** Number of columns. */
 	public int columns = 16;
+
+	/** Number of rows to split texture into. */
 	public int rows = 1;
 
+	/** Height to width ratio of sprite. */
 	public int rowScale = 1;
 
+	/** Filepath to texture file. Relative to asset directory. */
 	public String filename = "";
+
+	/** Internal name used to reference this object. */
 	public String name = "";
+
+	/** Name of shader to be used for this object. */
 	public String shader = null;
 
+	/** Scale of sprite. */
 	public float scale = 1;
+
+	/** Y-axis offset of sprite. */
 	public float y_offset = 0;
 	
 	public Texture texture = null;
@@ -32,7 +47,8 @@ public class TextureAtlas {
 	private TextureRegion[] clipped_regions = null;
 	private Vector2[] sprite_offsets = null;
 	private Vector2[] clipped_size_mod = null;
-	
+
+	/** Use bilinear texture filtering. */
 	public boolean filter = false;
 
 	public boolean isRepeatingAtlas = false;

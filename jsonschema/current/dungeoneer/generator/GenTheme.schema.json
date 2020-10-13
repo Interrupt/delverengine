@@ -1,0 +1,87 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Gen Theme",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.generator.GenTheme",
+            "description": "Fully-qualified Java class name."
+        },
+        "genInfos": {
+            "type": "array",
+            "description": "Array of GenInfos.",
+            "items": {
+                "$ref": "GenInfo.schema.json"
+            }
+        },
+        "doors": {
+            "type": "array",
+            "description": "Array of Doors.",
+            "items": {
+                "$ref": "../entities/Door.schema.json"
+            }
+        },
+        "spawnLights": {
+            "type": "array",
+            "description": "Array of light Entities.",
+            "items": {
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+            }
+        },
+        "decorations": {
+            "type": "array",
+            "description": "Array of decorations Entities.",
+            "items": {
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+            }
+        },
+        "surprises": {
+            "type": "array",
+            "description": "Array of surprise Entities.",
+            "items": {
+                "$ref": "../../Interfaces.schema.json#/definitions/EntityLike"
+            }
+        },
+        "defaultTextureAtlas": {
+            "type": "string",
+            "description": "Name of default TextureAtlas."
+        },
+        "chunkTiles": {
+            "type": "integer",
+            "description": "Size of a room.",
+            "default": 17
+        },
+        "mapChunks": {
+            "type": "integer",
+            "description": "Size of a map.",
+            "default": 4
+        },
+        "mapComplexity": {
+            "type": "integer",
+            "description": "Map complexity heuristic.",
+            "default": 4
+        },
+        "lakes": {
+            "type": "array",
+            "description": "Array of valid lake types to generate.",
+            "items": {
+                "type": "string",
+                "enum": ["WATER", "LAVA", "PIT"]
+            }
+        },
+        "painter": {
+            "$ref": "TexturePainter.schema.json",
+            "description": "TexturePainter for theme. Deprecated."
+        },
+        "texturePainters": {
+            "type": "object",
+            "description": "Dictionary providing a mapping of TextureAtlas names to TexturePainters.",
+            "patternProperties": {
+                ".*": {
+                    "$ref": "TexturePainter.schema.json"
+                }
+            }
+        }
+    }
+}

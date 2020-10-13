@@ -15,7 +15,6 @@ import com.interrupt.dungeoneer.collision.Collision;
 import com.interrupt.dungeoneer.collision.Collision.CollisionType;
 import com.interrupt.dungeoneer.editor.EditorMarker;
 import com.interrupt.dungeoneer.entities.*;
-import com.interrupt.dungeoneer.entities.Door.DoorDirection;
 import com.interrupt.dungeoneer.entities.Door.DoorState;
 import com.interrupt.dungeoneer.entities.Entity.CollidesWith;
 import com.interrupt.dungeoneer.entities.Entity.EntityType;
@@ -35,7 +34,6 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.partitioning.LightSpatialHash;
 import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
-import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 import com.interrupt.dungeoneer.tiles.TileMaterials;
@@ -77,6 +75,8 @@ public class Level {
 	public Array<Entity> entities;
 	public Array<Entity> non_collidable_entities;
 	public Array<Entity> static_entities = new Array<Entity>();
+
+	/** Name of level. */
 	public String levelName;
 
     public String levelId = null;
@@ -90,56 +90,110 @@ public class Level {
 	public Stairs up;
 	public Stairs down;
 
+	/** Should generator make stairs down. */
 	public boolean makeStairsDown = true;
-	
+
+	/** Unused. */
 	public float darkness = 1;
+
+	/** Starting distance of fog. */
 	public float fogStart;
+
+	/** Ending distance of fog. */
 	public float fogEnd;
+
+	/** Color of fog. */
 	public Color fogColor = new Color(0,0,0,1);
+
+	/** Camera far draw distance. */
 	public float viewDistance = 15;
+
+	/** Color from skybox. */
 	public Color skyLightColor = new Color(0.5f,0.5f,0.5f,0);
+
+	/** Color of shadows. */
 	public Color shadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
 	
 	public boolean isLoaded = false;
 	public boolean needsSaving = true;
+
+	/** Depth where level is placed. */
 	public int dungeonLevel;
+
+	/** Theme to apply to level. */
 	public String theme;
+
+	/** Comma separated list of mp3 filepaths. */
 	public String music;
+
+	/** Comma separated list of mp3 filepaths. */
 	public String actionMusic;
+
+	/** Play music on a loop. */
 	public Boolean loopMusic = true;
+
+	/** Ambient sound filepath. */
 	public String ambientSound = null;
+
+	/** Ambient sound volume. */
 	public Float ambientSoundVolume = 0.5f;
 
+	/** Array of additional themes to pull monsters from. */
 	public Array<String> alternateMonsterThemes = null;
-	
+
+	/** Skybox mesh. */
 	public DrawableMesh skybox = null;
-	
+
+	/** Filepath to level file. Used for non-generated levels. */
 	public String levelFileName;
+
 	public String levelHeightFile;
-	
+
+	/** Is the level procedurally generated from room pieces. */
 	public boolean generated = false;
+
+	/** Name of room generator type to use. */
     public String roomGeneratorType = null;
+
+    /** Chance any given room is procedurally generated. */
     public float roomGeneratorChance = 0.4f;
+
+	/** Are monsters spawned on this level. */
 	public boolean spawnMonsters = true;
+
+	/** Table of spawn rates. */
 	public SpawnRate spawnRates = null;
+
+	/** Array of trap prefab names. */
 	public String[] traps = {"ProximitySpikes"};
 	
 	private float monsterSpawnTimer = 0;
 	
 	public transient boolean mapIsDirty = true;
-	
+
+	/** Default wall texture index. */
 	protected int defaultWallTex = 0;
+
 	protected int defaultWallAccentTex = 11;
+
+	/** Default ceiling texture index. */
 	protected int defaultCeilTex = 1;
+
+	/** Default floor texture index. */
 	protected int defaultFloorTex = 2;
 	
 	protected int[] wallTextures = null;
 	protected int[] wallAccentTextures = null;
 	protected int[] ceilTextures = null;
 	protected int[] floorTextures = null;
-	
+
+	/** Wall TexturePainter */
 	protected HashMap<String, Array<Float>> wallPainter = null;
+
+	/** Floor TexturePainter */
 	protected HashMap<String, Array<Float>> floorPainter = null;
+
+	/** Ceiling TexturePainter */
 	protected HashMap<String, Array<Float>> ceilPainter = null;
 	
 	public Array<EditorMarker> editorMarkers = new Array<EditorMarker>();
@@ -168,6 +222,7 @@ public class Level {
 
 	public String objectivePrefab = null;
 
+	/** Loading screen background image filepath. */
 	public String loadingScreenBackground = null;
 
 	public boolean spawnEncounterDuringChase = true;
@@ -1522,7 +1577,7 @@ public class Level {
 		Game.pathfinding.InitForLevel(this);
 	}
 
-	private void initEntities(Array<Entity> entityList, Source source) {
+	public void initEntities(Array<Entity> entityList, Source source) {
 		if(entityList == null)
 			return;
 
@@ -1912,6 +1967,27 @@ public class Level {
 			}
 		}
 	}
+
+	private void updateLight(Entity entity) {
+		if (entity == null) {
+			return;
+		}
+
+		if(entity instanceof Light && entity.isActive)
+		{
+			Light t = (Light)entity;
+			lightSpatialHash.AddLight(t);
+		}
+
+		if (!(entity instanceof Group)) {
+			return;
+		}
+
+		Group group = (Group)entity;
+		for (Entity e : group.entities) {
+			updateLight(e);
+		}
+	}
 	
 	public void updateLights(Source source)
 	{
@@ -1939,11 +2015,7 @@ public class Level {
 		for(int i = 0; i < entities.size; i++)
 		{
 			Entity e = entities.get(i);
-			if(e instanceof Light && e.isActive)
-			{
-				Light t = (Light)e;
-				lightSpatialHash.AddLight(t);
-			}
+			updateLight(e);
 		}
 		
 		for(int i = 0; i < non_collidable_entities.size; i++)
@@ -1976,11 +2048,7 @@ public class Level {
 		for(int i = 0; i < static_entities.size; i++)
 		{
 			Entity e = static_entities.get(i);
-			if(e instanceof Light && e.isActive)
-			{
-				Light t = (Light)e;
-				lightSpatialHash.AddLight(t);
-			}
+			updateLight(e);
 		}
 		
 		// light some entities
@@ -3095,8 +3163,17 @@ public class Level {
 		{
 			e = list.get(entity_index);
 			
-			if(!inEditor) e.tick(this, delta);
-			else e.editorTick(this, delta);
+			if(!inEditor) {
+				if(e.skipTick) {
+					e.skipTick = false;
+					continue;
+				}
+
+				e.tick(this, delta);
+			}
+			else {
+				e.editorTick(this, delta);
+			}
 				
 			if(!e.isActive) toDelete.add(e);
 		}

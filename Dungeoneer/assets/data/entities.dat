@@ -1,185 +1,612 @@
 {
-	entities:{
-		"Areas": {
-			"Spawn Blocker": {
-				class:com.interrupt.dungeoneer.entities.areas.SpawnBlockerArea,
-				tex: 19,
-				collision:{x: 1, y: 1, z: 1}
-			},
-			"Collision Area": {
-				class:com.interrupt.dungeoneer.entities.areas.Area,
-				tex: 19,
-				isSolid:true,
-				collision:{x: 0.5, y: 0.5, z: 1}
-			},
-			"Skybox Area": {
-                class:com.interrupt.dungeoneer.entities.areas.SkyboxArea,
-                tex: 19,
-                isSolid:false,
-                collision:{x: 5, y: 5, z: 10}
+    "entities": {
+        "Areas": {
+            "Spawn Blocker": {
+                "class": "com.interrupt.dungeoneer.entities.areas.SpawnBlockerArea",
+                "tex": 19,
+                "collision": { "x": 1, "y": 1, "z": 1 }
+            },
+            "Collision Area": {
+                "class": "com.interrupt.dungeoneer.entities.areas.Area",
+                "tex": 19,
+                "isSolid": true,
+                "collision": { "x": 0.5, "y": 0.5, "z": 1 }
+            },
+            "Skybox Area": {
+                "class": "com.interrupt.dungeoneer.entities.areas.SkyboxArea",
+                "tex": 19,
+                "isSolid": false,
+                "collision": { "x": 5, "y": 5, "z": 10 }
             },
             "Fog Area": {
-				class:com.interrupt.dungeoneer.entities.areas.FogArea,
-				tex: 19,
-				isSolid:false,
-				collision:{x: 5, y: 5, z: 10}
-			},
-			"Teleporter Area": { class: com.interrupt.dungeoneer.entities.areas.TeleportArea },
-			"Secret Area": { class: com.interrupt.dungeoneer.entities.triggers.Trigger,
-				message: "A secret has been revealed!",
-				collision: {x: 0.65, y: 0.65, z: 1},
-				triggerType: "PLAYER_TOUCHED",
-				triggerResets: false,
-				messageTime: 2.0,
-				triggerSound: "ui/ui_secret_found.mp3",
-				isSecret: true
-			},
-			"Status Effect Area": {class: com.interrupt.dungeoneer.entities.areas.StatusEffectArea}
-		},
-		"Camera": {
-			"Splash Camera": {
-				class: com.interrupt.dungeoneer.entities.Camera
-			}
-		},
-		"Lights": {
-			"Ambient": {class:com.interrupt.dungeoneer.entities.Light,isDynamic: false},
-			"Dynamic": {class:com.interrupt.dungeoneer.entities.DynamicLight}
-		},
-		"Meshes": {
-			"Chair": {class:com.interrupt.dungeoneer.entities.Breakable,meshFile:meshes/chair.obj,textureFile: "textures.png",stepHeight:0.0,collision:{x:0.17,y:0.17,z:0.4},isSolid:true,gibNum:4,lootSpawnChance:0, surpriseSpawnChance:0, shadowType: "RECTANGLE"}
-		},
-		"Triggers": {
-			"Basic": { class: com.interrupt.dungeoneer.entities.triggers.Trigger, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"ProgressionCheck": { class: com.interrupt.dungeoneer.entities.triggers.ProgressionTrigger, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Conditional": { class: com.interrupt.dungeoneer.entities.triggers.ConditionalTrigger, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Music": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredMusic, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"AmbientSound": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredAmbientSound, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Shake": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredShake, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Flash": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredFlash, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Trap": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredTrap, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Teleport": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredTeleportPlayer, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Shop": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredShop, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Message": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredMessage, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"GameOver": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredGameOver, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Button": {
-				"class": "com.interrupt.dungeoneer.entities.triggers.ButtonModel",
-				"floating": true,
-				"meshFile": "meshes/button.obj",
-				"textureFile": "door.png",
-				"triggerResetTime": 10,
-				"useVerb": "Press",
-				"triggeredTransformation": {
-					"y": -0.03
-				},
-				"triggeredRotation": {},
-				"triggerAnimationTime": 10
-			},
-			"Repeater": { class: com.interrupt.dungeoneer.entities.triggers.RepeatingTrigger, floating: true },
-			"DamageTrigger": { class: com.interrupt.dungeoneer.entities.triggers.DamageTrigger, floating: true, isSolid: true },
-			"LookAtTrigger": { class: com.interrupt.dungeoneer.entities.triggers.LookAtTrigger, floating: true},
-			"DeleteTrigger": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredDelete, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"InventoryCheck": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredInventoryCheck, floating: true, triggerType: "PLAYER_TOUCHED" },
-			"Lever": {
-				class: com.interrupt.dungeoneer.entities.Group,
-				entities: [
-					{
-						class: com.interrupt.dungeoneer.entities.Model,
-						meshFile: meshes/lever_base.obj,
-						artType: entity,
-						collision: {
-							x: 0.0625,
-							y: 0.15,
-							z: 0.25
-						},
-						drawable: {
-							class: com.interrupt.dungeoneer.gfx.drawables.DrawableMesh,
-							isStaticMesh: true,
-							meshFile: meshes/lever_base.obj,
-							color: {
-								a: 1,
-								b: 0.49803922,
-								g: 0.49803922,
-								r: 1
-							},
-							x: 0,
-							y: 0
-						},
-						id: "",
-						isSolid: true,
-						x: 0,
-						y: 0,
-						isDynamic: false
-					},
-					{
-						class: com.interrupt.dungeoneer.entities.triggers.ButtonModel,
-						meshFile: meshes/lever_arm.obj,
-						triggerAnimationTime: 60,
-						id: "",
-						drawable: {
-							class: com.interrupt.dungeoneer.gfx.drawables.DrawableMesh,
-							meshFile: meshes/lever_arm.obj,
-							color: {
-								a: 1,
-								b: 0.49803922,
-								g: 0.49803922,
-								r: 1
-							},
-							x: 0,
-							y: 0
-						},
-						triggerSound: "",
-						artType: entity,
-						triggeredTransformation: {
-							z: -0.15
-						},
-						triggeredRotation: {
-							x: -30
-						},
-						x: 0,
-						y: 0
-					}
-				]
+                "class": "com.interrupt.dungeoneer.entities.areas.FogArea",
+                "tex": 19,
+                "isSolid": false,
+                "collision": { "x": 5, "y": 5, "z": 10 }
             },
-            "Achievement": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredAchievement, floating: true }
-		},
-		"LevelWarp": {
-            "LevelWarp": { class: com.interrupt.dungeoneer.entities.triggers.TriggeredWarp },
-            "WarpMarker": { class: com.interrupt.dungeoneer.entities.WarpMarker },
-            "Teleporter": { class: com.interrupt.dungeoneer.entities.areas.TeleportArea }
+            "Teleporter Area": {
+                "class": "com.interrupt.dungeoneer.entities.areas.TeleportArea"
+            },
+            "Secret Area": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.Trigger",
+                "message": "A secret has been revealed!",
+                "collision": { "x": 0.65, "y": 0.65, "z": 1 },
+                "triggerType": "PLAYER_TOUCHED",
+                "triggerResets": false,
+                "messageTime": 2.0,
+                "triggerSound": "ui/ui_secret_found.mp3",
+                "isSecret": true
+            },
+            "Status Effect Area": {
+                "class": "com.interrupt.dungeoneer.entities.areas.StatusEffectArea"
+            }
         },
-		"Spawners": {
+        "Camera": {
+            "Splash Camera": {
+                "class": "com.interrupt.dungeoneer.entities.Camera"
+            }
+        },
+        "Lights": {
+            "Ambient": {
+                "class": "com.interrupt.dungeoneer.entities.Light",
+                "isDynamic": false
+            },
+            "Dynamic": {
+                "class": "com.interrupt.dungeoneer.entities.DynamicLight"
+            }
+        },
+        "Meshes": {
+            "Chair": {
+                "class": "com.interrupt.dungeoneer.entities.Breakable",
+                "meshFile": "meshes/chair.obj",
+                "textureFile": "textures.png",
+                "stepHeight": 0.0,
+                "collision": { "x": 0.17, "y": 0.17, "z": 0.4 },
+                "isSolid": true,
+                "gibNum": 4,
+                "lootSpawnChance": 0,
+                "surpriseSpawnChance": 0,
+                "shadowType": "RECTANGLE"
+            }
+        },
+        "Triggers": {
+            "Basic": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.Trigger",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "ProgressionCheck": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.ProgressionTrigger",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Conditional": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.ConditionalTrigger",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Music": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredMusic",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "AmbientSound": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredAmbientSound",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Shake": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredShake",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Flash": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredFlash",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Trap": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredTrap",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Teleport": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredTeleportPlayer",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Shop": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredShop",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Message": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredMessage",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "GameOver": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredGameOver",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Button": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.ButtonModel",
+                "floating": true,
+                "meshFile": "meshes/button.obj",
+                "textureFile": "door.png",
+                "triggerResetTime": 10,
+                "useVerb": "Press",
+                "triggeredTransformation": { "y": -0.03 },
+                "triggeredRotation": {},
+                "triggerAnimationTime": 10
+            },
+            "Repeater": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.RepeatingTrigger",
+                "floating": true
+            },
+            "Elevator": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredElevator",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "DamageTrigger": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.DamageTrigger",
+                "floating": true,
+                "isSolid": true
+            },
+            "LookAtTrigger": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.LookAtTrigger",
+                "floating": true
+            },
+            "DeleteTrigger": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredDelete",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "LevelSwapTrigger": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.LevelSwap",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED",
+                "triggerResets": false
+            },
+            "InventoryCheck": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredInventoryCheck",
+                "floating": true,
+                "triggerType": "PLAYER_TOUCHED"
+            },
+            "Lever": {
+                "class": "com.interrupt.dungeoneer.entities.Group",
+                "entities": [
+                    {
+                        "class": "com.interrupt.dungeoneer.entities.Model",
+                        "meshFile": "meshes/lever_base.obj",
+                        "artType": "entity",
+                        "collision": { "x": 0.0625, "y": 0.15, "z": 0.25 },
+                        "drawable": {
+                            "class": "com.interrupt.dungeoneer.gfx.drawables.DrawableMesh",
+                            "isStaticMesh": true,
+                            "meshFile": "meshes/lever_base.obj",
+                            "color": { "r": 1, "g": 0.49803922, "b": 0.49803922, "a": 1 },
+                            "x": 0,
+                            "y": 0
+                        },
+                        "id": "",
+                        "isSolid": true,
+                        "x": 0,
+                        "y": 0,
+                        "isDynamic": false
+                    },
+                    {
+                        "class": "com.interrupt.dungeoneer.entities.triggers.ButtonModel",
+                        "meshFile": "meshes/lever_arm.obj",
+                        "triggerAnimationTime": 60,
+                        "id": "",
+                        "drawable": {
+                            "class": "com.interrupt.dungeoneer.gfx.drawables.DrawableMesh",
+                            "meshFile": "meshes/lever_arm.obj",
+                            "color": { "r": 1, "g": 0.49803922, "b": 0.49803922, "a": 1 },
+                            "x": 0,
+                            "y": 0
+                        },
+                        "triggerSound": "",
+                        "artType": "entity",
+                        "triggeredTransformation": { "z": -0.15 },
+                        "triggeredRotation": { "x": -30 },
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
+            },
+            "Achievement": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredAchievement",
+                "floating": true
+            }
+        },
+        "LevelWarp": {
+            "LevelWarp": {
+                "class": "com.interrupt.dungeoneer.entities.triggers.TriggeredWarp"
+            },
+            "WarpMarker": {
+                "class": "com.interrupt.dungeoneer.entities.WarpMarker"
+            },
+            "Teleporter": {
+                "class": "com.interrupt.dungeoneer.entities.areas.TeleportArea"
+            }
+        },
+        "Spawners": {
             "Item Spawner": {
-                class: com.interrupt.dungeoneer.entities.ItemSpawner
+                "class": "com.interrupt.dungeoneer.entities.ItemSpawner"
             },
             "Monster Spawner": {
-                class: com.interrupt.dungeoneer.entities.MonsterSpawner
+                "class": "com.interrupt.dungeoneer.entities.MonsterSpawner"
             },
             "Entity Spawner": {
-                class: com.interrupt.dungeoneer.entities.EntitySpawner
+                "class": "com.interrupt.dungeoneer.entities.EntitySpawner"
             }
         },
 		"Movers": {
-			"Basic": { class: com.interrupt.dungeoneer.entities.Mover, isSolid: true, collision: {x: 0.5,y: 0.5,z: 0.1} },
+			"Basic": {
+                "class": "com.interrupt.dungeoneer.entities.Mover",
+                "isSolid": true,
+                "collision":
+                {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 0.1
+                }
+            },
 			"Trap": {
-				class: com.interrupt.dungeoneer.entities.Mover,
-				meshFile: meshes/trap.obj,
-				squishDamage: 0,
-				moverEndMode: PRESSURE,
-				isSolid: true,
-				collision: {
-					x: 0.37,
-					y: 0.37,
-					z: 0.125
+				"class": "com.interrupt.dungeoneer.entities.Mover",
+				"meshFile": "meshes/trap.obj",
+				"squishDamage": 0,
+				"moverEndMode": "PRESSURE",
+				"isSolid": true,
+				"collision": {
+					"x": 0.37,
+					"y": 0.37,
+					"z": 0.125
 				},
-				movesBy: {
-					z: -0.03
+				"movesBy": {
+					"z": -0.03
 				},
-				artType: entity,
-				moveTime: 0.4,
-				startSound: trap_activate.mp3,
-				endWait: 6,
-				moverMode: ON_ANY_TOUCH
+				"artType": "entity",
+				"moveTime": 0.4,
+				"startSound": "trap_activate.mp3",
+				"endWait": 6,
+				"moverMode": "ON_ANY_TOUCH"
 			}
-		}
+		},
+        "Examples/Tech":{
+            "Railing":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "meshFile":"meshes/tech/railing_straight.obj",
+                "collision":{
+                    "x":0.5,
+                    "y":0.0625,
+                    "z":0.5
+                },
+                "isSolid":true,
+                "isDynamic":false,
+                "textureFile":"textures/tech/railing.png"
+            },
+            "Railing Corner":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.areas.Area",
+                        "collision":{
+                            "x":0.0625,
+                            "y":0.28125,
+                            "z":0.5
+                        },
+                        "isSolid":true,
+                        "tex":19,
+                        "y":0.21709347
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.areas.Area",
+                        "collision":{
+                            "x":0.28125,
+                            "y":0.0625,
+                            "z":0.5
+                        },
+                        "isSolid":true,
+                        "tex":19,
+                        "x":0.21992588
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Model",
+                        "meshFile":"meshes/tech/railing_corner.obj",
+                        "collision":{
+                            "x":0.5,
+                            "y":0.5,
+                            "z":0.065
+                        },
+                        "textureFile":"textures/tech/railing.png",
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Floor Lamp":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Floor Lamp On,Floor Lamp On,Floor Lamp On,Floor Lamp On,Floor Lamp Off",
+                "category":"Examples/Tech"
+            },
+            "Floor Lamp On":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Light",
+                        "isDynamic":false,
+                        "x": 0,
+                        "y": 0,
+                        "z": 0.189,
+                        "lightColor":{
+                            "a":1,
+                            "b":0.98,
+                            "g":1,
+                            "r":0.75
+                        },
+                        "animateHalo": false,
+                        "haloMode": "CORONA_ONLY"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Sprite",
+                        "spriteAtlas":"tech_sprites",
+                        "color":{
+                            "a":1
+                        },
+                        "collision":{
+                            "x":0.125,
+                            "y":0.125,
+                            "z":0.625
+                        },
+                        "isSolid":true,
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Floor Lamp Off":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Sprite",
+                        "spriteAtlas":"tech_sprites",
+                        "tex":1,
+                        "color":{
+                            "a":1
+                        },
+                        "collision":{
+                            "x":0.125,
+                            "y":0.125,
+                            "z":0.625
+                        },
+                        "isSolid":true,
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Flickering Floor Lamp":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.DynamicLight",
+                        "x":0,
+                        "fullbrite":true,
+                        "range":1.5,
+                        "lightColor":{
+                            "x":0.75,
+                            "y":1,
+                            "z":0.98
+                        },
+                        "lightType":"flicker_off",
+                        "y":0
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Sprite",
+                        "spriteAtlas":"tech_sprites",
+                        "color":{
+                            "a":1
+                        },
+                        "collision":{
+                            "x":0.125,
+                            "y":0.125,
+                            "z":0.625
+                        },
+                        "isSolid":true,
+                        "isDynamic":false
+                    }
+                ]
+            },
+            "Catwalk":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.5,
+                    "y":0.5,
+                    "z":0.5
+                },
+                "isDynamic":false,
+                "rotation":{
+                    "z":-630
+                },
+                "meshFile":"meshes/tech/catwalk.obj",
+                "textureFile":"textures/tech/catwalk.png"
+            },
+            "Greeble":{
+                "class": "com.interrupt.dungeoneer.entities.Prefab",
+                "category": "Example Meshes",
+                "name": "Greeble 0,Greeble 1,Greeble 3"
+            },
+            "Greeble 0":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Greeble 0A,Greeble 0B",
+                "category":"Examples/Tech"
+            },
+            "Greeble 0A":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.25,
+                    "y":0.125,
+                    "z":0.875
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_0.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 0B":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 0A"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "y":0.12607098,
+                        "z":0.1546365,
+                        "name":"Greeble 2"
+                    }
+                ]
+            },
+            "Greeble 1":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Greeble 1A,Greeble 1B,Greeble 1C",
+                "category":"Examples/Tech"
+            },
+            "Greeble 1A":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.375,
+                    "y":0.125,
+                    "z":0.75
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_1.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 1B":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Model",
+                        "isSolid":true,
+                        "collision":{
+                            "x":0.375,
+                            "y":0.125,
+                            "z":0.75
+                        },
+                        "isDynamic":false,
+                        "meshFile":"meshes/tech/greeble_1.obj",
+                        "textureFile":"textures/tech/greebles_0.png"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Light",
+                        "isDynamic":false,
+                        "lightColor":{
+                            "r":0.8352941,
+                            "g":0.9254902,
+                            "b":1,
+                            "a":1
+                        },
+                        "range":3
+                    }
+                ]
+            },
+            "Greeble 1C":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 1B"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Model",
+                        "isSolid":true,
+                        "collision":{
+                            "x":0.25,
+                            "y":0.125,
+                            "z":0.5
+                        },
+                        "y": 0.125,
+                        "z":0.1233865,
+                        "isDynamic":false,
+                        "meshFile":"meshes/tech/greeble_2.obj",
+                        "textureFile":"textures/tech/greebles_1.png"
+                    }
+                ]
+            },
+            "Greeble 2":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.25,
+                    "y":0.125,
+                    "z":0.5
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_2.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 3":{
+                "class":"com.interrupt.dungeoneer.entities.Prefab",
+                "name":"Greeble 3A,Greeble 3B,Greeble 3C",
+                "category":"Examples/Tech"
+            },
+            "Greeble 3A":{
+                "class":"com.interrupt.dungeoneer.entities.Model",
+                "isSolid":true,
+                "collision":{
+                    "x":0.5,
+                    "y":0.125,
+                    "z":0.75
+                },
+                "isDynamic":false,
+                "meshFile":"meshes/tech/greeble_3.obj",
+                "textureFile":"textures/tech/greebles_0.png,textures/tech/greebles_1.png"
+            },
+            "Greeble 3B":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 3A"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "x":-0.12641716,
+                        "y":0.12607098,
+                        "z":0.1233865,
+                        "name":"Greeble 2"
+                    }
+                ]
+            },
+            "Greeble 3C":{
+                "class":"com.interrupt.dungeoneer.entities.Group",
+                "entities":[
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "name":"Greeble 3A"
+                    },
+                    {
+                        "class":"com.interrupt.dungeoneer.entities.Prefab",
+                        "category":"Examples/Tech",
+                        "x":0.12641716,
+                        "y":0.12607098,
+                        "z":0.1233865,
+                        "name":"Greeble 2"
+                    }
+                ]
+            }
+        }
 	}
 }

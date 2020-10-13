@@ -1,7 +1,7 @@
 package com.interrupt.dungeoneer.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -9,10 +9,11 @@ import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.managers.EntityManager;
 
 public class Prefab extends Group {
-	
+	/** Prefab category. */
 	@EditorProperty
 	public String category = "NONE";
-	
+
+	/** Prefab name. */
 	@EditorProperty
 	public String name = "NONE";
 	
@@ -120,7 +121,14 @@ public class Prefab extends Group {
 			}
 			
 			Entity copy = EntityManager.instance.getEntity(loadedCategory, loadedName);
-			if(copy != null) entities.add(copy);
+			if(copy != null)
+				entities.add(copy);
+			else if(GameManager.renderer.editorIsRendering) {
+				// Something bad happened, show at least *something* in the editor
+				Sprite badSprite = new Sprite(0,0,11);
+				badSprite.spriteAtlas = "editor";
+				entities.add(badSprite);
+			}
 			
 			lastRot.set(0,0,0);
 			lastPosition.set(0,0,0);

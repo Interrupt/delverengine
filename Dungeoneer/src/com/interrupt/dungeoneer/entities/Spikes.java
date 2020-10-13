@@ -69,14 +69,17 @@ public class Spikes extends Model {
                     hitAlready.add(e);
 
                     if(e instanceof Actor || (!animation.isDonePlaying() && !animation.isReversed())) {
-                        Vector3 dir = getSpikeDirection();
+                        // Do not apply velocity to non-dynamic Entities!
+                        if (e.isDynamic) {
+                            Vector3 dir = getSpikeDirection();
 
-                        float moveAmount = (e instanceof Player) ? 0.04f : 0.03f;
-                        e.xa = dir.x * moveAmount;
-                        e.ya = dir.y * moveAmount;
-                        e.za = dir.z * moveAmount;
+                            float moveAmount = (e instanceof Player) ? 0.04f : 0.03f;
+                            e.xa = dir.x * moveAmount;
+                            e.ya = dir.y * moveAmount;
+                            e.za = dir.z * moveAmount;
 
-                        e.physicsSleeping = false;
+                            e.physicsSleeping = false;
+                        }
                     }
 
                     e.hit(0, 0, 2, 0f, Weapon.DamageType.PHYSICAL, this);
@@ -175,7 +178,6 @@ public class Spikes extends Model {
             drbl.isStaticMesh = false;
             if(drbl.drawOffset == null) drbl.drawOffset = new Vector3();
             drbl.drawOffset.set(getSpikeDirection()).scl(animation.getCurrentPosition().z - 0.5f);
-            drbl.drawOffset.z += yOffset;
 
             drawable.update(this);
         }

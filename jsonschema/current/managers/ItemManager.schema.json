@@ -1,0 +1,128 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ItemManager",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.managers.ItemManager",
+            "description": "Fully-qualified Java class name."
+        },
+        "melee": {
+            "description": "Mapping of dungeon levels to melee weapon tables.",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+": {
+                    "description": "Level item is found on.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "../dungeoneer/entities/items/Sword.schema.json"
+                    }
+                }
+            }
+        },
+        "armor": {
+            "description": "Mapping of dungeon levels to armor tables.",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+": {
+                    "description": "Level item is found on.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "../dungeoneer/entities/items/Armor.schema.json"
+                    }
+                }
+            }
+        },
+        "ranged": {
+            "description": "Mapping of dungeon levels to ranged weapon tables.",
+            "type": "object",
+            "patternProperties": {
+                "[0-9]+": {
+                    "description": "Level item is found on.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "../Interfaces.schema.json#/definitions/ItemLike"
+                    }
+                }
+            }
+        },
+        "unique": {
+            "description": "Unique item table.",
+            "type": "array",
+            "items": {
+                "$ref": "../Interfaces.schema.json#/definitions/ItemLike"
+            }
+        },
+        "wands": {
+            "description": "Wand table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Wand.schema.json"
+            }
+        },
+        "potions": {
+            "description": "Potion table.",
+            "type": "array",
+            "items": {
+                "$ref": "../Interfaces.schema.json#/definitions/PotionLike"
+            }
+        },
+        "food": {
+            "description": "Food table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Food.schema.json"
+            }
+        },
+        "scrolls": {
+            "description": "Scroll table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Scroll.schema.json"
+            }
+        },
+        "decorations": {
+            "description": "Decorations table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/Decoration.schema.json"
+            }
+        },
+        "junk": {
+            "description": "Junk table.",
+            "type": "array",
+            "items": {
+                "$ref": "../Interfaces.schema.json#/definitions/ItemLike"
+            }
+        },
+        "weaponEnchantments": {
+            "description": "Weapon enchantment table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/ItemModification.schema.json"
+            }
+        },
+        "weaponPrefixEnchantments": {
+            "description": "Weapon prefix enchantment table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/ItemModification.schema.json"
+            }
+        },
+        "armorEnchantments": {
+            "description": "Armor enchantment table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/ItemModification.schema.json"
+            }
+        },
+        "armorPrefixEnchantments": {
+            "description": "Armor prefix enchantment table.",
+            "type": "array",
+            "items": {
+                "$ref": "../dungeoneer/entities/items/ItemModification.schema.json"
+            }
+        }
+    }
+}

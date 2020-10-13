@@ -4,20 +4,39 @@ import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 
 public class ItemModification {
+    /** Name of ItemModification */
 	public String name;
+
+	/** Health points modifier */
 	protected int hpMod = 0;
+
     protected int mpMod = 0;
 
+    /** Armor points modifier */
     protected int armorMod = 0;
+
+    /** Move speed modifier */
     protected int moveSpeedMod = 0;
+
+    /** Agility modifier */
     protected int agilityMod = 0;
+
+    /** Magic modifier */
     protected int magicMod = 0;
+
+    /** Attack modifier */
     protected int attackMod = 0;
 
+    /** Attack speed modifier */
     protected float attackSpeedMod = 0;
+
+    /** Damage modifier */
     protected int damageMod = 0;
+
+    /** Knockback modifier */
     protected float knockbackMod = 0;
 
+    /** Magic resistance modifier */
     protected float magicResistMod = 0f;
 
     protected int fireResist = 0;
@@ -25,7 +44,8 @@ public class ItemModification {
     protected int lightningResist = 0;
     protected int magicResist = 0;
     protected int physicalResist = 0;
-	
+
+    /** Damage type */
 	public DamageType damageType = DamageType.PHYSICAL;
 	
 	public ItemModification() { }

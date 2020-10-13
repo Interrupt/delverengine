@@ -11,15 +11,33 @@ import com.interrupt.managers.StringManager;
 public class StatusEffect {
 	public enum StatusEffectType { BURNING, DRUNK, INVISIBLE, PARALYZE, POISON, RESTORE, SHIELD, SLOW, LEVITATE, SPEED }
 
+	/** Name of status effect. Shown on player HUD. */
 	public String name = StringManager.get("statuseffects.StatusEffect.defaultNameText");
+
+	/** Duration of status effect in milliseconds. */
 	public float timer = 1000;
+
+	/** Speed multiplier for effected player and monsters. */
 	public float speedMod = 1;
+
+	/** Damage multiplier for effected actors. */
 	public float damageMod = 1;
+
+	/** Magic damage multiplier for effected actors. */
 	public float magicDamageMod = 1;
+
+	/** Is status effect active? */
 	public boolean active = true;
+
+	/** Show a particle effect while active? */
 	public boolean showParticleEffect = true;
+
+	/** Shader name to draw effected actor with. */
 	public String shader = null;
+
 	public transient Entity owner = null;
+
+	/** Status effect type. */
 	public StatusEffectType statusEffectType;
 
 	public static StatusEffect getStatusEffect(DamageType damageType) {

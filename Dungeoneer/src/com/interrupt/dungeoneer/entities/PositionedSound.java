@@ -16,7 +16,7 @@ public class PositionedSound extends Entity {
 	protected float volume = 1f;
 	
 	@EditorProperty
-	protected float radius = 12f;
+	public float radius = 12f;
 	
 	@EditorProperty
 	protected float pitch = 1f;

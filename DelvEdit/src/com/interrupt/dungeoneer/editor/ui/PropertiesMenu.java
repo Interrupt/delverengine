@@ -4,23 +4,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorArt;
-import com.interrupt.dungeoneer.editor.EditorFrame;
 import com.interrupt.dungeoneer.entities.*;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
+import org.lwjgl.LWJGLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -29,18 +27,16 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 
 public class PropertiesMenu extends Table {
-    private final EditorFrame editorFrame;
     public ArrayMap<String, Array<Field>> arrayMap = new ArrayMap<String, Array<Field>>();
     private HashMap<Field, Actor> fieldMap = new HashMap<Field, Actor>();
 
     private final Array<Entity> selectedEntities;
     private final Array<Class> classes;
 
-    public PropertiesMenu(Skin skin, final EditorFrame editorFrame, final Array<Entity> entities) {
+    public PropertiesMenu(Skin skin, final Array<Entity> entities) {
         super(skin);
-        this.editorFrame = editorFrame;
-        this.selectedEntities = entities;
         final Entity entity = entities.get(0);
+        selectedEntities = entities;
 
         // add all of the classes from the first entity
         classes = getClassesForEntity(entity);
@@ -56,6 +52,19 @@ public class PropertiesMenu extends Table {
         classes.removeAll(nonCommon, true);
 
         try {
+            // Show entity name as pane header.
+            String[] nameParts = entity.getClass().getName().split("\\.");
+
+            String entityName = "Unknown";
+            if (nameParts.length > 0) {
+                entityName = nameParts[nameParts.length - 1];
+            }
+
+            add(new Label(entityName, EditorUi.mediumSkin))
+                    .align(Align.left)
+                    .padLeft(-12f);
+            row();
+
             // gather all of the fields into groups
             for (Class oClass : classes) {
                 Field[] fields = oClass.getDeclaredFields();
@@ -134,7 +143,7 @@ public class PropertiesMenu extends Table {
                                     }
                                 }.setFileNameEnabled(false);
 
-                                editorFrame.editorUi.getStage().addActor(picker);
+                                Editor.app.ui.getStage().addActor(picker);
                                 picker.show(getStage());
                             }
                         });
@@ -204,11 +213,11 @@ public class PropertiesMenu extends Table {
                                             applyChanges(field, new Material(atlas, (byte)v));
                                         }
 
-                                        editorFrame.editorUi.showEntityPropertiesMenu(editorFrame, false);
+                                        Editor.app.ui.showEntityPropertiesMenu(false);
                                     }
                                 };
-                                editorFrame.editorUi.getStage().addActor(picker);
-                                picker.show(editorFrame.editorUi.getStage());
+                                Editor.app.ui.getStage().addActor(picker);
+                                picker.show(Editor.app.ui.getStage());
                             }
                         });
 
@@ -266,11 +275,11 @@ public class PropertiesMenu extends Table {
                                         }
 
                                         applyChanges(field, value.toString());
-                                        editorFrame.editorUi.showEntityPropertiesMenu(editorFrame, false);
+                                        Editor.app.ui.showEntityPropertiesMenu(false);
                                     }
                                };
-                               editorFrame.editorUi.getStage().addActor(picker);
-                               picker.show(editorFrame.editorUi.getStage());
+                               Editor.app.ui.getStage().addActor(picker);
+                               picker.show(Editor.app.ui.getStage());
                            }
                        });
 
@@ -334,6 +343,55 @@ public class PropertiesMenu extends Table {
                                     tf.setTextFieldFilter(new DecimalsFilter());
                                 }
                                 return false;
+                            }
+                        });
+
+                        // Allow drag on label to scrub value.
+                        label.addListener(new InputListener() {
+                            private final DecimalFormat format = new DecimalFormat("##.##");
+                            private float firstX;
+                            private float firstY;
+                            private float lastX;
+
+                            @Override
+                            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                                firstX = Gdx.input.getX();
+                                firstY = Gdx.input.getY();
+                                lastX = x;
+
+                                if (!Gdx.input.isCursorCatched()) {
+                                    Gdx.input.setCursorCatched(true);
+                                }
+
+                                return true;
+                            }
+
+                            @Override
+                            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                                if (Gdx.input.isCursorCatched()) {
+                                    Gdx.input.setCursorCatched(false);
+                                }
+
+                                Gdx.input.setCursorPosition((int) firstX, (int) firstY);
+                                if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
+                                    Gdx.input.setCursorPosition((int) firstX, Gdx.graphics.getHeight() - 1 - (int) firstY);
+                                }
+                            }
+
+                            @Override
+                            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                                float dx = x - lastX;
+
+                                double dval = 0;
+                                if(!tf.getText().equals("")) dval = Double.parseDouble(tf.getText());
+                                dval += 0.1 * dx / 10;
+                                tf.setTextFieldFilter(null);
+                                tf.setText(format.format(dval));
+                                tf.setTextFieldFilter(new DecimalsFilter());
+
+                                applyChanges(field);
+
+                                lastX = x;
                             }
                         });
 
@@ -507,7 +565,7 @@ public class PropertiesMenu extends Table {
         return new ChangeListener() {
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 applyChanges(currentField);
-                editorFrame.editorUi.showEntityPropertiesMenu(editorFrame, false);
+                Editor.app.ui.showEntityPropertiesMenu(false);
             }
         };
     }
@@ -645,7 +703,7 @@ public class PropertiesMenu extends Table {
                 }
             }
 
-            editorFrame.refreshLights();
+            Editor.app.refreshLights();
 
             for(Entity entity : selectedEntities) {
                 if (entity.drawable != null) entity.drawable.refresh();

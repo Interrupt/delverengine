@@ -9,48 +9,62 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 
 public class BasicTrigger extends Entity {
-    @EditorProperty( group = "Trigger" )
-    public boolean isSecret = false;
-
     public enum TriggerStatus {WAITING, TRIGGERED, RESETTING, DESTROYED}
     public enum GameTime {WHENEVER, DESCENT, ESCAPE}
 
+    /** Does this count as a secret? */
+    @EditorProperty( group = "Trigger" )
+    public boolean isSecret = false;
+
+    /** Entity to send trigger event when triggered. */
     @EditorProperty( group = "Trigger" )
     public String triggersId = "";
 
+    /** Reset after being triggered? */
     @EditorProperty( group = "Trigger" )
     public boolean triggerResets = true;
 
+    /** Time to wait before performing trigger action after receiving trigger event. */
     @EditorProperty( group = "Trigger" )
     public float triggerDelay = 0f;
 
+    /** Time to wait to reset after performing trigger action. */
     @EditorProperty( group = "Trigger" )
     public float triggerResetTime = 0f;
 
+    /** Trigger event value. */
     @EditorProperty( group = "Trigger" )
     public String triggerValue = "";
 
+    /** Pass trigger event value to targeted trigger? */
     @EditorProperty( group = "Trigger" )
     public boolean triggerPropogates = true;
 
+    /** Message to display when triggered. */
     @EditorProperty( group = "Trigger" )
     public String message = "";
 
+    /** Duration to display message in seconds. */
     @EditorProperty( group = "Trigger" )
     public float messageTime = 5f;
 
+    /** Size of displayed message. */
     @EditorProperty( group = "Trigger" )
     public float messageSize = 1f;
 
+    /** Filepath of sound to play when triggered. */
     @EditorProperty( group = "Trigger" )
     public String triggerSound = null;
 
+    /** Which phase of the game to permit triggering. */
     @EditorProperty( group = "Trigger" )
     public Trigger.GameTime triggersDuring = Trigger.GameTime.WHENEVER;
 
+    /** Does this appear during end game? */
     @EditorProperty( group = "End Game" )
     public boolean appearsDuringEndgame = true;
 
+    /** Does trigger destroy itself? */
     protected boolean selfDestructs = true;
 
     protected Trigger.TriggerStatus triggerStatus= Trigger.TriggerStatus.WAITING;

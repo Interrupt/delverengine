@@ -81,9 +81,14 @@ public class SplashScreen extends BaseScreen {
 
 		splashText = splashTexts[r.nextInt(splashTexts.length)];
 
-		if(splashScreenInfo.logoImage != null)
+		if(splashScreenInfo.logoImage != null) {
 			logoTexture = Art.loadTexture(splashScreenInfo.logoImage);
-		
+
+			if(splashScreenInfo.logoFilter) {
+				logoTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+			}
+		}
+
 		fadeStartTick = 0;
 		fadeEndTick = 200;
 		isFadingOut = false;

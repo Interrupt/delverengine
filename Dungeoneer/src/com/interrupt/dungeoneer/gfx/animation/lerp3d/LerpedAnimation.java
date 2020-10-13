@@ -8,25 +8,36 @@ public class LerpedAnimation {
 	
 	private float time = 0;
 	private float total_time = 0;
+
+	/** Scale at which animation plays. Can be used to speed up or slow down entire animation. */
 	public float speed = 1f;
 
 	private float calc_length = 1f;
 	
 	public boolean playing = false;
-	
+
+	/** Animation initial position. */
 	public Vector3 startTransform = null;
+
+	/** Animation initial rotation. */
 	public Vector3 startRotation = null;
 	
 	public Vector3 curTransform = new Vector3();
 	public Vector3 curRotation = new Vector3();
-	
+
+	/** Time to perform action. */
 	public float actionTime = 6f;
-	
+
+	/** Array of LerpFrame objects. */
 	public Array<LerpFrame> frames;
 	int frame = 0;
 
+	/** Starting sprite index. */
 	public int startTexOffset = 0;
+
+	/** Ending sprite index. */
 	public int endTexOffset = 0;
+
 	public int curTexOffset = 0;
 	
 	private Interpolation lerpFrame = Interpolation.linear;

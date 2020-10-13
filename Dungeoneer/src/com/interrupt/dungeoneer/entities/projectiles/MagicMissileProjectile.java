@@ -1,45 +1,71 @@
 package com.interrupt.dungeoneer.entities.projectiles;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.*;
+import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.Explosion;
+import com.interrupt.dungeoneer.entities.Particle;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 
 public class MagicMissileProjectile extends Projectile {
-	
 	private float trailTimer = 2 + (int)(Math.random() * 4);
+
+	/** Leave particle trail? */
 	public boolean leaveTrail = true;
+
+	/** Splash force. */
 	public float splashForce = 0.1f;
+
+	/** Splash radius. */
 	public float splashRadius = 3f;
+
+	/** Splash damage amount. */
 	public boolean splashDamage = false;
-    public float particleAmoundMod = 1f;
+
+	/** Explosion particle scalar. */
+	public float particleAmoundMod = 1f;
+
+	/** Particle trail spawn interval. */
 	public float trailInterval = 0.1f;
-    public Explosion explosion = new Explosion();
-    public float lightMod = 1f;
+
+	/** Explosion entity. */
+	public Explosion explosion = new Explosion();
+
+	/** Light scalar. */
+	public float lightMod = 1f;
+
+	/** Trail particle sprite index. */
 	public int trailParticleTex = 0;
+
+	/** Trail particle lifetime. */
 	public float trailParticleLifetime = 60f;
+
+	/** Trail particle random lifetime. */
 	public float trailParticleRandomLifetime = 60f;
+
+	/** Trail particle start scale. */
 	public float trailParticleStartScale = 1f;
+
+	/** Trail particle end scale. */
 	public float trailParticleEndScale = 0f;
 
+	/** Sprite animation. */
 	protected SpriteAnimation animation = null;
 
+	/** End sprite index. */
 	@EditorProperty
 	public Integer endAnimTex = null;
 
+	/** Projectile sprite animation speed. */
 	@EditorProperty
 	public Float animSpeed = 30f;
 	

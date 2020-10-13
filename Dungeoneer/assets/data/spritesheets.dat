@@ -68,5 +68,11 @@
         "filename": "vfx.png",
         "scale": 1,
         "name": "vfx"
+    },
+    {
+        "columns": 4,
+        "filename": "textures/tech/sprites.png",
+        "scale": 1,
+        "name": "tech_sprites"
     }
 ]

@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Color",
+    "type": "object",
+    "description": "Class for representing 3D vectors and points.",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.badlogic.gdx.graphics.Color",
+            "description": "Fully-qualified Java class name."
+        },
+        "r": {
+            "type": "number",
+            "description": "Red channel.",
+            "default": 0.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "g": {
+            "type": "number",
+            "description": "Green channel.",
+            "default": 0.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "b": {
+            "type": "number",
+            "description": "Blue channel.",
+            "default": 0.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "a": {
+            "type": "number",
+            "description": "Alpha channel.",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        }
+    },
+    "default": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 1.0
+    }
+}

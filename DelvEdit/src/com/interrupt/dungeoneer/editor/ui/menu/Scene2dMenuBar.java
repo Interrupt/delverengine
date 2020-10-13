@@ -1,19 +1,17 @@
 package com.interrupt.dungeoneer.editor.ui.menu;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 
 public class Scene2dMenuBar extends Scene2dMenu {
 
-    private static Label titleLabel = null;
+    public static Button playButton = null;
 
     public Scene2dMenuBar(Skin skin) {
         super(skin);
-        titleLabel = new Label("New Level", skin);
+        playButton = new Button(skin);
+        playButton.add(new Image(skin, "menu-arrow")).size(10);
     }
 
     @Override
@@ -56,18 +54,18 @@ public class Scene2dMenuBar extends Scene2dMenu {
         menuTable.setSkin(skin);
         addActor(menuTable);
 
-        menuTable.add().width(6f);
+        float r = 0;
 
         // add the rows
         for(Actor a : items) {
             menuTable.add(a).align(Align.left).fill();
+            r = a.getRight();
         }
 
-        menuTable.add(titleLabel).padLeft(50).width(400f).fill();
-        titleLabel.setColor(Color.GRAY);
+        menuTable.add().width(getParent().getWidth() - 40 - r);
+        menuTable.add(playButton).width(30).height(30).align(Align.right).padTop(2).padRight(10).fill();
 
         menuTable.setBackground("menu_default_normal");
-        menuTable.add().width(4000f).fill();
 
         // add all of the sub menus to this space
         for(Actor a : items) {
@@ -83,9 +81,5 @@ public class Scene2dMenuBar extends Scene2dMenu {
         }
 
         menuTable.pack();
-    }
-
-    public static void setTitleLabel(String title) {
-        titleLabel.setText(title);
     }
 }
