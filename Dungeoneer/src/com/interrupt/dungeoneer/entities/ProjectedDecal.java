@@ -67,6 +67,7 @@ public class ProjectedDecal extends DirectionalEntity {
 	public ProjectedDecal(ProjectedDecal decal) {
 		artType = decal.artType;
 		tex = decal.tex;
+		spriteAtlas = decal.spriteAtlas;
 		decalWidth = decal.decalWidth;
 		decalHeight = decal.decalHeight;
 		isDynamic = false;

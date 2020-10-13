@@ -3152,8 +3152,17 @@ public class Level {
 		{
 			e = list.get(entity_index);
 			
-			if(!inEditor) e.tick(this, delta);
-			else e.editorTick(this, delta);
+			if(!inEditor) {
+				if(e.skipTick) {
+					e.skipTick = false;
+					continue;
+				}
+
+				e.tick(this, delta);
+			}
+			else {
+				e.editorTick(this, delta);
+			}
 				
 			if(!e.isActive) toDelete.add(e);
 		}

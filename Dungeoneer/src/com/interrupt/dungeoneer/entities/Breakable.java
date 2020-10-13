@@ -62,7 +62,15 @@ public class Breakable extends Model {
 	@EditorProperty
 	public float shakeAmount = 4f;
 
+	@EditorProperty
+	public boolean canBePushed = false;
+
+	@EditorProperty
+	public boolean canBreak = true;
+
 	public transient float shakeTimer = 0f;
+
+	private transient Array<Entity> entityStandingOnUsCache = new Array<>();
 
 	public Array<Entity> spawns = new Array<Entity>();
 	
@@ -72,6 +80,33 @@ public class Breakable extends Model {
 		isSolid = true;
 		stepHeight = 0f;
 	}
+
+	// player is pushing
+	@Override
+	public void push(Player player, Level level, float delta, CollisionAxis collisionAxis)
+	{
+		float massModPrimary = 1.0f - (mass * 0.1f);
+		float massModSecondary = 1.0f - (mass * 0.05f);
+
+		if(collisionAxis == CollisionAxis.X) {
+			player.xa *= massModPrimary;
+			player.ya *= massModSecondary;
+			xa = player.xa;
+			ya = player.ya;
+		}
+		else if(collisionAxis == CollisionAxis.Y) {
+			player.ya *= massModPrimary;
+			player.xa *= massModSecondary;
+			ya = player.ya;
+			xa = player.xa;
+		}
+
+		// Move this breakable now to allow the player room to move
+		tick(level, delta);
+
+		// Skip the next tick, since we already moved
+		skipTick = true;
+	}
 	
 	@Override
 	public void hit(float projx, float projy, int damage, float knockback, DamageType damageType, Entity instigator) {
@@ -80,8 +115,13 @@ public class Breakable extends Model {
 		}
 
 		super.hit(projx, projy, damage, knockback, damageType, instigator);
-		if(pushable) this.applyPhysicsImpulse(new Vector3(projx,projy,0).scl(knockback));
-		
+
+		if(canBePushed)
+			this.applyPhysicsImpulse(new Vector3(projx,projy,0).scl(knockback));
+
+		if(!canBreak)
+			return;
+
 		hp -= damage;
 
 		shakeTimer = 50f;
@@ -164,12 +204,17 @@ public class Breakable extends Model {
 				level.trigger(this, triggerWhenBreaks, "");
 			}
 	}
-	
-	public void tick(Level level, float delta) {
-		// if it's not pushable, this can't move so don't tick physics
-		super.tick(level, delta);
 
-		physicsSleeping = isOnFloor && !pushable;
+	public void tick(Level level, float delta) {
+
+		// Might need to keep track of how much we moved
+		float xBefore = x;
+		float yBefore = y;
+
+		if(canBePushed)
+			stepHeight = 0.1f;
+
+		super.tick(level, delta);
 
 		if(shakeTimer > 0 && Game.instance != null) {
 			shakeTimer -= delta;
@@ -178,6 +223,35 @@ public class Breakable extends Model {
 
 			if(shakeTimer <= 0) shakeTimer = 0;
 		}
+
+		// Make sure non pushable breakables go to sleep right away
+		physicsSleeping = isOnFloor && !canBePushed;
+
+		if(!canBePushed)
+			return; // Can't be pushed, so can stop here
+
+		// move any entities standing on us
+		entityStandingOnUsCache.addAll(level.getEntitiesColliding(x, y, z + 0.06f, this));
+
+		for(int i = 0; i < entityStandingOnUsCache.size; i++) {
+			Entity e = entityStandingOnUsCache.get(i);
+
+			if(e.isDynamic) {
+				e.physicsSleeping = false;
+
+				// Update the velocity, accounting for some friction. (0.3 seems to be the magic value)
+				e.xa += (x - xBefore) * 0.3f;
+				e.ya += (y - yBefore) * 0.3f;
+
+				// Tick this entity now, so it can tick any entities on top of itself
+				if(!e.skipTick) {
+					e.skipTick = true;
+					e.tick(level, delta);
+				}
+			}
+		}
+
+		entityStandingOnUsCache.clear();
 	}
 	
 	public void gib(Level level, Vector3 gibVel) {
@@ -211,10 +285,10 @@ public class Breakable extends Model {
 	
 	@Override
 	public void applyPhysicsImpulse(Vector3 impulse) {
-		float magnitude = impulse.len();
-		if (magnitude >= 1f) {
-			this.hit(impulse.x, impulse.y, (int)magnitude, magnitude, DamageType.PHYSICAL, null);
-		}
+		xa += impulse.x / mass;
+		ya += impulse.y / mass;
+		za += impulse.z / mass;
+		this.physicsSleeping = false;
 	}
 	
 	// never draw as a static mesh
