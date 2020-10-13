@@ -108,9 +108,7 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
     
                                 Editor.app.refresh();
     
-                                if (Editor.app.generatorInfo.lastGeneratedRoomTemplate == null
-                                        || Editor.app.generatorInfo.lastGeneratedRoomTemplate.theme != template.theme
-                                        || Editor.app.generatorInfo.lastGeneratedRoomTemplate.roomGeneratorType != template.roomGeneratorType) {
+                                if (Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
                                     Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
                                     needsRefresh = true;
                                 }

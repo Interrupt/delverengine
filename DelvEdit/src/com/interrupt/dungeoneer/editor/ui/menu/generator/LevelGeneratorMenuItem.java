@@ -107,9 +107,7 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                                     level.generate(Level.Source.EDITOR);
                                     Editor.app.refresh();
     
-                                    if (Editor.app.generatorInfo.lastGeneratedLevelTemplate == null
-                                            || Editor.app.generatorInfo.lastGeneratedLevelTemplate.theme != template.theme
-                                            || Editor.app.generatorInfo.lastGeneratedLevelTemplate.roomGeneratorType != template.roomGeneratorType) {
+                                    if (Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
                                         Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
                                         needsRefresh = true;
                                     }

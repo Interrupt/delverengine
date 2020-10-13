@@ -112,14 +112,17 @@ public class GeneratorInfo {
     }
 
     public boolean isLevelTemplateValid(Level template) {
-        if (!themes.contains(template.theme, false)) {
-            return false;
-        }
+        return template != null && themes.contains(template.theme, false)
+                && builders.contains(template.roomGeneratorType, false);
+    }
 
-        if (!builders.contains(template.roomGeneratorType, false)) {
-            return false;
-        }
+    public boolean isLastGeneratedLevelTemplateSelected(Level template) {
+        return lastGeneratedLevelTemplate != null && lastGeneratedLevelTemplate.theme.equals(template.theme)
+                && lastGeneratedLevelTemplate.roomGeneratorType.equals(template.roomGeneratorType);
+    }
 
-        return true;
+    public boolean isLastGeneratedRoomTemplateSelected(Level template) {
+        return lastGeneratedRoomTemplate != null && lastGeneratedRoomTemplate.theme.equals(template.theme)
+                && lastGeneratedRoomTemplate.roomGeneratorType.equals(template.roomGeneratorType);
     }
 }
