@@ -475,7 +475,7 @@ public class Tile implements Serializable {
 
         if(materials != null) {
         	materials.rotate90();
-		}
+        }
 	}
 
 	public static Tile copy(Tile tocopy) {
@@ -1050,9 +1050,8 @@ public class Tile implements Serializable {
 	}
 
 	public void setWallYOffset(TileEdges dir, float val) {
-		if(materials == null) {
-			materials = new TileMaterials();
-		}
+		if(materials == null)
+			return;
 
 		TileSurface s = materials.getTopSurface(dir);
 		if(s == null) {
@@ -1081,9 +1080,8 @@ public class Tile implements Serializable {
 	}
 
 	public void setBottomWallYOffset(TileEdges dir, float val) {
-		if(materials == null) {
-			materials = new TileMaterials();
-		}
+		if(materials == null)
+			return;
 
 		TileSurface s = materials.getTopSurface(dir);
 		if(s == null) {
@@ -1095,6 +1093,9 @@ public class Tile implements Serializable {
 	}
 
 	public void offsetTopWallSurfaces(float amount) {
+		if(materials == null)
+			return;
+
 		for(int i = 0; i < TileEdges.values().length; i++) {
 			TileEdges edge = TileEdges.values()[i];
 			TileSurface surface = materials.getTopSurface(edge);
@@ -1107,6 +1108,9 @@ public class Tile implements Serializable {
 	}
 
 	public void offsetBottomWallSurfaces(float amount) {
+		if(materials == null)
+			return;
+
 		for(int i = 0; i < TileEdges.values().length; i++) {
 			TileEdges edge = TileEdges.values()[i];
 			TileSurface surface = materials.getBottomSurface(edge);

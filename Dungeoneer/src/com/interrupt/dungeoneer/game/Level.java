@@ -62,9 +62,6 @@ public class Level {
 	
 	public enum Source { LEVEL_START, LEVEL_LOAD, EDITOR, SPAWNED }
 	private enum Direction { NORTH, SOUTH, EAST, WEST }
-
-	public static int CURRENT_VERSION = 2;
-	public int version = -1;
 	
 	public int width, height;
 	public Tile[] tiles;
@@ -236,9 +233,6 @@ public class Level {
 		// make a blank level for the editor
 		this.width = width;
 		this.height = height;
-
-		// Set a version for serialization purposes
-		version = CURRENT_VERSION;
 		
 		tiles = new Tile[width * height];
 		tileMaterials = new TileMaterials[width * height];
@@ -524,9 +518,11 @@ public class Level {
 		// Make sure the tile materials array matches the size of the tiles, and is filled
 		if(tileMaterials == null || tileMaterials.length != tiles.length) {
 			tileMaterials = new TileMaterials[tiles.length];
-			for(int i = 0; i < tiles.length; i++) {
+		}
+
+		for(int i = 0; i < tiles.length; i++) {
+			if(tileMaterials[i] == null)
 				tileMaterials[i] = new TileMaterials();
-			}
 		}
 	}
 
