@@ -1051,7 +1051,7 @@ public class Tile implements Serializable {
 
 	public void offsetTopWallSurfaces(TileEdges dir, float val) {
 		if(materials == null)
-			return;
+			materials = new TileMaterials();
 
 		TileSurface s = materials.getTopSurface(dir);
 		if(s == null) {
@@ -1081,7 +1081,7 @@ public class Tile implements Serializable {
 
 	public void offsetBottomWallSurfaces(TileEdges dir, float val) {
 		if(materials == null)
-			return;
+			materials = new TileMaterials();
 
 		TileSurface s = materials.getTopSurface(dir);
 		if(s == null) {
@@ -1094,7 +1094,7 @@ public class Tile implements Serializable {
 
 	public void offsetTopWallSurfaces(float amount) {
 		if(materials == null)
-			return;
+			materials = new TileMaterials();
 
 		for(int i = 0; i < TileEdges.values().length; i++) {
 			TileEdges edge = TileEdges.values()[i];
@@ -1109,7 +1109,7 @@ public class Tile implements Serializable {
 
 	public void offsetBottomWallSurfaces(float amount) {
 		if(materials == null)
-			return;
+			materials = new TileMaterials();
 
 		for(int i = 0; i < TileEdges.values().length; i++) {
 			TileEdges edge = TileEdges.values()[i];

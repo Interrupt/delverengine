@@ -521,8 +521,10 @@ public class Level {
 		}
 
 		for(int i = 0; i < tiles.length; i++) {
-			if(tileMaterials[i] == null)
-				tileMaterials[i] = new TileMaterials();
+			if (tiles[i] == null)
+				continue;
+
+			tiles[i].materials = tileMaterials[i];
 		}
 	}
 
@@ -1568,10 +1570,6 @@ public class Level {
 		for(int i = 0; i < tiles.length; i++) {
 			if(tiles[i] != null) {
 				tiles[i].init(source);
-
-				// attach the tile materials to the Tile
-				if(tileMaterials != null && i < tileMaterials.length)
-					tiles[i].materials = tileMaterials[i];
 			}
 		}
 		
@@ -1625,9 +1623,6 @@ public class Level {
 	public void setTile(int x, int y, Tile t) {
 		if(x >= 0 && x < width && y >= 0 && y < height) {
 			tiles[x + y * width] = t;
-
-			if(t != null)
-				tileMaterials[x + y * width] = t.materials;
 		}
 		
 		if(t != null) {
@@ -1640,9 +1635,6 @@ public class Level {
 			Tile existing = tiles[x + y * width];
 			if(existing == null || !existing.isLocked) {
 				tiles[x + y * width] = t;
-
-				if(t != null)
-					tileMaterials[x + y * width] = t.materials;
 			}
 		}
 
@@ -3641,6 +3633,7 @@ public class Level {
 	}
 	
 	private void preSaveCleanup(Array<Entity> entities) {
+		// Remove any entities that we should not save
 		Array<Entity> toDelete = new Array<Entity>();
 		if(entities != null) {
 			for(Entity e : entities) {
@@ -3650,6 +3643,14 @@ public class Level {
 		}
 		for(int i = 0; i < toDelete.size; i++) {
 			entities.removeValue(toDelete.get(i), true);
+		}
+
+		// Make sure tile materials persist
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] == null)
+				tileMaterials[i] = null;
+			else
+				tileMaterials[i] = tiles[i].materials;
 		}
 	}
 	
