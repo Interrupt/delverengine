@@ -406,7 +406,7 @@ public class Item extends Entity {
 
 			if (drawable instanceof DrawableMesh) {
 				DrawableMesh dm = (DrawableMesh)drawable;
-				dm.rotZ = GlRenderer.time * (360f / 2f);// * (16f / 360f);
+				dm.rotZ = GlRenderer.time * (360f / 2f);
 			}
 
 			pickupHelper.x = x;
