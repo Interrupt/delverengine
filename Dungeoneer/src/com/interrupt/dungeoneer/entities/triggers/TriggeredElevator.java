@@ -8,7 +8,9 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.collision.Collision;
 import com.interrupt.dungeoneer.entities.AmbientSound;
 import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.PathNode;
 import com.interrupt.dungeoneer.entities.items.Weapon;
+import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -55,6 +57,8 @@ public class TriggeredElevator extends Trigger {
 	protected float waitTime = 0;
 	protected float deltaBuffer = 0;
 	protected ElevatorState state = ElevatorState.NONE;
+
+	protected float amountFloorMovedSinceStart = 0;
 
 	public TriggeredElevator() { hidden = true; spriteAtlas = "editor"; tex = 11; selfDestructs = false; }
 
@@ -265,12 +269,13 @@ public class TriggeredElevator extends Trigger {
 
 			// Move the trigger as much as the floor, so that a touch could trigger it again
 			z += floorMoveAmount;
+			amountFloorMovedSinceStart += floorMoveAmount;
 
 			// Done with the cache
 			entitiesToMoveCache.clear();
 
 			// The world changed here, retesselate
-			markWorldAsDirty();
+			markWorldAsDirty(level);
 		}
 	}
 
@@ -307,7 +312,7 @@ public class TriggeredElevator extends Trigger {
 		}
 	}
 
-	private void markWorldAsDirty() {
+	private void markWorldAsDirty(Level level) {
 		// Mark this area as dirty to force world Tesselation here
 		int minX = (int)Math.floor(x - collision.x);
 		int maxX = (int)Math.ceil(x + collision.x);
@@ -321,6 +326,17 @@ public class TriggeredElevator extends Trigger {
 				markWorldAsDirty(tileX - 1, tileY);
 				markWorldAsDirty(tileX, tileY + 1);
 				markWorldAsDirty(tileX, tileY - 1);
+
+				// Stop pathfinding to this tile if it has moved too much
+				Tile t = level.getTileOrNull(tileX, tileY);
+				if(t == null)
+					continue;
+
+				PathNode n = Game.pathfinding.GetNodeAt(tileX + 0.5f, tileY + 0.5f, t.floorHeight);
+				if(n == null)
+					continue;
+
+				n.setEnabled(!t.blockMotion && Math.abs(amountFloorMovedSinceStart) < 0.5f);
 			}
 		}
 	}
