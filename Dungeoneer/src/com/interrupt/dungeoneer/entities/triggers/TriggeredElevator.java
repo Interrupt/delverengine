@@ -284,7 +284,7 @@ public class TriggeredElevator extends Trigger {
 			for(int tileY = minY; tileY < maxY; tileY++) {
 				Tile t = level.getTileOrNull(tileX, tileY);
 
-				if(t != null) {
+				if(t != null && !t.IsSolid()) {
 					if (elevatorType == ElevatorType.FLOOR || elevatorType == ElevatorType.BOTH) {
 						t.floorHeight += thisMoveAmount;
 						t.offsetBottomWallSurfaces(thisMoveAmount);
