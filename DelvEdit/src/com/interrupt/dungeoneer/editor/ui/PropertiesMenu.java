@@ -652,7 +652,7 @@ public class PropertiesMenu extends Table {
                     else if(currentField.getType() == TagSet.class) {
                         for(Entity entity : selectedEntities) {
                             TagSet tags = new TagSet();
-                            tags.addAll(Stream.of(val.split(",")).map((v) -> v.trim()).collect(Collectors.toSet()));
+                            tags.addAll(Stream.of(val.split(",")).map((v) -> v.trim()).toArray(String[]::new));
                             currentField.set(entity, tags);
                         }
                     }
