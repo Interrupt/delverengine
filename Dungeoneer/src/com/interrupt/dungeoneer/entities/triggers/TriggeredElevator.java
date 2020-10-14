@@ -89,6 +89,8 @@ public class TriggeredElevator extends Trigger {
 			}
 
 			if(squishDamageTimer > 20) squishDamageTimer = 0;
+		} else {
+			squishTotalTimer = 0;
 		}
 
 		// Handle moving
