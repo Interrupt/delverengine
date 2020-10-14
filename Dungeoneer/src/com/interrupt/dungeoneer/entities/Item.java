@@ -505,20 +505,25 @@ public class Item extends Entity {
 
 	protected void updateDrawableInternal(boolean held) {
 		String meshToUse = getMeshToUse(held);
-		if(meshToUse != null && (((lastMeshFile != meshToUse)) || (textureFile == null || (lastTextureFile != textureFile)))) {
-			String pickedMeshFile = meshToUse;
-			if(meshToUse.contains(",")) {
-				String[] files = meshToUse.split(",");
-				pickedMeshFile = files[Game.rand.nextInt(files.length)];
-			}
+		if(meshToUse != null) {
+			// Check if we need to create/update our mesh drawable
+			if (!meshToUse.equals(lastMeshFile) || (textureFile != null && !textureFile.equals(lastTextureFile))) {
+				String pickedMeshFile = meshToUse;
+				if (meshToUse.contains(",")) {
+					String[] files = meshToUse.split(",");
+					pickedMeshFile = files[Game.rand.nextInt(files.length)];
+				}
 
-			String pickedTextureFile = textureFile;
-			if(textureFile.contains(",")) {
-				String[] files = textureFile.split(",");
-				pickedTextureFile = files[Game.rand.nextInt(files.length)];
-			}
+				String pickedTextureFile = textureFile;
+				if (textureFile.contains(",")) {
+					String[] files = textureFile.split(",");
+					pickedTextureFile = files[Game.rand.nextInt(files.length)];
+				}
 
-			drawable = new DrawableMesh(pickedMeshFile, pickedTextureFile);
+				drawable = new DrawableMesh(pickedMeshFile, pickedTextureFile);
+				lastMeshFile = meshToUse;
+				lastTextureFile = textureFile;
+			}
 		} else {
 			// Make sure we stop using the mesh version when done
 			if(drawable instanceof DrawableMesh)
