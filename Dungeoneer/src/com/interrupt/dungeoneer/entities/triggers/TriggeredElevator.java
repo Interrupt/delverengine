@@ -1,9 +1,12 @@
 package com.interrupt.dungeoneer.entities.triggers;
 
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.collision.Collision;
+import com.interrupt.dungeoneer.entities.AmbientSound;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Level;
@@ -37,6 +40,17 @@ public class TriggeredElevator extends Trigger {
 	@EditorProperty
 	public float squishMaxReverseTime = 60;
 
+	@EditorProperty( group = "Audio", type = "FILE_PICKER", params = "audio", include_base = false )
+	private String startSound = null;
+	@EditorProperty( group = "Audio", type = "FILE_PICKER", params = "audio", include_base = false )
+	private String endSound = null;
+	@EditorProperty( group = "Audio", type = "FILE_PICKER", params = "audio", include_base = false )
+	private String returnStartSound = null;
+	@EditorProperty( group = "Audio", type = "FILE_PICKER", params = "audio", include_base = false )
+	private String returnEndSound = null;
+	@EditorProperty( group = "Audio", type = "FILE_PICKER", params = "audio", include_base = false )
+	private String movingSound = null;
+
 	protected float hasMoved = 0;
 	protected float waitTime = 0;
 	protected float deltaBuffer = 0;
@@ -49,16 +63,25 @@ public class TriggeredElevator extends Trigger {
 	private transient float squishDamageTimer = 0;
 	private transient float squishTotalTimer = 0;
 	private transient Entity squishing = null;
+
+	private transient AmbientSound movingAmbientSound = null;
 	
 	@Override
 	public void doTriggerEvent(String value) {
 		if(state == ElevatorState.NONE) {
 			waitTime = 0;
 			state = ElevatorState.MOVING;
+
+			if(startSound != null)
+				Audio.playPositionedSound(startSound, new Vector3(x,y,z), 0.7f, 14f);
+
 		} else if(state == ElevatorState.WAITING) {
 			if (waitTime > endWaitTime) {
 				waitTime = 0;
 				state = ElevatorState.RETURNING;
+
+				if(returnStartSound != null)
+					Audio.playPositionedSound(returnStartSound, new Vector3(x,y,z), 0.7f, 14f);
 			}
 		}
 
@@ -93,6 +116,22 @@ public class TriggeredElevator extends Trigger {
 			squishTotalTimer = 0;
 		}
 
+		// Handle moving sound
+		if(movingSound != null && !movingSound.equals("")) {
+			if(state == ElevatorState.MOVING || state == ElevatorState.RETURNING) {
+				if(movingAmbientSound == null) movingAmbientSound = new AmbientSound(x,y,z,movingSound,1f,1f,13f);
+				movingAmbientSound.setPosition(x, y, z);
+				movingAmbientSound.tick(level, delta);
+			}
+			else {
+				if(movingAmbientSound != null) {
+					movingAmbientSound.volume = 0;
+					movingAmbientSound.stop();
+					movingAmbientSound = null;
+				}
+			}
+		}
+
 		// Handle moving
 		float moving = 0;
 		float hasMovedAtStart = hasMoved;
@@ -112,6 +151,9 @@ public class TriggeredElevator extends Trigger {
 					hasMoved = moveAmount;
 
 					state = ElevatorState.WAITING;
+
+					if(endSound != null)
+						Audio.playPositionedSound(endSound, new Vector3(x,y,z), 0.7f, 14f);
 				}
 			} else if (state == ElevatorState.RETURNING) {
 				moving = -moveSpeed * deltaBuffer * 0.1f;
@@ -123,6 +165,9 @@ public class TriggeredElevator extends Trigger {
 					moving += 0 - hasMoved;
 					hasMoved = 0;
 					state = ElevatorState.NONE;
+
+					if(returnEndSound != null)
+						Audio.playPositionedSound(returnEndSound, new Vector3(x,y,z), 0.7f, 14f);
 				}
 			} else if (state == ElevatorState.WAITING) {
 				waitTime += delta;
@@ -131,6 +176,9 @@ public class TriggeredElevator extends Trigger {
 					if (waitTime > endWaitTime) {
 						waitTime = 0;
 						state = ElevatorState.RETURNING;
+
+						if(returnStartSound != null)
+							Audio.playPositionedSound(returnStartSound, new Vector3(x,y,z), 0.7f, 14f);
 					}
 				}
 			}
@@ -282,5 +330,10 @@ public class TriggeredElevator extends Trigger {
 		if(chunk != null) {
 			chunk.needsRetessellation = true;
 		}
+	}
+
+	public void onDispose() {
+		super.onDispose();
+		if(movingAmbientSound != null) movingAmbientSound.onDispose();
 	}
 }

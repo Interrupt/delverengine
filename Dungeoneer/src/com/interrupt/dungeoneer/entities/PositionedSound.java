@@ -13,7 +13,7 @@ public class PositionedSound extends Entity {
 	protected transient Long soundInstance = null;
 	
 	@EditorProperty
-	protected float volume = 1f;
+	public float volume = 1f;
 	
 	@EditorProperty
 	public float radius = 12f;
