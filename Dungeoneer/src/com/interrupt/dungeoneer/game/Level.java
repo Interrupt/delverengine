@@ -2594,6 +2594,33 @@ public class Level {
 		return collisionCache;
 	}
 
+	public Array<Entity> getEntitiesEncroaching2d(float x, float y, float collisionX, float collisionY, Entity checking) {
+		collisionCache.clear();
+		if(checking == null) return collisionCache;
+
+		Array<Entity> toCheck = spatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY));
+		toCheck.addAll(staticSpatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY)));
+
+		for(int i = 0; i < toCheck.size; i++) {
+			Entity e = toCheck.get(i);
+			if(e != checking)
+			{
+				// simple AABB test
+				if(x > e.x - e.collision.x - collisionX) {
+					if(x < e.x + e.collision.x + collisionX) {
+						if(y > e.y - e.collision.y - collisionY) {
+							if(y < e.y + e.collision.y + collisionY) {
+								collisionCache.add(e);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return collisionCache;
+	}
+
 	// check if two entities are touching
 	public boolean entitiesAreEncroaching(Entity checking, Entity e) {
 		if (e != checking) {
