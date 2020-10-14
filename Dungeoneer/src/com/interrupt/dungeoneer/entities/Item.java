@@ -404,6 +404,11 @@ public class Item extends Entity {
 				yOffset = (float) Math.cos(2 * GlRenderer.time + (x + y) * Math.PI) * bobAmplitude;
 			}
 
+			if (drawable instanceof DrawableMesh) {
+				DrawableMesh dm = (DrawableMesh)drawable;
+				dm.rotZ = GlRenderer.time * (360f / 2f);// * (16f / 360f);
+			}
+
 			pickupHelper.x = x;
 			pickupHelper.y = y + yOffset;
 			pickupHelper.z = z;
