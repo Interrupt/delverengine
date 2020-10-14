@@ -3490,6 +3490,24 @@ public class EditorApplication implements ApplicationListener {
 		floodFillWallTexture(x - nextXOffset, y - nextYOffset, checkTex, checkAtlas, adjacent);
 	}
 
+	public void panSurfaceY(float amt) {
+		if(pickedSurface.isPicked) {
+			Tile t = level.getTileOrNull((int) pickedSurface.position.x, (int) pickedSurface.position.z);
+			if(t == null)
+				return;
+
+			boolean isUpperWall = pickedSurface.tileSurface == TileSurface.UpperWall;
+
+			if(isUpperWall)
+				t.offsetTopWallSurfaces(pickedSurface.edge, amt);
+			else
+				t.offsetBottomWallSurfaces(pickedSurface.edge, amt);
+
+			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
+			history.saveState(level);
+		}
+	}
+
 	public TextureRegion[] loadAtlas(String texture, int spritesHorizontal, boolean filter) {
 		Texture spriteTextures = Art.loadTexture(texture);
 

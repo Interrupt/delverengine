@@ -91,7 +91,7 @@ public class Pathfinding {
         }
 
         if(!t.blockMotion) {
-            boolean isFree = level.collidesWorldOrEntities(levelX - 0.5f, levelY - 0.5f, at.floorHeight, collision, checking);
+            boolean isFree = level.collidesWorldOrEntities(levelX, levelY, at.floorHeight, collision, checking);
             if(isFree) {
                 PathNode existing = GetNode(x, y);
 
@@ -251,7 +251,7 @@ public class Pathfinding {
             Entity e = level.static_entities.get(i);
             if(e.collision.x >= 0.4f || e.collision.y >= 0.4f) {
 
-                boolean isFree = level.collidesWorldOrEntities(e.x - 0.5f, e.y - 0.5f, e.z + e.collision.z, checking.collision, checking);
+                boolean isFree = level.collidesWorldOrEntities(e.x, e.y, e.z + e.collision.z, checking.collision, checking);
                 if(isFree) {
                     PathNode n = new PathNode(new Vector3(e.x, e.y, e.z + e.collision.z));
 

@@ -36,6 +36,7 @@ import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
+import com.interrupt.dungeoneer.tiles.TileMaterials;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.TileManager;
@@ -64,6 +65,8 @@ public class Level {
 	
 	public int width, height;
 	public Tile[] tiles;
+	public TileMaterials[] tileMaterials;
+
 	public Array<Entity> entities;
 	public Array<Entity> non_collidable_entities;
 	public Array<Entity> static_entities = new Array<Entity>();
@@ -232,6 +235,8 @@ public class Level {
 		this.height = height;
 		
 		tiles = new Tile[width * height];
+		tileMaterials = new TileMaterials[width * height];
+
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
@@ -381,6 +386,8 @@ public class Level {
 			width = generated.width;
 			height = generated.height;
 			tiles = generated.tiles;
+			tileMaterials = generated.tileMaterials;
+
 			editorMarkers = generated.editorMarkers;
 			genTheme = generated.genTheme;
 
@@ -506,6 +513,21 @@ public class Level {
 		}
 	}
 
+	// Called after a level was unserialized from bytes or a file
+	public void postLoad() {
+		// Make sure the tile materials array matches the size of the tiles, and is filled
+		if(tileMaterials == null || tileMaterials.length != tiles.length) {
+			tileMaterials = new TileMaterials[tiles.length];
+		}
+
+		for(int i = 0; i < tiles.length; i++) {
+			if (tiles[i] == null)
+				continue;
+
+			tiles[i].materials = tileMaterials[i];
+		}
+	}
+
 	public void load() {
 		load(Source.LEVEL_START);
 	}
@@ -534,6 +556,8 @@ public class Level {
 			width = openLevel.width;
 			height = openLevel.height;
 			tiles = openLevel.tiles;
+			tileMaterials = openLevel.tileMaterials;
+
 			editorMarkers = openLevel.editorMarkers;
 			genTheme = DungeonGenerator.GetGenData(theme);
 
@@ -595,6 +619,8 @@ public class Level {
 				width = generated.width;
 				height = generated.height;
 				tiles = generated.tiles;
+				tileMaterials = generated.tileMaterials;
+
 				editorMarkers = generated.editorMarkers;
 				genTheme = generated.genTheme;
 				
@@ -1541,9 +1567,10 @@ public class Level {
 		}
 		
 		// initialize tiles
-		for(Tile tile : tiles) {
-			if(tile != null)
-				tile.init(source);
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] != null) {
+				tiles[i].init(source);
+			}
 		}
 		
 		// init the drawables
@@ -2557,6 +2584,33 @@ public class Level {
 								if(checking.z > e.z - checking.collision.z && checking.z < e.z + e.collision.z) {
 									collisionCache.add(e);
 								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return collisionCache;
+	}
+
+	public Array<Entity> getEntitiesEncroaching2d(float x, float y, float collisionX, float collisionY, Entity checking) {
+		collisionCache.clear();
+		if(checking == null) return collisionCache;
+
+		Array<Entity> toCheck = spatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY));
+		toCheck.addAll(staticSpatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY)));
+
+		for(int i = 0; i < toCheck.size; i++) {
+			Entity e = toCheck.get(i);
+			if(e != checking)
+			{
+				// simple AABB test
+				if(x > e.x - e.collision.x - collisionX) {
+					if(x < e.x + e.collision.x + collisionX) {
+						if(y > e.y - e.collision.y - collisionY) {
+							if(y < e.y + e.collision.y + collisionY) {
+								collisionCache.add(e);
 							}
 						}
 					}
@@ -3606,6 +3660,7 @@ public class Level {
 	}
 	
 	private void preSaveCleanup(Array<Entity> entities) {
+		// Remove any entities that we should not save
 		Array<Entity> toDelete = new Array<Entity>();
 		if(entities != null) {
 			for(Entity e : entities) {
@@ -3615,6 +3670,14 @@ public class Level {
 		}
 		for(int i = 0; i < toDelete.size; i++) {
 			entities.removeValue(toDelete.get(i), true);
+		}
+
+		// Make sure tile materials persist
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] == null)
+				tileMaterials[i] = null;
+			else
+				tileMaterials[i] = tiles[i].materials;
 		}
 	}
 	

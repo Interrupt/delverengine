@@ -22,6 +22,7 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.serializers.*;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.dungeoneer.tiles.TileMaterials;
 
 import java.io.*;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ public class LevelSerializer {
 		Input input = new Input(file.read());
 		Level level = kryo.readObject(input, Level.class);
 		input.close();
+		level.postLoad();
 		return level;
 	}
 	
@@ -68,6 +70,7 @@ public class LevelSerializer {
 			Input input = new Input(new FileInputStream(file));
 			Level level = kryo.readObject(input, Level.class);
 			input.close();
+			level.postLoad();
 			return level;
 		}
 		catch (Exception ex) {
@@ -79,6 +82,7 @@ public class LevelSerializer {
 		Input input = new Input(bytes);
 		Level level = kryo.readObject(input, Level.class);
 		input.close();
+		level.postLoad();
 		return level;
 	}
 
@@ -86,6 +90,7 @@ public class LevelSerializer {
 		Input input = new Input(file.read());
 		OverworldLevel level = kryo.readObject(input, OverworldLevel.class);
 		input.close();
+		level.postLoad();
 		return level;
 	}
 	
