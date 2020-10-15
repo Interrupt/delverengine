@@ -53,16 +53,19 @@ public class SectionDefinition {
 
     /** Picks a level template tier. */
     private int pickLevelTemplateTier() {
-        if (levelTemplateTiers == null || levelTemplateTiers.size <= 0) {
-            return 0;
+        int tier = -1;
+
+        if (levelTemplateTiers != null && levelTemplateTiers.size > 0) {
+            try {
+                tier = levelTemplateTiers.get(randomGenerator.nextInt(levelTemplateTiers.size));
+            } catch (IndexOutOfBoundsException exception) {
+                tier = -1;
+            }
         }
 
-        int tier = 0;
-
-        try {
-            tier = levelTemplateTiers.get(randomGenerator.nextInt(levelTemplateTiers.size));
-        } catch (IndexOutOfBoundsException exception) {
-            tier = 0;
+        // When no tiers given fallback to an even distribution.
+        if (tier == -1) {
+            tier = randomGenerator.nextInt(levelTemplates.size);
         }
 
         return tier;
