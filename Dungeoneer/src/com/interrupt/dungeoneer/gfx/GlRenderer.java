@@ -2746,6 +2746,8 @@ public class GlRenderer {
 						if(!c.Empty()) {
 							chunks.add(c);
 							c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
+							c.tesselators.water.addCollisionTriangles(triangleSpatialHash);
+							c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
 						}
 					}
 				}
@@ -2761,6 +2763,8 @@ public class GlRenderer {
 					triangleSpatialHash.dropWorldChunk(c);
 					c.Tesselate(loadedLevel, this);
 					c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
+					c.tesselators.water.addCollisionTriangles(triangleSpatialHash);
+					c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
 				}
 			}
 		}

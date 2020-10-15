@@ -3102,7 +3102,11 @@ public class EditorApplication implements ApplicationListener {
 
 			// Which surface should we paint?
 			if(pickedSurface.tileSurface == TileSurface.Floor) {
-				d.setPosition((int)pickedSurface.position.x + 0.5f, t.floorHeight, (int)pickedSurface.position.z + 0.5f);
+				float floorHeightOffset = 0f;
+				if(t.data.isWater)
+					floorHeightOffset = 0.08f;
+
+				d.setPosition((int)pickedSurface.position.x + 0.5f, t.floorHeight + floorHeightOffset, (int)pickedSurface.position.z + 0.5f);
 				d.setRotation(Vector3.Y, Vector3.Y);
 
 				d.setTopLeftOffset(0, 0, t.slopeNE);
