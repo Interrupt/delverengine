@@ -86,7 +86,7 @@ public class Collidor {
 	 * @param triangles The triangles
 	 * @param intersection The nearest intersection point (optional)
 	 * @return Whether the ray and the triangles intersect. */
-	public static boolean intersectRayTriangles(Ray ray, Array<Triangle> triangles, Vector3 intersection, Vector3 normal) {
+	public static boolean intersectRayTriangles(Ray ray, Array<CollisionTriangle> triangles, Vector3 intersection, Vector3 normal) {
 		float min_dist = Float.MAX_VALUE;
 		boolean hit = false;
 
@@ -134,7 +134,7 @@ public class Collidor {
 		}
 	}
 
-	public static boolean intersectRayForwardFacingTriangles(Ray ray, Camera camera, Array<Triangle> triangles, Vector3 intersection, Vector3 normal) {
+	public static boolean intersectRayForwardFacingTriangles(Ray ray, Camera camera, Array<CollisionTriangle> triangles, Vector3 intersection, Vector3 normal) {
 		float min_dist = Float.MAX_VALUE;
 		boolean hit = false;
 

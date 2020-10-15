@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.entities.Item.ItemType;
@@ -2576,12 +2577,12 @@ public class GlRenderer {
 			if(atlas != null && atlas.texture != null) {
 				if(!e.isStatic) {
 					if(editorIsRendering || DecalManager.addDecal(d))
-						d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum)), loadedLevel, atlas.getClippedSprite(e.tex));
+						d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum), true), loadedLevel, atlas.getClippedSprite(e.tex));
 					else
 						e.isActive = false;
 				}
 				else {
-					d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum)), loadedLevel, atlas.getClippedSprite(e.tex));
+					d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum), true), loadedLevel, atlas.getClippedSprite(e.tex));
 				}
 			}
 		}
@@ -2746,8 +2747,8 @@ public class GlRenderer {
 						if(!c.Empty()) {
 							chunks.add(c);
 							c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
-							c.tesselators.water.addCollisionTriangles(triangleSpatialHash);
-							c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
+							c.tesselators.water.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
+							c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
 						}
 					}
 				}
@@ -2763,8 +2764,8 @@ public class GlRenderer {
 					triangleSpatialHash.dropWorldChunk(c);
 					c.Tesselate(loadedLevel, this);
 					c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
-					c.tesselators.water.addCollisionTriangles(triangleSpatialHash);
-					c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash);
+					c.tesselators.water.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
+					c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
 				}
 			}
 		}
@@ -3145,26 +3146,29 @@ public class GlRenderer {
 		return x;
 	}
 
-	public Array<Triangle> GetCollisionTrianglesNear(Entity e) {
+	public Array<CollisionTriangle> GetCollisionTrianglesNear(Entity e) {
 		return triangleSpatialHash.getTrianglesAt(e.x, e.y, 2f);
 	}
 
-	public Array<Triangle> GetCollisionTrianglesIn(Frustum frustum) {
+	public Array<CollisionTriangle> GetCollisionTrianglesIn(Frustum frustum) {
 		return triangleSpatialHash.getTrianglesIn(frustum);
 	}
 
-	public Array<Triangle> GetCollisionTrianglesAlong(Ray ray, float length) {
+	public Array<CollisionTriangle> GetCollisionTrianglesAlong(Ray ray, float length) {
 		return triangleSpatialHash.getTrianglesAlong(ray, length);
 	}
 
-	public Array<Triangle> GetCollisionTrianglesAt(float x, float y, float colSize) {
+	public Array<CollisionTriangle> GetCollisionTrianglesAt(float x, float y, float colSize) {
 		return triangleSpatialHash.getTrianglesAt(x, y, colSize);
 	}
 
-	public Array<Vector3> TriangleArrayToVectorList(Array<Triangle> triangles) {
+	public Array<Vector3> TriangleArrayToVectorList(Array<CollisionTriangle> triangles, boolean excludeWaterTriangles) {
 		spatialWorkerList.clear();
 
-		for(Triangle t : triangles) {
+		for(CollisionTriangle t : triangles) {
+			if(excludeWaterTriangles && t.collisionType == CollisionTriangle.TriangleCollisionType.WATER)
+				continue;
+
 			spatialWorkerList.add(t.v1);
 			spatialWorkerList.add(t.v2);
 			spatialWorkerList.add(t.v3);
@@ -3411,7 +3415,7 @@ public class GlRenderer {
 
 		if(collisionTriangles != null) {
 			for (int i = 0; i < collisionTriangles.size(); i += 3) {
-				Triangle triangle = new Triangle(collisionTriangles.get(i + 2), collisionTriangles.get(i + 1), collisionTriangles.get(i));
+				CollisionTriangle triangle = new CollisionTriangle(collisionTriangles.get(i + 2), collisionTriangles.get(i + 1), collisionTriangles.get(i));
 				synchronized (triangleSpatialHash) {
 					triangleSpatialHash.AddTriangle(triangle);
 				}

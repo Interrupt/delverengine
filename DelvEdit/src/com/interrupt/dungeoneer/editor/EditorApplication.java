@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.editor.file.EditorFile;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
@@ -3745,7 +3746,7 @@ public class EditorApplication implements ApplicationListener {
         return moveMode;
     }
 
-    public Array<Triangle> GetCollisionTriangles() {
+    public Array<CollisionTriangle> GetCollisionTriangles() {
         return GlRenderer.triangleSpatialHash.getAllTriangles();
     }
 
