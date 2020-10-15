@@ -10,12 +10,15 @@ import com.interrupt.dungeoneer.interfaces.Directional;
 public class PhysicsForceArea extends Area implements Directional {
     public PhysicsForceArea() { hidden = true; spriteAtlas = "editor"; tex = 11; isStatic = false; isDynamic = true; collision.set(0.25f, 0.25f, 1f); }
 
+    /** Amount of impulse force to apply to entities. */
     @EditorProperty
     public float forceAmount = 0.01f;
 
+    /** Whether the force should be applied instantly, or incrementally. */
     @EditorProperty
     public boolean instantForce = false;
 
+    /** Apply the physics force? If disabled, a trigger can enable it. */
     @EditorProperty
     public boolean enabled = true;
 
