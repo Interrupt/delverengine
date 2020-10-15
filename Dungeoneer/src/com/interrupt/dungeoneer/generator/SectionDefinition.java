@@ -1,5 +1,7 @@
 package com.interrupt.dungeoneer.generator;
 
+import java.util.Random;
+
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
@@ -23,13 +25,22 @@ public class SectionDefinition {
     /** Array of possible level templates to use when making floors. */
     public Array<Level> levelTemplates = null;
 
+    /** Array of level template tiers spawn probabilities. Use indices of the `levelTemplates` array. */
+    public Array<Integer> levelTemplateTiers = null;
+
+    private Random randomGenerator = new Random();
+
     /** Returns an array of level templates, ordered by floors, transition level last. */
     public Array<Level> buildLevels() {
         Array<Level> levels = new Array<>();
+        Level levelTemplate;
 
         if(hasFloors() && hasLevelTemplates()) {
             for(int floor = 0; floor < floors; floor++) {
-                levels.add(pickLevelTemplate(floor));
+                levelTemplate = pickLevelTemplate(floor);
+                if (levelTemplate != null) {
+                    levels.add(levelTemplate);
+                }
             }
         }
 
@@ -40,11 +51,35 @@ public class SectionDefinition {
         return levels;
     }
 
+    /** Picks a level template tier. */
+    private int pickLevelTemplateTier() {
+        if (levelTemplateTiers == null || levelTemplateTiers.size <= 0) {
+            return 0;
+        }
+
+        int tier = 0;
+
+        try {
+            tier = levelTemplateTiers.get(randomGenerator.nextInt(levelTemplateTiers.size));
+        } catch (IndexOutOfBoundsException exception) {
+            tier = 0;
+        }
+
+        return tier;
+    }
+
     /** Picks a level template. */
     private Level pickLevelTemplate(int floor) {
-        Level levelTemplate = levelTemplates.first();
-        Level level = copyLevelDefinition(levelTemplate);
+        int tier = pickLevelTemplateTier();
+        Level levelTemplate;
 
+        try {
+            levelTemplate = levelTemplates.get(tier);
+        } catch (IndexOutOfBoundsException exception) {
+            return null;
+        }
+
+        Level level = copyLevelDefinition(levelTemplate);
         level.levelName = getLevelName(level, floor);
         level.dungeonLevel = getDungeonLevel(floor);
 
