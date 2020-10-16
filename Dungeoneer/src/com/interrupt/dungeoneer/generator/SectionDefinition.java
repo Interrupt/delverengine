@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.generator;
 
-import java.util.Random;
-
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
@@ -27,8 +25,6 @@ public class SectionDefinition {
 
     /** Array of level template tiers spawn probabilities. Use indices of the `levelTemplates` array. */
     public Array<Integer> levelTemplateTiers = null;
-
-    private Random randomGenerator = new Random();
 
     /** Returns an array of level templates, ordered by floors, transition level last. */
     public Array<Level> buildLevels() {
@@ -57,15 +53,10 @@ public class SectionDefinition {
 
         if (levelTemplateTiers != null && levelTemplateTiers.size > 0) {
             try {
-                tier = levelTemplateTiers.get(randomGenerator.nextInt(levelTemplateTiers.size));
+                tier = levelTemplateTiers.random();
             } catch (IndexOutOfBoundsException exception) {
                 tier = -1;
             }
-        }
-
-        // When no tiers given fallback to an even distribution.
-        if (tier == -1) {
-            tier = randomGenerator.nextInt(levelTemplates.size);
         }
 
         return tier;
@@ -77,7 +68,7 @@ public class SectionDefinition {
         Level levelTemplate;
 
         try {
-            levelTemplate = levelTemplates.get(tier);
+            levelTemplate = (tier == -1) ? levelTemplates.random() : levelTemplates.get(tier);
         } catch (IndexOutOfBoundsException exception) {
             return null;
         }
