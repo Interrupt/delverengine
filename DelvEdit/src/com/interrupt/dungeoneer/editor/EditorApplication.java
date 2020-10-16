@@ -84,8 +84,6 @@ public class EditorApplication implements ApplicationListener {
 	public GlRenderer renderer = null;
 	public EditorFile file = null;
 
-    private EditorClipboard clipboard = null;
-
 	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
 	public enum DragMode { NONE, XY, X, Y, Z }
@@ -2862,98 +2860,6 @@ public class EditorApplication implements ApplicationListener {
             markWorldAsDirty(info.x, info.y, 1);
 		}
 	}
-
-    public Entity copyEntity(Entity entity) {
-        return Game.fromJson(entity.getClass(), Game.toJson(entity));
-    }
-
-    public void copy() {
-        clipboard = new EditorClipboard();
-
-        // Copy entities
-        if(Editor.selection.picked != null) {
-            Entity picked = Editor.selection.picked;
-            for (Entity e : Editor.selection.all) {
-                Entity copy = copyEntity(e);
-                copy.x -= (int) picked.x + 1;
-                copy.y -= (int) picked.y + 1;
-                copy.z -= - level.getTile((int)picked.x, (int)picked.y).getFloorHeight(0.5f, 0.5f);
-
-                clipboard.entities.add(copy);
-            }
-        }
-
-        // Copy tiles
-        if(Editor.selection.picked == null) {
-            for (TileSelectionInfo info : Editor.selection.tiles) {
-                Tile t = info.tile;
-                if (t != null) {
-                    info.tile = Tile.copy(t);
-                }
-
-                // Calculate offset
-                info.x -= Editor.selection.tiles.x;
-                info.y -= Editor.selection.tiles.y;
-
-                clipboard.tiles.add(info);
-            }
-        }
-
-        // Serialize to system clipboard.
-        Clipboard systemClipboard = Gdx.app.getClipboard();
-        String contents = new Json().toJson(clipboard);
-        systemClipboard.setContents(contents);
-    }
-
-    public void paste() {
-        // Deserialize from system clipboard.
-        try {
-            Clipboard systemClipboard = Gdx.app.getClipboard();
-            Json json = new Json();
-            clipboard = json.fromJson(EditorClipboard.class, systemClipboard.getContents());
-        }
-        catch (Exception e) {
-            Gdx.app.log("Editor", e.getMessage());
-        }
-
-        if (clipboard == null) {
-            return;
-        }
-
-        int cursorTileX = Editor.selection.tiles.x;
-        int cursorTileY = Editor.selection.tiles.y;
-
-        // Paste tiles
-        for (TileSelectionInfo info : clipboard.tiles) {
-            Tile t = info.tile;
-            if (t != null) {
-                t = Tile.copy(t);
-            }
-
-            int offsetX = info.x + cursorTileX;
-            int offsetY = info.y + cursorTileY;
-
-            level.setTile(offsetX, offsetY, t);
-            markWorldAsDirty(offsetX, offsetY, 1);
-        }
-
-        // Paste entities
-        for(Entity e : clipboard.entities) {
-            Entity copy = copyEntity(e);
-            copy.x += cursorTileX + 1;
-            copy.y += cursorTileY + 1;
-
-            Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
-            if(copyAt != null) {
-                copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
-            }
-
-            addEntity(copy);
-        }
-
-        // Save undo history
-        history.saveState(level);
-    }
 
 	public void rotateAngle() {
         if(Editor.selection.picked != null) return;
