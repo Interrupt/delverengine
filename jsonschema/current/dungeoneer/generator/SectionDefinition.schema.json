@@ -39,11 +39,11 @@
                 "description": "Array of possible level templates to use when making floors."
             }
         },
-        "levelTemplateTiers": {
+        "levelTemplateDistribution": {
             "type": "array",
             "items": {
                 "type": "integer",
-                "description": "Array of level template tiers spawn probabilities. Use indices of the `levelTemplates` array."
+                "description": "Array of level template indices corresponding to spawn probabilities. Use indices of the `levelTemplates` array."
             }
         }
     }

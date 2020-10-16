@@ -23,8 +23,8 @@ public class SectionDefinition {
     /** Array of possible level templates to use when making floors. */
     public Array<Level> levelTemplates = null;
 
-    /** Array of level template tiers spawn probabilities. Use indices of the `levelTemplates` array. */
-    public Array<Integer> levelTemplateTiers = null;
+    /** Array of level template indices corresponding to spawn probabilities. Use indices of the `levelTemplates` array. */
+    public Array<Integer> levelTemplateDistribution = null;
 
     /** Returns an array of level templates, ordered by floors, transition level last. */
     public Array<Level> buildLevels() {
@@ -47,28 +47,28 @@ public class SectionDefinition {
         return levels;
     }
 
-    /** Picks a level template tier. */
-    private int pickLevelTemplateTier() {
-        int tier = -1;
+    /** Picks a level template index. */
+    private int pickLevelTemplateIndex() {
+        int index = -1;
 
-        if (levelTemplateTiers != null && levelTemplateTiers.size > 0) {
+        if (hasLevelTemplateDistribution()) {
             try {
-                tier = levelTemplateTiers.random();
+                index = levelTemplateDistribution.random();
             } catch (IndexOutOfBoundsException exception) {
-                tier = -1;
+                index = -1;
             }
         }
 
-        return tier;
+        return index;
     }
 
     /** Picks a level template. */
     private Level pickLevelTemplate(int floor) {
-        int tier = pickLevelTemplateTier();
+        int index = pickLevelTemplateIndex();
         Level levelTemplate;
 
         try {
-            levelTemplate = (tier == -1) ? levelTemplates.random() : levelTemplates.get(tier);
+            levelTemplate = (index == -1) ? levelTemplates.random() : levelTemplates.get(index);
         } catch (IndexOutOfBoundsException exception) {
             return null;
         }
@@ -109,6 +109,11 @@ public class SectionDefinition {
     /** Does the `SectionDefinition` have at least one level template? */
     private boolean hasLevelTemplates() {
         return levelTemplates != null && levelTemplates.size > 0;
+    }
+
+    /** Does the `SectionDefinition` have at least one index set? */
+    private boolean hasLevelTemplateDistribution() {
+        return levelTemplateDistribution != null && levelTemplateDistribution.size > 0;
     }
 
     /** Does the `SectionDefinition` have at least one floor? */
