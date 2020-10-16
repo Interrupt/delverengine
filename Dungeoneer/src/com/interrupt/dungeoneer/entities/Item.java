@@ -404,7 +404,7 @@ public class Item extends Entity {
 				yOffset = (float) Math.cos(2 * GlRenderer.time + (x + y) * Math.PI) * bobAmplitude;
 			}
 
-			if (drawable instanceof DrawableMesh) {
+			if (floating && drawable instanceof DrawableMesh) {
 				DrawableMesh dm = (DrawableMesh)drawable;
 				dm.rotZ = GlRenderer.time * (360f / 2f);
 			}
