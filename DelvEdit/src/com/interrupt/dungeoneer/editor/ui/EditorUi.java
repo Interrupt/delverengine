@@ -346,9 +346,9 @@ public class EditorUi {
 
         menuBar.addItem(
             new MenuItem("Level", smallSkin)
-                        .addItem(new MenuItem("Test Level From Camera", smallSkin, actions.playFromCameraAction)
+                        .addItem(new MenuItem("Play From Camera", smallSkin, actions.playFromCameraAction)
                                 .setAccelerator(new MenuAccelerator(Keys.P, false, false)))
-                        .addItem(new MenuItem("Test Level From Start", smallSkin, actions.playFromStartAction)
+                        .addItem(new MenuItem("Play From Start", smallSkin, actions.playFromStartAction)
                                 .setAccelerator(new MenuAccelerator(Keys.P, false, true)))
                 .addSeparator()
                 .addItem(new MenuItem("Rotate Level", smallSkin)
