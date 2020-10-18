@@ -12,6 +12,7 @@ import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.FilePicker;
 import com.interrupt.dungeoneer.editor.ui.NewLevelDialog;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
+import com.interrupt.dungeoneer.editor.ui.WarningDialog;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
@@ -269,85 +270,78 @@ public class EditorFile {
         Editor.app.editorInput.resetKeys();
     }
 
-    private void openInternal(FileHandle fileHandle) {
-        try {
-            EditorFile editorFile = new EditorFile(fileHandle);
+    private void openInternal(FileHandle file) {
+        file = Gdx.files.getFileHandle(file.file().getAbsolutePath(), Files.FileType.Absolute);
+        String name = file.name();
 
-            String fileName = editorFile.name();
-            String dir = editorFile.directory();
+        if (file.exists()) {
+            Level level;
 
-            FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
-            if(levelFileHandle.exists()) {
-                Level level;
-
-                if(fileName.endsWith(".png")) {
-                    level = loadPngFile(levelFileHandle, dir);
-                }
-                else if(fileName.endsWith(".bin")) {
-                    level = loadBinFile(levelFileHandle);
-                }
-                else if(fileName.endsWith(".dat")) {
-                    level = loadDatFile(levelFileHandle);
-                }
-                else {
-                    Gdx.app.log("EditorFile", "Unkown extension. Cannot load '" + fileName + "'.");
+            try {
+                if (name.endsWith(".png")) {
+                    level = loadPngFile(file);
+                } else if (name.endsWith(".bin")) {
+                    level = loadBinFile(file);
+                } else if (name.endsWith(".dat")) {
+                    level = loadDatFile(file);
+                } else {
+                    showWarningDialog("Unkown extension. Cannot load '" + name + "'.");
                     return;
                 }
-
-                Editor.app.file = editorFile;
-                Editor.app.updateTitle();
-
-                Editor.app.level = level;
-                Editor.app.refresh();
-                Editor.app.cameraController.setPosition(level.width / 2f, 4.5f, level.height / 2f);
-
-                Editor.app.history = new EditorHistory();
-                Editor.app.history.saveState(Editor.app.level);
-                Editor.app.file.markClean();
-                
-                Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
-                Editor.options.recentlyOpenedFiles.insert(0, levelFileHandle.path());
-                
-                Editor.app.viewSelected();
-            }
-            else {
-                Gdx.app.log("EditorFile", "File does not exist. Cannot load '" + fileName + "'.");
+            } catch (Exception exception) {
+                showWarningDialog(exception.getMessage() + " Cannot load '" + file.name() + "'.");
                 return;
             }
-        }
-        catch(Exception exception) {
-            Gdx.app.error("EditorFile", exception.getMessage() + " Cannot load '" + fileHandle.name() + "'.");
+
+            Editor.app.file = new EditorFile(file);
+
+            Editor.app.level = level;
+            Editor.app.refresh();
+            Editor.app.cameraController.setPosition(level.width / 2f, 4.5f, level.height / 2f);
+
+            Editor.app.history = new EditorHistory();
+            Editor.app.history.saveState(Editor.app.level);
+            Editor.app.file.markClean();
+
+            Editor.options.addRecentlyOpenedFile(file.path());
+
+            Editor.app.viewSelected();
+        } else {
+            showWarningDialog("File does not exist. Cannot load '" + name + "'.");
             return;
         }
     }
 
     /** Loads a `.png` level file. */
-    private Level loadPngFile(FileHandle fileHandle, String directory) {
-        String heightFile = directory + fileName.replace(".png", "-height.png");
-        if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
-            heightFile = directory + fileName.replace(".png", "_height.png");
-            if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+    private Level loadPngFile(FileHandle file) {
+        String name = file.name();
+        String directory = file.file().getParent();
+
+        String heightFile = directory + name.replace(".png", "-height.png");
+        if (!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+            heightFile = directory + name.replace(".png", "_height.png");
+            if (!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
                 heightFile = null;
             }
         }
 
         Level level = new Level();
-        level.loadForEditor(directory + fileName, heightFile);
+        level.loadForEditor(directory + name, heightFile);
 
         return level;
     }
 
     /** Loads a `.bin` level file. */
-    private Level loadBinFile(FileHandle fileHandle) {
-        Level level = KryoSerializer.loadLevel(fileHandle);
+    private Level loadBinFile(FileHandle file) {
+        Level level = KryoSerializer.loadLevel(file);
         level.init(Level.Source.EDITOR);
 
         return level;
     }
 
     /** Loads a `.dat` level file. */
-    private Level loadDatFile(FileHandle fileHandle) {
-        Level level = Game.fromJson(Level.class, fileHandle);
+    private Level loadDatFile(FileHandle file) {
+        Level level = Game.fromJson(Level.class, file);
         level.init(Level.Source.EDITOR);
 
         return level;
@@ -426,5 +420,12 @@ public class EditorFile {
 
     public long getHoursSinceLastSave() {
         return TimeUnit.HOURS.convert(getMillisSinceLastSave(), TimeUnit.MILLISECONDS);
+    }
+
+    private void showWarningDialog(String warning) {
+        Gdx.app.log("EditorFile", warning);
+
+        WarningDialog warningDialog = new WarningDialog(EditorUi.smallSkin, warning);
+        warningDialog.show(Editor.app.ui.getStage());
     }
 }
