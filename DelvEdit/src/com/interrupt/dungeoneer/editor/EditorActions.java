@@ -14,7 +14,8 @@ public class EditorActions {
     public ActionListener exitAction;
     public ActionListener rotateLeftAction;
     public ActionListener rotateRightAction;
-    public ActionListener playAction;
+    public ActionListener playFromCameraAction;
+    public ActionListener playFromStartAction;
     public ActionListener carveAction;
     public ActionListener paintAction;
     public ActionListener deleteAction;
@@ -108,9 +109,15 @@ public class EditorActions {
             }
         };
 
-        playAction = new ActionListener() {
+        playFromCameraAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                Editor.app.testLevel();
+                Editor.app.testLevel(true);
+            }
+        };
+
+        playFromStartAction = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                Editor.app.testLevel(false);
             }
         };
 

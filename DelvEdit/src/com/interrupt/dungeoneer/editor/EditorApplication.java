@@ -2117,7 +2117,9 @@ public class EditorApplication implements ApplicationListener {
         controlPoints.clear();
     }
 
-	public void testLevel() {
+	public void testLevel(boolean useCameraPosition) {
+		editorInput.resetKeys();
+
 		gameApp = new GameApplication();
 		GameApplication.editorRunning = true;
 
@@ -2128,16 +2130,35 @@ public class EditorApplication implements ApplicationListener {
 		previewLevel.genTheme = DungeonGenerator.GetGenData(previewLevel.theme);
 
 		gameApp.createFromEditor(previewLevel);
-
-		Vector3 cameraPosition = cameraController.getPosition();
-		Vector2 cameraRotation = cameraController.getRotation();
-
-		Game.instance.player.x = cameraPosition.x;
-		Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
-		Game.instance.player.z = cameraPosition.z;
-		Game.instance.player.rot = cameraRotation.x;
-		Game.instance.player.yrot = -cameraRotation.y;
 		Game.isDebugMode = true;
+
+		EditorMarker startMarker = null;
+		if (!useCameraPosition) {
+			for (EditorMarker marker : level.editorMarkers) {
+				if (marker.type == Markers.playerStart || marker.type == Markers.stairUp) {
+					startMarker = marker;
+					break;
+				}
+			}
+		}
+
+		if (!useCameraPosition && startMarker != null) {
+			Game.instance.player.x = startMarker.x + 0.5f;
+			Game.instance.player.y = startMarker.y + 0.5f;
+			Game.instance.player.z = previewLevel.getTile((int) Game.instance.player.x, (int) Game.instance.player.y)
+					.getFloorHeight() + 0.5f;
+
+			Game.instance.player.rot = (float) Math.toRadians(-(startMarker.rot + 180f));
+		} else {
+			Vector3 cameraPosition = cameraController.getPosition();
+			Vector2 cameraRotation = cameraController.getRotation();
+	
+			Game.instance.player.x = cameraPosition.x;
+			Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
+			Game.instance.player.z = cameraPosition.z;
+			Game.instance.player.rot = cameraRotation.x;
+			Game.instance.player.yrot = -cameraRotation.y;
+		}
 	}
 
 	public void initTextures() {
