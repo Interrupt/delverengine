@@ -1,14 +1,13 @@
 package com.interrupt.dungeoneer.editor;
 
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Group;
 import com.interrupt.dungeoneer.entities.Prefab;
 import com.interrupt.dungeoneer.game.Game;
+
+import javax.swing.*;
 
 public class JsonViewer extends JPanel {
 	public JsonViewer(final Entity entity) {
@@ -39,7 +38,7 @@ public class JsonViewer extends JPanel {
 		String jsonText = Game.toJson(copy, Entity.class);
 		Json json = new Json();
 		json.setOutputType(JsonWriter.OutputType.json);
-		jsonText = json.prettyPrint(jsonText);
+		jsonText = json.prettyPrint(jsonText, 40);
 		textArea.setText(jsonText);
 		
 		add(textArea);

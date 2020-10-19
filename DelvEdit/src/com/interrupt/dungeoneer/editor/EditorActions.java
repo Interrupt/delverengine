@@ -278,14 +278,14 @@ public class EditorActions {
         copyAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.copy();
+                EditorClipboard.copy();
             }
         };
 
         pasteAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.paste();
+                EditorClipboard.paste();
             }
         };
 
