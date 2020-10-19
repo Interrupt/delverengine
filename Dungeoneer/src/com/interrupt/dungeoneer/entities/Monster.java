@@ -1322,6 +1322,16 @@ public class Monster extends Actor implements Directional {
 			Audio.preload(idleSound);
 			Audio.preload(alertSound);
 		}*/
+
+		// Let the lightmap color fade
+		if(drawable instanceof DrawableSprite)
+		{
+			DrawableSprite s = (DrawableSprite)drawable;
+			if(s.colorLastFrame == null) {
+				Color lightmap = GameManager.renderer.GetLightmapAt(level, x + drawable.drawOffset.x, z, y + drawable.drawOffset.y);
+				s.colorLastFrame = new Color(lightmap.r, lightmap.g, lightmap.b, 1f);
+			}
+		}
 	}
 	
 	public void stun(float stunTime) {
@@ -1342,14 +1352,6 @@ public class Monster extends Actor implements Directional {
 		super.updateDrawable();
 		if(drawable != null) {
 			drawable.drawOffset.z = getStepUpValue() + yOffset;
-		}
-
-		// Let the lightmap color fade
-		if(drawable instanceof DrawableSprite)
-		{
-			DrawableSprite s = (DrawableSprite)drawable;
-			if(s.colorLastFrame == null)
-				s.colorLastFrame = new Color(1f, 1f, 1f, 1f);
 		}
 	}
 
