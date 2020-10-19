@@ -41,6 +41,7 @@
             "oneOf": [
                 {"$ref":  "dungeoneer/entities/areas/Area.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/FogArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/PhysicsForceArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/SkyboxArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/SpawnBlockerArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/StatusEffectArea.schema.json"},
