@@ -275,7 +275,7 @@ public class Monster extends Actor implements Directional {
 		// for ranged monsters
 		maxMp = 10;
 		mp = maxMp;
-		
+
 		stepHeight = 0.4f;
 		
 		attacktimer = 30;
@@ -285,6 +285,10 @@ public class Monster extends Actor implements Directional {
 		collision.x = 0.3f;
 		collision.y = 0.3f;
 		collision.z = 0.6f;
+
+		artType = ArtType.entity;
+		isSolid = true;
+		bounces = false;
 
 		shadowType = ShadowType.BLOB;
 	}
@@ -314,19 +318,6 @@ public class Monster extends Actor implements Directional {
 	
 	public void Init(Level level, int playerLevel)
 	{
-		artType = ArtType.entity;
-		origtex = tex;
-		isSolid = true;
-
-		bounces = false;
-
-		tickcount = Game.rand.nextInt(1000);
-		
-		targetx = x;
-		targety = y;
-		
-		hp = maxHp;
-
 		// If the player is scaling faster than the level difficulty, bump up a little bit
 		int levelDifficulty = (int)(level.dungeonLevel * 1.5f);
 		int calcedDifficulty = levelDifficulty;
@@ -1303,7 +1294,20 @@ public class Monster extends Actor implements Directional {
 	
 	@Override
 	public void init(Level level, Source source) {
+		if(source != Source.LEVEL_LOAD) {
+			// Set some default properties if being first created
+			origtex = tex;
+
+			tickcount = Game.rand.nextInt(1000);
+
+			targetx = x;
+			targety = y;
+
+			hp = maxHp;
+		}
+
 		super.init(level, source);
+
 		// add some base animations if none were defined
 		if(walkAnimation == null) walkAnimation = new SpriteAnimation(tex, tex + 1, 32f, null);
 		if(attackAnimation == null && hasAttackAnim) {

@@ -68,6 +68,7 @@ import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 import com.interrupt.helpers.FloatTuple;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
+import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
 import com.noise.PerlinNoise;
 
@@ -230,6 +231,7 @@ public class EditorApplication implements ApplicationListener {
     protected HashMap<Entity.ArtType, TextureRegion[]> spriteAtlases = new HashMap<Entity.ArtType, TextureRegion[]>();
 
     protected EntityManager entityManager;
+    protected MonsterManager monsterManager;
 
 	Mesh cubeMesh;
     Mesh gridMesh;
@@ -402,6 +404,15 @@ public class EditorApplication implements ApplicationListener {
 		} catch (Exception ex) {
 			// whoops
 			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
+		}
+
+		// load the monster templates
+		try {
+			monsterManager = Game.getModManager().loadMonsterManager(Game.gameData.monsterDataFiles);
+			MonsterManager.setSingleton(monsterManager);
+		} catch (Exception ex) {
+			// whoops
+			Gdx.app.log("Editor", "Error loading monsters.dat: " + ex.getMessage());
 		}
 
         Gdx.input.setCursorCatched(false);
