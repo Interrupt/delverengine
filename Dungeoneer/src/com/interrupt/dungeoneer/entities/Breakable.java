@@ -85,6 +85,9 @@ public class Breakable extends Model {
 	@Override
 	public void push(Player player, Level level, float delta, CollisionAxis collisionAxis)
 	{
+		if(!canBePushed)
+			return;
+
 		float massModPrimary = 1.0f - (mass * 0.1f);
 		float massModSecondary = 1.0f - (mass * 0.05f);
 
