@@ -570,18 +570,40 @@
             "endTexOffset": 1,
             "frames": [
                 {
-                    "transform": { "x": 0.12, "y": -0.250, "z": 0.4000 },
+                    "transform": { "x": 0.12, "y": -0.20, "z": 0.4000 },
                     "rotation": { "x": 0.0, "y": 80.0, "z": 0.0 },
                     "length": 0.0
                 },
                 {
-                    "transform": { "x": 0.12, "y": -0.1200, "z": -0.150 },
+                    "transform": { "x": 0.12, "y": -0.01200, "z": -0.150 },
                     "rotation": { "x": 0.0, "y": 80.0, "z": 0.0 },
                     "length": 1.2
                 },
                 {
-                    "transform": { "x": 0.12, "y": -0.250, "z": 0.4000 },
+                    "transform": { "x": 0.12, "y": -0.20, "z": 0.4000 },
                     "rotation": { "x": 0.0, "y": 80.0, "z": 0.0 },
+                    "length": 0
+                }
+            ]
+        },
+        "gunFire3D": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "actionTime": 10,
+            "endTexOffset": 1,
+            "frames": [
+                {
+                    "transform": { "x": -0.1, "y": -0.3, "z": 0.30 },
+                    "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "length": 0.0
+                },
+                {
+                    "transform": { "x": -0.1, "y": -0.3, "z": 0.20 },
+                    "rotation": { "x": 5.0, "y": 0.0, "z": 0.0 },
+                    "length": 1.2
+                },
+                {
+                    "transform": { "x": -0.1, "y": -0.3, "z": 0.30 },
+                    "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
                     "length": 0
                 }
             ]
