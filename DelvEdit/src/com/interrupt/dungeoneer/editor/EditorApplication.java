@@ -729,6 +729,9 @@ public class EditorApplication implements ApplicationListener {
 			shouldDrawBox = true;
 		}
 
+		// Always draw the box when tiles are selected
+		shouldDrawBox |= selected;
+
 		// don't draw the box when freelooking
 		if(shouldDrawBox && !selected && Gdx.input.isCursorCatched()) {
 			shouldDrawBox = false;
@@ -750,10 +753,14 @@ public class EditorApplication implements ApplicationListener {
 				// Tile selection bounding
 				Editor.selection.tiles.x = Math.min(level.width - 1, Math.max(0, (int)end.x));
 				Editor.selection.tiles.y = Math.min(level.height - 1, Math.max(0, (int)end.z));
+
 				shouldDrawBox &= entireLevelSelection.contains((int)end.x, (int)end.z);
 
 				selStartX = Editor.selection.tiles.x;
 				selStartY = Editor.selection.tiles.y;
+				
+				Editor.selection.tiles.setStartTile(selStartX, selStartY);
+
 				controlPoints.clear();
 			}
 			else if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
@@ -995,16 +1002,20 @@ public class EditorApplication implements ApplicationListener {
 					Tile south = level.getTile(xx, selY + selHeight - 1);
 
 					// ceil north
-					drawLine(tempVec1.set(xx, north.ceilSlopeNE + north.ceilHeight, selY), tempVec2.set(xx + 1f,north.ceilSlopeNW + north.ceilHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthCeiling() ? Color.WHITE : Color.RED);
+					if(!north.renderSolid)
+						drawLine(tempVec1.set(xx, north.ceilSlopeNE + north.ceilHeight, selY), tempVec2.set(xx + 1f,north.ceilSlopeNW + north.ceilHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthCeiling() ? Color.WHITE : Color.RED);
 
 					// ceil south
-					drawLine(tempVec1.set(xx, south.ceilSlopeSE + south.ceilHeight, selY + selHeight), tempVec2.set(xx + 1f,south.ceilSlopeSW + south.ceilHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthCeiling() ? Color.WHITE : Color.RED);
+					if(!south.renderSolid)
+						drawLine(tempVec1.set(xx, south.ceilSlopeSE + south.ceilHeight, selY + selHeight), tempVec2.set(xx + 1f,south.ceilSlopeSW + south.ceilHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthCeiling() ? Color.WHITE : Color.RED);
 
 					// floor north
-					drawLine(tempVec1.set(xx, north.slopeNE + north.floorHeight, selY), tempVec2.set(xx + 1f,north.slopeNW + north.floorHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthFloor() ? Color.WHITE : Color.RED);
+					if(!north.renderSolid)
+						drawLine(tempVec1.set(xx, north.slopeNE + north.floorHeight, selY), tempVec2.set(xx + 1f,north.slopeNW + north.floorHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthFloor() ? Color.WHITE : Color.RED);
 
 					// floor south
-					drawLine(tempVec1.set(xx, south.slopeSE + south.floorHeight, selY + selHeight), tempVec2.set(xx + 1f,south.slopeSW + south.floorHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthFloor() ? Color.WHITE : Color.RED);
+					if(!south.renderSolid)
+						drawLine(tempVec1.set(xx, south.slopeSE + south.floorHeight, selY + selHeight), tempVec2.set(xx + 1f,south.slopeSW + south.floorHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthFloor() ? Color.WHITE : Color.RED);
 				}
 
 				for(int yy = selY; yy < selY + selHeight; yy++) {
@@ -1012,16 +1023,20 @@ public class EditorApplication implements ApplicationListener {
 					Tile east = level.getTile(selX + selWidth - 1, yy);
 
 					// ceil west
-					drawLine(tempVec1.set(selX, west.ceilSlopeNE + west.ceilHeight, yy), tempVec2.set(selX,west.ceilSlopeSE + west.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestCeiling() ? Color.WHITE : Color.RED);
+					if(!west.renderSolid)
+						drawLine(tempVec1.set(selX, west.ceilSlopeNE + west.ceilHeight, yy), tempVec2.set(selX,west.ceilSlopeSE + west.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestCeiling() ? Color.WHITE : Color.RED);
 
 					// ceil east
-					drawLine(tempVec1.set(selX + selWidth, east.ceilSlopeNW + east.ceilHeight, yy), tempVec2.set(selX + selWidth,east.ceilSlopeSW + east.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastCeiling() ? Color.WHITE : Color.RED);
+					if(!east.renderSolid)
+						drawLine(tempVec1.set(selX + selWidth, east.ceilSlopeNW + east.ceilHeight, yy), tempVec2.set(selX + selWidth,east.ceilSlopeSW + east.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastCeiling() ? Color.WHITE : Color.RED);
 
 					// floor west
-					drawLine(tempVec1.set(selX, west.slopeNE + west.floorHeight, yy), tempVec2.set(selX,west.slopeSE + west.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestFloor() ? Color.WHITE : Color.RED);
+					if(!west.renderSolid)
+						drawLine(tempVec1.set(selX, west.slopeNE + west.floorHeight, yy), tempVec2.set(selX,west.slopeSE + west.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestFloor() ? Color.WHITE : Color.RED);
 
 					// floor east
-					drawLine(tempVec1.set(selX + selWidth, east.slopeNW + east.floorHeight, yy), tempVec2.set(selX + selWidth,east.slopeSW + east.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastFloor() ? Color.WHITE : Color.RED);
+					if(!east.renderSolid)
+						drawLine(tempVec1.set(selX + selWidth, east.slopeNW + east.floorHeight, yy), tempVec2.set(selX + selWidth,east.slopeSW + east.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastFloor() ? Color.WHITE : Color.RED);
 				}
 			}
 		}
@@ -3477,14 +3492,6 @@ public class EditorApplication implements ApplicationListener {
 		Tile selectedTile = Editor.selection.tiles.first();
 		t.floorHeight = selectedTile.floorHeight;
 		t.ceilHeight = selectedTile.ceilHeight;
-
-		if(pickedSurface == null || !pickedSurface.isPicked) {
-			TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
-			float size = atlas.rowScale * atlas.scale;
-			t.ceilHeight = size - 0.5f;
-		}
-
-		t.floorHeight = Editor.selection.tiles.getBounds().min.z;
 
 		setTile(t);
 
