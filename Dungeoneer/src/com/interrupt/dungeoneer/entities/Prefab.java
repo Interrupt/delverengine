@@ -23,7 +23,7 @@ public class Prefab extends Group {
 	public Prefab() { artType = ArtType.hidden; }
 	public Prefab(String category, String name) { artType = ArtType.hidden; this.category = category; this.name = name; }
 	
-	private String lastName = "";
+	protected String lastName = "";
 	
 	@Override
 	public void tick(Level level, float delta) {
@@ -39,6 +39,17 @@ public class Prefab extends Group {
 
 		updateDrawable();
 		spawnPrefab(level, source);
+	}
+
+	public Entity GetEntity(String category, String name) {
+		return EntityManager.instance.getEntity(category, name);
+	}
+
+	public void SpawnEntity(Level level, Entity e) {
+		if (e instanceof Monster) {
+			((Monster)e).Init(level, Game.instance.player.level);
+		}
+		level.addEntity(e);
 	}
 
 	public void spawnPrefab(Level level, Source source) {
@@ -78,7 +89,7 @@ public class Prefab extends Group {
 					}
 				}
 
-				level.addEntity(e);
+				SpawnEntity(level, e);
 
 				// Bug fix to make sure doors get oriented properly
 				if(e instanceof Door) {
@@ -120,7 +131,7 @@ public class Prefab extends Group {
 				loadedName = names[Game.rand.nextInt(names.length)].trim();
 			}
 			
-			Entity copy = EntityManager.instance.getEntity(loadedCategory, loadedName);
+			Entity copy = GetEntity(loadedCategory, loadedName);
 			if(copy != null)
 				entities.add(copy);
 			else if(GameManager.renderer.editorIsRendering) {

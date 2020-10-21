@@ -92,7 +92,7 @@ public class PropertiesMenu extends Table {
 
                 // don't display some items for a prefab or group
                 if (entity instanceof Prefab) {
-                    if (!item.key.equals("Prefab") && !item.key.equals("General")) continue;
+                    if (!item.key.equals("Prefab") && !item.key.equals("MonsterPrefab")) continue;
                 } else if (entity instanceof Group) {
                     if (!item.key.equals("Group") && !item.key.equals("General")) continue;
                 }

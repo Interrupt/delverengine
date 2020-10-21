@@ -2807,6 +2807,13 @@ public class GlRenderer {
 		else return t;
 	}
 
+	public Color GetLightmapAt(Level level, float posx, float posy, float posz)
+	{
+		Color t = level.getLightColorAt(posx, posz, posy, null, lightmapTempColor);
+		if(t == null) return Color.BLACK;
+		else return t;
+	}
+
 	public float GetTexVAt(float posy, TextureAtlas atlas)
 	{
 		int scale = atlas.rowScale * (int)atlas.scale;
