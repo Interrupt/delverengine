@@ -800,9 +800,9 @@ public class Tesselator {
 					        		float v;
 
 					        		if(bottomWallIndex != null && bottomWallIndex >= i) {
-										v = reg.getV() + checkDir.getBottomWallYOffset(dir) / atlas.scale;
+										v = reg.getV() + checkDir.getBottomWallYOffset(dir) / (atlas.scale * atlas.rowScale);
 									} else {
-										v = reg.getV() + checkDir.getWallYOffset(dir) / atlas.scale;
+										v = reg.getV() + checkDir.getWallYOffset(dir) / (atlas.scale * atlas.rowScale);
 									}
 
 					        		// This is ugly!
