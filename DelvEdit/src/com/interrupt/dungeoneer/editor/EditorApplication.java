@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.editor.file.EditorFile;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
@@ -83,8 +84,6 @@ public class EditorApplication implements ApplicationListener {
 	public Level level = null;
 	public GlRenderer renderer = null;
 	public EditorFile file = null;
-
-    private EditorClipboard clipboard = null;
 
 	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
@@ -2116,7 +2115,9 @@ public class EditorApplication implements ApplicationListener {
         controlPoints.clear();
     }
 
-	public void testLevel() {
+	public void testLevel(boolean useCameraPosition) {
+		editorInput.resetKeys();
+
 		gameApp = new GameApplication();
 		GameApplication.editorRunning = true;
 
@@ -2127,16 +2128,35 @@ public class EditorApplication implements ApplicationListener {
 		previewLevel.genTheme = DungeonGenerator.GetGenData(previewLevel.theme);
 
 		gameApp.createFromEditor(previewLevel);
-
-		Vector3 cameraPosition = cameraController.getPosition();
-		Vector2 cameraRotation = cameraController.getRotation();
-
-		Game.instance.player.x = cameraPosition.x;
-		Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
-		Game.instance.player.z = cameraPosition.z;
-		Game.instance.player.rot = cameraRotation.x;
-		Game.instance.player.yrot = -cameraRotation.y;
 		Game.isDebugMode = true;
+
+		EditorMarker startMarker = null;
+		if (!useCameraPosition) {
+			for (EditorMarker marker : level.editorMarkers) {
+				if (marker.type == Markers.playerStart || marker.type == Markers.stairUp) {
+					startMarker = marker;
+					break;
+				}
+			}
+		}
+
+		if (!useCameraPosition && startMarker != null) {
+			Game.instance.player.x = startMarker.x + 0.5f;
+			Game.instance.player.y = startMarker.y + 0.5f;
+			Game.instance.player.z = previewLevel.getTile((int) Game.instance.player.x, (int) Game.instance.player.y)
+					.getFloorHeight() + 0.5f;
+
+			Game.instance.player.rot = (float) Math.toRadians(-(startMarker.rot + 180f));
+		} else {
+			Vector3 cameraPosition = cameraController.getPosition();
+			Vector2 cameraRotation = cameraController.getRotation();
+	
+			Game.instance.player.x = cameraPosition.x;
+			Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
+			Game.instance.player.z = cameraPosition.z;
+			Game.instance.player.rot = cameraRotation.x;
+			Game.instance.player.yrot = -cameraRotation.y;
+		}
 	}
 
 	public void initTextures() {
@@ -2863,98 +2883,6 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-    public Entity copyEntity(Entity entity) {
-        return Game.fromJson(entity.getClass(), Game.toJson(entity));
-    }
-
-    public void copy() {
-        clipboard = new EditorClipboard();
-
-        // Copy entities
-        if(Editor.selection.picked != null) {
-            Entity picked = Editor.selection.picked;
-            for (Entity e : Editor.selection.all) {
-                Entity copy = copyEntity(e);
-                copy.x -= (int) picked.x + 1;
-                copy.y -= (int) picked.y + 1;
-                copy.z -= - level.getTile((int)picked.x, (int)picked.y).getFloorHeight(0.5f, 0.5f);
-
-                clipboard.entities.add(copy);
-            }
-        }
-
-        // Copy tiles
-        if(Editor.selection.picked == null) {
-            for (TileSelectionInfo info : Editor.selection.tiles) {
-                Tile t = info.tile;
-                if (t != null) {
-                    info.tile = Tile.copy(t);
-                }
-
-                // Calculate offset
-                info.x -= Editor.selection.tiles.x;
-                info.y -= Editor.selection.tiles.y;
-
-                clipboard.tiles.add(info);
-            }
-        }
-
-        // Serialize to system clipboard.
-        Clipboard systemClipboard = Gdx.app.getClipboard();
-        String contents = new Json().toJson(clipboard);
-        systemClipboard.setContents(contents);
-    }
-
-    public void paste() {
-        // Deserialize from system clipboard.
-        try {
-            Clipboard systemClipboard = Gdx.app.getClipboard();
-            Json json = new Json();
-            clipboard = json.fromJson(EditorClipboard.class, systemClipboard.getContents());
-        }
-        catch (Exception e) {
-            Gdx.app.log("Editor", e.getMessage());
-        }
-
-        if (clipboard == null) {
-            return;
-        }
-
-        int cursorTileX = Editor.selection.tiles.x;
-        int cursorTileY = Editor.selection.tiles.y;
-
-        // Paste tiles
-        for (TileSelectionInfo info : clipboard.tiles) {
-            Tile t = info.tile;
-            if (t != null) {
-                t = Tile.copy(t);
-            }
-
-            int offsetX = info.x + cursorTileX;
-            int offsetY = info.y + cursorTileY;
-
-            level.setTile(offsetX, offsetY, t);
-            markWorldAsDirty(offsetX, offsetY, 1);
-        }
-
-        // Paste entities
-        for(Entity e : clipboard.entities) {
-            Entity copy = copyEntity(e);
-            copy.x += cursorTileX + 1;
-            copy.y += cursorTileY + 1;
-
-            Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
-            if(copyAt != null) {
-                copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
-            }
-
-            addEntity(copy);
-        }
-
-        // Save undo history
-        history.saveState(level);
-    }
-
 	public void rotateAngle() {
         if(Editor.selection.picked != null) return;
 
@@ -3102,7 +3030,11 @@ public class EditorApplication implements ApplicationListener {
 
 			// Which surface should we paint?
 			if(pickedSurface.tileSurface == TileSurface.Floor) {
-				d.setPosition((int)pickedSurface.position.x + 0.5f, t.floorHeight, (int)pickedSurface.position.z + 0.5f);
+				float floorHeightOffset = 0f;
+				if(t.data.isWater)
+					floorHeightOffset = 0.08f;
+
+				d.setPosition((int)pickedSurface.position.x + 0.5f, t.floorHeight + floorHeightOffset, (int)pickedSurface.position.z + 0.5f);
 				d.setRotation(Vector3.Y, Vector3.Y);
 
 				d.setTopLeftOffset(0, 0, t.slopeNE);
@@ -3741,7 +3673,7 @@ public class EditorApplication implements ApplicationListener {
         return moveMode;
     }
 
-    public Array<Triangle> GetCollisionTriangles() {
+    public Array<CollisionTriangle> GetCollisionTriangles() {
         return GlRenderer.triangleSpatialHash.getAllTriangles();
     }
 

@@ -3,18 +3,18 @@ package com.interrupt.dungeoneer.partitioning;
 import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.*;
-import com.interrupt.dungeoneer.GameManager;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.IntMap;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.gfx.WorldChunk;
-import com.interrupt.dungeoneer.tiles.Tile;
-import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 
 public class TriangleSpatialHash {
 	private final int cellSize;
-	private IntMap<Array<Triangle>> hash = new IntMap<Array<Triangle>>();
+	private IntMap<Array<CollisionTriangle>> hash = new IntMap<>();
 	
-	private Array<Triangle> temp = new Array<Triangle>();
+	private Array<CollisionTriangle> temp = new Array<>();
 	private IntArray cellKeys = new IntArray();
 	
 	public TriangleSpatialHash(int cellSize)  {
@@ -107,10 +107,10 @@ public class TriangleSpatialHash {
 		return cellKeys;
 	}
 	
-	private void PutTriangle(int key, Triangle e) {
-		Array<Triangle> eList = hash.get(key);
+	private void PutTriangle(int key, CollisionTriangle e) {
+		Array<CollisionTriangle> eList = hash.get(key);
 		if(eList == null) {
-			eList = new Array<Triangle>();
+			eList = new Array<CollisionTriangle>();
 			eList.add(e);
 			
 			hash.put(key, eList);
@@ -121,7 +121,7 @@ public class TriangleSpatialHash {
 		}
 	}
 	
-	public void AddTriangle(Triangle e) {
+	public void AddTriangle(CollisionTriangle e) {
 		int key = getKey(e.v1.x, e.v1.z);
 		PutTriangle(key, e);
 		
@@ -139,7 +139,7 @@ public class TriangleSpatialHash {
 		// drop triangles in these cells
 		for(int i = 0; i < cells.size; i++) {
 			int cell = cells.get(i);
-			Array<Triangle> inCell = hash.get(cell);
+			Array<CollisionTriangle> inCell = hash.get(cell);
 			if(inCell != null) {
 				inCell.clear();
 			}
@@ -147,16 +147,16 @@ public class TriangleSpatialHash {
 	}
 	
 	// Returns triangles found near an entity
-	public Array<Triangle> getTrianglesAt(float x, float y, float colSize) {
+	public Array<CollisionTriangle> getTrianglesAt(float x, float y, float colSize) {
 		temp.clear();
 		IntArray cells = getCellsNear(x, y, colSize);
 		
 		// look in all the nearby cells for triangles
 		for(int i = 0; i < cells.size; i++) {
 			int cell = cells.get(i);
-			Array<Triangle> inCell = hash.get(cell);
+			Array<CollisionTriangle> inCell = hash.get(cell);
 			if(inCell != null) {
-				for(Triangle triangle : inCell) {
+				for(CollisionTriangle triangle : inCell) {
 					if(!temp.contains(triangle, true)) temp.add(triangle);
 				}
 			}
@@ -166,16 +166,16 @@ public class TriangleSpatialHash {
 	}
 	
 	// Returns all the triangles found along a ray
-	public Array<Triangle> getTrianglesAlong(Ray ray, float length) {
+	public Array<CollisionTriangle> getTrianglesAlong(Ray ray, float length) {
 		temp.clear();
 		IntArray cells = getCellsAlong(ray, length);
 		
 		// look in all the nearby cells for triangles
 		for(int i = 0; i < cells.size; i++) {
 			int cell = cells.get(i);
-			Array<Triangle> inCell = hash.get(cell);
+			Array<CollisionTriangle> inCell = hash.get(cell);
 			if(inCell != null) {
-				for(Triangle triangle : inCell) {
+				for(CollisionTriangle triangle : inCell) {
 					if(!temp.contains(triangle, true)) temp.add(triangle);
 				}
 			}
@@ -185,16 +185,16 @@ public class TriangleSpatialHash {
 	}
 	
 	// Returns all the triangles in a frustum
-	public Array<Triangle> getTrianglesIn(Frustum frustum) {
+	public Array<CollisionTriangle> getTrianglesIn(Frustum frustum) {
 		temp.clear();
 		IntArray cells = getCellsIn(frustum);
 		
 		// look in all the nearby cells for triangles
 		for(int i = 0; i < cells.size; i++) {
 			int cell = cells.get(i);
-			Array<Triangle> inCell = hash.get(cell);
+			Array<CollisionTriangle> inCell = hash.get(cell);
 			if(inCell != null) {
-				for(Triangle triangle : inCell) {
+				for(CollisionTriangle triangle : inCell) {
 					if(!temp.contains(triangle, true)) temp.add(triangle);
 				}
 			}
@@ -208,15 +208,15 @@ public class TriangleSpatialHash {
 	}
 	
 	public void Flush() {
-		for(Array<Triangle> val : hash.values()) {
+		for(Array<CollisionTriangle> val : hash.values()) {
 			val.clear();
 		}
 	}
 
-    public Array<Triangle> getAllTriangles() {
+    public Array<CollisionTriangle> getAllTriangles() {
         temp.clear();
 
-        for(Array<Triangle> val : hash.values()) {
+        for(Array<CollisionTriangle> val : hash.values()) {
             temp.addAll(val);
         }
 
