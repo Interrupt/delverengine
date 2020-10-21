@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.utils.SerializationException;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
@@ -288,6 +289,9 @@ public class EditorFile {
                     showWarningDialog("Unkown extension. Cannot load '" + name + "'.");
                     return;
                 }
+            } catch (SerializationException exception) {
+                showWarningDialog("Corrupted file data. Cannot load '" + file.name() + "'.");
+                return;
             } catch (Exception exception) {
                 showWarningDialog(exception.getMessage() + " Cannot load '" + file.name() + "'.");
                 return;
