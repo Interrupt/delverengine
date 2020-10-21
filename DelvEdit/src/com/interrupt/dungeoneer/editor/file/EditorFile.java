@@ -293,6 +293,11 @@ public class EditorFile {
                 return;
             }
 
+            if (!validateLevel(level)) {
+                showWarningDialog("Invalid level data. Cannot load '" + file.name() + "'.");
+                return;
+            }
+
             Editor.app.file = new EditorFile(file);
 
             Editor.app.level = level;
@@ -305,6 +310,7 @@ public class EditorFile {
 
             Editor.options.addRecentlyOpenedFile(file.path());
 
+            Editor.app.clearEntitySelection();
             Editor.app.viewSelected();
         } else {
             showWarningDialog("File does not exist. Cannot load '" + name + "'.");
@@ -345,6 +351,11 @@ public class EditorFile {
         level.init(Level.Source.EDITOR);
 
         return level;
+    }
+
+    /** Validates that a given level is loaded correctly from storage. */
+    private boolean validateLevel(Level level) {
+        return level.entities != null;
     }
 
     /** Prompt user and create a new level. */
