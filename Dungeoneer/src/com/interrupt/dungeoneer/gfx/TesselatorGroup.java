@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Triangle;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.gfx.decals.DDecal;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
@@ -137,13 +138,18 @@ public class TesselatorGroup {
     }
 
     public void addCollisionTriangles(TriangleSpatialHash triangleSpatialHash) {
+        addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WORLD);
+    }
+
+    public void addCollisionTriangles(TriangleSpatialHash triangleSpatialHash, CollisionTriangle.TriangleCollisionType collisionType) {
         for(int ti = 0; ti < tesselators.size; ti++) {
             Tesselator tesselator = tesselators.getValueAt(ti);
             for (int i = 0; i < tesselator.collisionTriangles.size - 2; i += 3) {
                 triangleSpatialHash.AddTriangle(
-                        new Triangle(tesselator.collisionTriangles.get(i),
+                        new CollisionTriangle(tesselator.collisionTriangles.get(i),
                                 tesselator.collisionTriangles.get(i + 1),
-                                tesselator.collisionTriangles.get(i + 2)));
+                                tesselator.collisionTriangles.get(i + 2),
+                                collisionType));
             }
         }
     }
