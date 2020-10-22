@@ -68,6 +68,8 @@ public class MagicMissileProjectile extends Projectile {
 	/** Projectile sprite animation speed. */
 	@EditorProperty
 	public Float animSpeed = 30f;
+
+	public HaloMode haloMode = HaloMode.BOTH;
 	
 	public MagicMissileProjectile() {
 		artType = ArtType.sprite;
@@ -227,6 +229,10 @@ public class MagicMissileProjectile extends Projectile {
 
 	@Override
 	public HaloMode getHaloMode() {
+		if (haloMode != null) {
+			return haloMode;
+		}
+
 		return HaloMode.BOTH;
 	}
 }
