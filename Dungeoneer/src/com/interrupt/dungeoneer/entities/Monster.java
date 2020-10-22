@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -200,6 +201,9 @@ public class Monster extends Actor implements Directional {
 	/** Monster attack animation. */
 	private SpriteAnimation attackAnimation = null;
 
+	/** Monster ranged attack animation. */
+	private SpriteAnimation rangedAttackAnimation = null;
+
 	/** Monster cast animation. */
 	private SpriteAnimation castAnimation = null;
 
@@ -379,6 +383,7 @@ public class Monster extends Actor implements Directional {
 		int tookDamage = super.takeDamage(damage, damageType, instigator);
 		if(doPainRoll(tookDamage)) {
 			if (attackAnimation != null) attackAnimation.playing = false;
+			if (rangedAttackAnimation != null) rangedAttackAnimation.playing = false;
 			if (hurtAnimation != null) hurtAnimation.play();
 		}
 		return tookDamage;
@@ -664,14 +669,19 @@ public class Monster extends Actor implements Directional {
 			tza = 0;
 		}
 		
-		if(hostile && (playerdist < collision.x + reach || playerdist < collision.x + attackStartDistance))
-		{
-		    float zDiff = Math.abs((player.z + 0.3f) - (z + 0.3f));
-            if(zDiff < reach || zDiff < attackStartDistance) {
-                attack(player);
-                txa = 0;
-                tza = 0;
-            }
+		if(hostile) {
+			if((playerdist < collision.x + reach || playerdist < collision.x + attackStartDistance)) {
+				float zDiff = Math.abs((player.z + 0.3f) - (z + 0.3f));
+				if (zDiff < reach || zDiff < attackStartDistance) {
+					attack(player);
+					txa = 0;
+					tza = 0;
+				}
+			} else if(playerdist > projectileAttackMinDistance && playerdist < projectileAttackMaxDistance && (projectile != null || rangedAttackAnimation != null)) {
+				rangedAttack(player);
+				txa = 0;
+				tza = 0;
+			}
 		}
 		
 		if(walkSound != null) {
@@ -763,62 +773,6 @@ public class Monster extends Actor implements Directional {
 				}
 			}
 		}
-
-		if(projectile != null && attacktimer <= 0 && stuntime <= 0 && canSeePlayer && hostile && !isParalyzed()
-				&& playerdist < projectileAttackMaxDistance && playerdist > projectileAttackMinDistance)
-		{
-			// face fire direction!
-			setDirectionTowards(player);
-
-			attacktimer = projectileAttackTime;
-			if(attackAnimation != null) {
-				attackAnimation.play();
-			}
-
-			try {
-				Entity pCopy = null;
-				if(projectile instanceof Prefab) {
-					Prefab p = (Prefab)projectile;
-					pCopy = EntityManager.instance.getEntity(p.category, p.name);
-				}
-				else {
-					pCopy = (Entity) KryoSerializer.copyObject(projectile);
-				}
-
-				if(pCopy != null) {
-					pCopy.owner = this;
-					pCopy.ignorePlayerCollision = false;
-
-					// spawns from this entity
-					pCopy.x = x;
-					pCopy.y = y;
-					pCopy.z = projectileOffset + z + (collision.z * 0.6f);
-
-					Vector3 dirToPlayer = new Vector3(player.x, player.y, player.z + (player.collision.z * 0.5f));
-					if (!pCopy.floating) {
-						// Go ballistics
-						dirToPlayer.z += (playerdist * playerdist) * projectileBallisticsMod;
-					}
-
-					dirToPlayer.sub(pCopy.x, pCopy.y, pCopy.z).nor();
-
-					// offset out of collision
-					pCopy.x += dirToPlayer.x * collision.x * 0.5f;
-					pCopy.y += dirToPlayer.y * collision.x * 0.5f;
-					pCopy.z += dirToPlayer.z * collision.x * 0.5f;
-
-					// initial speed
-					dirToPlayer.scl(projectileSpeed);
-
-					pCopy.xa = dirToPlayer.x;
-					pCopy.ya = dirToPlayer.y;
-					pCopy.za = dirToPlayer.z;
-
-					level.SpawnEntity(pCopy);
-				}
-			}
-			catch(Exception ex) { }
-		}
 		
 		// idle sounds!
 		if(!hostile || !chasetarget) {
@@ -836,10 +790,11 @@ public class Monster extends Actor implements Directional {
 		if(hurtAnimation != null && hurtAnimation.playing) hurtAnimation.animate(delta, this);
 		else if(castAnimation != null && castAnimation.playing) castAnimation.animate(delta, this);
 		else if(attackAnimation != null && attackAnimation.playing) attackAnimation.animate(delta, this);
+		else if(rangedAttackAnimation != null && rangedAttackAnimation.playing) rangedAttackAnimation.animate(delta, this);
 		else if(dodgeAnimation != null && dodgeAnimation.playing) dodgeAnimation.animate(delta, this);
 		else if(walkAnimation != null) walkAnimation.animate(delta, this);
 	}
-	
+
 	private float getSpeed() {
 		float baseSpeed = speed;
 
@@ -1172,6 +1127,90 @@ public class Monster extends Actor implements Directional {
 			else {
 				tryDamageHit(attackTarget, 0f, 0.05f);
 			}
+		}
+	}
+
+	private void rangedAttack(Entity target) {
+		if(target == null || !target.isActive) return;
+		if(!hostile) return;
+		if(stuntime > 0) return;
+		if(isParalyzed()) return;
+		if(!alerted) alerted = true;
+
+		if(attacktimer <= 0)
+		{
+			attackTarget = target;
+			attacktimer = attackTime + Game.rand.nextInt(30);
+			setDirectionTowards(attackTarget);
+
+			if(rangedAttackAnimation != null) {
+				rangedAttackAnimation.play();
+
+				// If no actions are set, try to spawn the basic projectile.
+				// Otherwise, assume there is a ProjectileAttackAction in there.
+				if(rangedAttackAnimation.actions == null) {
+					spawnBasicProjectile(target);
+				}
+			}
+			else {
+				spawnBasicProjectile(target);
+			}
+		}
+	}
+
+	private void spawnBasicProjectile(Entity target) {
+		// face fire direction!
+		setDirectionTowards(target);
+
+		attacktimer = projectileAttackTime;
+		if(rangedAttackAnimation == null && attackAnimation != null) {
+			attackAnimation.play();
+		}
+
+		try {
+			Entity pCopy = null;
+			if(projectile instanceof Prefab) {
+				Prefab p = (Prefab)projectile;
+				pCopy = EntityManager.instance.getEntity(p.category, p.name);
+			}
+			else {
+				pCopy = (Entity) KryoSerializer.copyObject(projectile);
+			}
+
+			if(pCopy != null) {
+				pCopy.owner = this;
+				pCopy.ignorePlayerCollision = false;
+
+				// spawns from this entity
+				pCopy.x = x;
+				pCopy.y = y;
+				pCopy.z = projectileOffset + z + (collision.z * 0.6f);
+
+				Vector3 dirToTarget = new Vector3(target.x, target.y, target.z + (target.collision.z * 0.5f));
+				if (!pCopy.floating) {
+					// Go ballistics
+					dirToTarget.z += (playerdist * playerdist) * projectileBallisticsMod;
+				}
+
+				dirToTarget.sub(pCopy.x, pCopy.y, pCopy.z).nor();
+
+				// offset out of collision
+				pCopy.x += dirToTarget.x * collision.x * 0.5f;
+				pCopy.y += dirToTarget.y * collision.x * 0.5f;
+				pCopy.z += dirToTarget.z * collision.x * 0.5f;
+
+				// initial speed
+				dirToTarget.scl(projectileSpeed);
+
+				pCopy.xa = dirToTarget.x;
+				pCopy.ya = dirToTarget.y;
+				pCopy.za = dirToTarget.z;
+
+				Game.instance.level.SpawnEntity(pCopy);
+			}
+		}
+		catch(Exception ex) {
+			Gdx.app.log("DelverGame", "Error spawning projectile: " + ex.getMessage());
 		}
 	}
 
