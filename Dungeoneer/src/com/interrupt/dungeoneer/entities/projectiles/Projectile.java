@@ -22,8 +22,6 @@ public class Projectile extends Entity {
 	/** Projectile speed.  */
 	public float speed = 0.3f;
 
-	public transient Entity owner = null;
-
 	/** Damage amount. */
 	public int damage = 3;
 
