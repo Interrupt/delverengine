@@ -104,6 +104,7 @@
         "haloMode": {
             "$ref": "../Entity.schema.json#/definitions/HaloMode",
             "description": "Projectile halo type.",
+            "baseClass": "MagicMissileProjectile",
             "default": "BOTH"
         },
         "speed": {
