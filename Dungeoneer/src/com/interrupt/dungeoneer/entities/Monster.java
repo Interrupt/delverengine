@@ -73,7 +73,7 @@ public class Monster extends Actor implements Directional {
 
 	/** Time to wait before starting to move again after an attack. */
 	@EditorProperty
-	private float postAttackMoveWaitTime = 10;
+	private float postAttackMoveWaitTime = 0.01f;
 
 	/** Time interval between monster projectile attacks. */
 	@EditorProperty
@@ -682,20 +682,20 @@ public class Monster extends Actor implements Directional {
 
 		// stop moving after an attack
 		if(postAttackMoveWaitTimer > 0) {
-			if(attackAnimation != null || rangedAttackAnimation != null) {
-				boolean isPlayingAttackAnimation = false;
+			boolean isPlayingAttackAnimation = false;
 
-				if(attackAnimation != null)
-					isPlayingAttackAnimation |= attackAnimation.playing;
-				if(rangedAttackAnimation != null)
-					isPlayingAttackAnimation |= rangedAttackAnimation.playing;
+			if(attackAnimation != null)
+				isPlayingAttackAnimation |= attackAnimation.playing;
+			if(rangedAttackAnimation != null)
+				isPlayingAttackAnimation |= rangedAttackAnimation.playing;
+			if(castAnimation != null)
+				isPlayingAttackAnimation |= castAnimation.playing;
 
-				if(!isPlayingAttackAnimation)
-					postAttackMoveWaitTimer -= delta;
+			if(!isPlayingAttackAnimation)
+				postAttackMoveWaitTimer -= delta;
 
-				txa = 0;
-				tza = 0;
-			}
+			txa = 0;
+			tza = 0;
 		}
 		
 		if(hostile) {
@@ -797,6 +797,8 @@ public class Monster extends Actor implements Directional {
 					}
 				}
 			}
+
+			postAttackMoveWaitTimer = postAttackMoveWaitTime;
 		}
 		
 		// idle sounds!
