@@ -1124,7 +1124,7 @@ public class Monster extends Actor implements Directional {
 		if(!hostile) return;
 		if(stuntime > 0) return;
 		if(isParalyzed()) return;
-		if(!alerted) alerted = true;
+		alerted = true;
 
 		if(attacktimer > 0)
 			return;
@@ -1164,7 +1164,7 @@ public class Monster extends Actor implements Directional {
 		if(!hostile) return;
 		if(stuntime > 0) return;
 		if(isParalyzed()) return;
-		if(!alerted) alerted = true;
+		alerted = true;
 
 		if(rangedAttackTimer > 0)
 			return;
@@ -1236,6 +1236,10 @@ public class Monster extends Actor implements Directional {
 				pCopy.xa = dirToTarget.x;
 				pCopy.ya = dirToTarget.y;
 				pCopy.za = dirToTarget.z;
+
+				// Some items trigger effects when thrown
+				if(pCopy instanceof Item)
+					((Item)pCopy).tossItem(Game.instance.level, 1.0f);
 
 				Game.instance.level.SpawnEntity(pCopy);
 			}

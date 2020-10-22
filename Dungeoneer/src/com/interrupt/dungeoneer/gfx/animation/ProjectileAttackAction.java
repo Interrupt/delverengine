@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.gfx.animation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.Prefab;
 import com.interrupt.dungeoneer.game.Game;
@@ -110,6 +111,10 @@ public class ProjectileAttackAction extends AnimationAction {
 				pCopy.xa = dirToPlayer.x;
 				pCopy.ya = dirToPlayer.y;
 				pCopy.za = dirToPlayer.z;
+
+				// Some items trigger effects when thrown
+				if(pCopy instanceof Item)
+					((Item)pCopy).tossItem(Game.instance.level, 1.0f);
 
 				Game.instance.level.SpawnEntity(pCopy);
 			}
