@@ -17,7 +17,7 @@ public class FusedBomb extends Item {
 	public boolean isLit = true;
 
 	@EditorProperty
-	public float chanceIsLit = 0.75f;
+	public float chanceIsLit = 0.25f;
 
 	@EditorProperty
 	public float countdownTimer = 150f;

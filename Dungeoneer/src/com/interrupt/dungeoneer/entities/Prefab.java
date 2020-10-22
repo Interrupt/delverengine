@@ -49,7 +49,7 @@ public class Prefab extends Group {
 		if (e instanceof Monster) {
 			((Monster)e).Init(level, Game.instance.player.level);
 		}
-		level.addEntity(e);
+		level.addEntity(e, Source.SPAWNED);
 	}
 
 	public void spawnPrefab(Level level, Source source) {

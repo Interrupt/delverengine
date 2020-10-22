@@ -194,7 +194,7 @@ public class Wand extends Weapon {
 				chargeEffect.tex = 0;
 
 				chargeTime = 0f;
-				level.addEntity(chargeEffect);
+				level.addEntity(chargeEffect, Level.Source.SPAWNED);
 			}
 
 			chargeEffect.x = x;
