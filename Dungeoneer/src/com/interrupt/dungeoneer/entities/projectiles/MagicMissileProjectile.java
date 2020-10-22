@@ -69,6 +69,7 @@ public class MagicMissileProjectile extends Projectile {
 	@EditorProperty
 	public Float animSpeed = 30f;
 
+	/** Projectile halo type. */
 	public HaloMode haloMode = HaloMode.BOTH;
 	
 	public MagicMissileProjectile() {
