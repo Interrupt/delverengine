@@ -71,6 +71,10 @@ public class Monster extends Actor implements Directional {
 	@EditorProperty
 	private float attackTime = 60;
 
+	/** Time to wait before starting to move again after an attack. */
+	@EditorProperty
+	private float postAttackMoveWaitTime = 10;
+
 	/** Time interval between monster projectile attacks. */
 	@EditorProperty
 	private float projectileAttackTime = 100;
@@ -88,9 +92,11 @@ public class Monster extends Actor implements Directional {
 	public float projectileOffset = 0f;
 	
 	private float attacktimer = 0;
+	private float rangedAttackTimer = 0;
 	private float regenManaTimer = 0;
 	
 	private float stuntime = 0;
+	private float postAttackMoveWaitTimer = 0;
 
 	/** Is monster alerted to player's presence? */
 	public boolean alerted = false;
@@ -283,6 +289,7 @@ public class Monster extends Actor implements Directional {
 		stepHeight = 0.4f;
 		
 		attacktimer = 30;
+		rangedAttackTimer = 30;
 		
 		mass = 2f;
 
@@ -442,6 +449,7 @@ public class Monster extends Actor implements Directional {
 		
 		// tick some timers (TODO: MAKE A TIMER HELPER)
 		if(attacktimer > 0) attacktimer -= delta;
+		if(rangedAttackTimer > 0) rangedAttackTimer -= delta;
 		regenManaTimer += delta;
 		
 		if(regenManaTimer > 60) {
@@ -478,7 +486,9 @@ public class Monster extends Actor implements Directional {
 		if(hostile) {
 			canSeePlayer = level.canSeeIncludingDoors(x, y, player.x, player.y, 17);
 
+			// Reset attack timers if we lose track of the player
 			if(!canSeePlayer && attacktimer < 30) attacktimer = 30;
+			if(!canSeePlayer && rangedAttackTimer < 30) rangedAttackTimer = 30;
 			
 			pxdir = player.x - x;
 			pydir = player.y - y;
@@ -511,6 +521,7 @@ public class Monster extends Actor implements Directional {
 				Audio.playPositionedSound(alertSound, new Vector3(x, y, z), soundVolume, 1f, 12f);
 
 				attacktimer = 40 + Game.rand.nextInt(20);
+				rangedAttackTimer = 40 + Game.rand.nextInt(20);
 			}
 		}
 		
@@ -668,19 +679,33 @@ public class Monster extends Actor implements Directional {
 			txa = 0;
 			tza = 0;
 		}
+
+		// stop moving after an attack
+		if(postAttackMoveWaitTimer > 0) {
+			if(attackAnimation != null || rangedAttackAnimation != null) {
+				boolean isPlayingAttackAnimation = false;
+
+				if(attackAnimation != null)
+					isPlayingAttackAnimation |= attackAnimation.playing;
+				if(rangedAttackAnimation != null)
+					isPlayingAttackAnimation |= rangedAttackAnimation.playing;
+
+				if(!isPlayingAttackAnimation)
+					postAttackMoveWaitTimer -= delta;
+
+				txa = 0;
+				tza = 0;
+			}
+		}
 		
 		if(hostile) {
 			if((playerdist < collision.x + reach || playerdist < collision.x + attackStartDistance)) {
 				float zDiff = Math.abs((player.z + 0.3f) - (z + 0.3f));
 				if (zDiff < reach || zDiff < attackStartDistance) {
 					attack(player);
-					txa = 0;
-					tza = 0;
 				}
 			} else if(playerdist > projectileAttackMinDistance && playerdist < projectileAttackMaxDistance && (projectile != null || rangedAttackAnimation != null)) {
 				rangedAttack(player);
-				txa = 0;
-				tza = 0;
 			}
 		}
 		
@@ -1099,35 +1124,37 @@ public class Monster extends Actor implements Directional {
 		if(isParalyzed()) return;
 		if(!alerted) alerted = true;
 
-		if(attacktimer <= 0)
-		{
-			if(dodgeAnimation != null) {
-				dodgeAnimation.play();
-				attacktimer = attackTime * 2;
-				return;
-			}
+		if(attacktimer > 0)
+			return;
 
-			attackTarget = target;
-			attacktimer = attackTime + Game.rand.nextInt(10);
-			Audio.playPositionedSound(attackSwingSound, new Vector3(x, y, z), 0.75f, 1f, 12f);
+		if(dodgeAnimation != null) {
+			dodgeAnimation.play();
+			attacktimer = attackTime * 2;
+			return;
+		}
 
-			setDirectionTowards(attackTarget);
+		attackTarget = target;
+		attacktimer = attackTime + Game.rand.nextInt(10);
+		Audio.playPositionedSound(attackSwingSound, new Vector3(x, y, z), 0.75f, 1f, 12f);
 
-			if(Game.rand.nextFloat() > 0.7f) Audio.playPositionedSound(attackSound, new Vector3(x, y, z), soundVolume, 1f, 12f);
+		setDirectionTowards(attackTarget);
 
-			if(attackAnimation != null) {
-				attackAnimation.play();
+		if(Game.rand.nextFloat() > 0.7f) Audio.playPositionedSound(attackSound, new Vector3(x, y, z), soundVolume, 1f, 12f);
 
-				// if no actions are set, just do the damage hit now
-				// otherwise assume that there's a set damage frame
-				if(attackAnimation.actions == null) {
-					tryDamageHit(attackTarget, 0f, 0.05f);
-				}
-			}
-			else {
+		if(attackAnimation != null) {
+			attackAnimation.play();
+
+			// if no actions are set, just do the damage hit now
+			// otherwise assume that there's a set damage frame
+			if(attackAnimation.actions == null) {
 				tryDamageHit(attackTarget, 0f, 0.05f);
 			}
 		}
+		else {
+			tryDamageHit(attackTarget, 0f, 0.05f);
+		}
+
+		postAttackMoveWaitTimer = postAttackMoveWaitTime;
 	}
 
 	private void rangedAttack(Entity target) {
@@ -1137,33 +1164,35 @@ public class Monster extends Actor implements Directional {
 		if(isParalyzed()) return;
 		if(!alerted) alerted = true;
 
-		if(attacktimer <= 0)
-		{
-			attackTarget = target;
-			attacktimer = attackTime + Game.rand.nextInt(30);
-			setDirectionTowards(attackTarget);
+		if(rangedAttackTimer > 0)
+			return;
 
-			if(rangedAttackAnimation != null) {
-				rangedAttackAnimation.play();
+		attackTarget = target;
+		rangedAttackTimer = projectileAttackTime + Game.rand.nextInt(15);
+		setDirectionTowards(attackTarget);
 
-				// If no actions are set, try to spawn the basic projectile.
-				// Otherwise, assume there is a ProjectileAttackAction in there.
-				if(rangedAttackAnimation.actions == null) {
-					spawnBasicProjectile(target);
-				}
-			}
-			else {
+		if(rangedAttackAnimation != null) {
+			rangedAttackAnimation.play();
+
+			// If no actions are set, try to spawn the basic projectile.
+			// Otherwise, assume there is a ProjectileAttackAction in there.
+			if(rangedAttackAnimation.actions == null) {
 				spawnBasicProjectile(target);
 			}
 		}
+		else {
+			spawnBasicProjectile(target);
+		}
+
+		postAttackMoveWaitTimer = postAttackMoveWaitTime;
 	}
 
 	private void spawnBasicProjectile(Entity target) {
 		// face fire direction!
 		setDirectionTowards(target);
 
-		attacktimer = projectileAttackTime;
-		if(rangedAttackAnimation == null && attackAnimation != null) {
+		rangedAttackTimer = projectileAttackTime;
+		if(attackAnimation != null) {
 			attackAnimation.play();
 		}
 
