@@ -317,6 +317,7 @@ public class EditorFile {
             Editor.app.clearEntitySelection();
             Editor.app.viewSelected();
         } else {
+            Editor.options.removeRecentlyOpenedFile(file.path());
             showWarningDialog("File does not exist. Cannot load '" + name + "'.");
             return;
         }

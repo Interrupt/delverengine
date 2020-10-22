@@ -40,8 +40,12 @@ public class EditorOptions {
         Editor.options.save();
     }
 
-    public void addRecentlyOpenedFile(String path) {
+    public void removeRecentlyOpenedFile(String path) {
         recentlyOpenedFiles.removeValue(path, false);
+    }
+
+    public void addRecentlyOpenedFile(String path) {
+        removeRecentlyOpenedFile(path);
         recentlyOpenedFiles.insert(0, path);
     }
 }
