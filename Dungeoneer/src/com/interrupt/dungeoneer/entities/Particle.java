@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.noise.PerlinNoise;
 
 import java.util.Random;
@@ -17,8 +18,6 @@ public class Particle extends Sprite {
 	public float lifetime = 82;
 	public float starttime = 0;
 	public boolean initialized = true;
-
-    public Particle() { color = new Color(Color.WHITE); collidesWith = CollidesWith.staticOnly; }
 	
 	public boolean checkCollision = true;
 	
@@ -51,49 +50,23 @@ public class Particle extends Sprite {
 	public boolean hasHalo = false;
 
 	public HaloMode haloMode = HaloMode.NONE;
-	
-	public Particle(float x, float y, int tex)
-	{
-		super(x, y, tex);
-		artType = ArtType.particle;
 
-		lifetime = 20 + r.nextInt(160);
-		
-		isSolid = false;
-	}
-	
-	public Particle(float x, float y, float z, int tex)
-	{
-		super(x, y, tex);
-		this.z = z;
+	public Particle() {
+		color = new Color(Color.WHITE);
 		artType = ArtType.particle;
+		collidesWith = CollidesWith.staticOnly;
 
-		lifetime = 20 + r.nextInt(160);
-		
-		isSolid = false;
-	}
-	
-	public Particle(float x, float y, float z, float xv, float yv, float zv, int tex, Color c)
-	{
-		super(x, y, tex);
-		this.z = z;
-		artType = ArtType.particle;
-		
-		this.xa = xv * 2;
-		this.ya = yv * 2;
-		this.za = zv * 2;
-
-		lifetime = 20 + r.nextInt(160);
-		
-		color = new Color(c);
-		
-		isSolid = false;
+		// Create a drawable sprite that scales from the center
+		drawable = new DrawableSprite(tex, artType, false);
 	}
 	
 	public Particle(float x, float y, float z, float xv, float yv, float zv, int tex, Color c, boolean fullbrite)
 	{
-		super(x, y, tex);
+		this.x = x;
+		this.y = y;
 		this.z = z;
+
+		this.tex = tex;
 		artType = ArtType.particle;
 		
 		this.xa = xv * 2;
@@ -106,6 +79,9 @@ public class Particle extends Sprite {
 		
 		isSolid = false;
 		this.fullbrite = fullbrite;
+
+		// Create a drawable sprite that scales from the center
+		drawable = new DrawableSprite(tex, artType, false);
 	}
 	
 	@Override
