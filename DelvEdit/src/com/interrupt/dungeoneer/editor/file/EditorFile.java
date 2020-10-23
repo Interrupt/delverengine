@@ -286,7 +286,7 @@ public class EditorFile {
                 } else if (name.endsWith(".dat")) {
                     level = loadDatFile(file);
                 } else {
-                    showWarningDialog("Unkown extension. Cannot load '" + name + "'.");
+                    showWarningDialog("Unknown extension. Cannot load '" + name + "'.");
                     return;
                 }
             } catch (SerializationException exception) {
