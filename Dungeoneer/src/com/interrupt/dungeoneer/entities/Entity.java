@@ -590,6 +590,7 @@ public class Entity {
 				attachment.owner = this;
 				attachment.isSolid = false;	// attachments are always non solid
 				attachment.tick(level, delta);
+				attachment.tickAttached(level, delta);
 
 				if(!attachment.isActive) attachedToRemove.add(attachment);
 			}
@@ -653,7 +654,29 @@ public class Entity {
 	}
 
 	// only called in the editor
-	public void editorTick(Level level, float delta) { }
+	public void editorTick(Level level, float delta) {
+		if (attached == null) {
+			return;
+		}
+
+		if (attachmentTransform == null) {
+			attachmentTransform = new Vector3();
+		}
+
+		for (Entity entity : attached) {
+			if (entity == null) {
+				continue;
+			}
+
+			entity.x += x - attachmentTransform.x;
+			entity.y += y - attachmentTransform.y;
+			entity.z += z - attachmentTransform.z;
+
+			entity.editorTick(level, delta);
+		}
+
+		attachmentTransform.set(x, y ,z);
+	}
 	public void editorStartPreview(Level level) { }
 	public void editorStopPreview(Level level) { }
 
