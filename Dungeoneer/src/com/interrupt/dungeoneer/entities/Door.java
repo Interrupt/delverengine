@@ -5,7 +5,6 @@ import java.util.Random;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
@@ -15,17 +14,16 @@ import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.StringManager;
 
 public class Door extends Entity {
-	public enum DoorState {CLOSED, OPENING, OPEN, CLOSING, STUCK};
-    public enum DoorOpenType {SLIDE, SLIDE_UP, ROTATE, ROTATE_UP};
-    public enum DoorDirection {NORTH, SOUTH, EAST, WEST};
-    public enum DoorType {NORMAL, TRAPDOOR};
+	public enum DoorState {CLOSED, OPENING, OPEN, CLOSING, STUCK}
+    public enum DoorOpenType {SLIDE, SLIDE_UP, ROTATE, ROTATE_UP}
+    public enum DoorDirection {NORTH, SOUTH, EAST, WEST}
+    public enum DoorType {NORMAL, TRAPDOOR}
 
     /** Door mesh filepath. */
     @EditorProperty(type = "FILE_PICKER", params = "meshes")
@@ -515,7 +513,7 @@ public class Door extends Entity {
 	public void updateDrawable() {
 		// init the drawable
 		DrawableMesh doorDrawable = null;
-		if(drawable == null || !(drawable instanceof DrawableMesh) || lastMeshFile != doorMesh ) {
+		if(!(drawable instanceof DrawableMesh) || !lastMeshFile.equals(doorMesh) ) {
 			doorDrawable = new DrawableMesh(doorMesh, doorTexture);
 			drawable = doorDrawable;
             lastMeshFile = doorMesh;
