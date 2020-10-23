@@ -3304,12 +3304,7 @@ public class Level {
 	}
 
 	public void addEntity(Entity e) {
-		addEntity(e, Source.LEVEL_START);
-	}
-
-	public void addEntity(Entity e, Source source) {
-
-		e.init(this, source);
+		e.init(this, Source.LEVEL_START);
 
 		if (!e.isActive) {
 			return;

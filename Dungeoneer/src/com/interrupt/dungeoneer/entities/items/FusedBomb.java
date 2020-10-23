@@ -67,10 +67,7 @@ public class FusedBomb extends Item {
     public void init(Level level, Level.Source source) {
         super.init(level, source);
 
-        if (source == Level.Source.SPAWNED && !wasSpawned) {
-            isLit = Game.rand.nextFloat() < chanceIsLit;
-        }
-
+        isLit = Game.rand.nextFloat() < chanceIsLit;
         isDud = Game.rand.nextFloat() < chanceIsDud;
         wasSpawned = true;
     }
