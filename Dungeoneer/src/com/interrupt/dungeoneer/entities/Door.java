@@ -598,22 +598,35 @@ public class Door extends Entity {
 			tempDir.set(offset);
 		}
 	}
-	
+
 	@Override
 	public void rotate90() {
-		if(doorDirection == DoorDirection.NORTH) {
+		if (doorDirection == DoorDirection.NORTH) {
 			doorDirection = DoorDirection.EAST;
-		}
-		else if(doorDirection == DoorDirection.EAST) {
+		} else if (doorDirection == DoorDirection.EAST) {
 			doorDirection = DoorDirection.SOUTH;
-		}
-		else if(doorDirection == DoorDirection.SOUTH) {
+		} else if (doorDirection == DoorDirection.SOUTH) {
 			doorDirection = DoorDirection.WEST;
-		}
-		else if(doorDirection == DoorDirection.WEST) {
+		} else if (doorDirection == DoorDirection.WEST) {
 			doorDirection = DoorDirection.NORTH;
 		}
+
 		super.rotate90();
+	}
+
+	@Override
+	public void rotate90Reversed() {
+		if (doorDirection == DoorDirection.NORTH) {
+			doorDirection = DoorDirection.WEST;
+		} else if (doorDirection == DoorDirection.WEST) {
+			doorDirection = DoorDirection.SOUTH;
+		} else if (doorDirection == DoorDirection.SOUTH) {
+			doorDirection = DoorDirection.EAST;
+		} else if (doorDirection == DoorDirection.EAST) {
+			doorDirection = DoorDirection.NORTH;
+		}
+
+		super.rotate90Reversed();
 	}
 
 	public String getUseText() {
