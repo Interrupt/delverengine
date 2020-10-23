@@ -1500,6 +1500,8 @@ public class Monster extends Actor implements Directional {
 
 	@Override
 	public void editorTick(Level level, float delta) {
+		super.editorTick(level, delta);
+
 		if(walkAnimation == null)
 			return;
 

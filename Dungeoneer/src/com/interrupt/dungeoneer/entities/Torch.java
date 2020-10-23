@@ -1,15 +1,9 @@
 package com.interrupt.dungeoneer.entities;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.DynamicLight.LightType;
-import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.managers.EntityManager;
@@ -136,7 +130,11 @@ public class Torch extends Light {
 		}
 	}
 
-	public void editorTick(Level level, float delta) { if(animation != null) animation.animate(delta, this); }
+	public void editorTick(Level level, float delta) {
+		super.editorTick(level, delta);
+		if(animation != null) animation.animate(delta, this);
+	}
+
 	public void editorStartPreview(Level level) { if(torchAnimateMode == TorchAnimateModes.LOOP) this.playAnimation(new SpriteAnimation(texAnimStart, texAnimEnd, animSpeed, null), true, true); }
 	public void editorStopPreview(Level level) {
 		if(animation != null) {

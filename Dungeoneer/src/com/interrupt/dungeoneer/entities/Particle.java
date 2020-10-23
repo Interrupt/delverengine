@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.entities;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +10,8 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.noise.PerlinNoise;
+
+import java.util.Random;
 
 public class Particle extends Sprite {
 	public float lifetime = 82;
@@ -284,6 +284,7 @@ public class Particle extends Sprite {
 	}
 	
 	public void editorTick(Level level, float delta) {
+		super.editorTick(level, delta);
 		tick(level, delta);
 	}
 	
