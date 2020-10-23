@@ -142,7 +142,7 @@ public class Item extends Entity {
 	public transient String lastMeshFile = null;
 	public transient String lastTextureFile = null;
 
-	private Entity pickupHelper = null;
+	private static final transient Entity pickupHelper = new Entity();
 
 	public Item() {
 		isSolid = true;
@@ -204,17 +204,6 @@ public class Item extends Entity {
 			} else {
 				roll = 0f;
 			}
-		}
-
-		if (isPickup && pickupHelper == null) {
-			pickupHelper = new Entity();
-			pickupHelper.x = x;
-			pickupHelper.y = y;
-			pickupHelper.z = z;
-			pickupHelper.collidesWith = CollidesWith.actorsOnly;
-			pickupHelper.collision.x = pickupDistance / 2f;
-			pickupHelper.collision.y = pickupDistance / 2;
-			pickupHelper.collision.z = pickupDistance;
 		}
 	}
 
@@ -412,6 +401,10 @@ public class Item extends Entity {
 			pickupHelper.x = x;
 			pickupHelper.y = y + yOffset;
 			pickupHelper.z = z;
+			pickupHelper.collidesWith = CollidesWith.actorsOnly;
+			pickupHelper.collision.x = pickupDistance / 2f;
+			pickupHelper.collision.y = pickupDistance / 2;
+			pickupHelper.collision.z = pickupDistance;
 
 			Array<Entity> encroaching = level.getEntitiesColliding(x, y, z, pickupHelper);
 
