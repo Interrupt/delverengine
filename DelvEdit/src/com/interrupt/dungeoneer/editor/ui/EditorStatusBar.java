@@ -29,7 +29,6 @@ public class EditorStatusBar extends Group {
                 super.act(delta);
 
                 if (infoTime > 5) {
-                    //setText("");
                     infoIcon.setVisible(false);
                     setVisible(false);
                 }
