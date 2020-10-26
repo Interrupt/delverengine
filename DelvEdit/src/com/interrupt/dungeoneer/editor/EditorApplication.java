@@ -395,23 +395,8 @@ public class EditorApplication implements ApplicationListener {
 		StringManager.init();
 		Game.init();
 
-		// load the entity templates
-		try {
-			entityManager = Game.getModManager().loadEntityManager(Game.gameData.entityDataFiles);
-			EntityManager.setSingleton(entityManager);
-		} catch (Exception ex) {
-			// whoops
-			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
-		}
-
-		// load the monster templates
-		try {
-			monsterManager = Game.getModManager().loadMonsterManager(Game.gameData.monsterDataFiles);
-			MonsterManager.setSingleton(monsterManager);
-		} catch (Exception ex) {
-			// whoops
-			Gdx.app.log("Editor", "Error loading monsters.dat: " + ex.getMessage());
-		}
+		loadEntities();
+		loadMonsters();
 
         Gdx.input.setCursorCatched(false);
         initTextures();
@@ -420,6 +405,28 @@ public class EditorApplication implements ApplicationListener {
                 TextureAtlas.cachedRepeatingAtlases.firstKey();
 
 		createEmptyLevel(17, 17);
+	}
+
+	/** Load entity templates */
+	public void loadEntities() {
+		try {
+			entityManager = Game.getModManager().loadEntityManager(Game.gameData.entityDataFiles);
+			EntityManager.setSingleton(entityManager);
+		} catch (Exception ex) {
+			// whoops
+			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
+		}
+	}
+
+	/** Load monster templates. */
+	public void loadMonsters() {
+		try {
+			monsterManager = Game.getModManager().loadMonsterManager(Game.gameData.monsterDataFiles);
+			MonsterManager.setSingleton(monsterManager);
+		} catch (Exception ex) {
+			// whoops
+			Gdx.app.log("Editor", "Error loading monsters.dat: " + ex.getMessage());
+		}
 	}
 
 	public void createEmptyLevel(int width, int height) {
