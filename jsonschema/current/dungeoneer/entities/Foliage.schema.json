@@ -1,0 +1,272 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Foliage",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.entities.Foliage",
+            "description": "Fully-qualified Java class name.",
+            "baseClass": "Foliage"
+        },
+        "foliagePosition": {
+            "$ref": "#/definitions/foliageAttachment",
+            "description": "Where to place foliage.",
+            "default": "FLOOR"
+        },
+        "swayAmount": {
+            "type": "number",
+            "description": "Ambient sway amount.",
+            "default": 4.5
+        },
+        "id": {
+            "type": "string",
+            "description": "Id of Entity.",
+            "baseClass": "Entity"
+        },
+        "x": {
+            "type": "number",
+            "description": "Position x-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "y": {
+            "type": "number",
+            "description": "Position y-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "z": {
+            "type": "number",
+            "description": "Position z-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "xa": {
+            "type": "number",
+            "description": "Velocity x-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "ya": {
+            "type": "number",
+            "description": "Velocity y-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "za": {
+            "type": "number",
+            "description": "Velocity z-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "roll": {
+            "type": "number",
+            "description": "Roll used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "tex": {
+            "type": "integer",
+            "description": "Sprite index.",
+            "baseClass": "Entity"
+        },
+        "isActive": {
+            "type": "boolean",
+            "description": "Should Entity be updated and drawn.",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "yOffset": {
+            "type": "number",
+            "description": "Vertical offset used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 0
+        },
+        "shader": {
+            "type": "string",
+            "description": "Shader name used to draw the Entity.",
+            "baseClass": "Entity"
+        },
+        "artType": {
+            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "baseClass": "Entity"
+        },
+        "spriteAtlas": {
+            "type": "string",
+            "description": "Sprite TextureAtlas name.",
+            "baseClass": "Entity"
+        },
+        "entityType": {
+            "$ref": "Entity.schema.json#/definitions/EntityType",
+            "baseClass": "Entity"
+        },
+        "isSolid": {
+            "type": "boolean",
+            "description": "Can other entities collide with this Entity.",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "collision": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Dimensions of Entity bounding box.",
+            "baseClass": "Entity"
+        },
+        "collidesWith": {
+            "$ref": "Entity.schema.json#/definitions/CollidesWith",
+            "baseClass": "Entity",
+            "default": "all"
+        },
+        "scale": {
+            "type": "number",
+            "description": "Scale used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 1.0
+        },
+        "hidden": {
+            "type": "boolean",
+            "description": "Should Entity not be drawn?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isDynamic": {
+            "type": "boolean",
+            "description": "Is this a physics object?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "spawnChance": {
+            "type": "number",
+            "description": "Chance to be created.",
+            "baseClass": "Entity",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "detailLevel": {
+            "$ref": "Entity.schema.json#/definitions/DetailLevel",
+            "description": "Detail level at which to be drawn",
+            "baseClass": "Entity",
+            "default": "LOW"
+        },
+        "drawDistance": {
+            "$ref": "Entity.schema.json#/definitions/DrawDistance",
+            "description": "Distance at which to be drawn.",
+            "baseClass": "Entity",
+            "default": "FAR"
+        },
+        "canStepUpOn": {
+            "type": "boolean",
+            "description": "Can Entity be stepped up on?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "floating": {
+            "type": "boolean",
+            "description": "Is Entity floating?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "mass": {
+            "type": "number",
+            "description": "Mass of Entity.",
+            "baseClass": "Entity",
+            "default": 1.0
+        },
+        "dropSound": {
+            "type": "string",
+            "description": "Sound played when Entity hits the floor.",
+            "baseClass": "Entity",
+            "default": "drops/drop_soft.mp3"
+        },
+        "shadowType": {
+            "$ref": "Entity.schema.json#/definitions/ShadowType",
+            "description": "Type of drop shadow.",
+            "baseClass": "Entity",
+            "default": "NONE"
+        },
+        "bounces": {
+            "type": "boolean",
+            "description": "Does Entity bounce?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "stepHeight": {
+            "type": "number",
+            "description": "How high can Entity step up?",
+            "baseClass": "Entity",
+            "default": 0.5
+        },
+        "pushable": {
+            "type": "boolean",
+            "description": "Can Entity be pushed?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isStatic": {
+            "type": "boolean",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isOnFloor": {
+            "type": "boolean",
+            "description": "Is Entity on the floor?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isOnEntity": {
+            "type": "boolean",
+            "description": "Is Entity on another Entity?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "ignorePlayerCollision": {
+            "type": "boolean",
+            "description": "Ignore collision with Player?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "color": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Entity tint color.",
+            "baseClass": "Entity",
+            "default": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0
+            }
+        },
+        "fullbrite": {
+            "type": "boolean",
+            "description": "Draw Entity without shading?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "attachmentTransform": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Position offset of attached Entities.",
+            "baseClass": "Entity"
+        },
+        "attached": {
+            "type": "array",
+            "description": "Array of attached Entities.",
+            "baseClass": "Entity"
+        }
+    },
+    "required": [
+        "class"
+    ],
+    "default": {
+        "class": "com.interrupt.dungeoneer.entities.Foliage",
+        "isStatic": true
+    },
+    "definitions": {
+        "foliageAttachment": {
+            "type": "string",
+            "enum": [
+                "FLOOR",
+                "CEILING",
+                "CENTER"
+            ]
+        }
+    }
+}

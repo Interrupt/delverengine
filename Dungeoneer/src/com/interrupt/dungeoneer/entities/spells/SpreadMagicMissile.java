@@ -6,16 +6,20 @@ import com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile;
 import com.interrupt.dungeoneer.game.Game;
 
 public class SpreadMagicMissile extends MagicMissile {
-
-	public SpreadMagicMissile() { trailInterval = 2f; splashForce = 0.005f; }
-
+    /** Projectile count. */
     public int numProjectiles = 5;
+
+    /** Horizontal spread distance. */
     public float xSpread = 5f;
+
+    /** Vertical spread distance. */
     public float ySpread = 5f;
 
     Vector3 tempDir = new Vector3();
-	
-	@Override
+
+    public SpreadMagicMissile() { trailInterval = 2f; splashForce = 0.005f; }
+
+    @Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
 		
 		int dmg = doAttackRoll() / numProjectiles;

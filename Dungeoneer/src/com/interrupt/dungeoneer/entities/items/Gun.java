@@ -19,12 +19,11 @@ import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.StringManager;
 
 public class Gun extends Weapon {
-	
-	public Gun() { itemType = ItemType.wand; chargesAttack = false; }
-	
+    /** Is automatic fire? */
 	@EditorProperty
 	public boolean automatic = true;
-	
+
+	/** Time between shots in milliseconds. */
 	@EditorProperty
 	public float cycleTime = 6f;
 
@@ -32,34 +31,48 @@ public class Gun extends Weapon {
 
 	private boolean canFire = true;
 
+	/** Ammo type. Must correspond to a ItemStack stackType. */
 	@EditorProperty
     public String ammoType = "BULLET";
 
+	/** Ammo consumed per shot. */
     @EditorProperty
     public int ammoPerShot = 1;
 
+    /** Sound to play when attempting to fire with no ammo. */
 	@EditorProperty(group = "Gun Sounds")
     public String outOfAmmoSound = "button.mp3";
 
+	/** Sound to play when firing. */
 	@EditorProperty(group = "Gun Sounds")
 	public String fireSound = "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3";
 
+	/** Explosion on hit. */
 	Explosion hitEffect = null;
+
+	/** Muzzle flash effect played when firing. */
 	Explosion muzzleFlash = null;
 
+	/** Number of projectiles per shot. */
 	@EditorProperty(group = "Gun Projectiles")
     public int projectileNum = 1;
 
+	/** Projectile horizontal spread. */
 	@EditorProperty(group = "Gun Projectiles")
     public float projectileSpreadX = 0f;
 
+	/** Projectile vertical spread. */
 	@EditorProperty(group = "Gun Projectiles")
     public float projectileSpreadY = 0f;
 
+	/** Number of particles for each projectile hit. */
 	@EditorProperty(group = "Gun Projectiles")
     public int hitParticles = 7;
 
+	/** Projectile to fire. Will use hitscan if null. */
 	public Projectile projectile = null;
+
+    public Gun() { itemType = ItemType.wand; chargesAttack = false; }
 
 	public Gun(float x, float y) {
 		super(x, y, 16, ItemType.wand, StringManager.get("items.Gun.defaultNameText")); speed = 0.01f;

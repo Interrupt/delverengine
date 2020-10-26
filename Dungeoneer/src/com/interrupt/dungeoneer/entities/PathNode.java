@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.game.Pathfinding;
 public class PathNode extends Entity {
     public transient short playerSmell = 0;
     public short weight = 0;
+    public boolean nodeEnabled = true;
 
     private transient Array<PathNode> connections = new Array<PathNode>();
     private transient Array<PathNode> jumps = new Array<PathNode>();
@@ -82,7 +83,7 @@ public class PathNode extends Entity {
             // normal connections
             for (int i = 0; i < connections.size; i++) {
                 PathNode node = connections.get(i);
-                if(node != previous) {
+                if(node != previous && node.nodeEnabled) {
                     node.walk(iteration, this);
                 }
             }
@@ -92,6 +93,12 @@ public class PathNode extends Entity {
     public void reset() {
         synchronized (this) {
             playerSmell = Short.MAX_VALUE;
+        }
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        synchronized (this) {
+            this.nodeEnabled = isEnabled;
         }
     }
 }

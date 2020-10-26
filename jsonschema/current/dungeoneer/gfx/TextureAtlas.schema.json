@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Texture Atlas",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.gfx.TextureAtlas",
+            "description": "Fully-qualified Java class name."
+        },
+        "columns": {
+            "type": "integer",
+            "default": 16,
+            "description": "Number of columns."
+        },
+        "rowScale": {
+            "type": "integer",
+            "default": 1,
+            "description": "Height to width ratio of sprite."
+        },
+        "filename": {
+            "type": "string",
+            "default": "",
+            "description": "Filepath to texture file. Relative to asset directory."
+        },
+        "name": {
+            "type": "string",
+            "default": "",
+            "description": "Internal name used to reference this object."
+        },
+        "shader": {
+            "type": "string",
+            "default": "",
+            "description": "Name of shader to be used for this object."
+        },
+        "scale": {
+            "type": "number",
+            "default": 1,
+            "description": "Scale of sprite."
+        },
+        "y_offset": {
+            "type": "number",
+            "default": 0,
+            "description": "Y-axis offset of sprite."
+        },
+        "filter": {
+            "type": "boolean",
+            "default": false,
+            "description": "Use bilinear texture filtering."
+        }
+    },
+    "required": [
+        "filename",
+        "name"
+    ]
+}

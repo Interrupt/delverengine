@@ -9,24 +9,41 @@ import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.managers.EntityManager;
 
 public class MagicMissile extends Spell {
-	
+	/** Sound to play on hit. */
 	public String hitSound = null;
-	
-	public MagicMissile() { }
 
+	/** Spell sprite. */
     public Material appearance = null;
+
+	/** Spell explosion. */
     public Explosion explosion = null;
 
+	/** Spell projectile speed. */
     float speed = 0.17f;
+
+	/** Particle trail spawn interval. */
 	float trailInterval = 1f;
+
+	/** Force of spell splash damage. */
 	float splashForce = 0.1f;
+
+	/** Radius of spell splash. */
 	float splashRadius = 3f;
+
+	/** Does spell cause splash damage? */
 	public boolean splashDamage = false;
+
+	/** Does spell projectile float? */
 	boolean floating = true;
+
+	/** Spell aim accuracy. */
 	float shotAccuracy = 1.0f;
 
-	public MagicMissileProjectile magicMissileProjectile = null;
-	
+	/** Spell projectile. */
+    public MagicMissileProjectile magicMissileProjectile = null;
+
+    public MagicMissile() { }
+
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
 		

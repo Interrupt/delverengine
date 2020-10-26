@@ -1,26 +1,31 @@
 package com.interrupt.dungeoneer.entities.spells;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.Audio;
-import com.interrupt.dungeoneer.entities.*;
+import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
+import com.interrupt.dungeoneer.entities.Explosion;
+import com.interrupt.dungeoneer.entities.Particle;
+import com.interrupt.dungeoneer.entities.ProjectedDecal;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 
 public class SplashExplosion extends Spell {
-	
-	public int damage = 2;
-	public float radius = 0.5f;
-	public float physicsForce = 0.2f;
-	public String explodeSound = "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3";
-	
+	/** Damage amount. */
+    public int damage = 2;
+
+	/** Splash radius. */
+    public float radius = 0.5f;
+
+	/** Explosion force. */
+    public float physicsForce = 0.2f;
+
+	/** Sound to play when exploding. */
+    public String explodeSound = "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3";
+
 	private Entity owner = null;
 	
 	public SplashExplosion() { }

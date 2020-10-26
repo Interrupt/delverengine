@@ -5,30 +5,29 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.DynamicLight;
-import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Particle;
-import com.interrupt.dungeoneer.entities.Player;
+import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.tiles.Tile;
 
 import java.util.Random;
 
 public class TeleportArea extends Area {
     public TeleportArea() { hidden = true; spriteAtlas = "editor"; tex = 11; isStatic = false; isDynamic = true; }
 
+    /** WarpMarker id to teleport to. */
     @EditorProperty
     public String toWarpMarkerId = null;
 
+    /** Keep relative position offset? */
     @EditorProperty
     public boolean preserveOffset = true;
 
+    /** Show teleport particle effect? */
     @EditorProperty
     public boolean doTeleportEffect = false;
 
-    private transient Vector3 t_vector3 = new Vector3();
+    private final transient Vector3 t_vector3 = new Vector3();
 
     @Override
     public void tick(Level level, float delta) {
@@ -41,62 +40,60 @@ public class TeleportArea extends Area {
         }
     }
 
-    public void teleportEntity(Entity e, Level level) {
-        if(toWarpMarkerId != null) {
-            float xTarget = e.x - x;
-            float yTarget = e.y - y;
-            float offset = 0;
-
-            if(e instanceof Player) {
-                xTarget += 0.5f;
-                yTarget += 0.5f;
-                offset = 0.5f;
-            }
-
-            doEffect(t_vector3.set(e.x + offset, e.y + offset, e.z), level);
-
-            putEntityAtWarpMarker(e, level, toWarpMarkerId);
-
-            if(preserveOffset) {
-                e.x += xTarget;
-                e.y += yTarget;
-            }
-
-            doEffect(t_vector3.set(e.x + offset, e.y + offset, e.z), level);
+    /**
+     * Teleport given entity to specified WarpMarker.
+     *
+     * @param e Target Entity to teleport
+     * @param level Level containing target Entity
+     */
+    private void teleportEntity(Entity e, Level level) {
+        if(toWarpMarkerId == null || toWarpMarkerId.isEmpty()) {
+            return;
         }
+
+        doEffect(t_vector3.set(e.x, e.y, e.z), level);
+        putEntityAtWarpMarker(e, level);
+        doEffect(t_vector3.set(e.x, e.y, e.z), level);
     }
 
-    public void putEntityAtWarpMarker(Entity e, Level level, String warpMarkerId) {
-        if(warpMarkerId != null) {
-            Array<Entity> found = level.getEntitiesById(warpMarkerId);
+    /**
+     * Helper method to handle positioning a teleported entity.
+     *
+     * @param e Target Entity to teleport
+     * @param level Level containing target Entity
+     */
+    private void putEntityAtWarpMarker(Entity e, Level level) {
+        Array<Entity> found = level.getEntitiesById(toWarpMarkerId);
 
-            // try a more fuzzy search, as a fallback
+        // Try a more fuzzy search, as a fallback
+        if(found.size == 0) {
+            found = level.getEntitiesLikeId(toWarpMarkerId);
+
             if(found.size == 0) {
-                found = level.getEntitiesLikeId(warpMarkerId);
+                return;
             }
+        }
 
-            if(found.size > 0) {
-                Entity warpTo = found.first();
-                if(e instanceof Player) {
-                    Player player = (Player)e;
-                    player.x = warpTo.x - 0.5f;
-                    player.y = warpTo.y - 0.5f;
-                    player.z = warpTo.z;
+        float xOffset = e.x - x;
+        float yOffset = e.y - y;
 
-                    if(!preserveOffset)
-                        player.rot = (float) Math.toRadians(warpTo.getRotation().z + 90f);
-                }
-                else {
-                    e.x = warpTo.x;
-                    e.y = warpTo.y;
-                    e.z = warpTo.z;
+        Entity warpTo = found.first();
+        e.setPosition(warpTo);
 
-                    if(!preserveOffset) {
-                        Vector3 rot = warpTo.getRotation();
-                        e.setRotation(rot.x, rot.y, rot.z);
-                    }
-                }
-            }
+        if(preserveOffset) {
+            e.x += xOffset;
+            e.y += yOffset;
+
+            return;
+        }
+
+        Vector3 rotation = warpTo.getRotation();
+        if (e instanceof Player) {
+            Player player = (Player) e;
+            player.rot = (float) Math.toRadians(rotation.z + 90f);
+        }
+        else {
+            e.setRotation(rotation.x, rotation.y, rotation.z);
         }
     }
 

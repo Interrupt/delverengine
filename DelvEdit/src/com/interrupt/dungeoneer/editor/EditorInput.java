@@ -19,8 +19,6 @@ public class EditorInput implements InputProcessor {
         return buttonsDown[button];
     }
 
-    public boolean ignoreRightClick = false;
-
     public EditorInput() {}
 
     @Override
@@ -94,7 +92,7 @@ public class EditorInput implements InputProcessor {
         buttonsDown[button] = true;
         if(!buttonEvents.contains(button)) buttonEvents.add(button);
 
-        ignoreRightClick = false;
+        Editor.app.ui.touchDown(x, y, pointer, button);
 
         for (InputProcessor listener : listeners) {
             boolean results = listener.touchDown(x, y, pointer, button);

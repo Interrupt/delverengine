@@ -47,19 +47,30 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Player extends Actor {
-	
+	/** Player gold amount. */
 	public int gold = 0;
 
+	/** Player z-axis rotation. */
 	public float rot = 0;
+
+	/** Player y-axis rotation. */
 	public float yrot = 0;
+
 	public float rota = 0;
 	public float rotya = 0;
 	
 	public float rot2 = 0;
 
+	/** Player jump height. */
 	public float jumpHeight = 0.05f;
+
+	/** Player eye height. */
 	public float eyeHeight = 0.12f;
+
+	/** Head bob speed. */
 	public float headBobSpeed = 0.319f;
+
+	/** Head bob height. */
 	public float headBobHeight = 0.3f;
 	
 	public boolean hasAttacked;
@@ -74,7 +85,8 @@ public class Player extends Actor {
 	
 	public boolean ignoreStairs = false;
 	public float spawnX, spawnY;
-	
+
+	/** Player key count. */
 	public int keys = 0;
 	
 	public float attackChargeTime = 40;
@@ -101,12 +113,12 @@ public class Player extends Actor {
 	
 	public int levelNum = 0;
 	
-	// inventory stuff
+	/** Player inventory. */
 	public Array<Item> inventory = new Array<Item>();
 	public Integer selectedBarItem = null;
 	public Integer heldItem = null;
 
-	// items to start with!
+	/** New game player inventory. */
 	public Array<Entity> startingInventory = new Array<Entity>();
 	
 	public HashMap<String,Item> equippedItems = new HashMap<String,Item>();
@@ -151,11 +163,15 @@ public class Player extends Actor {
 	Vector3 tempVec2 = new Vector3();
 	Vector3 tempVec3 = new Vector3();
 	Vector3 tempVec4 = new Vector3();
-	
+
+	/** Player light color. */
 	public Color torchColor = new Color(1f, 0.8f, 0.4f, 1f);
-	private Color originalTorchColor = null;
+
+	/** Player light range. */
 	public float torchRange = 3.0f;
-	
+
+	private Color originalTorchColor = null;
+
 	public boolean inEditor = false;
 	
 	public static transient ControllerState controllerState = new ControllerState();
@@ -191,6 +207,7 @@ public class Player extends Actor {
 
     public transient float strafeCameraAngleMod = 0f;
 
+    /** Does player level up? */
     private boolean canLevelUp = true;
 
     private Array<TravelInfo> travelPath = new Array<TravelInfo>();
@@ -364,6 +381,8 @@ public class Player extends Actor {
 		
 		// room to move in X?
 		if (!isSolid || level.isFree(nextx, y, z, collision, stepHeight, false, hitLoc)) {
+			runPushCheck(level, delta, CollisionAxis.X);
+
 			Entity encroaching = null;
 			if(isSolid) {
 				encroaching = level.getHighestEntityCollision(nextx, y, z, collision, this);
@@ -384,10 +403,10 @@ public class Player extends Actor {
 						encroaching.steppedOn(this);
 					}
 					else {
-						xa = 0;
 						if(!inEditor) {
 							encroaching.encroached(this);
 						}
+						xa = 0;
 					}
 				}
 				else {
@@ -395,10 +414,10 @@ public class Player extends Actor {
 				}
 			}
 			else {
-				xa = 0;
 				if(!inEditor) {
 					encroaching.encroached(this);
 				}
+				xa = 0;
 			}
 		}
 		else {
@@ -407,6 +426,8 @@ public class Player extends Actor {
 		
 		// room to move in Y?
 		if (!isSolid || level.isFree(x, nexty, z, collision, stepHeight, false, hitLoc)) {
+			runPushCheck(level, delta, CollisionAxis.Y);
+
 			Entity encroaching = null;
 			if(isSolid) {
 				encroaching = level.getHighestEntityCollision(x, nexty, z, collision, this);
@@ -427,10 +448,10 @@ public class Player extends Actor {
 						encroaching.steppedOn(this);
 					}
 					else {
-						ya = 0;
 						if(!inEditor) {
 							encroaching.encroached(this);
 						}
+						ya = 0;
 					}
 				}
 				else {
@@ -438,10 +459,10 @@ public class Player extends Actor {
 				}
 			}
 			else {
-				ya = 0;
 				if(!inEditor) {
 					encroaching.encroached(this);
 				}
+				ya = 0;
 			}
 		}
 		else {
@@ -657,6 +678,45 @@ public class Player extends Actor {
 		}
 		else {
 			drunkMod = 0;
+		}
+	}
+
+	private void runPushCheck(Level level, float delta, CollisionAxis collisionAxis) {
+
+		float checkX = x;
+		float checkY = y;
+
+		if(collisionAxis == CollisionAxis.X) {
+			checkX = nextx;
+		}
+		else if(collisionAxis == CollisionAxis.Y) {
+			checkY = nexty;
+		}
+
+		// This is all the same collision check from the tick function copy pasted here, probably should generalize this
+		Entity encroaching = null;
+		if(isSolid) {
+			encroaching = level.getHighestEntityCollision(checkX, checkY, z, collision, this);
+			if(encroaching == null) {
+				encroaching = level.checkStandingRoomWithEntities(checkX, checkY, z, collision, this);
+			}
+		}
+
+		if(encroaching == null || z > encroaching.z + encroaching.collision.z - stepHeight) {
+			// are we touching an entity?
+			if(encroaching != null) {
+				// maybe we can climb on it
+				if( z > encroaching.z + encroaching.collision.z - stepHeight &&
+						level.collidesWorldOrEntities(checkX, checkY, encroaching.z + encroaching.collision.z, collision, this) && encroaching.canStepUpOn) {
+					// can climb, no push
+				}
+				else {
+					encroaching.push(this, level, delta, collisionAxis);
+				}
+			}
+		}
+		else {
+			encroaching.push(this, level, delta, collisionAxis);
 		}
 	}
 

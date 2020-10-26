@@ -22,7 +22,10 @@ import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.managers.ShaderManager;
 
 public class DrawableMesh extends Drawable {
+	/** Mesh filepath. */
 	public String meshFile = "meshes/chair.obj";
+
+	/** Mesh texture filepath. */
 	public String textureFile = "meshes.png";
 	
 	public transient Mesh loadedMesh;
@@ -32,28 +35,45 @@ public class DrawableMesh extends Drawable {
 	
 	private transient Matrix4 modelView = null;
 	private transient Matrix4 combined = new Matrix4();
-	private transient Matrix4 workspace = new Matrix4();
-	private transient Vector3 workVec = new Vector3();
 
 	public transient Vector3 scaleVector = null;
-	
+
+	/** Position x-coordinate. */
 	public float x = 0;
+
+	/** Position y-coordinate. */
 	public float y = 0;
+
+	/** Position z-coordinate. */
 	public float z = 0;
-	
+
+	/** Rotation x-coordinate. */
 	public float rotX = 0;
+
+	/** Rotation y-coordinate. */
 	public float rotY = 0;
+
+	/** Rotation z-coordinate. */
 	public float rotZ = 0;
 	
 	public transient BoundingBox bbox = null;
 	private transient BoundingBox frustrumCheckBox = new BoundingBox();
-	
+
+	/** Is mesh static. Static meshes are combined and drawn more efficiently. */
 	public boolean isStaticMesh = false;
+
     public boolean addCollisionTriangles = false;
 
     public boolean bakeLighting = false;
     private transient Mesh bakedMesh = null;
     private transient Vector3 bakedRotation = new Vector3(0, 0, 0);
+
+    // Scratch work quaternions and vectors
+    private transient Quaternion workQuat1 = new Quaternion();
+    private transient Quaternion workQuat2 = new Quaternion();
+    private transient Vector3 workVec1 = new Vector3();
+    private transient Vector3 workVec2 = new Vector3();
+
 
     public DrawableMesh() { }
 
@@ -139,7 +159,7 @@ public class DrawableMesh extends Drawable {
 	public void update(Entity e) {
 		x = e.x;
 		y = e.y;
-		z = e.z;
+		z = e.z + e.yOffset;
 		fullbrite = e.fullbrite;
 		scale = e.scale;
 		color = e.color;
@@ -157,14 +177,20 @@ public class DrawableMesh extends Drawable {
 		}
 
 		// make the model view
-		Vector3 dirWithoutY = workVec.set(dir.x,0,dir.z);
-		if(modelView == null) modelView = new Matrix4();
-
+		if (modelView == null) modelView = new Matrix4();
 		modelView.setToTranslation(x + drawOffset.x, z - 0.5f + drawOffset.z, y + drawOffset.y);
 
-		modelView.mul(workspace.setToLookAt(dirWithoutY, Vector3.Y));
-		modelView.mul(workspace.setToRotation(Vector3.X, dir.y * -90f));
-			
+		// Rotate to face the direction, this time using Quaternions to support better rotation
+		Vector3 tmp = workVec1.set(Vector3.Y).crs(dir).nor();
+		Vector3 tmp2 = workVec2.set(dir).crs(tmp).nor();
+		workQuat1.setFromAxes(tmp.x, tmp2.x, dir.x, tmp.y, tmp2.y, dir.y, tmp.z, tmp2.z, dir.z);
+
+		// Old way was flipped, new way should also be to not break old stuff
+		workQuat2.set(Vector3.Y, 180f);
+		workQuat1.mul(workQuat2);
+
+		// Apply the quaternion rotation, as well as any other axis based rotation
+		modelView.rotate(workQuat1);
 		modelView.rotate(Vector3.Y, rotZ - bakedRotation.z);
 		modelView.rotate(Vector3.X, rotX - bakedRotation.x);
 		modelView.rotate(Vector3.Z, rotY - bakedRotation.y);

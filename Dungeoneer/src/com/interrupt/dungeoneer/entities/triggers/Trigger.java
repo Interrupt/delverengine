@@ -18,56 +18,71 @@ import com.interrupt.managers.StringManager;
 import java.text.MessageFormat;
 
 public class Trigger extends Entity {
-
+	/** Does this count as a secret? */
 	@EditorProperty( group = "Trigger" )
 	public boolean isSecret = false;
 
 	public enum TriggerStatus {WAITING, TRIGGERED, RESETTING, DESTROYED}
 	public enum TriggerType {USE, PLAYER_TOUCHED, ACTOR_TOUCHED, ANY_TOUCHED}
 	public enum GameTime {WHENEVER, DESCENT, ESCAPE}
-	
+
+	/** Kind of action that causes trigger. */
 	@EditorProperty( group = "Trigger" )
 	public TriggerType triggerType = TriggerType.USE;
-	
+
+	/** Entity to send trigger event when triggered. */
 	@EditorProperty( group = "Trigger" )
 	public String triggersId = "";
-	
+
+	/** Reset after being triggered? */
 	@EditorProperty( group = "Trigger" )
 	public boolean triggerResets = true;
 
+	/** Only allow trigger events from Entities with specified id. */
     @EditorProperty( group = "Trigger" )
     public String onlyTriggeredById = null;
-	
+
+    /** Time to wait before performing trigger action after receiving trigger event. */
 	@EditorProperty( group = "Trigger" )
 	public float triggerDelay = 0f;
-	
+
+	/** Time to wait to reset after performing trigger action. */
 	@EditorProperty( group = "Trigger" )
 	public float triggerResetTime = 0f;
-	
+
+	/** Trigger event value. */
 	@EditorProperty( group = "Trigger" )
 	public String triggerValue = "";
-	
+
+	/** Pass trigger event value to targeted trigger? */
 	@EditorProperty( group = "Trigger" )
 	public boolean triggerPropogates = true;
-	
+
+	/** Text to show for interaction prompt. */
 	@EditorProperty( group = "Trigger" )
 	public String useVerb = StringManager.get("entities.Trigger.defaultUseVerb");
-	
+
+	/** Message to display when triggered. */
 	@EditorProperty( group = "Trigger" )
 	public String message = "";
-	
+
+	/** Duration to display message in seconds. */
 	@EditorProperty( group = "Trigger" )
 	public float messageTime = 5f;
-	
+
+	/** Size of displayed message. */
 	@EditorProperty( group = "Trigger" )
 	public float messageSize = 1f;
-	
+
+	/** Filepath of sound to play when triggered. */
 	@EditorProperty( group = "Trigger" )
 	public String triggerSound = null;
 
+	/** Which phase of the game to permit triggering. */
 	@EditorProperty( group = "Trigger" )
 	public GameTime triggersDuring = GameTime.WHENEVER;
 
+	/** Does this appear during end game? */
 	@EditorProperty( group = "End Game" )
 	public boolean appearsDuringEndgame = true;
 	

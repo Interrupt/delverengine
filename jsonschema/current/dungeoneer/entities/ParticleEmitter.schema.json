@@ -1,0 +1,499 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Particle Emitter",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.entities.ParticleEmitter",
+            "description": "Fully-qualified Java class name.",
+            "baseClass": "ParticleEmitter"
+        },
+        "startMode": {
+            "$ref": "#/definitions/StartMode",
+            "description": "",
+            "baseClass": "ParticleEmitter",
+            "default": "IMMEDIATELY"
+        },
+        "particleStartTex": {
+            "type": "integer",
+            "description": "Particle starting animation frame sprite index.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particleEndTex": {
+            "type": "integer",
+            "description": "Particle ending animation frame sprite index.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particleArtTye": {
+            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "description": "Particle art type.",
+            "baseClass": "ParticleEmitter",
+            "default": "particle"
+        },
+        "particleAtlas": {
+            "type": "string",
+            "description": "Particle TextureAtlas name.",
+            "baseClass": "ParticleEmitter",
+            "default": "particle"
+        },
+        "particleShadows": {
+            "type": "boolean",
+            "description": "Do particles have shadows?",
+            "baseClass": "ParticleEmitter",
+            "default": false
+        },
+        "particleHalos": {
+            "type": "boolean",
+            "description": "Do particles have halos?",
+            "baseClass": "ParticleEmitter",
+            "default": false
+        },
+        "particleHalo": {
+            "$ref": "Entity.schema.json#/definitions/HaloMode",
+            "description": "Particle halo mode.",
+            "baseClass": "ParticleEmitter",
+            "default": "NONE"
+        },
+        "particleLifetime": {
+            "type": "number",
+            "description": "Particle lifetime in milliseconds",
+            "baseClass": "ParticleEmitter",
+            "default": 20
+        },
+        "particlesCollide": {
+            "type": "boolean",
+            "description": "Do particles collide?",
+            "baseClass": "ParticleEmitter",
+            "default": true
+        },
+        "particleSpread": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Size of volume where particles will be created.",
+            "baseClass": "ParticleEmitter",
+            "default": {
+                "x": 0.1,
+                "y": 0.1,
+                "z": 0.1
+            }
+        },
+        "particleCollisionSize": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Particle bounding box dimensions.",
+            "baseClass": "ParticleEmitter",
+            "default": {
+                "x": 0.05,
+                "y": 0.05,
+                "z": 0.05
+            }
+        },
+        "particleVelocity": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Particle initial velocity.",
+            "baseClass": "ParticleEmitter",
+            "default": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        "particleMaxVelocity": {
+            "type": "number",
+            "description": "Particle maximum speed.",
+            "baseClass": "ParticleEmitter",
+            "default": 10
+        },
+        "particleDampenAmount": {
+            "type": "number",
+            "description": "Amount of velocity a particle preserves each tick.",
+            "baseClass": "ParticleEmitter",
+            "default": 0.9
+        },
+        "particleRandomVelocity": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Range for creating a random velocity vector. Will be added to initial velocity.",
+            "baseClass": "ParticleEmitter",
+            "default": {
+                "x": 0.1,
+                "y": 0.1,
+                "z": 0.1
+            }
+        },
+        "particleRandomSpawnCount": {
+            "type": "number",
+            "description": "Maximum amount of additional particles to spawn.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particlesRotateByVariance": {
+            "type": "number",
+            "description": "Particle angular velocity variance.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particlesMovementRotateAmount": {
+            "type": "number",
+            "description": "Particle angular velocity determined by particle speed.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particlesFloat": {
+            "type": "boolean",
+            "description": "Are particles effected by gravity?",
+            "baseClass": "ParticleEmitter",
+            "default": false
+        },
+        "turbulenceAmount": {
+            "type": "number",
+            "description": "Maximum amount of particle turbulence.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "turbulenceMoveModifier": {
+            "type": "number",
+            "description": "Particle turbulence amount determined by particle speed.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particleStartScale": {
+            "type": "number",
+            "description": "Starting scale of particle.",
+            "baseClass": "ParticleEmitter",
+            "default": 1
+        },
+        "particleEndScale": {
+            "type": "number",
+            "description": "Ending scale of particle.",
+            "baseClass": "ParticleEmitter",
+            "default": 1
+        },
+        "particlesFullbrite": {
+            "type": "boolean",
+            "description": "Draw particle without shading?",
+            "baseClass": "ParticleEmitter",
+            "default": false
+        },
+        "particlesRotateBy": {
+            "type": "number",
+            "description": "Particle angular velocity.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particleSpawnCount": {
+            "type": "integer",
+            "description": "Number of particles to spawn per emission.",
+            "baseClass": "ParticleEmitter",
+            "default": 2
+        },
+        "particleSpawnInterval": {
+            "type": "number",
+            "description": "Amount of time between emissions in milliseconds.",
+            "baseClass": "ParticleEmitter",
+            "default": 15
+        },
+        "particleRandomSpawnInterval": {
+            "type": "number",
+            "description": "Maximum amount of additional random time added to spawn interval.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particleRandomLifetime": {
+            "type": "number",
+            "description": "Maximum amount of additional random time added to particle lifetime.",
+            "baseClass": "ParticleEmitter",
+            "default": 0
+        },
+        "particlesRepeat": {
+            "type": "boolean",
+            "description": "Does emitter continuously emit?",
+            "baseClass": "ParticleEmitter",
+            "default": true
+        },
+        "particlesMoveRelativeToParent": {
+            "type": "boolean",
+            "description": "Do particles move relative to parent?",
+            "baseClass": "ParticleEmitter",
+            "default": true
+        },
+        "particleColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Particle color tint.",
+            "baseClass": "ParticleEmitter",
+            "default": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            }
+        },
+        "particleEndColor": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Particle ending color. Particle will not change color if omitted.",
+            "baseClass": "ParticleEmitter"
+        },
+        "particlesPersist": {
+            "type": "boolean",
+            "description": "Should this Entity be saved to the level file?",
+            "baseClass": "ParticleEmitter",
+            "default": false
+        },
+        "spawnDistance": {
+            "type": "number",
+            "description": "Only emit particles if player within this distance.",
+            "baseClass": "ParticleEmitter",
+            "default": 40
+        },
+        "pickRandomSprite": {
+            "type": "boolean",
+            "description": "Choose a random sprite between particleStartTex and particleEndTex for each particle?",
+            "baseClass": "ParticleEmitter",
+            "default": false
+        },
+        "id": {
+            "type": "string",
+            "description": "Id of Entity.",
+            "baseClass": "Entity"
+        },
+        "x": {
+            "type": "number",
+            "description": "Position x-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "y": {
+            "type": "number",
+            "description": "Position y-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "z": {
+            "type": "number",
+            "description": "Position z-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "xa": {
+            "type": "number",
+            "description": "Velocity x-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "ya": {
+            "type": "number",
+            "description": "Velocity y-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "za": {
+            "type": "number",
+            "description": "Velocity z-component.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "roll": {
+            "type": "number",
+            "description": "Roll used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 0.0
+        },
+        "tex": {
+            "type": "integer",
+            "description": "Sprite index.",
+            "baseClass": "Entity"
+        },
+        "isActive": {
+            "type": "boolean",
+            "description": "Should Entity be updated and drawn.",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "yOffset": {
+            "type": "number",
+            "description": "Vertical offset used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 0
+        },
+        "shader": {
+            "type": "string",
+            "description": "Shader name used to draw the Entity.",
+            "baseClass": "Entity"
+        },
+        "artType": {
+            "$ref": "Entity.schema.json#/definitions/ArtType",
+            "baseClass": "Entity"
+        },
+        "spriteAtlas": {
+            "type": "string",
+            "description": "Sprite TextureAtlas name.",
+            "baseClass": "Entity"
+        },
+        "entityType": {
+            "$ref": "Entity.schema.json#/definitions/EntityType",
+            "baseClass": "Entity"
+        },
+        "isSolid": {
+            "type": "boolean",
+            "description": "Can other entities collide with this Entity.",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "collision": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Dimensions of Entity bounding box.",
+            "baseClass": "Entity"
+        },
+        "collidesWith": {
+            "$ref": "Entity.schema.json#/definitions/CollidesWith",
+            "baseClass": "Entity",
+            "default": "all"
+        },
+        "scale": {
+            "type": "number",
+            "description": "Scale used when drawing the Entity.",
+            "baseClass": "Entity",
+            "default": 1.0
+        },
+        "hidden": {
+            "type": "boolean",
+            "description": "Should Entity not be drawn?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isDynamic": {
+            "type": "boolean",
+            "description": "Is this a physics object?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "spawnChance": {
+            "type": "number",
+            "description": "Chance to be created.",
+            "baseClass": "Entity",
+            "default": 1.0,
+            "minimum": 0.0,
+            "maximum": 1.0
+        },
+        "detailLevel": {
+            "$ref": "Entity.schema.json#/definitions/DetailLevel",
+            "description": "Detail level at which to be drawn",
+            "baseClass": "Entity",
+            "default": "LOW"
+        },
+        "drawDistance": {
+            "$ref": "Entity.schema.json#/definitions/DrawDistance",
+            "description": "Distance at which to be drawn.",
+            "baseClass": "Entity",
+            "default": "FAR"
+        },
+        "canStepUpOn": {
+            "type": "boolean",
+            "description": "Can Entity be stepped up on?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "floating": {
+            "type": "boolean",
+            "description": "Is Entity floating?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "mass": {
+            "type": "number",
+            "description": "Mass of Entity.",
+            "baseClass": "Entity",
+            "default": 1.0
+        },
+        "dropSound": {
+            "type": "string",
+            "description": "Sound played when Entity hits the floor.",
+            "baseClass": "Entity",
+            "default": "drops/drop_soft.mp3"
+        },
+        "shadowType": {
+            "$ref": "Entity.schema.json#/definitions/ShadowType",
+            "description": "Type of drop shadow.",
+            "baseClass": "Entity",
+            "default": "NONE"
+        },
+        "bounces": {
+            "type": "boolean",
+            "description": "Does Entity bounce?",
+            "baseClass": "Entity",
+            "default": true
+        },
+        "stepHeight": {
+            "type": "number",
+            "description": "How high can Entity step up?",
+            "baseClass": "Entity",
+            "default": 0.5
+        },
+        "pushable": {
+            "type": "boolean",
+            "description": "Can Entity be pushed?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isStatic": {
+            "type": "boolean",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isOnFloor": {
+            "type": "boolean",
+            "description": "Is Entity on the floor?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "isOnEntity": {
+            "type": "boolean",
+            "description": "Is Entity on another Entity?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "ignorePlayerCollision": {
+            "type": "boolean",
+            "description": "Ignore collision with Player?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "color": {
+            "$ref": "../../gdx/Color.schema.json",
+            "description": "Entity tint color.",
+            "baseClass": "Entity",
+            "default": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0
+            }
+        },
+        "fullbrite": {
+            "type": "boolean",
+            "description": "Draw Entity without shading?",
+            "baseClass": "Entity",
+            "default": false
+        },
+        "attachmentTransform": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Position offset of attached Entities.",
+            "baseClass": "Entity"
+        },
+        "attached": {
+            "type": "array",
+            "description": "Array of attached Entities.",
+            "baseClass": "Entity"
+        }
+    },
+    "required": [
+        "class"
+    ],
+    "definitions": {
+        "StartMode": {
+            "type": "string",
+            "enum": [
+                "IMMEDIATELY",
+                "DELAYED"
+            ]
+        }
+    }
+}

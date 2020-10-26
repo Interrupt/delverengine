@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Stats",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.rpg.Stats",
+            "description": "Fully-qualified Java class name."
+        },
+        "ATK": {
+            "type": "integer",
+            "description": "Attack stat.",
+            "default": 4
+        },
+        "DEF": {
+            "type": "integer",
+            "description": "Defense stat.",
+            "default": 4
+        },
+        "DEX": {
+            "type": "integer",
+            "description": "Dexterity stat.",
+            "default": 4
+        },
+        "SPD": {
+            "type": "integer",
+            "description": "Speed stat.",
+            "default": 4
+        },
+        "MAG": {
+            "type": "integer",
+            "description": "Magic stat.",
+            "default": 4
+        },
+        "END": {
+            "type": "integer",
+            "description": "Endurance stat.",
+            "default": 4
+        },
+        "HP": {
+            "type": "integer",
+            "description": "Healthpoints stat.",
+            "default": 8
+        },
+        "attackSpeedMod": {
+            "type": "number",
+            "description": "Attack speed modifier.",
+            "default": 0
+        },
+        "knockbackMod": {
+            "type": "number",
+            "description": "Knockback modifier.",
+            "default": 0
+        },
+        "magicResistMod": {
+            "type": "number",
+            "description": "Magic resistance modifier.",
+            "default": 0
+        }
+    }
+}

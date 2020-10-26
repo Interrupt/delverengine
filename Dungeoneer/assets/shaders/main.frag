@@ -11,16 +11,15 @@ varying vec2 v_texCoords;
 varying float v_fogFactor;
 varying float v_eyeDistance;
 
-vec4 tex_Color;
+const float c_epsilon = 1.0 / 256.0;
 
 void main() {
-  vec4 color;
-    
-  tex_Color = texture2D( u_texture, v_texCoords );
-  color = v_color * tex_Color;
-  if(tex_Color.a < 0.01) discard;
+    vec4 tex_Color = texture2D(u_texture, v_texCoords);
+    if(tex_Color.a < c_epsilon) discard;
 
-  color += tex_Color * (1.0 - tex_Color.a) * 2.5;
+    // Alpha channel drives emissive/fullbrite
+    vec4 fullbrite = tex_Color / (tex_Color.a);
+    vec4 color = mix(fullbrite, tex_Color * v_color, tex_Color.a);
 
-  gl_FragColor = mix(u_FogColor, color, v_fogFactor);
+    gl_FragColor = mix(u_FogColor, color, v_fogFactor);
 }

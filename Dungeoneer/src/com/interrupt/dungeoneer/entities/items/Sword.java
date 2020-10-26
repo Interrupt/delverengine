@@ -21,10 +21,12 @@ public class Sword extends Weapon {
 	public Sword(float x, float y) {
 		super(x, y, 8, ItemType.sword, "SWORD");
 	}
-	
+
+	/** Sound played when Sword hits a wall */
 	@EditorProperty
 	public String wallHitSound = "clang.mp3,clang_02.mp3,clang_03.mp3,clang_04.mp3";
-	
+
+	/** Sound played when Sword is swung */
 	@EditorProperty
 	public String swingSound = "whoosh1.mp3,whoosh1_02.mp3,whoosh1_03.mp3,whoosh1_04.mp3";
 	

@@ -50,7 +50,7 @@ import java.util.concurrent.Executors;
 
 public class Game {
 	/** Engine version */
-	public static String VERSION = "v1.2.0";
+	public static String VERSION = "v1.3.0";
 
     /** The save game version, gets saved in the player */
     public static int SAVE_VERSION = 1;
@@ -146,6 +146,7 @@ public class Game {
 		if(monsterManager == null) {
 			monsterManager = new MonsterManager();
 		}
+		MonsterManager.setSingleton(monsterManager);
 
 		// Load animation data
 		LerpedAnimationManager lam = modManager.loadAnimationManager();

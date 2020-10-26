@@ -1,15 +1,9 @@
 package com.interrupt.dungeoneer.entities;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.DynamicLight.LightType;
-import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.managers.EntityManager;
@@ -18,33 +12,40 @@ public class Torch extends Light {
 
 	float ticks = 0;
 	float switchtime = 10;
-	
+
+	/** Starting animation frame sprite index. */
 	@EditorProperty
 	public int texAnimStart = 4;
-	
+
+	/** Ending animation frame sprite index. */
 	@EditorProperty
 	public int texAnimEnd = 5;
 
 	public enum TorchAnimateModes { RANDOM, LOOP }
 
+	/** Torch animation mode. */
 	@EditorProperty
 	public TorchAnimateModes torchAnimateMode = TorchAnimateModes.RANDOM;
 
+	/** Animation speed. */
 	@EditorProperty
 	public float animSpeed = 30f;
 
 	protected SpriteAnimation animation = null;
-	
+
 	public ParticleEmitter emitter = null;
 	
 	public Torch() { spriteAtlas = "sprite"; hidden = false; collision.set(0.05f,0.05f,0.2f); fullbrite = true; haloMode = HaloMode.BOTH; haloOffset = 0.8f; }
 
+	/** Looping ambient sound. */
 	@EditorProperty
 	public String audio = "torch.mp3";
 
+	/** Make flies? */
 	@EditorProperty
     public boolean makeFlies = false;
 
+	/** Make ParticleEmitter? */
 	@EditorProperty
 	public boolean makeEmitter = true;
 	
@@ -129,7 +130,11 @@ public class Torch extends Light {
 		}
 	}
 
-	public void editorTick(Level level, float delta) { if(animation != null) animation.animate(delta, this); }
+	public void editorTick(Level level, float delta) {
+		super.editorTick(level, delta);
+		if(animation != null) animation.animate(delta, this);
+	}
+
 	public void editorStartPreview(Level level) { if(torchAnimateMode == TorchAnimateModes.LOOP) this.playAnimation(new SpriteAnimation(texAnimStart, texAnimEnd, animSpeed, null), true, true); }
 	public void editorStopPreview(Level level) {
 		if(animation != null) {

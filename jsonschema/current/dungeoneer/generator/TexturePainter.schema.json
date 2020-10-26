@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Texture Painter",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.generator.TexturePainter",
+            "description": "Fully-qualified Java class name."
+        },
+        "wall": {
+            "type": "object",
+            "description": "Wall texture index mapping.",
+            "$ref": "#/definitions/TextureIndexMapping"
+        },
+        "floor": {
+            "type": "object",
+            "description": "Floor texture index mapping.",
+            "$ref": "#/definitions/TextureIndexMapping"
+        },
+        "ceiling": {
+            "type": "object",
+            "description": "Ceiling texture index mapping.",
+            "$ref": "#/definitions/TextureIndexMapping"
+        }
+    },
+    "definitions": {
+        "TextureIndexMapping": {
+            "type": "object",
+            "description": "Texture Index Mapping",
+            "patternProperties": {
+                ".*": {
+                    "type": "array",
+                    "description": "Texture index to remap.",
+                    "items": {
+                        "type": "integer",
+                        "description": "Remapped values."
+                    }
+                }
+            }
+        }
+    }
+}

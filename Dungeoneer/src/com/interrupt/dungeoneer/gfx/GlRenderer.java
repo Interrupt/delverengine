@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.entities.Item.ItemType;
@@ -36,10 +37,7 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredMusic;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredShop;
 import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.decals.DDecal;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableProjectedDecal;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.gfx.drawables.*;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.gfx.shaders.WaterShaderInfo;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
@@ -50,7 +48,6 @@ import com.interrupt.dungeoneer.ui.EquipLoc;
 import com.interrupt.dungeoneer.ui.FontBounds;
 import com.interrupt.dungeoneer.ui.Hotbar;
 import com.interrupt.dungeoneer.ui.UiSkin;
-import com.interrupt.helpers.FloatTuple;
 import com.interrupt.managers.ShaderManager;
 import com.interrupt.managers.TileManager;
 import com.noise.PerlinNoise;
@@ -78,7 +75,7 @@ public class GlRenderer {
 	public TextureRegion miniMap;
 	public boolean showMap = false;
 
-	protected BitmapFont font = null;
+	public BitmapFont font = null;
 
 	protected TextureAtlas wallTextures;
 	protected TextureAtlas spriteTextures;
@@ -130,6 +127,9 @@ public class GlRenderer {
 	public static ShaderInfo fogShaderInfo;
 
 	public SpriteBatch uiBatch;
+
+	public Array<DrawableText> textToRender = new Array<>();
+	public SpriteBatch textBatch;
 
 	protected ArrayMap<String, DecalBatch> opaqueSpriteBatches = new ArrayMap<String, DecalBatch>();
 	protected ArrayMap<String, DecalBatch> transparentSpriteBatches = new ArrayMap<String, DecalBatch>();
@@ -396,6 +396,8 @@ public class GlRenderer {
 
 		uiBatch = new SpriteBatch();
 		uiBatch.setShader(uiShader);
+
+		textBatch = new SpriteBatch();
 
 		postProcessBatch = new SpriteBatch();
 		postProcessBatch.disableBlending();
@@ -779,6 +781,120 @@ public class GlRenderer {
 		}
 	}
 
+	TextureRegion tempGlyphTextureRegion = new TextureRegion();
+	public void renderTextBatches() {
+		DecalBatch batch = getDecalBatch("sprite", Entity.BlendMode.OPAQUE);
+		if (renderingForPicking)
+			batch = getDecalBatch("picking", Entity.BlendMode.OPAQUE);
+
+		// Global text scale modifier. Make a constant?
+		float baseTextScale = 0.025f;
+
+		Color tempColor = new Color();
+
+		for (int i = 0; i < textToRender.size; i++) {
+			DrawableText dT = textToRender.get(i);
+
+			float curXPos = 0f, curZPos = 0f;
+
+			GlyphLayout bounds = FontBounds.GetBounds(font, dT.text);
+			float textWidth = bounds.width * dT.scale * baseTextScale;
+			float textHeight = bounds.height * dT.scale * baseTextScale;
+
+			int line = 0;
+			float lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
+
+			BitmapFont.Glyph glyph = font.getData().getGlyph('X');
+
+			float glyphWidth, glyphHeight = glyph.height * dT.scale * baseTextScale;
+
+			// Draw a decal per-glyph for this text
+			for (int ii = 0; ii < dT.text.length(); ii++) {
+				char character = dT.text.charAt(ii);
+
+				glyph = font.getData().getGlyph(character);
+
+				if (glyph == null && character == '\n') { // Newline support is in DrawableText, replaces "\\n" with "\n" there to avoid issues with font boundary calculations.
+					curXPos = 0;
+					curZPos += glyphHeight;
+
+					lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
+					continue;
+				}
+
+				glyphWidth = glyph.width * dT.scale * baseTextScale;
+
+				float tx = dT.parentPosition.x + curXPos;
+				float ty = dT.parentPosition.y + 0.001f; // Pull out a bit, to place directly on walls
+				float tz = dT.parentPosition.z - curZPos + (glyphHeight * 0.5f); // Place font baseline directly on entity origin
+
+				// Center text on origin
+				tx -= textWidth * 0.5f - (textWidth - lineWidth) * dT.alignmentOffset;
+				tz += textHeight * 0.5f;
+
+				// Offset a tiny bit, because something was doing that in the glyph rendering code
+				tx += 0.1f * dT.scale;
+
+				// Increase the cursor position for next time
+				curXPos += glyphWidth;
+
+				// Update the position based on our rotation
+				Vector3 rotTemp = new Vector3(tx - dT.parentPosition.x, ty - dT.parentPosition.y, tz - dT.parentPosition.z);
+				rotTemp.rotate(Vector3.X, -dT.parentRotation.x);
+				rotTemp.rotate(Vector3.Y, -dT.parentRotation.y);
+				rotTemp.rotate(Vector3.Z, -dT.parentRotation.z);
+
+				tx = rotTemp.x + dT.parentPosition.x;
+				ty = rotTemp.y + dT.parentPosition.y;
+				tz = rotTemp.z + dT.parentPosition.z - 0.5f;
+
+				// Have everything, can now set up a sprite decal to draw
+				DDecal sd = decalPool.obtain();
+				usedDecals.add(sd);
+
+				sd.setBlending(-1, -1);
+				if (!renderingForPicking) {
+					if (dT.blendMode == Entity.BlendMode.ALPHA) {
+						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+					} else if (dT.blendMode == Entity.BlendMode.ADD) {
+						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+					}
+				}
+
+				sd.setPosition(tx, tz, ty);
+				sd.transformationOffset = Vector2.Zero;
+
+				sd.setRotation(0, 0, 0);
+				sd.rotateY(dT.parentRotation.z);
+				sd.rotateX(dT.parentRotation.x);
+				sd.rotateZ(dT.parentRotation.y);
+
+				if (dT.fullbrite) {
+					sd.setColor(dT.color.r, dT.color.g, dT.color.b, 1.0f);
+				} else {
+					tempColor.set(GetLightmapAt(tx, tz, ty)).mul(dT.color);
+					sd.setColor(tempColor.r, tempColor.g, tempColor.b, 1.0f);
+				}
+
+				if (renderingForPicking)
+					sd.setColor(dT.pickingColor);
+
+				sd.setScale(1f);
+				sd.setWidth(glyphWidth);
+				sd.setHeight(glyphHeight);
+
+				tempGlyphTextureRegion.setTexture(font.getRegion().getTexture());
+				tempGlyphTextureRegion.setRegion(glyph.u, glyph.v2, glyph.u2, glyph.v);
+				sd.setTextureRegion(tempGlyphTextureRegion);
+
+				batch.add(sd);
+			}
+			batch.flush();
+		}
+
+		textToRender.clear();
+	}
+
 	public void renderOpaqueSprites() {
 		try {
 			for (int i = 0; i < opaqueSpriteBatches.size; i++) {
@@ -1058,6 +1174,7 @@ public class GlRenderer {
 		}
 
 		renderOpaqueSprites();
+		renderTextBatches();
 	}
 
 	public void renderEntitiesForPicking(Level level) {
@@ -1095,6 +1212,7 @@ public class GlRenderer {
 		}
 
 		renderOpaqueSprites();
+		renderTextBatches();
 
 		renderingForPicking = false;
 	}
@@ -1404,6 +1522,7 @@ public class GlRenderer {
 		}
 
 		renderOpaqueSprites();
+		renderTextBatches();
 		renderMeshes();
 		renderTransparentEntities();
 
@@ -1501,6 +1620,10 @@ public class GlRenderer {
 				renderDrawableSprite(s.x, s.y, s.z, true, s, (DrawableSprite)s.drawable);
 			else
 				renderDrawableSprite(s.x, s.y, s.z, false, s, (DrawableSprite)s.drawable);
+		}
+
+		else if(s.drawable instanceof DrawableText) {
+			renderDrawableText(s.x, s.y, s.z, s, (DrawableText)s.drawable);
 		}
 		else if(s.drawable instanceof DrawableBeam) {
 			renderDrawableBeam(s.x, s.y, s.z, (DrawableBeam)s.drawable);
@@ -1881,8 +2004,11 @@ public class GlRenderer {
 			handMaxLerpTime -= 2.5f * Gdx.graphics.getDeltaTime();
 			if(handMaxLerpTime < 0) handMaxLerpTime = 0;
 
-			if (handMaxDirection.y > 0.25f)
-				handMaxDirection.y = Interpolation.exp5.apply(0.25f, handMaxDirection.y, handMaxLerpTime);
+			// Give non-ranged items a max angle to look up
+			if(!(heldItem instanceof Bow || heldItem instanceof Wand || heldItem instanceof Gun)) {
+				if (handMaxDirection.y > 0.25f)
+					handMaxDirection.y = Interpolation.exp5.apply(0.25f, handMaxDirection.y, handMaxLerpTime);
+			}
 
 			handMaxDirection = handMaxDirection.nor();
 		}
@@ -1896,6 +2022,44 @@ public class GlRenderer {
 		downDirection.set(camera.up).nor();
 
 		handLagRotation.set(handMaxDirection);
+
+		// Handle drawable meshes. First, make sure a model is loaded if this was just in the inventory
+		if(heldItem.shouldUseMesh(true))
+			heldItem.updateHeldDrawable();
+
+		if(heldItem.drawable instanceof DrawableMesh) {
+			heldItem.x = camera.position.x;
+			heldItem.z = camera.position.y + 0.5f - heldItem.yOffset; // Bump the held item up a bit, but negate the yOffset
+			heldItem.y = camera.position.z;
+
+			// translate forward
+			heldItem.x += handMaxDirection.x * (transform.z + 0.28f);
+			heldItem.z += handMaxDirection.y * (transform.z + 0.28f);
+			heldItem.y += handMaxDirection.z * (transform.z + 0.28f);
+
+			// translate right
+			heldItem.x += rightDirection.x * (transform.x - 0.12f);
+			heldItem.z += rightDirection.y * (transform.x - 0.12f);
+			heldItem.y += rightDirection.z * (transform.x - 0.12f);
+
+			// translate down
+			heldItem.x += downDirection.x * (transform.y - 0.07f);
+			heldItem.z += downDirection.y * (transform.y - 0.07f);
+			heldItem.y += downDirection.z * (transform.y - 0.07f);
+
+			((DrawableMesh)heldItem.drawable).dir.set(camera.direction);
+			((DrawableMesh)heldItem.drawable).rotX = rotation.x;
+			((DrawableMesh)heldItem.drawable).rotY = rotation.y;
+			((DrawableMesh)heldItem.drawable).rotZ = rotation.z;
+			heldItem.drawable.update(heldItem);
+
+			Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
+			renderMesh((DrawableMesh)heldItem.drawable, modelShaderInfo);
+			Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDepthFunc(GL20.GL_ALWAYS);
+			return;
+		}
 
 		DDecal sd = decalPool.obtain();
 		usedDecals.add(sd);
@@ -2197,7 +2361,6 @@ public class GlRenderer {
 		}
 		else {
 			Color lightmap = GetLightmapAt(x + drawable.drawOffset.x, z, y + drawable.drawOffset.y);
-
 			if(drawable.colorLastFrame != null) {
 				drawable.colorLastFrame.lerp(lightmap.r, lightmap.g, lightmap.b, 1f, 4.5f * Gdx.graphics.getDeltaTime());
 				sd.setColor(drawable.colorLastFrame.r, drawable.colorLastFrame.g, drawable.colorLastFrame.b, drawable.color.a);
@@ -2218,7 +2381,10 @@ public class GlRenderer {
 		}
 
 		if(drawable.billboard) {
-			sd.setY(-(offset.y + atlas.y_offset) + z + drawable.drawOffset.z);
+			if(drawable.scaleWithOffsets)
+				sd.setY(-((offset.y * atlas.scale * drawable.scale) + atlas.y_offset) + z + drawable.drawOffset.z);
+			else
+				sd.setY(-((offset.y) + atlas.y_offset) + z + drawable.drawOffset.z);
 		}
 		else {
 			sd.setY(z + drawable.drawOffset.z);
@@ -2254,6 +2420,12 @@ public class GlRenderer {
 		batch.add(sd);
 
 		usedDecals.add(sd);
+	}
+
+	public void renderDrawableText(float x, float y, float z, Entity entity, DrawableText drawable)
+	{
+		drawable.pickingColor.set(entityPickColor);
+		textToRender.add(drawable);
 	}
 
 	Vector3 t_beam_axis = new Vector3();
@@ -2408,12 +2580,12 @@ public class GlRenderer {
 			if(atlas != null && atlas.texture != null) {
 				if(!e.isStatic) {
 					if(editorIsRendering || DecalManager.addDecal(d))
-						d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum)), loadedLevel, atlas.getClippedSprite(e.tex));
+						d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum), true), loadedLevel, atlas.getClippedSprite(e.tex));
 					else
 						e.isActive = false;
 				}
 				else {
-					d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum)), loadedLevel, atlas.getClippedSprite(e.tex));
+					d.projectDecal(TriangleArrayToVectorList(GetCollisionTrianglesIn(d.perspective.frustum), true), loadedLevel, atlas.getClippedSprite(e.tex));
 				}
 			}
 		}
@@ -2578,6 +2750,8 @@ public class GlRenderer {
 						if(!c.Empty()) {
 							chunks.add(c);
 							c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
+							c.tesselators.water.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
+							c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
 						}
 					}
 				}
@@ -2593,6 +2767,8 @@ public class GlRenderer {
 					triangleSpatialHash.dropWorldChunk(c);
 					c.Tesselate(loadedLevel, this);
 					c.tesselators.world.addCollisionTriangles(triangleSpatialHash);
+					c.tesselators.water.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
+					c.tesselators.waterfall.addCollisionTriangles(triangleSpatialHash, CollisionTriangle.TriangleCollisionType.WATER);
 				}
 			}
 		}
@@ -2630,6 +2806,13 @@ public class GlRenderer {
 	public Color GetLightmapAt(float posx, float posy, float posz)
 	{
 		Color t = loadedLevel.getLightColorAt(posx, posz, posy, null, lightmapTempColor);
+		if(t == null) return Color.BLACK;
+		else return t;
+	}
+
+	public Color GetLightmapAt(Level level, float posx, float posy, float posz)
+	{
+		Color t = level.getLightColorAt(posx, posz, posy, null, lightmapTempColor);
 		if(t == null) return Color.BLACK;
 		else return t;
 	}
@@ -2973,26 +3156,29 @@ public class GlRenderer {
 		return x;
 	}
 
-	public Array<Triangle> GetCollisionTrianglesNear(Entity e) {
+	public Array<CollisionTriangle> GetCollisionTrianglesNear(Entity e) {
 		return triangleSpatialHash.getTrianglesAt(e.x, e.y, 2f);
 	}
 
-	public Array<Triangle> GetCollisionTrianglesIn(Frustum frustum) {
+	public Array<CollisionTriangle> GetCollisionTrianglesIn(Frustum frustum) {
 		return triangleSpatialHash.getTrianglesIn(frustum);
 	}
 
-	public Array<Triangle> GetCollisionTrianglesAlong(Ray ray, float length) {
+	public Array<CollisionTriangle> GetCollisionTrianglesAlong(Ray ray, float length) {
 		return triangleSpatialHash.getTrianglesAlong(ray, length);
 	}
 
-	public Array<Triangle> GetCollisionTrianglesAt(float x, float y, float colSize) {
+	public Array<CollisionTriangle> GetCollisionTrianglesAt(float x, float y, float colSize) {
 		return triangleSpatialHash.getTrianglesAt(x, y, colSize);
 	}
 
-	public Array<Vector3> TriangleArrayToVectorList(Array<Triangle> triangles) {
+	public Array<Vector3> TriangleArrayToVectorList(Array<CollisionTriangle> triangles, boolean excludeWaterTriangles) {
 		spatialWorkerList.clear();
 
-		for(Triangle t : triangles) {
+		for(CollisionTriangle t : triangles) {
+			if(excludeWaterTriangles && t.collisionType == CollisionTriangle.TriangleCollisionType.WATER)
+				continue;
+
 			spatialWorkerList.add(t.v1);
 			spatialWorkerList.add(t.v2);
 			spatialWorkerList.add(t.v3);
@@ -3239,7 +3425,7 @@ public class GlRenderer {
 
 		if(collisionTriangles != null) {
 			for (int i = 0; i < collisionTriangles.size(); i += 3) {
-				Triangle triangle = new Triangle(collisionTriangles.get(i + 2), collisionTriangles.get(i + 1), collisionTriangles.get(i));
+				CollisionTriangle triangle = new CollisionTriangle(collisionTriangles.get(i + 2), collisionTriangles.get(i + 1), collisionTriangles.get(i));
 				synchronized (triangleSpatialHash) {
 					triangleSpatialHash.AddTriangle(triangle);
 				}

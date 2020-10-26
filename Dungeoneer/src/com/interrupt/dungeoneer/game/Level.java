@@ -36,6 +36,7 @@ import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
+import com.interrupt.dungeoneer.tiles.TileMaterials;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.TileManager;
@@ -64,9 +65,13 @@ public class Level {
 	
 	public int width, height;
 	public Tile[] tiles;
+	public TileMaterials[] tileMaterials;
+
 	public Array<Entity> entities;
 	public Array<Entity> non_collidable_entities;
 	public Array<Entity> static_entities = new Array<Entity>();
+
+	/** Name of level. */
 	public String levelName;
 
     public String levelId = null;
@@ -80,56 +85,110 @@ public class Level {
 	public Stairs up;
 	public Stairs down;
 
+	/** Should generator make stairs down. */
 	public boolean makeStairsDown = true;
-	
+
+	/** Unused. */
 	public float darkness = 1;
+
+	/** Starting distance of fog. */
 	public float fogStart;
+
+	/** Ending distance of fog. */
 	public float fogEnd;
+
+	/** Color of fog. */
 	public Color fogColor = new Color(0,0,0,1);
+
+	/** Camera far draw distance. */
 	public float viewDistance = 15;
+
+	/** Color from skybox. */
 	public Color skyLightColor = new Color(0.5f,0.5f,0.5f,0);
+
+	/** Color of shadows. */
 	public Color shadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
 	
 	public boolean isLoaded = false;
 	public boolean needsSaving = true;
+
+	/** Depth where level is placed. */
 	public int dungeonLevel;
+
+	/** Theme to apply to level. */
 	public String theme;
+
+	/** Comma separated list of mp3 filepaths. */
 	public String music;
+
+	/** Comma separated list of mp3 filepaths. */
 	public String actionMusic;
+
+	/** Play music on a loop. */
 	public Boolean loopMusic = true;
+
+	/** Ambient sound filepath. */
 	public String ambientSound = null;
+
+	/** Ambient sound volume. */
 	public Float ambientSoundVolume = 0.5f;
 
+	/** Array of additional themes to pull monsters from. */
 	public Array<String> alternateMonsterThemes = null;
-	
+
+	/** Skybox mesh. */
 	public DrawableMesh skybox = null;
-	
+
+	/** Filepath to level file. Used for non-generated levels. */
 	public String levelFileName;
+
 	public String levelHeightFile;
-	
+
+	/** Is the level procedurally generated from room pieces. */
 	public boolean generated = false;
+
+	/** Name of room generator type to use. */
     public String roomGeneratorType = null;
+
+    /** Chance any given room is procedurally generated. */
     public float roomGeneratorChance = 0.4f;
+
+	/** Are monsters spawned on this level. */
 	public boolean spawnMonsters = true;
+
+	/** Table of spawn rates. */
 	public SpawnRate spawnRates = null;
+
+	/** Array of trap prefab names. */
 	public String[] traps = {"ProximitySpikes"};
 	
 	private float monsterSpawnTimer = 0;
 	
 	public transient boolean mapIsDirty = true;
-	
+
+	/** Default wall texture index. */
 	protected int defaultWallTex = 0;
+
 	protected int defaultWallAccentTex = 11;
+
+	/** Default ceiling texture index. */
 	protected int defaultCeilTex = 1;
+
+	/** Default floor texture index. */
 	protected int defaultFloorTex = 2;
 	
 	protected int[] wallTextures = null;
 	protected int[] wallAccentTextures = null;
 	protected int[] ceilTextures = null;
 	protected int[] floorTextures = null;
-	
+
+	/** Wall TexturePainter */
 	protected HashMap<String, Array<Float>> wallPainter = null;
+
+	/** Floor TexturePainter */
 	protected HashMap<String, Array<Float>> floorPainter = null;
+
+	/** Ceiling TexturePainter */
 	protected HashMap<String, Array<Float>> ceilPainter = null;
 	
 	public Array<EditorMarker> editorMarkers = new Array<EditorMarker>();
@@ -158,6 +217,7 @@ public class Level {
 
 	public String objectivePrefab = null;
 
+	/** Loading screen background image filepath. */
 	public String loadingScreenBackground = null;
 
 	public boolean spawnEncounterDuringChase = true;
@@ -175,6 +235,8 @@ public class Level {
 		this.height = height;
 		
 		tiles = new Tile[width * height];
+		tileMaterials = new TileMaterials[width * height];
+
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
@@ -324,6 +386,8 @@ public class Level {
 			width = generated.width;
 			height = generated.height;
 			tiles = generated.tiles;
+			tileMaterials = generated.tileMaterials;
+
 			editorMarkers = generated.editorMarkers;
 			genTheme = generated.genTheme;
 
@@ -449,6 +513,21 @@ public class Level {
 		}
 	}
 
+	// Called after a level was unserialized from bytes or a file
+	public void postLoad() {
+		// Make sure the tile materials array matches the size of the tiles, and is filled
+		if(tileMaterials == null || tileMaterials.length != tiles.length) {
+			tileMaterials = new TileMaterials[tiles.length];
+		}
+
+		for(int i = 0; i < tiles.length; i++) {
+			if (tiles[i] == null)
+				continue;
+
+			tiles[i].materials = tileMaterials[i];
+		}
+	}
+
 	public void load() {
 		load(Source.LEVEL_START);
 	}
@@ -477,6 +556,8 @@ public class Level {
 			width = openLevel.width;
 			height = openLevel.height;
 			tiles = openLevel.tiles;
+			tileMaterials = openLevel.tileMaterials;
+
 			editorMarkers = openLevel.editorMarkers;
 			genTheme = DungeonGenerator.GetGenData(theme);
 
@@ -538,6 +619,8 @@ public class Level {
 				width = generated.width;
 				height = generated.height;
 				tiles = generated.tiles;
+				tileMaterials = generated.tileMaterials;
+
 				editorMarkers = generated.editorMarkers;
 				genTheme = generated.genTheme;
 				
@@ -1484,9 +1567,10 @@ public class Level {
 		}
 		
 		// initialize tiles
-		for(Tile tile : tiles) {
-			if(tile != null)
-				tile.init(source);
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] != null) {
+				tiles[i].init(source);
+			}
 		}
 		
 		// init the drawables
@@ -2510,6 +2594,33 @@ public class Level {
 		return collisionCache;
 	}
 
+	public Array<Entity> getEntitiesEncroaching2d(float x, float y, float collisionX, float collisionY, Entity checking) {
+		collisionCache.clear();
+		if(checking == null) return collisionCache;
+
+		Array<Entity> toCheck = spatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY));
+		toCheck.addAll(staticSpatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY)));
+
+		for(int i = 0; i < toCheck.size; i++) {
+			Entity e = toCheck.get(i);
+			if(e != checking)
+			{
+				// simple AABB test
+				if(x > e.x - e.collision.x - collisionX) {
+					if(x < e.x + e.collision.x + collisionX) {
+						if(y > e.y - e.collision.y - collisionY) {
+							if(y < e.y + e.collision.y + collisionY) {
+								collisionCache.add(e);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return collisionCache;
+	}
+
 	// check if two entities are touching
 	public boolean entitiesAreEncroaching(Entity checking, Entity e) {
 		if (e != checking) {
@@ -3095,8 +3206,17 @@ public class Level {
 		{
 			e = list.get(entity_index);
 			
-			if(!inEditor) e.tick(this, delta);
-			else e.editorTick(this, delta);
+			if(!inEditor) {
+				if(e.skipTick) {
+					e.skipTick = false;
+					continue;
+				}
+
+				e.tick(this, delta);
+			}
+			else {
+				e.editorTick(this, delta);
+			}
 				
 			if(!e.isActive) toDelete.add(e);
 		}
@@ -3540,6 +3660,7 @@ public class Level {
 	}
 	
 	private void preSaveCleanup(Array<Entity> entities) {
+		// Remove any entities that we should not save
 		Array<Entity> toDelete = new Array<Entity>();
 		if(entities != null) {
 			for(Entity e : entities) {
@@ -3549,6 +3670,14 @@ public class Level {
 		}
 		for(int i = 0; i < toDelete.size; i++) {
 			entities.removeValue(toDelete.get(i), true);
+		}
+
+		// Make sure tile materials persist
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] == null)
+				tileMaterials[i] = null;
+			else
+				tileMaterials[i] = tiles[i].materials;
 		}
 	}
 	

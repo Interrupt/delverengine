@@ -1,8 +1,8 @@
 {
 	unique: [
 		{
-			class:com.interrupt.dungeoneer.entities.items.Sword,
-			itemType:sword,
+			class: "com.interrupt.dungeoneer.entities.items.Sword",
+			itemType: "sword",
 			tex:0,
 			brokenTex:0,
 			spriteAtlas:"unique",
@@ -28,8 +28,8 @@
 	melee:{
 		"1" : [
 			{
-				class:com.interrupt.dungeoneer.entities.items.Sword,
-				itemType:sword,
+				class: "com.interrupt.dungeoneer.entities.items.Sword",
+				itemType: "sword",
 				tex:0,
 				brokenTex:0,
 				spriteAtlas:"melee",
@@ -41,8 +41,9 @@
 				speed:1.0,
 				chargespeed:1.0,
 				cost:5,
-				pickupSound:"pu_metal.mp3",
-				attackAnimation:"daggerAttack",
+                wallHitSound: "clang.mp3,clang_02.mp3,clang_03.mp3,clang_04.mp3",
+                pickupSound: "pu_metal.mp3",
+                attackAnimation:"daggerAttack",
 				attackStrongAnimation:"daggerAttackStrong",
 				chargeAnimation:"daggerCharge",
 				dropSound:"drops/drop_metal_01.mp3,drops/drop_metal_02.mp3,drops/drop_metal_03.mp3"
@@ -52,8 +53,8 @@
 	ranged:{
 		"1" : [
 			{
-				class:com.interrupt.dungeoneer.entities.items.Bow,
-				itemType:bow,
+				class: "com.interrupt.dungeoneer.entities.items.Bow",
+				itemType: "bow",
 				tex:2,
 				name:"Testing Ranged Bow",
 				baseDamage:1,
@@ -66,23 +67,22 @@
 				twoHanded:true
 			},
 			{
-				class:com.interrupt.dungeoneer.entities.items.ItemStack,
-				itemType:stack,
+				class: "com.interrupt.dungeoneer.entities.items.ItemStack",
+				itemType: "stack",
 				item: {
-					class:com.interrupt.dungeoneer.entities.projectiles.Missile,
-					name:"Arrow",
+					class: "com.interrupt.dungeoneer.entities.projectiles.Missile",
+					name: "Arrow",
 					tex: 73
 				},
-				stackType:"ARROW",
-				tex:3,
-				name:"Testing Arrows",
-				count:4,
-				yOffset:-0.11,
-				cost:10
+				stackType: "ARROW",
+				tex: 3,
+				name: "Testing Arrows",
+				count: 4,
+				yOffset: -0.11,
+				cost: 10
 			},
 			{
-                "class":"com.interrupt.dungeoneer.entities.items.Gun",
-                "roll":45,
+                "class": "com.interrupt.dungeoneer.entities.items.Gun",
                 "tex":0,
                 "heldTex":1,
                 "spriteAtlas":"item-guns",
@@ -130,7 +130,6 @@
                     "explosionAnimSpeed": 22,
                     "hasHalo": false,
                     "explodeSound": null,
-                    "fullbrite": false,
                     "impulseAmount": 0,
                     "scale": 0.4,
                     "color": {"r":0.9,"g":0.6,"b":0.2,"a":1.0},
@@ -138,99 +137,100 @@
                 }
             },
             {
-                class:com.interrupt.dungeoneer.entities.items.ItemStack,
-                itemType:stack,
-                stackType:"BULLET",
-                tex:3,
-                spriteAtlas:"item-guns",
-                name:"Bullets",
-                count:100,
-                yOffset:-0.11,
-                cost:10
+                class: "com.interrupt.dungeoneer.entities.items.ItemStack",
+                itemType: "stack",
+                stackType: "BULLET",
+                tex: 3,
+                spriteAtlas: "item-guns",
+                name: "Bullets",
+                count: 100,
+                yOffset: -0.11,
+                cost: 10
             }
 		]
 	},
-
 	armor:{
 		"1" : [
 			{
-				class:com.interrupt.dungeoneer.entities.items.Armor,
-				itemType:armor,
-				tex:8,
-				spriteAtlas:"armor",
-				name:"Test Shirt",
-				armor:3,
-				yOffset:-0.11,
-				cost:8,
-				pickupSound:"pu_gen_v2.mp3"
+				class: "com.interrupt.dungeoneer.entities.items.Armor",
+				itemType: "armor",
+				tex: 8,
+				spriteAtlas: "armor",
+				name: "Test Shirt",
+				armor: 3,
+				yOffset: -0.11,
+				cost: 8,
+				pickupSound: "pu_gen_v2.mp3"
 			},
 			{
-				class:com.interrupt.dungeoneer.entities.items.Armor,
-				itemType:armor,
-				tex:16,
-				spriteAtlas:"armor",
-				name:"Test Pants",
-				armor:1,
-				equipLoc:"PANTS",
-				yOffset:-0.11,
-				cost:8,
-				pickupSound:"pu_gen_v2.mp3"
+				class: "com.interrupt.dungeoneer.entities.items.Armor",
+				itemType: "armor",
+				tex: 16,
+				spriteAtlas: "armor",
+				name: "Test Pants",
+				armor: 1,
+				equipLoc: "PANTS",
+				yOffset: -0.11,
+				cost: 8,
+				pickupSound: "pu_gen_v2.mp3"
 			},
 			{
-				class:com.interrupt.dungeoneer.entities.items.Armor,
-				itemType:armor,
-				tex:0,
-				spriteAtlas:"armor",
-				name:"Test Hat",
-				armor:1,
-				equipLoc:"HAT",
-				yOffset:-0.11,
-				cost:8,
-				pickupSound:"pu_gen_v2.mp3"
+				class: "com.interrupt.dungeoneer.entities.items.Armor",
+				itemType: "armor",
+				tex: 0,
+				spriteAtlas: "armor",
+				name: "Test Hat",
+				armor: 1,
+				equipLoc: "HAT",
+				yOffset: -0.11,
+				cost: 8,
+				pickupSound: "pu_gen_v2.mp3"
 			},
 			{
-				class:com.interrupt.dungeoneer.entities.items.Armor,
-				itemType:armor,
-				tex:24,
-				heldTex:32,
-				spriteAtlas:"armor",
-				name:"Test Shield",
-				armor:2,
+				class: "com.interrupt.dungeoneer.entities.items.Armor",
+				itemType: "armor",
+				tex: 24,
+				heldTex: 32,
+				spriteAtlas: "armor",
+				name: "Test Shield",
+				armor: 2,
 				durability: 50,
-				equipLoc:"OFFHAND",
-				yOffset:-0.125,
-				cost:8,
-				pickupSound:"pu_gen_v2.mp3",
+				equipLoc: "OFFHAND",
+				yOffset: -0.125,
+				cost: 8,
+				pickupSound: "pu_gen_v2.mp3",
 				baseMods: { moveSpeedMod: -1 }
 			}
 		]
 	},
-
 	wands:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Wand,
-			itemType:wand,
+			class: "com.interrupt.dungeoneer.entities.items.Wand",
+			itemType: "wand",
 			name:"Test Wand",
 			magicStatBoostMod: 6,
 			spell: {
-				class:com.interrupt.dungeoneer.entities.spells.MagicMissile,
+				class: "com.interrupt.dungeoneer.entities.spells.MagicMissile",
 				magicMissileProjectile: {
-					class: com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile,
-					tex:52,
+					class: "com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile",
+					tex: 52,
 					endAnimTex: 55,
 					scale: 0.5,
 					animSpeed: 7.5,
-					spriteAtlas:"particle",
-					floating:true,
-					fullbrite:true,
+					spriteAtlas: "particle",
+					floating: true,
+					fullbrite: true,
 					knockback: 0.01,
 					attached: [
 						{
-							class: com.interrupt.dungeoneer.entities.SpriteBeam,
+							class: "com.interrupt.dungeoneer.entities.SpriteBeam",
 							tex: 30,
-							color: {r:0.6172,g:0.0937,b:0.7695},
+							color: {
+                                r: 0.6172,
+                                g: 0.0937,
+                                b: 0.7695},
 							yOffset: -0.425,
-							beamRenderMode: LINE
+							beamRenderMode: "LINE"
 						}
 					],
 					splashRadius: 0.5,
@@ -251,31 +251,36 @@
 					    randomRoll: 45.0
                     }
 				},
-				spellColor:{r:0.6172,g:0.0937,b:0.7695},
-				appearance: { tex: 15, texAtlas: "particle" },
+				spellColor:{
+                    r: 0.6172,
+                    g: 0.0937,
+                    b: 0.7695},
+				appearance: {
+                    tex: 15,
+                    texAtlas: "particle"
+                },
 				castSoundVolume: 0.1,
 				trailInterval: 2,
 				splashForce: 0.01,
 				speed: 0.45,
-				shotAccuracy: 0.92,
-				castSoundVolume: 0.1
+				shotAccuracy: 0.92
 			},
 			charges:20,
-			damageType:MAGIC,
-			baseDamage:1,
-			randDamage:1,
+			damageType: "MAGIC",
+			baseDamage: 1,
+			randDamage: 1,
 			autoFire: true,
 			autoFireTime: 10,
-			tex:1,
-			spriteAtlas:"wands",
+			tex: 1,
+			spriteAtlas: "wands",
 			yOffset: 0.0,
-			cost:45
+			cost: 45
 		}
 	],
 	potions:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:2,
 			name:"Red potion",
 			yOffset:-0.11,
@@ -284,8 +289,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:3,
 			name:"Blue potion",
 			yOffset:-0.11,
@@ -294,8 +299,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:4,
 			name:"Green potion",
 			yOffset:-0.11,
@@ -304,8 +309,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:5,
 			name:"Purple potion",
 			yOffset:-0.11,
@@ -314,8 +319,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:6,
 			name:"Dark potion",
 			yOffset:-0.11,
@@ -324,8 +329,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:7,
 			name:"Gold potion",
 			yOffset:-0.11,
@@ -334,8 +339,8 @@
 			dropSound:"drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
 		},
 		{
-			class:com.interrupt.dungeoneer.entities.items.Potion,
-			itemType:potion,
+			class: "com.interrupt.dungeoneer.entities.items.Potion",
+			itemType: "potion",
 			tex:1,
 			name:"Bright potion",
 			yOffset:-0.11,
@@ -346,19 +351,22 @@
 	],
 	scrolls:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Scroll,
-			itemType:scroll,
-			spell: { class:com.interrupt.dungeoneer.entities.spells.Heal, heal:6 },
+			class: "com.interrupt.dungeoneer.entities.items.Scroll",
+			itemType: "scroll",
+			spell: {
+                class: "com.interrupt.dungeoneer.entities.spells.Heal",
+                heal: 6
+            },
 			tex:72,
-			name:"Testing Scroll",
-			yOffset:-0.11,
-			cost:120
+			name: "Testing Scroll",
+			yOffset: -0.11,
+			cost: 120
 		}
 	],
 	decorations:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Decoration,
-			itemType:junk,
+			class: "com.interrupt.dungeoneer.entities.items.Decoration",
+			itemType: "junk",
 			tex:2,
 			name:"Test Junk",
 			yOffset:-0.11
@@ -366,8 +374,8 @@
 	],
 	junk:[
 		{
-			class: com.interrupt.dungeoneer.entities.items.Decoration,
-			itemType: junk,
+			class: "com.interrupt.dungeoneer.entities.items.Decoration",
+			itemType: "junk",
 			collision:{x: 0.1, y: 0.1, z: 0.2},
 			tex: 3,
 			mass: 0.7,
@@ -376,7 +384,7 @@
 			equipLoc: "OFFHAND",
 			attached: [
 				{
-					class: com.interrupt.dungeoneer.entities.DynamicLight,
+					class: "com.interrupt.dungeoneer.entities.DynamicLight",
 					id: "",
 					range: 3,
 					lightColor: {
@@ -384,7 +392,7 @@
 						y: 0.47,
 						z: 0.12
 					},
-					lightType: fire,
+					lightType: "fire",
 					z:-0.2,
 					haloMode: "BOTH"
 				}
@@ -393,9 +401,9 @@
 	],
 	food:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.Food,
-			itemType:potion,
-			foodType:food,
+			class: "com.interrupt.dungeoneer.entities.items.Food",
+			itemType: "potion",
+			foodType: "food",
             foodMod:0.5,
 			tex:4,
 			name:"Testing Food",
@@ -404,34 +412,32 @@
 			cost:30
 		}
 	],
-
 	weaponEnchantments:[
 		{
-			class:com.interrupt.dungeoneer.entities.items.ItemModification,
+			class: "com.interrupt.dungeoneer.entities.items.ItemModification",
 			name:"of Testing",
-			attackSpeedMod:0.3
+			attackSpeedMod: 0.3
 		}
 	],
-
 	weaponPrefixEnchantments: [
 		{
-			class:com.interrupt.dungeoneer.entities.items.ItemModification,
+			class: "com.interrupt.dungeoneer.entities.items.ItemModification",
 			name:"Test's",
-			attackSpeedMod:0.1
+			attackSpeedMod: 0.1
 		}
 	],
 	armorEnchantments: [
 		{
-			class:com.interrupt.dungeoneer.entities.items.ItemModification,
+			class: "com.interrupt.dungeoneer.entities.items.ItemModification",
 			name:"of the Test",
-			moveSpeedMod:2
+			moveSpeedMod: 2
 		}
 	],
 	armorPrefixEnchantments: [
 		{
-			class:com.interrupt.dungeoneer.entities.items.ItemModification,
+			class: "com.interrupt.dungeoneer.entities.items.ItemModification",
 			name:"Tester's",
-			moveSpeedMod:1
+			moveSpeedMod: 1
 		}
 	]
 }

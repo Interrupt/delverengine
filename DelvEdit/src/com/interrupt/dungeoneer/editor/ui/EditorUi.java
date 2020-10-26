@@ -332,6 +332,9 @@ public class EditorUi {
                     .addItem(new MenuItem("Constrain to Z-axis", smallSkin, actions.zDragMode).setAccelerator(new MenuAccelerator(Keys.Z, false, false)))
                 )
                 .addItem(new MenuItem("Rotate", smallSkin, actions.rotateMode).setAccelerator(new MenuAccelerator(Keys.R, false, false)))
+                .addItem(new MenuItem("Turn", smallSkin)
+                        .addItem(new MenuItem("Clockwise", smallSkin, actions.turnLeftAction).setAccelerator(new MenuAccelerator(Keys.LEFT, true, false)))
+                        .addItem(new MenuItem("Counter-clockwise", smallSkin, actions.turnRightAction).setAccelerator(new MenuAccelerator(Keys.RIGHT, true, false))))
         );
 
         menuBar.addItem(
@@ -345,11 +348,14 @@ public class EditorUi {
 
         menuBar.addItem(
             new MenuItem("Level", smallSkin)
-                .addItem(new MenuItem("Test Level", smallSkin, actions.playAction).setAccelerator(new MenuAccelerator(Keys.P, false, false)))
+                        .addItem(new MenuItem("Play From Camera", smallSkin, actions.playFromCameraAction)
+                                .setAccelerator(new MenuAccelerator(Keys.P, false, false)))
+                        .addItem(new MenuItem("Play From Start", smallSkin, actions.playFromStartAction)
+                                .setAccelerator(new MenuAccelerator(Keys.P, false, true)))
                 .addSeparator()
                 .addItem(new MenuItem("Rotate Level", smallSkin)
                     .addItem(new MenuItem("Clockwise", smallSkin, actions.rotateLeftAction))
-                    .addItem(new MenuItem("Counter-Clockwise", smallSkin, actions.rotateRightAction)))
+                    .addItem(new MenuItem("Counter-clockwise", smallSkin, actions.rotateRightAction)))
                 .addItem(new MenuItem("Resize Level", smallSkin, resizeWindowAction))
                 .addSeparator()
                 .addItem(new MenuItem("Set Theme", smallSkin, setThemeAction))
@@ -382,7 +388,7 @@ public class EditorUi {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (event.getType().name().equals("touchUp")) {
-                    Editor.app.testLevel();
+                    Editor.app.testLevel(false);
                 }
             }
         });
@@ -620,6 +626,12 @@ public class EditorUi {
                         Editor.app.getIntersection().y,
                         Editor.app.getLevel()));
             }
+        }
+    }
+
+    public void touchDown(int x, int y, int pointer, int button) {
+        if (button == Input.Buttons.RIGHT) {
+            hideContextMenu();
         }
     }
 }

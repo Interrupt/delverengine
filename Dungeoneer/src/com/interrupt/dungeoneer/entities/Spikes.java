@@ -178,7 +178,6 @@ public class Spikes extends Model {
             drbl.isStaticMesh = false;
             if(drbl.drawOffset == null) drbl.drawOffset = new Vector3();
             drbl.drawOffset.set(getSpikeDirection()).scl(animation.getCurrentPosition().z - 0.5f);
-            drbl.drawOffset.z += yOffset;
 
             drawable.update(this);
         }

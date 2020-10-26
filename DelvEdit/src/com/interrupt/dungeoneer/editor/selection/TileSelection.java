@@ -15,6 +15,9 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
     public int width;
     public int height;
 
+    public int startX;
+    public int startY;
+
     /** A collection of tiles that are adjacent to the selection. */
     public Iterable<AdjacentTileSelectionInfo> adjacent;
 
@@ -70,16 +73,36 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         };
     }
 
+    public static TileSelection Rect(int x, int y, int width, int height) {
+        TileSelection tileSelection = new TileSelection();
+
+        tileSelection.x = x;
+        tileSelection.y = y;
+        tileSelection.startX = x;
+        tileSelection.startY = y;
+        tileSelection.width = width;
+        tileSelection.height = height;
+
+        return tileSelection;
+    }
+
     public void clear() {
         x = 0;
         y = 0;
+        startX = 0;
+        startY = 0;
         width = 1;
         height = 1;
     }
 
     /** Initial tile of selection. */
     public Tile first() {
-        return Editor.app.getLevel().getTile(x, y);
+        return Editor.app.getLevel().getTile(startX, startY);
+    }
+
+    public void setStartTile(int tileStartX, int tileStartY) {
+        startX = tileStartX;
+        startY = tileStartY;
     }
 
     public boolean contains(int x, int y) {
@@ -113,7 +136,6 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
             }
 
             BoundingBox b = getBounds(info);
-
             if (first == null) {
                 bounds.set(b);
                 first = info;
@@ -121,6 +143,14 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
 
             bounds.ext(getBounds(info));
         }
+
+        // Clamp tile selection bounds to the floor / ceiling heights of the first tile
+        Tile firstTile = first();
+        bounds.min.z = firstTile.floorHeight;
+        bounds.max.z = firstTile.ceilHeight;
+
+        // Reset bounds, to update the internal size.
+        bounds.set(bounds.min, bounds.max);
 
         return bounds;
     }

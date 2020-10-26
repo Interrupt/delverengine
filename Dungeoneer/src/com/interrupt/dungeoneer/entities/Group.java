@@ -1,19 +1,15 @@
 package com.interrupt.dungeoneer.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 
 import java.util.UUID;
 
 public class Group extends DirectionalEntity {
-	
+	/** Array of grouped Entities. */
 	public Array<Entity> entities = new Array<Entity>();
 	
 	protected Vector3 lastRot = new Vector3();
@@ -32,7 +28,7 @@ public class Group extends DirectionalEntity {
 			e.tick(level, delta);
 		}
 	}
-	
+
 	@Override
 	public void init(Level level, Source source) {
 
@@ -41,7 +37,7 @@ public class Group extends DirectionalEntity {
 
         setPosition(x, y, z);
 
-		if(source != Source.EDITOR && isActive) {
+		if(source != Source.EDITOR) {
 			if(!lastRot.equals(rotation)) {
 				float remainder = (rotation.z % 90) - rotation.z;
 				int rotate90Mod = (int) (remainder / 90) % 4;
@@ -91,6 +87,11 @@ public class Group extends DirectionalEntity {
 
             lastRot.set(rotation);
 			isActive = false;
+		}
+		else {
+			for (Entity e : entities) {
+				e.init(level, source);
+			}
 		}
 	}
 
