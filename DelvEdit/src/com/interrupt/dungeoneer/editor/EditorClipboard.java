@@ -28,6 +28,8 @@ public class EditorClipboard {
 
                 instance.entities.add(copy);
             }
+
+            Editor.app.ui.statusBar.showInfo(String.format("Copied %d selected entity(s)", instance.entities.size));
         }
 
         // Copy tiles
@@ -44,6 +46,8 @@ public class EditorClipboard {
 
                 instance.tiles.add(info);
             }
+
+            Editor.app.ui.statusBar.showInfo(String.format("Copied %d selected tile(s)", instance.tiles.size));
         }
 
         // Serialize to system clipboard.
@@ -84,6 +88,7 @@ public class EditorClipboard {
         }
 
         if (instance == null) {
+            Editor.app.ui.statusBar.showWarning("Failed to paste from clipboard.");
             return;
         }
 
@@ -102,20 +107,26 @@ public class EditorClipboard {
 
             Editor.app.level.setTile(offsetX, offsetY, t);
             Editor.app.markWorldAsDirty(offsetX, offsetY, 1);
+
+            Editor.app.ui.statusBar.showInfo(String.format("Pasted %d tile(s)", instance.tiles.size));
         }
 
         // Paste entities
-        for(Entity e : instance.entities) {
-            Entity copy = copyEntity(e);
-            copy.x += cursorTileX + 1;
-            copy.y += cursorTileY + 1;
+        if (instance.entities.size > 0) {
+            for (Entity e : instance.entities) {
+                Entity copy = copyEntity(e);
+                copy.x += cursorTileX + 1;
+                copy.y += cursorTileY + 1;
 
-            Tile copyAt = Editor.app.level.getTileOrNull(cursorTileX, cursorTileY);
-            if(copyAt != null) {
-                copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
+                Tile copyAt = Editor.app.level.getTileOrNull(cursorTileX, cursorTileY);
+                if (copyAt != null) {
+                    copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
+                }
+
+                Editor.app.addEntity(copy);
             }
 
-            Editor.app.addEntity(copy);
+            Editor.app.ui.statusBar.showInfo(String.format("Pasted %d entity(s)", instance.entities.size));
         }
 
         // Save undo history
