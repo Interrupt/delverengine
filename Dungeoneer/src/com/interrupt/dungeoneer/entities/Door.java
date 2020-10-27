@@ -513,7 +513,7 @@ public class Door extends Entity {
 	public void updateDrawable() {
 		// init the drawable
 		DrawableMesh doorDrawable = null;
-		if(!(drawable instanceof DrawableMesh) || !lastMeshFile.equals(doorMesh) ) {
+		if(!(drawable instanceof DrawableMesh) || lastMeshFile != doorMesh) {
 			doorDrawable = new DrawableMesh(doorMesh, doorTexture);
 			drawable = doorDrawable;
             lastMeshFile = doorMesh;
