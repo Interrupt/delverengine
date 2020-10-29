@@ -316,6 +316,7 @@ public class EditorFile {
                 Editor.options.recentlyOpenedFiles.insert(0, levelFileHandle.path());
 
                 Editor.app.viewSelected();
+                Editor.app.updateEditorHierarchyWindow();
             }
         }
         catch(Exception ex) {

@@ -120,6 +120,8 @@ public class EditorUi {
         };
     }
 
+    public EditorHierarchyWindow editorHierarchyWindow;
+
     public EditorUi() {
         defaultSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.json"),
                 new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.atlas")));
@@ -342,6 +344,8 @@ public class EditorUi {
                 .addItem(new MenuItem("Toggle Lights", smallSkin, actions.toggleLightsAction).setAccelerator(new MenuAccelerator(Keys.L, false, false)))
                 .addSeparator()
                 .addItem(new MenuItem("View Selected", smallSkin, actions.viewSelectedAction).setAccelerator(new MenuAccelerator(Keys.SPACE, false, false)))
+                .addSeparator()
+                .addItem(new MenuItem("Show Hierarchy", smallSkin, actions.showHierarchyAction).setAccelerator(new MenuAccelerator(Keys.H, false, false)))
         );
 
         menuBar.addItem(
@@ -393,6 +397,9 @@ public class EditorUi {
 
         mainTable.setZIndex(1000);
         mainTable.add(menuBar);
+
+        editorHierarchyWindow = new EditorHierarchyWindow();
+        stage.addActor(editorHierarchyWindow);
 
         stage.addListener(new InputListener() {
             @Override

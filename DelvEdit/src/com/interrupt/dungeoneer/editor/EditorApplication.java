@@ -1254,7 +1254,8 @@ public class EditorApplication implements ApplicationListener {
 						Entity copy = Game.fromJson(Editor.selection.picked.getClass(), Game.toJson(Editor.selection.picked));
 						level.entities.add(copy);
 
-                        pickEntity(copy);
+						pickEntity(copy);
+						ui.editorHierarchyWindow.select();
 
 						Array<Entity> copies = new Array<Entity>();
 						for(Entity selected : Editor.selection.selected) {
@@ -2010,7 +2011,8 @@ public class EditorApplication implements ApplicationListener {
 					}
 					else {
 						clearEntitySelection();
-                        pickEntity(Editor.selection.hovered);
+						pickEntity(Editor.selection.hovered);
+						ui.editorHierarchyWindow.select();
 					}
 				}
 			}
@@ -3669,7 +3671,7 @@ public class EditorApplication implements ApplicationListener {
 
     public void pickEntity(Entity entity) {
         Editor.selection.picked = entity;
-        ui.showEntityPropertiesMenu(true);
+		ui.showEntityPropertiesMenu(true);
     }
 
     public void pickAdditionalEntity(Entity entity) {
@@ -3826,5 +3828,13 @@ public class EditorApplication implements ApplicationListener {
 
 	public void setTitle(String title) {
 		Gdx.graphics.setTitle(title + " - DelvEdit");
+	}
+
+	public void showEditorHierarchyWindow() {
+		ui.editorHierarchyWindow.show();
+	}
+
+	public void updateEditorHierarchyWindow() {
+		ui.editorHierarchyWindow.update();
 	}
 }
