@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -22,6 +23,7 @@ import com.interrupt.dungeoneer.entities.Entity;
 public class EditorHierarchyWindow extends Window {
     ScrollPane scrollPane;
     List<Entity> entityList;
+    Label searchResultsLabel;
     String searchText = "";
 
     public EditorHierarchyWindow() {
@@ -87,6 +89,10 @@ public class EditorHierarchyWindow extends Window {
             }
         });
 
+        row();
+        searchResultsLabel = new Label("Loading hierarchy", EditorUi.smallSkin);
+        add(searchResultsLabel).align(Align.left);
+
         setVisible(false);
     }
 
@@ -131,11 +137,19 @@ public class EditorHierarchyWindow extends Window {
         Array<Entity> entities = Editor.app.level.entities;
         Array<Entity> filteredEntities = new Array<>();
 
-        for (int i = 0; i < entities.size;i++) {
+        for (int i = 0; i < entities.size; i++) {
             if (entities.get(i).toString().toLowerCase().contains(searchText)) {
                 filteredEntities.add(entities.get(i));
             }
         }
+
+        int entitiesCount = entities.size;
+        int filteredEntitiesCount = filteredEntities.size;
+
+        String searchResultsText = (entitiesCount == 0) ? "No entities added to the scene yet."
+                : ("Showing " + ((entitiesCount == filteredEntitiesCount) ? entitiesCount
+                        : filteredEntitiesCount + " of " + entitiesCount) + " entities.");
+        searchResultsLabel.setText(searchResultsText);
 
         if (filteredEntities.size > 0) {
             entityList.setItems(filteredEntities);
@@ -154,7 +168,7 @@ public class EditorHierarchyWindow extends Window {
 
         pack();
         setWidth(300f);
-        setHeight(400f);
+        setHeight(600f);
     }
 
     private void performShowAction() {
