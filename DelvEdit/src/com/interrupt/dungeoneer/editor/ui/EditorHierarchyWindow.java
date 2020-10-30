@@ -10,9 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -20,6 +22,7 @@ import com.interrupt.dungeoneer.entities.Entity;
 public class EditorHierarchyWindow extends Window {
     ScrollPane scrollPane;
     List<Entity> entityList;
+    String searchText = "";
 
     public EditorHierarchyWindow() {
         super("Hierarchy", EditorUi.smallSkin);
@@ -33,6 +36,15 @@ public class EditorHierarchyWindow extends Window {
         });
 
         getTitleTable().padLeft(6f).padRight(6f).add(closeButton);
+
+        TextField searchTextField = new TextField("", EditorUi.smallSkin);
+        searchTextField.setTextFieldListener(new TextField.TextFieldListener() {
+            public void keyTyped(TextField textField, char key) {
+                searchText = textField.getText().toLowerCase();
+                updateInternal();
+            }
+        });
+        add(searchTextField).align(Align.left).fillX().row();
 
         entityList = new List<>(EditorUi.smallSkin);
         entityList.getSelection().setRequired(false);
@@ -117,9 +129,16 @@ public class EditorHierarchyWindow extends Window {
 
     private void updateInternal() {
         Array<Entity> entities = Editor.app.level.entities;
+        Array<Entity> filteredEntities = new Array<>();
 
-        if (entities.size > 0) {
-            entityList.setItems(entities);
+        for (int i = 0; i < entities.size;i++) {
+            if (entities.get(i).toString().toLowerCase().contains(searchText)) {
+                filteredEntities.add(entities.get(i));
+            }
+        }
+
+        if (filteredEntities.size > 0) {
+            entityList.setItems(filteredEntities);
             scrollPane.setVisible(true);
 
             if (Editor.selection.picked != null) {
