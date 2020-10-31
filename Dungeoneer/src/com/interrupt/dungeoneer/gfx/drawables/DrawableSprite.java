@@ -18,6 +18,7 @@ public class DrawableSprite extends Drawable {
 	public Float cameraPull = null;
 	public boolean isFogSprite = false;
 	public transient Color colorLastFrame = null;
+	public boolean scaleWithOffsets = true;
 	
 	public Vector3 rotation = Vector3.Zero;
 	public float xScale = 1;
@@ -30,16 +31,11 @@ public class DrawableSprite extends Drawable {
 		this.tex = tex;
 		this.artType = artType;
 	}
-	
-	public DrawableSprite(int tex, ArtType artType, float rot) {
+
+	public DrawableSprite(int tex, ArtType artType, boolean scaleWithOffsets) {
 		this.tex = tex;
 		this.artType = artType;
-		this.rot = rot;
-	}
-
-	public DrawableSprite(int tex, TextureAtlas spriteAtlas) {
-		this.tex = tex;
-		this.atlas = spriteAtlas;
+		this.scaleWithOffsets = scaleWithOffsets;
 	}
 	
 	public void update(Entity e) {

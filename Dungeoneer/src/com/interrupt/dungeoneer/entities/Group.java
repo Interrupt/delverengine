@@ -28,7 +28,7 @@ public class Group extends DirectionalEntity {
 			e.tick(level, delta);
 		}
 	}
-	
+
 	@Override
 	public void init(Level level, Source source) {
 
@@ -37,7 +37,7 @@ public class Group extends DirectionalEntity {
 
         setPosition(x, y, z);
 
-		if(source != Source.EDITOR && isActive) {
+		if(source != Source.EDITOR) {
 			if(!lastRot.equals(rotation)) {
 				float remainder = (rotation.z % 90) - rotation.z;
 				int rotate90Mod = (int) (remainder / 90) % 4;
@@ -87,6 +87,11 @@ public class Group extends DirectionalEntity {
 
             lastRot.set(rotation);
 			isActive = false;
+		}
+		else {
+			for (Entity e : entities) {
+				e.init(level, source);
+			}
 		}
 	}
 

@@ -146,6 +146,7 @@ public class Game {
 		if(monsterManager == null) {
 			monsterManager = new MonsterManager();
 		}
+		MonsterManager.setSingleton(monsterManager);
 
 		// Load animation data
 		LerpedAnimationManager lam = modManager.loadAnimationManager();

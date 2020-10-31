@@ -2381,7 +2381,10 @@ public class GlRenderer {
 		}
 
 		if(drawable.billboard) {
-			sd.setY(-(offset.y + atlas.y_offset) + z + drawable.drawOffset.z);
+			if(drawable.scaleWithOffsets)
+				sd.setY(-((offset.y * atlas.scale * drawable.scale) + atlas.y_offset) + z + drawable.drawOffset.z);
+			else
+				sd.setY(-((offset.y) + atlas.y_offset) + z + drawable.drawOffset.z);
 		}
 		else {
 			sd.setY(z + drawable.drawOffset.z);
@@ -2803,6 +2806,13 @@ public class GlRenderer {
 	public Color GetLightmapAt(float posx, float posy, float posz)
 	{
 		Color t = loadedLevel.getLightColorAt(posx, posz, posy, null, lightmapTempColor);
+		if(t == null) return Color.BLACK;
+		else return t;
+	}
+
+	public Color GetLightmapAt(Level level, float posx, float posy, float posz)
+	{
+		Color t = level.getLightColorAt(posx, posz, posy, null, lightmapTempColor);
 		if(t == null) return Color.BLACK;
 		else return t;
 	}

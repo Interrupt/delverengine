@@ -10,7 +10,7 @@ public class WarningDialog extends Dialog {
         text(warning);
         getContentTable().row();
 
-        button("Understood", true);
+        button("Close", true);
     }
 
     @Override
