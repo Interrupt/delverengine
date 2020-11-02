@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.JsonWriter;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Group;
 import com.interrupt.dungeoneer.entities.Prefab;
-import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.utils.JsonUtil;
 
 import javax.swing.*;
 
@@ -35,7 +35,7 @@ public class JsonViewer extends JPanel {
 		}
 		
 
-		String jsonText = Game.toJson(copy, Entity.class);
+		String jsonText = JsonUtil.toJson(copy, Entity.class);
 		Json json = new Json();
 		json.setOutputType(JsonWriter.OutputType.json);
 		jsonText = json.prettyPrint(jsonText, 40);

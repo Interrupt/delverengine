@@ -40,6 +40,7 @@ import com.interrupt.dungeoneer.tiles.TileMaterials;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.TileManager;
+import com.interrupt.utils.JsonUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -547,7 +548,7 @@ public class Level {
 			FileHandle levelFileHandle = Game.findInternalFileInMods(levelFileName);
 					
 			if(levelFileName.endsWith(".dat") || levelFileName.endsWith(".json")) {
-				openLevel = Game.fromJson(Level.class, levelFileHandle);
+				openLevel = JsonUtil.fromJson(Level.class, levelFileHandle);
 			}
 			else {
 				openLevel = KryoSerializer.loadLevel(levelFileHandle);

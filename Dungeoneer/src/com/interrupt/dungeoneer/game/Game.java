@@ -38,10 +38,12 @@ import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.Logger;
 import com.interrupt.utils.OSUtils;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.Random;
@@ -207,7 +209,7 @@ public class Game {
 
 		// try loading the player template
 		try {
-			Player playerTemplate = Game.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
+			Player playerTemplate = JsonUtil.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
 			if(playerTemplate != null) player = playerTemplate;
 		}
 		catch(Exception ex) {
@@ -248,7 +250,7 @@ public class Game {
 
 		Array<Level> dataLevels = new Array<Level>();
 		{
-			dataLevels = Game.fromJson(Array.class, dungeonFile);
+			dataLevels = JsonUtil.fromJson(Array.class, dungeonFile);
 		}
 		
 		return dataLevels;
@@ -426,7 +428,7 @@ public class Game {
 
 			// try loading the player template
 			try {
-				Player playerTemplate = Game.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
+				Player playerTemplate = JsonUtil.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
 				if (playerTemplate != null) player = playerTemplate;
 			} catch (Exception ex) {
 				Gdx.app.error("Delver", ex.getMessage());
@@ -932,7 +934,7 @@ public class Game {
 		try {
 			Gdx.app.log("DelverLifeCycle", "Saving options");
 			FileHandle optionsFile = getFile(Options.getOptionsDir() + "options.txt");
-			Game.toJson(Options.instance, optionsFile);
+			JsonUtil.toJson(Options.instance, optionsFile);
 		} catch(Exception ex) { Gdx.app.log("DelverLifeCycle", "Error saving options"); }
 
 		if(level.needsSaving) {
@@ -957,7 +959,7 @@ public class Game {
 		
 		// save the player
 		FileHandle file = getFile(saveDir + "player.dat");
-		Game.toJson(player, file);
+		JsonUtil.toJson(player, file);
 
 		// save progress!
 		saveProgression(progression, Game.instance.getSaveSlot());
@@ -992,7 +994,7 @@ public class Game {
 		
 		// save the player
 		FileHandle file = getFile(saveDir + "player.dat");
-		Game.toJson(player, file);
+		JsonUtil.toJson(player, file);
 	}
 
 	public boolean levelFileExists(int levelnum, String travelPathKey) {
@@ -1042,7 +1044,7 @@ public class Game {
 			}
 		}
 		else if(file.exists()) {
-			level = Game.fromJson(SavedLevelContainer.class, file).level;
+			level = JsonUtil.fromJson(SavedLevelContainer.class, file).level;
 			level.init(Source.LEVEL_LOAD);
 			
 			Gdx.app.log("DelverLifeCycle", "Loading level " + levelNumber + " from " + file.path());
@@ -1078,7 +1080,7 @@ public class Game {
 			{
 				Gdx.app.log("DelverLifeCycle", "Loading player from " + file.path());
 				
-				player = Game.fromJson(Player.class, file);
+				player = JsonUtil.fromJson(Player.class, file);
 			}
 			else return false;
 			
@@ -1295,7 +1297,7 @@ public class Game {
 		try {
 			//FileHandle modFile = Game.getInternal(path + "/data/items.dat");
 			FileHandle progressionFile = getFile(Options.getOptionsDir() + "game_" + saveSlot + ".dat");
-			return Game.fromJson(Progression.class, progressionFile);
+			return JsonUtil.fromJson(Progression.class, progressionFile);
 		} catch (Exception e) {
 			Gdx.app.error("Delver", e.getMessage());
 		}
@@ -1315,7 +1317,7 @@ public class Game {
 					optionsDir.mkdirs();
 
 				FileHandle progressionFile = getFile(Options.getOptionsDir() + "game_" + saveSlot + ".dat");
-				Game.toJson(progression, progressionFile);
+				JsonUtil.toJson(progression, progressionFile);
 			}
 		} catch (Exception e) {
 			Gdx.app.error("Delver", e.getMessage());
@@ -1436,44 +1438,6 @@ public class Game {
         if(h != null && h.exists()) return h;
         return Gdx.files.internal(filename);
     }
-
-	public static <T> T fromJson(Class<T> type, FileHandle file) {
-		try {
-			Reader reader = new InputStreamReader(new FileInputStream(file.file().getAbsoluteFile()), "UTF-8");
-
-			Json json = new Json();
-			T returnValue = json.fromJson(type, reader);
-			return returnValue;
-		}
-		catch (Exception ex) {
-			Json json = new Json();
-			return json.fromJson(type, file);
-		}
-	}
-
-	public static <T> T fromJson (Class<T> type, String str) {
-		Json json = new Json();
-		return json.fromJson(type, str);
-	}
-
-	public static void toJson(Object object, FileHandle file) {
-		try {
-			Writer writer = new OutputStreamWriter(new FileOutputStream(file.file().getAbsoluteFile()), "UTF-8");
-			Json json = new Json();
-			json.toJson(object, writer);
-		}
-		catch (Exception ex) {}
-	}
-
-	public static String toJson (Object object) {
-		Json json = new Json();
-		return json.toJson(object);
-	}
-
-	public static String toJson (Object object, Class knownType) {
-		Json json = new Json();
-		return json.toJson(object, knownType);
-	}
 
 	public void clearMemory() {
 		level = null;

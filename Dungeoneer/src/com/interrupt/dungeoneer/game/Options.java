@@ -8,6 +8,7 @@ import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.input.GamepadBinding;
 import com.interrupt.dungeoneer.input.GamepadDefinition;
+import com.interrupt.utils.JsonUtil;
 
 public class Options {
 	transient public static Options instance;
@@ -105,7 +106,7 @@ public class Options {
 	public static void loadOptions() {
 		try {
 			FileHandle optionsFile = getFile(getOptionsDir() + "options.txt");
-			Options.instance = Game.fromJson(Options.class, optionsFile);
+			Options.instance = JsonUtil.fromJson(Options.class, optionsFile);
 			SetInputOptions(null);
 		} catch (Exception e) {
 			ApplicationType type = ApplicationType.Desktop;
@@ -182,7 +183,7 @@ public class Options {
 					optionsDir.mkdirs();
 
 				FileHandle optionsFile = getFile(optionsDirString + "options.txt");
-				Game.toJson(Options.instance, optionsFile);
+				JsonUtil.toJson(Options.instance, optionsFile);
 			}
 		} catch (Exception e) {
 			// Whoops!

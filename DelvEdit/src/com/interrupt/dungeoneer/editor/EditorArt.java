@@ -11,6 +11,7 @@ import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.Tesselator;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.utils.JsonUtil;
 
 public class EditorArt {
 	
@@ -20,7 +21,7 @@ public class EditorArt {
 	
 	public static void initAtlases() {
 		FileHandle itemFile = Game.getInternal("data/spritesheets.dat");
-		TextureAtlas[] atlases = Game.fromJson(TextureAtlas[].class, itemFile);
+		TextureAtlas[] atlases = JsonUtil.fromJson(TextureAtlas[].class, itemFile);
 		
 		atlasList = new String[atlases.length + 1];
 		int curAtlas = 0;

@@ -10,13 +10,13 @@ import java.util.function.Supplier;
 /** Helper class for working with JSON. */
 public class JsonUtil {
     /** Serializes the given object to the specified path. */
-    public static void toJson(String path, Object object) {
+    public static void toJson(Object object, String path) {
         FileHandle file = Gdx.files.local(path);
-        toJson(file, object);
+        toJson(object, file);
     }
 
     /** Serializes the given object to the given file. */
-    public static void toJson(FileHandle file, Object object) {
+    public static void toJson(Object object, FileHandle file) {
         if (file == null) {
             Gdx.app.log("JsonUtil", "Attempting to write to a null FileHandle objct.");
             return;
@@ -27,13 +27,24 @@ public class JsonUtil {
 
     /** Serializes an object to a standardized JSON format. */
     public static String toJson(Object object) {
+        return toJson(object, (Class<?>)null);
+    }
+
+    /** Serializes an object to a standardized JSON format using a given type. */
+    public static String toJson(Object object, Class<?> type) {
         Json json = new Json();
         json.setOutputType(JsonWriter.OutputType.json);
 
         String contents = "{}";
+        int singleLineColumns = 40;
 
         try {
-            contents = json.prettyPrint(json.toJson(object), 40);
+            if (type != null) {
+                contents = json.prettyPrint(json.toJson(object, type), singleLineColumns);
+            }
+            else {
+                contents = json.prettyPrint(json.toJson(object), singleLineColumns);
+            }
         }
         catch (Exception ignored) {
             Gdx.app.log("JsonUtil", "Failed to serialize object.");
