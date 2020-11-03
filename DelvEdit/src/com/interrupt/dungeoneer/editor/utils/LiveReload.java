@@ -90,6 +90,7 @@ public class LiveReload {
         if (needToReloadAssets.compareAndSet(true, false)) {
             Gdx.app.log("LiveReload", "Reloading assets");
             EditorArt.refresh();
+            Editor.app.generatorInfo.refresh();
             Editor.app.initTextures();
             Editor.app.loadEntities();
             Editor.app.loadMonsters();
