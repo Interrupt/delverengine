@@ -41,6 +41,7 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
+import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
 import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
@@ -319,6 +320,8 @@ public class EditorApplication implements ApplicationListener {
 
 	private TileSelection entireLevelSelection;
 
+	public GeneratorInfo generatorInfo;
+
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
@@ -395,7 +398,21 @@ public class EditorApplication implements ApplicationListener {
 		StringManager.init();
 		Game.init();
 
-		// load the entity templates
+		loadEntities();
+		loadMonsters();
+
+		Gdx.input.setCursorCatched(false);
+		generatorInfo = new GeneratorInfo();
+        initTextures();
+
+        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
+		TextureAtlas.cachedRepeatingAtlases.firstKey();
+
+		createEmptyLevel(17, 17);
+	}
+
+	/** Load entity templates */
+	public void loadEntities() {
 		try {
 			entityManager = Game.getModManager().loadEntityManager(Game.gameData.entityDataFiles);
 			EntityManager.setSingleton(entityManager);
@@ -403,8 +420,10 @@ public class EditorApplication implements ApplicationListener {
 			// whoops
 			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
 		}
+	}
 
-		// load the monster templates
+	/** Load monster templates. */
+	public void loadMonsters() {
 		try {
 			monsterManager = Game.getModManager().loadMonsterManager(Game.gameData.monsterDataFiles);
 			MonsterManager.setSingleton(monsterManager);
@@ -412,14 +431,6 @@ public class EditorApplication implements ApplicationListener {
 			// whoops
 			Gdx.app.log("Editor", "Error loading monsters.dat: " + ex.getMessage());
 		}
-
-        Gdx.input.setCursorCatched(false);
-        initTextures();
-
-        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
-                TextureAtlas.cachedRepeatingAtlases.firstKey();
-
-		createEmptyLevel(17, 17);
 	}
 
 	public void createEmptyLevel(int width, int height) {

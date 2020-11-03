@@ -474,6 +474,11 @@
         "localizedName": "Choose your fate",
         "comment": ""
     },
+    "overlays.LevelUpOverlay.currentStatValueLabel": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Current: {0}",
+        "comment": "Text shown on level up card. {0} is the value of the stat."
+    },
     "overlays.LevelUpOverlay.ATTACK": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "+1 ATTACK",

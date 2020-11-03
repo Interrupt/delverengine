@@ -50,12 +50,25 @@ public class Item extends Entity {
 			1.5f
 	};
 
+	/** Is item a pickup? */
+	@EditorProperty(group = "Pickup")
+	public boolean isPickup = false;
+
+	/** Distance at which to perform pickup behavior. */
+	@EditorProperty(group = "Pickup")
+	public float pickupDistance = 1.0f;
+
+	/** How much bob does floating pickup have? */
+	@EditorProperty(group = "Pickup")
+	public float bobAmplitude = 0.05f;
+
 	/** Current item condition */
 	@EditorProperty
 	public ItemCondition itemCondition = ItemCondition.normal;
 
 	/** Item enchantment */
 	public ItemModification enchantment = null;
+
 	/** Item prefx enchantment */
 	public ItemModification prefixEnchantment = null;
 
@@ -116,9 +129,8 @@ public class Item extends Entity {
 	@EditorProperty( group = "Visual - Model", type = "FILE_PICKER", params = "")
 	public String textureFile = "";
 
+	/** Allow enchantments on item when spawned? */
 	@EditorProperty(group = "Spawning")
-
-    /** Allow enchantments on item when spawned? */
 	public boolean canSpawnEnchanted = true;
 
 	/** Set random condition for item when spawned? */
@@ -129,6 +141,8 @@ public class Item extends Entity {
 
 	public transient String lastMeshFile = null;
 	public transient String lastTextureFile = null;
+
+	private static final transient Entity pickupHelper = new Entity();
 
 	public Item() {
 		isSolid = true;
@@ -205,6 +219,11 @@ public class Item extends Entity {
 	@Override
 	public void encroached(Player hit)
 	{
+		if (isPickup && canPickup(hit)) {
+			doPickup(hit);
+			return;
+		}
+
 		if(!ignorePlayerCollision) {
 			float speed = workVec.len();
 			if(speed > 0.06f) {
@@ -255,6 +274,29 @@ public class Item extends Entity {
 	public void tossItem(Level level, float attackPower) {
 		// Override this
 	}
+
+	/**
+	 * Predicate for determining if a <code>doPickup(player)</code> can be performed. Can be overridden
+	 * to handle special cases. E.g. not picking up a health item if at full heath.
+	 * Overriding methods should still call this via <code>super.doPickup(player)</code>.
+	 *
+	 * @param player The player instance.
+	 * @return True if pickup can be performed.
+	 */
+	public boolean canPickup(Player player) {
+		return player.hasFreeInventorySpace();
+	}
+
+	/**
+	 * Default behavior for a pickup. Overriding methods should still
+	 * call this via <code>super.doPickup(player)</code>.
+	 *
+	 * @param player The player instance.
+	 */
+	public void doPickup(Player player) {
+		pickup(player);
+	}
+
 
 	protected void pickup(Player player)
 	{
@@ -323,7 +365,7 @@ public class Item extends Entity {
 
 		if(!isOnFloor && !isOnEntity && !wasOnEntity) {
 			if(floating) {
-				yOffset = (float)Math.sin(GameManager.renderer.time) * 0.05f;
+				yOffset = (float)Math.sin(GlRenderer.time) * 0.05f;
 			}
 			else {
 				roll += 250f * Gdx.graphics.getDeltaTime();
@@ -343,6 +385,35 @@ public class Item extends Entity {
 			}
 			else {
 				roll = Interpolation.linear.apply(roll, 0, 0.3f);
+			}
+		}
+
+		if (isPickup) {
+			if (floating) {
+				yOffset = (float) Math.cos(2 * GlRenderer.time + (x + y) * Math.PI) * bobAmplitude;
+			}
+
+			if (floating && drawable instanceof DrawableMesh) {
+				DrawableMesh dm = (DrawableMesh)drawable;
+				dm.rotZ = GlRenderer.time * (360f / 2f);
+			}
+
+			pickupHelper.x = x;
+			pickupHelper.y = y + yOffset;
+			pickupHelper.z = z;
+			pickupHelper.collidesWith = CollidesWith.actorsOnly;
+			pickupHelper.collision.x = pickupDistance / 2f;
+			pickupHelper.collision.y = pickupDistance / 2;
+			pickupHelper.collision.z = pickupDistance;
+
+			Array<Entity> encroaching = level.getEntitiesColliding(x, y, z, pickupHelper);
+
+			for (Entity e : encroaching) {
+				if (e instanceof Player) {
+					Player p = (Player)e;
+					encroached(p);
+					break;
+				}
 			}
 		}
 
