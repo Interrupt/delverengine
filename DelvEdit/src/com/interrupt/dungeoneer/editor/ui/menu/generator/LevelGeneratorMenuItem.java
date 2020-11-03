@@ -105,7 +105,9 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                                     level.roomGeneratorChance = 0.4f;
                                     level.roomGeneratorType = template.roomGeneratorType;
                                     level.generate(Level.Source.EDITOR);
+
                                     Editor.app.refresh();
+                                    Editor.app.updateEditorHierarchyWindow();
     
                                     if (Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
                                         Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;

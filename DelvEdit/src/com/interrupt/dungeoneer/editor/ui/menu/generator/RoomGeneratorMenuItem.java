@@ -107,6 +107,7 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                                 Editor.app.getLevel().theme = template.theme;
     
                                 Editor.app.refresh();
+                                Editor.app.updateEditorHierarchyWindow();
     
                                 if (Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
                                     Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
