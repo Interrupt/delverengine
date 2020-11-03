@@ -11,47 +11,79 @@ import com.interrupt.managers.EntityManager;
 public class FusedBomb extends Item {
     enum triggerBehaviorType {light, explode}
 
+    /** Sprite index if bomb is a dud. */
     @EditorProperty(group = "Visual", type = "SPRITE_ATLAS_NUM")
     public int dudTex = 23;
 
+    /** Is the bomb lit? */
     public boolean isLit = false;
 
+    /** Chance the bomb is lit when spawned. */
     @EditorProperty
-    public float chanceIsLit = 0.25f;
+    public float chanceIsLit = 0.333f;
 
+    /** Time until bomb explodes. */
     @EditorProperty
     public float countdownTimer = 150f;
 
+    /** Random amount of time added to timer. */
     @EditorProperty
     public float randomCountdownTimer = 50f;
 
+    /** Chance the bomb is a dud. */
     @EditorProperty
     public float chanceIsDud = 0.125f;
 
+    /** Is the bomb a dud? */
     public boolean isDud = false;
 
+    /** Has the bomb been spawned? Guards against relighting bomb on loading a save. */
     public boolean wasSpawned = false;
 
+    /** What does the bomb do when triggered? */
     @EditorProperty
     public triggerBehaviorType triggerBehavior = triggerBehaviorType.light;
 
+    /** Explosion radius. */
     public float explosionRadius = 3f;
+
+    /** Explosion impulse strength. */
     public float explosionImpulse = 0.2f;
+
+    /** Explosion damage amount. */
     public float explosionDamage = 3f;
+
+    /** Explosion damage type. */
     public Weapon.DamageType explosionDamageType = Weapon.DamageType.PHYSICAL;
+
+    /** Explosion color. */
     public Color explosionColor = Colors.EXPLOSION;
 
+    /** Color to tint bomb as it gets closer to exploding. */
     private final Color flashColor = new Color(Colors.BOMB_FLASH);
 
+    /** Is the bomb wet? */
     private boolean isWet = false;
 
+    /** Explosion object to create. */
     Explosion explosion = new Explosion();
 
+    /** List of random Entities to spawn when bomb explodes. */
     Array<Entity> spawns = new Array<>();
+
+    /** Number of spawns to create. */
     int spawnsCount = 1;
+
+    /** Spawn initial velocity. */
     public Vector3 spawnVelocity = new Vector3(0.0f, 0.0f, 0.0625f);
+
+    /** Spawn initial random velocity. */
     public Vector3 spawnRandomVelocity = new Vector3(0.125f, 0.125f, 0.0625f);
+
+    /** Size of volume where spawns will be created. */
     public Vector3 spawnSpread = new Vector3(0.125f, 0.125f, 0.0f);
+
+    /** Percent of parent speed to inherit. */
     public float spawnMomentumTransfer = 1.0f;
 
     public float timerStart = -1f;
@@ -67,8 +99,15 @@ public class FusedBomb extends Item {
     public void init(Level level, Level.Source source) {
         super.init(level, source);
 
-        isLit = Game.rand.nextFloat() < chanceIsLit;
-        isDud = Game.rand.nextFloat() < chanceIsDud;
+        if (source == Level.Source.EDITOR) {
+            return;
+        }
+
+        if (!wasSpawned) {
+            isLit |= Game.rand.nextFloat() < chanceIsLit;
+            isDud |= Game.rand.nextFloat() < chanceIsDud;
+        }
+
         wasSpawned = true;
     }
 
