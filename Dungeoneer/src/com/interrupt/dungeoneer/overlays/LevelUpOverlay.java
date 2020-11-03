@@ -73,7 +73,7 @@ public class LevelUpOverlay extends WindowOverlay {
 		attributeName.setColor(new Color(0.298039215686275f, 0.12156862745098f, 0.12156862745098f, 1f));
 
 		String currentStatValueLabel = StringManager.get("overlays.LevelUpOverlay.currentStatValueLabel");
-		currentStatValueLabel = MessageFormat.format(currentStatValueLabel, currentValue,toString());
+		currentStatValueLabel = MessageFormat.format(currentStatValueLabel, currentValue);
 		final Label value = new Label(currentStatValueLabel, skin.get(LabelStyle.class));
 		value.setWrap(true);
 		value.setFontScale(0.75f);
