@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.utils.SerializationException;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
@@ -12,6 +13,7 @@ import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.FilePicker;
 import com.interrupt.dungeoneer.editor.ui.NewLevelDialog;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
+import com.interrupt.dungeoneer.editor.ui.WarningDialog;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
@@ -269,58 +271,96 @@ public class EditorFile {
         Editor.app.editorInput.resetKeys();
     }
 
-    private void openInternal(FileHandle fileHandle) {
-        try {
-            // NOTE: You must access the new Editor file via Editor.app.file
-            // for the rest of this method.
-            Editor.app.file = new EditorFile(fileHandle);
-            Editor.app.updateTitle();
+    private void openInternal(FileHandle file) {
+        file = Gdx.files.getFileHandle(file.file().getAbsolutePath(), Files.FileType.Absolute);
+        String name = file.name();
 
-            String fileName = Editor.app.file.name();
-            String dir = Editor.app.file.directory();
+        if (file.exists()) {
+            Level level;
 
-            FileHandle levelFileHandle = Gdx.files.getFileHandle(fileHandle.file().getAbsolutePath(), Files.FileType.Absolute);
-            if(levelFileHandle.exists()) {
-                Level openLevel;
-
-                if(fileName.endsWith(".png")) {
-                    String heightFile = dir + fileName.replace(".png", "-height.png");
-                    if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
-                        heightFile = dir + fileName.replace(".png", "_height.png");
-                        if(!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
-                            heightFile = null;
-                        }
-                    }
-
-                    openLevel = new Level();
-                    openLevel.loadForEditor(dir + fileName, heightFile);
+            try {
+                if (name.endsWith(".png")) {
+                    level = loadPngFile(file);
+                } else if (name.endsWith(".bin")) {
+                    level = loadBinFile(file);
+                } else if (name.endsWith(".dat")) {
+                    level = loadDatFile(file);
+                } else {
+                    showWarningDialog("Unknown extension. Cannot load '" + name + "'.");
+                    return;
                 }
-                else if(fileName.endsWith(".bin")) {
-                    openLevel = KryoSerializer.loadLevel(levelFileHandle);
-                    openLevel.init(Level.Source.EDITOR);
-                }
-                else {
-                    openLevel = Game.fromJson(Level.class, levelFileHandle);
-                    openLevel.init(Level.Source.EDITOR);
-                }
+            } catch (SerializationException exception) {
+                showWarningDialog("Corrupted file data. Cannot load '" + file.name() + "'.");
+                return;
+            } catch (Exception exception) {
+                showWarningDialog(exception.getMessage() + " Cannot load '" + file.name() + "'.");
+                return;
+            }
 
-                Editor.app.level = openLevel;
-                Editor.app.refresh();
-                Editor.app.cameraController.setPosition(openLevel.width / 2f, 4.5f, openLevel.height / 2f);
+            if (!validateLevel(level)) {
+                showWarningDialog("Invalid level data. Cannot load '" + file.name() + "'.");
+                return;
+            }
 
-                Editor.app.history = new EditorHistory();
-                Editor.app.history.saveState(Editor.app.level);
-                Editor.app.file.markClean();
+            Editor.app.file = new EditorFile(file);
 
-                Editor.options.recentlyOpenedFiles.removeValue(levelFileHandle.path(), false);
-                Editor.options.recentlyOpenedFiles.insert(0, levelFileHandle.path());
+            Editor.app.level = level;
+            Editor.app.refresh();
+            Editor.app.cameraController.setPosition(level.width / 2f, 4.5f, level.height / 2f);
 
-                Editor.app.viewSelected();
+            Editor.app.history = new EditorHistory();
+            Editor.app.history.saveState(Editor.app.level);
+            Editor.app.file.markClean();
+
+            Editor.options.addRecentlyOpenedFile(file.path());
+
+            Editor.app.clearEntitySelection();
+            Editor.app.viewSelected();
+        } else {
+            Editor.options.removeRecentlyOpenedFile(file.path());
+            showWarningDialog("File does not exist. Cannot load '" + name + "'.");
+            return;
+        }
+    }
+
+    /** Loads a `.png` level file. */
+    private Level loadPngFile(FileHandle file) {
+        String name = file.name();
+        String directory = file.file().getParent();
+
+        String heightFile = directory + name.replace(".png", "-height.png");
+        if (!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+            heightFile = directory + name.replace(".png", "_height.png");
+            if (!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
+                heightFile = null;
             }
         }
-        catch(Exception ex) {
-            Gdx.app.error("DelvEdit", ex.getMessage());
-        }
+
+        Level level = new Level();
+        level.loadForEditor(directory + name, heightFile);
+
+        return level;
+    }
+
+    /** Loads a `.bin` level file. */
+    private Level loadBinFile(FileHandle file) {
+        Level level = KryoSerializer.loadLevel(file);
+        level.init(Level.Source.EDITOR);
+
+        return level;
+    }
+
+    /** Loads a `.dat` level file. */
+    private Level loadDatFile(FileHandle file) {
+        Level level = Game.fromJson(Level.class, file);
+        level.init(Level.Source.EDITOR);
+
+        return level;
+    }
+
+    /** Validates that a given level is loaded correctly from storage. */
+    private boolean validateLevel(Level level) {
+        return level.entities != null;
     }
 
     /** Prompt user and create a new level. */
@@ -396,5 +436,12 @@ public class EditorFile {
 
     public long getHoursSinceLastSave() {
         return TimeUnit.HOURS.convert(getMillisSinceLastSave(), TimeUnit.MILLISECONDS);
+    }
+
+    private void showWarningDialog(String warning) {
+        Gdx.app.log("EditorFile", warning);
+
+        WarningDialog warningDialog = new WarningDialog(EditorUi.smallSkin, warning);
+        warningDialog.show(Editor.app.ui.getStage());
     }
 }

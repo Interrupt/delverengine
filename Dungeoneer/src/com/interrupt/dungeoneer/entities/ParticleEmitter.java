@@ -3,15 +3,12 @@ package com.interrupt.dungeoneer.entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.serializers.hacks.BoundingBoxOld;
 
 public class ParticleEmitter extends Entity {
@@ -272,6 +269,8 @@ public class ParticleEmitter extends Entity {
 	
 	@Override
 	public void editorTick(Level level, float delta) {
+		super.editorTick(level, delta);
+
 		// let the emitter make particles in the editor, just don't save them ever
 		Boolean persistValue = particlesPersist;
 		

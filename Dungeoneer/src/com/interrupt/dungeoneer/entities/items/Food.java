@@ -28,13 +28,13 @@ public class Food extends Item {
 	/** Description of Food item. */
 	@EditorProperty
 	public String infoText = "items.Food.infoText";
-	
+
 	public Food() { }
 
 	public Food(float x, float y) {
 		super(x, y, 0, ItemType.potion, StringManager.get("items.Food.defaultNameText"));
 	}
-	
+
 	public void Eat(Player player) {
 		player.history.ateFood(this);
 
@@ -73,17 +73,23 @@ public class Food extends Item {
 				player.addStatusEffect(new DrunkEffect((int) (3600 * foodMod * 0.75f)));
 			}
 		}
-		
+
 		int location = player.inventory.indexOf(this, true);
 		player.inventory.set(location, null);
 		Game.RefreshUI();
 	}
-	
+
 	public boolean inventoryUse(Player player){
 		Eat(player);
         return true;
 	}
-	
+
+	@Override
+	public void doPickup(Player player) {
+		super.doPickup(player);
+		Eat(player);
+	}
+
 	public String GetInfoText() {
 		return StringManager.getOrDefaultTo(infoText, infoText);
 	}

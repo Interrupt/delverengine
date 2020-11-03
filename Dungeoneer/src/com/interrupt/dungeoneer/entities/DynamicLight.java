@@ -175,6 +175,7 @@ public class DynamicLight extends Entity {
 
 	@Override
 	public void editorTick(Level level, float delta) {
+		super.editorTick(level, delta);
 		tick(level, delta);
 	}
 	
