@@ -99,7 +99,7 @@ public class FusedBomb extends Item {
     public void init(Level level, Level.Source source) {
         super.init(level, source);
 
-        if (source == Level.Source.EDITOR) {
+        if (wasJustPlacedInEditor(source)) {
             return;
         }
 
@@ -268,5 +268,9 @@ public class FusedBomb extends Item {
     @Override
     public void onPickup() {
         isLit = false;
+    }
+
+    private boolean wasJustPlacedInEditor(Level.Source source) {
+        return source == Level.Source.EDITOR;
     }
 }
