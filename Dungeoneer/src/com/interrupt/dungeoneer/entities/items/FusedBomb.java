@@ -103,11 +103,12 @@ public class FusedBomb extends Item {
             return;
         }
 
-        if (!wasSpawned) {
-            isLit |= Game.rand.nextFloat() < chanceIsLit;
-            isDud |= Game.rand.nextFloat() < chanceIsDud;
+        if (wasSpawned) {
+            return;
         }
 
+        isLit |= Game.rand.nextFloat() < chanceIsLit;
+        isDud |= Game.rand.nextFloat() < chanceIsDud;
         wasSpawned = true;
     }
 
