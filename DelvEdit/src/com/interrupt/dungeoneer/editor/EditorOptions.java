@@ -39,4 +39,13 @@ public class EditorOptions {
     public void dispose() {
         Editor.options.save();
     }
+
+    public void removeRecentlyOpenedFile(String path) {
+        recentlyOpenedFiles.removeValue(path, false);
+    }
+
+    public void addRecentlyOpenedFile(String path) {
+        removeRecentlyOpenedFile(path);
+        recentlyOpenedFiles.insert(0, path);
+    }
 }

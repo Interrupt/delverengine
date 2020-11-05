@@ -36,6 +36,7 @@ public class Prefab extends Group {
 		// Force a refresh
 		lastRot.set(0, 0, 0);
 		loadedCategory = "NONE";
+		loadedName = "NONE";
 
 		updateDrawable();
 		spawnPrefab(level, source);
