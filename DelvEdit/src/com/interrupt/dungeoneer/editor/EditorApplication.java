@@ -55,6 +55,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
+import com.interrupt.dungeoneer.generator.RoomGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.SpriteGroupStrategy;
@@ -433,18 +434,63 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
+	/** Creates an empty level with given `width` and `height`. */
 	public void createEmptyLevel(int width, int height) {
 		level = new Level(width, height);
+
+		Tile t = new Tile();
+		t.floorHeight = -0.5f;
+		t.ceilHeight = 0.5f;
+		level.setTile(width / 2, height / 2, t);
+
+		cleanEditorState();
+	}
+
+	/** Generates a level based on a `template` level. */
+	public void generateLevelFromTemplate(Level template) {
+		level.editorMarkers.clear();
+		level.entities.clear();
+		level.non_collidable_entities.clear();
+		level.static_entities.clear();
+
+		level.theme = template.theme;
+		level.generated = true;
+		level.dungeonLevel = 0;
+		level.crop(0, 0, 17 * 5, 17 * 5);
+		level.roomGeneratorChance = 0.4f;
+		level.roomGeneratorType = template.roomGeneratorType;
+		level.generate(Level.Source.EDITOR);
+
+		cleanEditorState();
+	}
+
+	/** Generates a single room based on a `template` level. */
+	public void generateRoomFromTemplate(Level template) {
+		level.editorMarkers.clear();
+		level.entities.clear();
+		level.non_collidable_entities.clear();
+		level.static_entities.clear();
+
+		Level generatedLevel = new Level(17, 17);
+		generatedLevel.roomGeneratorType = template.roomGeneratorType;
+
+		RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
+		generator.generate(true, true, true, true);
+
+		level.crop(0, 0, generatedLevel.width, generatedLevel.height);
+		level.paste(generatedLevel, 0, 0);
+		level.theme = template.theme;
+
+		cleanEditorState();
+	}
+
+	/** Should be called after manually setting the `level` in the editor. */
+	private void cleanEditorState() {
 		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
 		refresh();
 		
 		history = new EditorHistory();
 		file = new EditorFile();
-		
-		Tile t = new Tile();
-		t.floorHeight = -0.5f;
-		t.ceilHeight = 0.5f;
-		level.setTile(width / 2, height / 2, t);
 
 		history.saveState(level);
 		file.markClean();
