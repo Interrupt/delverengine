@@ -55,6 +55,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
+import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.generator.RoomGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
@@ -454,7 +455,12 @@ public class EditorApplication implements ApplicationListener {
 		level.theme = template.theme;
 		level.generated = true;
 		level.dungeonLevel = 0;
-		level.crop(0, 0, 17 * 5, 17 * 5);
+
+		GenTheme genTheme = DungeonGenerator.GetGenData(template.theme);
+		int chunkTiles = genTheme.getChunkTileSize();
+		int mapChunks = genTheme.getMapChunks();
+		level.crop(0, 0, chunkTiles * mapChunks, chunkTiles * mapChunks);
+
 		level.roomGeneratorChance = template.roomGeneratorChance;
 		level.roomGeneratorType = template.roomGeneratorType;
 		level.generate(Level.Source.EDITOR);
@@ -464,12 +470,12 @@ public class EditorApplication implements ApplicationListener {
 
 	/** Generates a single room based on a `template` level. */
 	public void generateRoomFromTemplate(Level template) {
-		level.editorMarkers.clear();
-		level.entities.clear();
-		level.non_collidable_entities.clear();
-		level.static_entities.clear();
+		level.clear();
 
-		Level generatedLevel = new Level(17, 17);
+		GenTheme genTheme = DungeonGenerator.GetGenData(template.theme);
+		int chunkTiles = genTheme.getChunkTileSize();
+		Level generatedLevel = new Level(chunkTiles, chunkTiles);
+
 		generatedLevel.roomGeneratorType = template.roomGeneratorType;
 
 		RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
