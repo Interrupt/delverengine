@@ -349,7 +349,7 @@ public class Level {
 
 		loadSurprises(genTheme);
 
-		initPrefabs();
+		initPrefabs(Source.LEVEL_START);
 
 		addEntitiesFromMarkers(editorMarkers, new Array<>(), new Boolean[width * height], new Array<>(), genTheme, 0, 0);
 		decorateLevel();
@@ -428,7 +428,7 @@ public class Level {
 		// mark some locations as trap-free
 		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
 
-		initPrefabs();
+		initPrefabs(Source.EDITOR);
 
 		// keep a list of places to avoid when making traps
 		Boolean canMakeTrap[] = new Boolean[width * height];
@@ -668,7 +668,7 @@ public class Level {
 		// mark some locations as trap-free
 		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
 
-		initPrefabs();
+		initPrefabs(Source.LEVEL_START);
 		
 		decorateLevel();
 		
@@ -1542,26 +1542,26 @@ public class Level {
 		return false;
 	}
 
-	public void initPrefabs() {
+	public void initPrefabs(Source source) {
 		// init any prefabs
 		// this is a separate pass as things like Monsters might want to check their collisions!
 
 		for(int i = 0; i < entities.size; i++) {
 			Entity e = entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 		for(int i = 0; i < non_collidable_entities.size; i++) {
 			Entity e = non_collidable_entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 		for(int i = 0; i < static_entities.size; i++) {
 			Entity e = static_entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 
