@@ -302,28 +302,28 @@ public class Level {
 		fogEnd = 20f;
 		viewDistance = 20f;
 		
-		Array<Entity> copy_entities = new Array<>(100);
-		Array<Entity> copy_non_collidable_entities = new Array<>(100);
-		Array<Entity> copy_static_entities = new Array<>(100);
+		Array<Entity> copyEntities = new Array<>(100);
+		Array<Entity> copyNonCollidableEntities = new Array<>(100);
+		Array<Entity> copyStaticEntities = new Array<>(100);
 
 		if ((static_entities != null && static_entities.size > 0) || (non_collidable_entities != null && non_collidable_entities.size > 0)) {
 			// We already have data for other entity types, therefore, we do not need to split the entities again (generated level).
 			for(int i = 0; i < entities.size; i++) {
 				Entity copy = entities.get(i);
 				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-				copy_entities.add(copy);
+				copyEntities.add(copy);
 			}
 
 			for(int i = 0; i < non_collidable_entities.size; i++) {
 				Entity copy = non_collidable_entities.get(i);
 				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-				copy_non_collidable_entities.add(copy);
+				copyNonCollidableEntities.add(copy);
 			}
 
 			for(int i = 0; i < static_entities.size; i++) {
 				Entity copy = static_entities.get(i);
 				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-				copy_static_entities.add(copy);
+				copyStaticEntities.add(copy);
 			}
 		}
 		else {
@@ -333,17 +333,17 @@ public class Level {
 				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
 					
 				if(!copy.isDynamic)
-					copy_static_entities.add(copy);
+					copyStaticEntities.add(copy);
 				else if(!copy.isSolid && !(copy instanceof ButtonDecal))
-					copy_non_collidable_entities.add(copy);
+					copyNonCollidableEntities.add(copy);
 				else
-					copy_entities.add(copy);
+					copyEntities.add(copy);
 			}
 		}
 		
-		entities = copy_entities;
-		non_collidable_entities = copy_non_collidable_entities;
-		static_entities = copy_static_entities;
+		entities = copyEntities;
+		non_collidable_entities = copyNonCollidableEntities;
+		static_entities = copyStaticEntities;
 
 		genTheme = DungeonGenerator.GetGenData(theme);
 
@@ -351,7 +351,7 @@ public class Level {
 
 		initPrefabs();
 
-		addEntitiesFromMarkers(editorMarkers, new Array<Vector2>(), new Boolean[width * height], new Array<Vector2>(), genTheme, 0, 0);
+		addEntitiesFromMarkers(editorMarkers, new Array<>(), new Boolean[width * height], new Array<>(), genTheme, 0, 0);
 		decorateLevel();
 
 		init(Source.LEVEL_START);
