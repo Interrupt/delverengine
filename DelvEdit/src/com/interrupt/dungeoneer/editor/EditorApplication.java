@@ -444,6 +444,7 @@ public class EditorApplication implements ApplicationListener {
 		level.setTile(width / 2, height / 2, t);
 
 		cleanEditorState();
+		cameraController.setDefaultPositionAndRotation();
 	}
 
 	/** Generates a level based on a `template` level. */
@@ -491,8 +492,6 @@ public class EditorApplication implements ApplicationListener {
 
 		history.saveState(level);
 		file.markClean();
-
-		cameraController.setDefaultPositionAndRotation();
 	}
 
 	@Override
