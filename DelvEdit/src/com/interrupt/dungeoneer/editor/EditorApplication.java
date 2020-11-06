@@ -455,7 +455,7 @@ public class EditorApplication implements ApplicationListener {
 		level.generated = true;
 		level.dungeonLevel = 0;
 		level.crop(0, 0, 17 * 5, 17 * 5);
-		level.roomGeneratorChance = 0.4f;
+		level.roomGeneratorChance = template.roomGeneratorChance;
 		level.roomGeneratorType = template.roomGeneratorType;
 		level.generate(Level.Source.EDITOR);
 
