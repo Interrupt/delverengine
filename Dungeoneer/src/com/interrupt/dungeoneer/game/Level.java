@@ -3761,4 +3761,11 @@ public class Level {
 		if(ambientSound != null && !Game.isMobile)
 			Audio.playAmbientSound(ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
 	}
+
+	public void clear() {
+		if (editorMarkers != null) editorMarkers.clear();
+		if (entities != null) entities.clear();
+		if (static_entities != null) static_entities.clear();
+		if (non_collidable_entities != null) non_collidable_entities.clear();
+	}
 }

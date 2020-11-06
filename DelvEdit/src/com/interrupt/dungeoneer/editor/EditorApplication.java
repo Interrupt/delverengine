@@ -448,10 +448,7 @@ public class EditorApplication implements ApplicationListener {
 
 	/** Generates a level based on a `template` level. */
 	public void generateLevelFromTemplate(Level template) {
-		level.editorMarkers.clear();
-		level.entities.clear();
-		level.non_collidable_entities.clear();
-		level.static_entities.clear();
+		level.clear();
 
 		level.theme = template.theme;
 		level.generated = true;
