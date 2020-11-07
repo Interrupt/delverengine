@@ -306,39 +306,17 @@ public class Level {
 		Array<Entity> copyNonCollidableEntities = new Array<>(100);
 		Array<Entity> copyStaticEntities = new Array<>(100);
 
-		if ((static_entities != null && static_entities.size > 0) || (non_collidable_entities != null && non_collidable_entities.size > 0)) {
-			// We already have data for other entity types, therefore, we do not need to split the entities again (generated level).
-			for(int i = 0; i < entities.size; i++) {
-				Entity copy = entities.get(i);
-				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-				copyEntities.add(copy);
-			}
+		for(int i = 0; i < entities.size; i++) {
+			Entity copy = entities.get(i);
+			if (!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance))
+				continue;
 
-			for(int i = 0; i < non_collidable_entities.size; i++) {
-				Entity copy = non_collidable_entities.get(i);
-				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-				copyNonCollidableEntities.add(copy);
-			}
-
-			for(int i = 0; i < static_entities.size; i++) {
-				Entity copy = static_entities.get(i);
-				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
+			if(!copy.isDynamic)
 				copyStaticEntities.add(copy);
-			}
-		}
-		else {
-			// We need to split the entities into their respective types (loaded level).
-			for(int i = 0; i < entities.size; i++) {
-				Entity copy = entities.get(i);
-				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-					
-				if(!copy.isDynamic)
-					copyStaticEntities.add(copy);
-				else if(!copy.isSolid && !(copy instanceof ButtonDecal))
-					copyNonCollidableEntities.add(copy);
-				else
-					copyEntities.add(copy);
-			}
+			else if(!copy.isSolid && !(copy instanceof ButtonDecal))
+				copyNonCollidableEntities.add(copy);
+			else
+				copyEntities.add(copy);
 		}
 		
 		entities = copyEntities;
