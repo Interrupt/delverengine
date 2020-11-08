@@ -50,19 +50,18 @@ public class MainMenuScreen extends BaseScreen {
     private boolean ignoreEscapeKey = false;
     private boolean refreshOnEscape = false;
 
-    Array<Table> saveSlotUi = new Array<>();
+    private Array<Table> saveSlotUi = new Array<>();
     
-    Player errorPlayer = new Player();
+    private Player errorPlayer = new Player();
     
-    Array<Level> dungeonInfo = null;
+    private Color fadeColor = new Color(Color.BLACK);
+    private boolean fadingOut = false;
+    private float fadeFactor = 1f;
 
-    Color fadeColor = new Color(Color.BLACK);
-    boolean fadingOut = false;
-    float fadeFactor = 1f;
+    private static final String BASE_SAVE_DIR = "save/";
+    private static final String LOG_TAG_DELVER_LIFE_CYCLE = "DelverLifeCycle";
 	
 	public MainMenuScreen() {
-		dungeonInfo = Game.buildLevelLayout();
-
 		if(splashScreenInfo != null) {
 		    splashLevel = splashScreenInfo.backgroundLevel;
         }
@@ -105,7 +104,7 @@ public class MainMenuScreen extends BaseScreen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                playButtonEvent(false);
+                handlePlayButtonEvent(false);
             }
         });
 
@@ -114,7 +113,7 @@ public class MainMenuScreen extends BaseScreen {
         deleteButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                deleteButtonEvent(false);
+                handleDeleteButtonEvent(false);
             }
         });
 
@@ -122,7 +121,7 @@ public class MainMenuScreen extends BaseScreen {
         optionsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                GameApplication.SetScreen(new OverlayWrapperScreen(new OptionsOverlay(false, true)));
+                handleOptionsButtonEvent();
             }
         });
 
@@ -130,7 +129,7 @@ public class MainMenuScreen extends BaseScreen {
         modsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                GameApplication.SetScreen(new OverlayWrapperScreen(new ModsOverlay()));
+                handleModsButtonEvent();
             }
         });
 
@@ -510,8 +509,9 @@ public class MainMenuScreen extends BaseScreen {
 
         Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
 	}
-	
-	public void playButtonEvent(boolean force) {
+    
+    /** Handles the event when the play button is clicked. */
+	private void handlePlayButtonEvent(boolean force) {
         Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
 
         if(!force) {
@@ -522,12 +522,12 @@ public class MainMenuScreen extends BaseScreen {
                     ClickListener playListener = new ClickListener() {
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
-                            playButtonEvent(true);
+                            handlePlayButtonEvent(true);
                         }
                     };
 
                     String message = StringManager.get("screens.MainMenuScreen.missingModsWarning");
-                    String missingModsString = "";
+                    StringBuilder missingModsStringBuilder = new StringBuilder();
 
                     for(int i = 0; i < missing.size; i++) {
                         String m = missing.get(i);
@@ -536,10 +536,11 @@ public class MainMenuScreen extends BaseScreen {
                         if(m.length() > maxModLength)
                             m = m.substring(0, maxModLength - 3) + "...";
 
-                        missingModsString += m + "\n";
+                            missingModsStringBuilder.append(m);
+                            missingModsStringBuilder.append("\n");
                     }
 
-                    showModal(MessageFormat.format(message, missingModsString), StringManager.get("screens.MainMenuScreen.playButton"), StringManager.get("screens.MainMenuScreen.cancelButton"), playListener, 260);
+                    showModal(MessageFormat.format(message, missingModsStringBuilder.toString()), StringManager.get("screens.MainMenuScreen.playButton"), StringManager.get("screens.MainMenuScreen.cancelButton"), playListener, 260);
                     return;
                 }
             }
@@ -560,13 +561,14 @@ public class MainMenuScreen extends BaseScreen {
             }
         })));
 	}
-	
-	public void deleteButtonEvent(boolean force) {
+    
+    /** Handles the event when the delete button is clicked. */
+	private void handleDeleteButtonEvent(boolean force) {
 	    if(!force) {
             ClickListener eraseListener = new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    deleteButtonEvent(true);
+                    handleDeleteButtonEvent(true);
                 }
             };
 
@@ -578,15 +580,24 @@ public class MainMenuScreen extends BaseScreen {
 		progress[selectedSave] = null;
 		deleteSavegame(selectedSave);
 		selectedSave = null;
-	}
+    }
+    
+    /** Handles the event when the options button is clicked. */
+    private void handleOptionsButtonEvent() {
+        GameApplication.SetScreen(new OverlayWrapperScreen(new OptionsOverlay(false, true)));
+    }
+
+    /** Handles the event when the mods button is clicked. */
+    private void handleModsButtonEvent() {
+        GameApplication.SetScreen(new OverlayWrapperScreen(new ModsOverlay()));
+    }
 	
 	private void loadSavegames() {
-		String baseSaveDir = "save/";
-		FileHandle dir = Game.getFile(baseSaveDir);
+		FileHandle dir = Game.getFile(BASE_SAVE_DIR);
 		
-		Gdx.app.log("DelverLifeCycle", "Getting savegames from " + dir.path());
+		Gdx.app.log(LOG_TAG_DELVER_LIFE_CYCLE, "Getting savegames from " + dir.path());
 		for(int i = 0; i < saveGames.length; i++) {
-			FileHandle file = Game.getFile(baseSaveDir + "/" + i + "/player.dat");
+			FileHandle file = Game.getFile(BASE_SAVE_DIR + i + "/player.dat");
 			if(file.exists())
 			{
 				try {
@@ -599,7 +610,7 @@ public class MainMenuScreen extends BaseScreen {
 		}
 		
 		for(int i = 0; i < saveGames.length; i++) {
-			FileHandle file = Game.getFile(baseSaveDir + "/game_" + i + ".dat");
+			FileHandle file = Game.getFile(BASE_SAVE_DIR + "game_" + i + ".dat");
 			if(file.exists())
 			{
 				try {
@@ -614,21 +625,19 @@ public class MainMenuScreen extends BaseScreen {
 	
 	private void deleteSavegame(int saveLoc) {
 		try {
-			String baseSaveDir = "save/";
-			FileHandle file = Game.getFile(baseSaveDir + "/" + saveLoc + "/");
-			Gdx.app.log("DelverLifeCycle", "Deleting savegame " + file.path());
+			FileHandle file = Game.getFile(BASE_SAVE_DIR + saveLoc + "/");
+			Gdx.app.log(LOG_TAG_DELVER_LIFE_CYCLE, "Deleting savegame " + file.path());
 			file.deleteDirectory();
 		} catch(Exception ex) {
-            Gdx.app.error("DelverLifeCycle", ex.getMessage());
+            Gdx.app.error(LOG_TAG_DELVER_LIFE_CYCLE, ex.getMessage());
         }
 		
 		try {
-			String baseSaveDir = "save/";
-			FileHandle file = Game.getFile(baseSaveDir + "/game_" + saveLoc + ".dat");
-			Gdx.app.log("DelverLifeCycle", "Deleting progress " + file.path());
+			FileHandle file = Game.getFile(BASE_SAVE_DIR + "game_" + saveLoc + ".dat");
+			Gdx.app.log(LOG_TAG_DELVER_LIFE_CYCLE, "Deleting progress " + file.path());
 			file.delete();
 		} catch(Exception ex) {
-            Gdx.app.error("DelverLifeCycle", ex.getMessage());
+            Gdx.app.error(LOG_TAG_DELVER_LIFE_CYCLE, ex.getMessage());
         }
 
         makeContent();
