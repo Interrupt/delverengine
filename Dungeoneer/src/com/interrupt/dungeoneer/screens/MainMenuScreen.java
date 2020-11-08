@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -34,7 +33,6 @@ import com.interrupt.managers.StringManager;
 import java.text.MessageFormat;
 
 public class MainMenuScreen extends BaseScreen {
-	
     private Texture menuTexture;
     private TextureRegion[] menuRegions;
 
@@ -45,14 +43,14 @@ public class MainMenuScreen extends BaseScreen {
     private TextButton deleteButton;
     private TextButton optionsButton;
     
-    private Progression progress[] = new Progression[3];
-    private Player saveGames[] = new Player[3];    
+    private Progression[] progress = new Progression[3];
+    private Player[] saveGames = new Player[3];    
     private Integer selectedSave;
     
     private boolean ignoreEscapeKey = false;
     private boolean refreshOnEscape = false;
 
-    Array<Table> saveSlotUi = new Array<Table>();
+    Array<Table> saveSlotUi = new Array<>();
     
     Player errorPlayer = new Player();
     
@@ -63,7 +61,6 @@ public class MainMenuScreen extends BaseScreen {
     float fadeFactor = 1f;
 	
 	public MainMenuScreen() {
-		
 		dungeonInfo = Game.buildLevelLayout();
 
 		if(splashScreenInfo != null) {
@@ -150,8 +147,6 @@ public class MainMenuScreen extends BaseScreen {
 
         for(int i = 0; i < 3; i++) {
             final int loc = i;
-
-            Player save = saveGames[i];
 
             String saveName = StringManager.get("screens.MainMenuScreen.newGameSaveSlot");
             if(saveGames[i] != null && saveGames[i] == errorPlayer) saveName = StringManager.get("screens.MainMenuScreen.errorSaveSlot");
@@ -433,9 +428,9 @@ public class MainMenuScreen extends BaseScreen {
         if(splashScreenInfo.music != null)
             Audio.playMusic(splashScreenInfo.music, true);
 	}
-	
+    
+    @Override
 	public void draw(float delta) {
-		
 		super.draw(delta);
 		
 		renderer = GameManager.renderer;
@@ -459,7 +454,6 @@ public class MainMenuScreen extends BaseScreen {
 	}
 	
 	private String getSaveName(Progression p, Integer levelNum, String levelName) {
-		
 		if(p != null && p.won) return StringManager.get("screens.MainMenuScreen.finishedSaveSlot");
 		if(levelNum == null) return StringManager.get("screens.MainMenuScreen.deadSaveSlot");
 
@@ -470,8 +464,8 @@ public class MainMenuScreen extends BaseScreen {
 		return levelName;
 	}
 
+    @Override
 	public void tick(float delta) {
-
         super.tick(delta);
 		
 		// quit!
@@ -509,11 +503,7 @@ public class MainMenuScreen extends BaseScreen {
             selected.setColor(Color.WHITE);
         }
 		
-		if(saveGames[saveLoc] != errorPlayer)
-			playButton.setVisible(true);
-		else
-			playButton.setVisible(false);
-		
+        playButton.setVisible(saveGames[saveLoc] != errorPlayer);
 		selectedSave = saveLoc;
 		
 		deleteButton.setVisible(saveGames[selectedSave] != null || progress[selectedSave] != null);
@@ -522,7 +512,6 @@ public class MainMenuScreen extends BaseScreen {
 	}
 	
 	public void playButtonEvent(boolean force) {
-
         Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
 
         if(!force) {
@@ -573,7 +562,6 @@ public class MainMenuScreen extends BaseScreen {
 	}
 	
 	public void deleteButtonEvent(boolean force) {
-
 	    if(!force) {
             ClickListener eraseListener = new ClickListener() {
                 @Override
@@ -630,16 +618,18 @@ public class MainMenuScreen extends BaseScreen {
 			FileHandle file = Game.getFile(baseSaveDir + "/" + saveLoc + "/");
 			Gdx.app.log("DelverLifeCycle", "Deleting savegame " + file.path());
 			file.deleteDirectory();
-		}
-		catch(Exception ex) {}
+		} catch(Exception ex) {
+            Gdx.app.error("DelverLifeCycle", ex.getMessage());
+        }
 		
 		try {
 			String baseSaveDir = "save/";
 			FileHandle file = Game.getFile(baseSaveDir + "/game_" + saveLoc + ".dat");
 			Gdx.app.log("DelverLifeCycle", "Deleting progress " + file.path());
 			file.delete();
-		}
-		catch(Exception ex) {}
+		} catch(Exception ex) {
+            Gdx.app.error("DelverLifeCycle", ex.getMessage());
+        }
 
         makeContent();
 	}
@@ -649,5 +639,4 @@ public class MainMenuScreen extends BaseScreen {
 	    if(Game.modManager.modsFound == null) return false;
 	    return Game.modManager.hasExtraMods();
     }
-
 }
