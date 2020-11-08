@@ -129,7 +129,7 @@ public class MainMenuScreen extends BaseScreen {
             }
         });
 
-        TextButton modsButton = new TextButton(MessageFormat.format(paddedButtonText, "Mods"), skin);
+        TextButton modsButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.modsButton")), skin);
         modsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
