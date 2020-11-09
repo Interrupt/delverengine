@@ -313,7 +313,7 @@ public class Level {
 
 			if(!copy.isDynamic)
 				copyStaticEntities.add(copy);
-			else if(!copy.isSolid && !(copy instanceof ButtonDecal))
+			else if(!copy.isSolid)
 				copyNonCollidableEntities.add(copy);
 			else
 				copyEntities.add(copy);
