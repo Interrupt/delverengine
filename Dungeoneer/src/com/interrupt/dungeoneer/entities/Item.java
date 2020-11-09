@@ -255,6 +255,7 @@ public class Item extends Entity {
 		}
 	}
 
+	@Override
 	public void use(Player player, float projx, float projy)
 	{
 		float pxdir = player.x - x;
@@ -296,7 +297,6 @@ public class Item extends Entity {
 	public void doPickup(Player player) {
 		pickup(player);
 	}
-
 
 	protected void pickup(Player player)
 	{
