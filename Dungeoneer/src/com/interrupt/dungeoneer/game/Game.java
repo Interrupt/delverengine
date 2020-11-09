@@ -168,6 +168,7 @@ public class Game {
 		EntityManager.setSingleton(entityManager);
 	}
 	
+	/** Create game for editor usage. */
 	public Game(Level levelToStart) {
 		instance = this;
 		level = levelToStart;
@@ -186,9 +187,6 @@ public class Game {
 		
 		bag.visible = false;
 		
-		// Load the levels data file, keep the levels array null for now (try loading from save first)
-		level = levelToStart;
-
 		// Load the base game data
 		if(gameData == null) {
 			gameData = modManager.loadGameData();
