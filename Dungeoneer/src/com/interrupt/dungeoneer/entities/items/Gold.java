@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.entities.items;
 
-import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Item;
@@ -12,64 +11,78 @@ import com.interrupt.managers.StringManager;
 import java.text.MessageFormat;
 
 public class Gold extends Item {
-	
-	public Gold() {
-		tex = 88;
-		artType = ArtType.item;
-		name = StringManager.get("items.Gold.defaultNameText");
-		collidesWith = CollidesWith.staticOnly;
-		dropSound = "drops/drop_gold.mp3";
-		collision.x = 0.1f;
-		collision.y = 0.1f;
-	}
-	
 	@EditorProperty
 	public int goldAmount = 1;
 	
+	/** @deprecated v1.4.0: Use `Item::isPickup` instead. */
+	@Deprecated
 	public boolean autoPickup = false;
 	
-	public boolean playedDropSound = false;
+	/** String translation keys. */
+	private static final String TRANS_KEY_DEFAULT_NAME_TEXT = "items.Gold.defaultNameText";
+	private static final String TRANS_KEY_GOLD_ITEM_TEXT = "items.Gold.goldItemText";
+
+	public Gold() {
+		this.tex = 88;
+		this.artType = ArtType.item;
+		this.name = StringManager.get(Gold.TRANS_KEY_DEFAULT_NAME_TEXT);
+		this.collidesWith = CollidesWith.staticOnly;
+		this.dropSound = "drops/drop_gold.mp3";
+		this.collision.x = 0.1f;
+		this.collision.y = 0.1f;
+	}
 
 	public Gold(float x, float y) {
-		super(x, y, 0, ItemType.gold, StringManager.get("items.Gold.defaultNameText"));
+		super(x, y, 0, ItemType.gold, StringManager.get(Gold.TRANS_KEY_DEFAULT_NAME_TEXT));
 	}
 	
 	public Gold(int amount) {
 		this();
-		goldAmount = amount;
-		this.name = StringManager.get("items.Gold.defaultNameText");
+		this.goldAmount = amount;
+		this.name = StringManager.get(Gold.TRANS_KEY_DEFAULT_NAME_TEXT);
 
-		if(goldAmount <= 0) goldAmount = 1;
-		if(goldAmount > 5) tex = 89;
+		if(this.goldAmount <= 0) this.goldAmount = 1;
+		if(this.goldAmount > 5) tex = 89;
 		
-		pickupSound = "pu_gold.mp3";
+		this.pickupSound = "pu_gold.mp3";
 	}
 
 	@Override
 	public String GetItemText() {
-		return MessageFormat.format(StringManager.get("items.Gold.goldItemText"), this.goldAmount);
+		return MessageFormat.format(StringManager.get(Gold.TRANS_KEY_GOLD_ITEM_TEXT), this.goldAmount);
 	}
 	
 	@Override
-	public void tick(Level level, float delta)
-	{
+	public void tick(Level level, float delta) {
 		super.tick(level, delta);
 		
-		if(isActive && autoPickup) {
-			Player p = Game.instance.player;
-			if(Math.abs(p.x + 0.5f - x) < 0.3f && Math.abs(p.y + 0.5f - y ) < 0.3f) {
-				p.gold++;
-				isActive = false;
+		if(this.isActive && (this.autoPickup || this.isPickup)) {
+			Player player = Game.instance.player;
+
+			if(this.isPlayerInReach(player)) {
+				this.consumeGold(player);
 			}
 		}
 	}
 	
+	@Override
 	protected void pickup(Player player) {
-		if(isActive) {
-			player.gold += goldAmount;
-			isActive = false;
-			Audio.playSound(pickupSound, 0.3f, 1f);
-			makeItemPickupAnimation(player);
+		if(this.isActive) {
+			this.consumeGold(player);
+			this.makeItemPickupAnimation(player);
 		}
+	}
+
+	/** Takes care of gold consumption by the player. */
+	private void consumeGold(Player consumer) {
+		consumer.changeGoldAmount(this.goldAmount);
+
+		Audio.playSound(this.pickupSound, 0.3f, 1f);
+		this.isActive = false;
+	}
+
+	/** Returns whether the player is in reach to pickup the gold. */
+	private boolean isPlayerInReach(Player player) {
+		return Math.abs(player.x + 0.5f - this.x) <= this.pickupDistance && Math.abs(player.y + 0.5f - this.y) <= this.pickupDistance;
 	}
 }

@@ -116,7 +116,7 @@ public class ShopOverlay extends WindowOverlay {
 
 		Table buttonTable = new Table();
 
-		if(item.cost <= player.gold) {
+		if(item.cost <= player.getGoldAmount()) {
 			TextButton buyButton = new TextButton("Yes", skin.get(TextButtonStyle.class));
 			buyButton.addListener(new ClickListener() {
 				@Override
@@ -157,7 +157,7 @@ public class ShopOverlay extends WindowOverlay {
 						player.stats.SPD += item.upgrade.stats.SPD;
 					}
 
-					player.gold-=item.cost;
+					player.changeGoldAmount(-item.cost);
 					Audio.playSound("ui/ui_buy.mp3", 0.6f);
 					makeLayout();
 				}
@@ -186,7 +186,7 @@ public class ShopOverlay extends WindowOverlay {
 		lblGoldLabel.setAlignment(Align.bottom | Align.left);
 		lblGoldLabel.setFontScale(0.75f);
 
-		lblGoldAmount = new Label(String.format("%d", player.gold), skin.get(LabelStyle.class));
+		lblGoldAmount = new Label(String.format("%d", player.getGoldAmount()), skin.get(LabelStyle.class));
 		lblGoldAmount.setAlignment(Align.right);
 		lblGoldAmount.setFontScale(0.75f);
 
@@ -263,7 +263,7 @@ public class ShopOverlay extends WindowOverlay {
 	    lblGoldLabel.setFontScale(0.75f);
 	    //lblGoldLabel.setColor(1f, 1f, 0.5f, 0.6f);
 	    
-	    lblGoldAmount = new Label(String.format("%d", player.gold), skin.get(LabelStyle.class));
+	    lblGoldAmount = new Label(String.format("%d", player.getGoldAmount()), skin.get(LabelStyle.class));
 	    lblGoldAmount.setAlignment(Align.right);
 	    lblGoldAmount.setFontScale(0.75f);
 	    //lblGoldAmount.setColor(1f, 1f, 0.5f, 0.6f);
@@ -354,7 +354,7 @@ public class ShopOverlay extends WindowOverlay {
 		value.setAlignment(Align.right);
 		value.setFontScale(0.75f);
 		
-		if(player.gold >= item.cost)
+		if(player.getGoldAmount() >= item.cost)
 			value.setColor(0.6f, 1f, 0.6f, 0.6f);
 		else
 			value.setColor(1f, 0.6f, 0.6f, 0.6f);

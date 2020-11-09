@@ -174,7 +174,7 @@ public class GameOverScreen extends StatsScreen {
 
         // save the updated progress
         final Progression progression = Game.instance.progression;
-        progression.gold = Game.instance.player.gold;
+        progression.gold = Game.instance.player.getGoldAmount();
         progression.won = !gameOver;
 
         if(gameOver) {
@@ -304,7 +304,7 @@ public class GameOverScreen extends StatsScreen {
             SteamApi.api.achieve("WON");
         }
 
-        int goldThisRun = Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun;
+        int goldThisRun = Game.instance.player.getGoldAmount() - Game.instance.progression.goldAtStartOfRun;
         if(goldThisRun > 300) {
             SteamApi.api.achieve("RUN_GOLD");
         }

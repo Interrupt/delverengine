@@ -25,7 +25,7 @@ public class CharacterOverlay extends WindowOverlay {
     @Override
     public Table makeContent() {
         makeRow("Health",  player.stats.END, "Level", player.level);
-        makeRow("Magic",   player.stats.MAG, "Gold", player.gold);
+        makeRow("Magic",   player.stats.MAG, "Gold", player.getGoldAmount());
         makeRow("Speed", Integer.toString(player.stats.SPD), "XP", player.exp + "/" + player.getNextLevel());
         makeRow("Attack",  player.stats.ATK);
         makeRow("Defense", player.stats.DEF);

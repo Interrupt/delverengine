@@ -2591,5 +2591,30 @@ public class Player extends Actor {
 			if(itm != null && itm.drawable != null)
 				itm.drawable.refresh();
 		}
-    }
+	}
+	
+	/** Returns the current player gold amount. */
+	public int getGoldAmount() {
+		return this.gold;
+	}
+
+	/** Sets the current player gold amount. Returns the player object for chaining purposes. */
+	public Player setGoldAmount(int goldAmount) {
+		this.gold = goldAmount;
+
+		// Make sure the gold never falls below 0.
+		this.gold = Math.max(0, this.gold);
+
+		return this;
+	}
+
+	/** Changes the current player gold amount and returns the new gold amount. */
+	public int changeGoldAmount(int goldAmount) {
+		this.gold += goldAmount;
+
+		// Make sure the gold never falls below 0.
+		this.gold = Math.max(0, this.gold);
+
+		return this.gold;
+	}
 }

@@ -222,7 +222,7 @@ public class Game {
 		level.loadFromEditor();
 
 		player.randomSeed = rand.nextInt();
-		player.gold = 1000;
+		player.setGoldAmount(1000);
 
 		progression.inventoryUpgrades = 0;
 		progression.hotbarUpgrades = 0;
@@ -435,7 +435,7 @@ public class Game {
 
 			// Set progression
 			player.randomSeed = rand.nextInt();
-			player.gold = progression.gold;
+			player.setGoldAmount(progression.gold);
 			player.inventorySize += (progression.inventoryUpgrades + progression.hotbarUpgrades);
 			player.hotbarSize += progression.hotbarUpgrades;
 			player.startPlaytime();
@@ -453,7 +453,7 @@ public class Game {
 				levelNum = -1;
 				player = new Player(this);
 				player.level = 2;
-				player.gold = progression.gold;
+				player.setGoldAmount(progression.gold);
 				player.maxHp = 12;
 				player.hp = player.maxHp;
 				player.randomSeed = rand.nextInt();
