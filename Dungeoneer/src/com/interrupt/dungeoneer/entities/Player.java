@@ -1056,7 +1056,7 @@ public class Player extends Actor {
 				}
 			}
 
-			if((Game.hud.isAttackPressed()) && !(touchingItem && input.uiTouchPointer == input.rightPointer)) {
+            if((Game.hud.isAttackPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer)) {
 
 				deltaX = 0;
 				deltaY = 0;
@@ -1093,9 +1093,9 @@ public class Player extends Actor {
 				lastDelta.set(thisX, thisY);
 			}
 
-			if(!(Game.hud.isAttackPressed())) {
-				lastDelta = null;
-			}
+            if(!(Game.hud.isAttackPressed() || input.isRightTouched())) {
+                lastDelta = null;
+            }
 		}
 
 		// reset the ignore touch flag
