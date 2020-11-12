@@ -12,11 +12,31 @@ public class Gold extends Item {
 	@EditorProperty
 	public int goldAmount = 1;
 
+	/**
+	 * @deprecated <code>autoPickup</code> has been deprecated in favor of
+	 *             <code>Item::isPickup</code> and will get removed in the next
+	 *             major release.
+	 */
+	@Deprecated
+	public boolean autoPickup = false;
+
+	/**
+	 * @deprecated <code>playedDropSound</code> has been deprecated and will get
+	 *             removed in the next major release.
+	 */
+	@Deprecated
+	public boolean playedDropSound = false;
+
 	/** String translation keys. */
 	private static final String TRANS_KEY_DEFAULT_NAME_TEXT = "items.Gold.defaultNameText";
 	private static final String TRANS_KEY_GOLD_ITEM_TEXT = "items.Gold.goldItemText";
 
 	public Gold() {
+		// Make sure legacy code is supported.
+		if (autoPickup) {
+			this.isPickup = true;
+		}
+
 		this.tex = 88;
 		this.artType = ArtType.item;
 		this.name = StringManager.get(Gold.TRANS_KEY_DEFAULT_NAME_TEXT);
@@ -28,16 +48,26 @@ public class Gold extends Item {
 
 	public Gold(float x, float y) {
 		super(x, y, 0, ItemType.gold, StringManager.get(Gold.TRANS_KEY_DEFAULT_NAME_TEXT));
+
+		// Make sure legacy code is supported.
+		if (autoPickup) {
+			this.isPickup = true;
+		}
 	}
-	
+
 	public Gold(int amount) {
 		this();
 		this.goldAmount = amount;
 		this.name = StringManager.get(Gold.TRANS_KEY_DEFAULT_NAME_TEXT);
 
-		if(this.goldAmount <= 0) this.goldAmount = 1;
-		if(this.goldAmount > 5) tex = 89;
-		
+		if (this.goldAmount <= 0) {
+			this.goldAmount = 1;
+		}
+
+		if (this.goldAmount > 5) {
+			tex = 89;
+		}
+
 		this.pickupSound = "pu_gold.mp3";
 	}
 
