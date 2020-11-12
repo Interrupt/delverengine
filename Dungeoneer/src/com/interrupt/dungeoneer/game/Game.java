@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Json;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
@@ -352,8 +351,7 @@ public class Game {
                     FileHandle sectionFile = g.child("section.dat");
                     if(sectionFile.exists()) {
                         Gdx.app.debug("Delver", "Found section file: " + sectionFile.path());
-                        Json json = new Json();
-                        SectionDefinition d = json.fromJson(SectionDefinition.class, sectionFile);
+                        SectionDefinition d = JsonUtil.fromJson(SectionDefinition.class, sectionFile);
                         sections.put(g.name(), d);
                     }
                 }

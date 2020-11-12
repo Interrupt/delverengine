@@ -31,8 +31,6 @@ public class ModManager {
 
     private transient Array<String> excludeFiles = new Array<String>();
 
-    private transient Json json = new Json();
-
     private static ScriptingApi scriptingApi = null;
 
     public ModManager() { }
@@ -461,7 +459,7 @@ public class ModManager {
 
     public WorkshopModData getDataForMod(String modPath) {
         try {
-            WorkshopModData data = json.fromJson(WorkshopModData.class, new FileHandle(modPath).child("modInfo.json"));
+            WorkshopModData data = JsonUtil.fromJson(WorkshopModData.class, new FileHandle(modPath).child("modInfo.json"));
             return data;
         }
         catch(Exception ex) {

@@ -3,7 +3,6 @@ package com.interrupt.dungeoneer.editor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Clipboard;
-import com.badlogic.gdx.utils.Json;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -64,8 +63,7 @@ public class EditorClipboard {
         // Deserialize from system clipboard.
         try {
             Clipboard systemClipboard = Gdx.app.getClipboard();
-            Json json = new Json();
-            instance = json.fromJson(EditorClipboard.class, systemClipboard.getContents());
+            instance = JsonUtil.fromJson(EditorClipboard.class, systemClipboard.getContents());
         }
         catch (Exception ignored) {}
 
