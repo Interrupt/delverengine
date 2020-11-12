@@ -18,7 +18,7 @@ public class JsonUtil {
     /** Serializes the given object to the given file. */
     public static void toJson(Object object, FileHandle file) {
         if (file == null) {
-            Gdx.app.log("JsonUtil", "Attempting to write to a null FileHandle objct.");
+            Gdx.app.log("DelverSerialization", "Attempting to write to a null FileHandle objct.");
             return;
         }
 
@@ -32,8 +32,7 @@ public class JsonUtil {
 
     /** Serializes an object to a standardized JSON format using a given type. */
     public static String toJson(Object object, Class<?> type) {
-        Json json = new Json();
-        json.setOutputType(JsonWriter.OutputType.json);
+        Json json = getJson();
 
         String contents = "{}";
         int singleLineColumns = 40;
@@ -47,7 +46,7 @@ public class JsonUtil {
             }
         }
         catch (Exception ignored) {
-            Gdx.app.log("JsonUtil", "Failed to serialize object.");
+            Gdx.app.log("DelverSerialization", "Failed to serialize object.");
         }
 
         return contents;
@@ -68,7 +67,7 @@ public class JsonUtil {
         catch (Exception ignored) { }
 
         if (result == null) {
-            Gdx.app.log("JsonUtil", "Failed to deserialize object. Using default value.");
+            Gdx.app.log("DelverSerialization", "Failed to deserialize object. Using default value.");
             result = defaultValueSupplier.get();
         }
 
@@ -77,7 +76,21 @@ public class JsonUtil {
 
     /** Deserialize an object from JSON. */
     public static <T> T fromJson(Class<T> type, String json) {
-        Json json_ = new Json();
+        Json json_ = getJson();
         return json_.fromJson(type, json);
+    }
+
+    private static Json getJson() {
+        Json json = new Json() {
+            @Override
+            protected boolean ignoreUnknownField(Class type, String fieldName) {
+                Gdx.app.log("DelverSerialization", String.format("Unknown field: %s for class: %s", fieldName, type));
+
+                return true;
+            }
+        };
+        json.setOutputType(JsonWriter.OutputType.json);
+
+        return json;
     }
 }
