@@ -44,6 +44,8 @@ public class JsonUtil {
             else {
                 contents = json.prettyPrint(json.toJson(object), singleLineColumns);
             }
+
+            contents = contents.replace("\t", "    ");
         }
         catch (Exception ignored) {
             Gdx.app.log("DelverSerialization", "Failed to serialize object.");
