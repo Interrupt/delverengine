@@ -77,14 +77,24 @@ public class JsonUtil {
     /** Deserialize an object from JSON. */
     public static <T> T fromJson(Class<T> type, String json) {
         Json json_ = getJson();
-        return json_.fromJson(type, json);
+        T result;
+
+        try {
+            result = json_.fromJson(type, json);
+        }
+        catch (Exception ex) {
+            Gdx.app.log("DelverSerialization", String.format("Error: Failed to deserialize JSON: \"%s\"", json));
+            throw ex;
+        }
+
+        return result;
     }
 
     private static Json getJson() {
         Json json = new Json() {
             @Override
             protected boolean ignoreUnknownField(Class type, String fieldName) {
-                Gdx.app.log("DelverSerialization", String.format("Unknown field: %s for class: %s", fieldName, type));
+                Gdx.app.log("DelverSerialization", String.format("Warning: Unknown field: %s for class: %s", fieldName, type));
 
                 return true;
             }
