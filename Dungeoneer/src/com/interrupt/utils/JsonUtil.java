@@ -18,7 +18,7 @@ public class JsonUtil {
     /** Serializes the given object to the given file. */
     public static void toJson(Object object, FileHandle file) {
         if (file == null) {
-            Gdx.app.log("DelverSerialization", "Attempting to write to a null FileHandle objct.");
+            Gdx.app.log("DelverSerialization", "Attempting to write to a null FileHandle object.");
             return;
         }
 
