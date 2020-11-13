@@ -38,6 +38,7 @@ public class Gold extends Item {
 		this.name = StringManager.get("items.Gold.defaultNameText");
 		this.collidesWith = CollidesWith.staticOnly;
 		this.dropSound = "drops/drop_gold.mp3";
+		this.pickupSound = "pu_gold.mp3";
 		this.collision.x = 0.1f;
 		this.collision.y = 0.1f;
 	}
@@ -53,8 +54,6 @@ public class Gold extends Item {
 		if (this.goldAmount > 5) {
 			tex = 89;
 		}
-
-		this.pickupSound = "pu_gold.mp3";
 	}
 
 	@Override
