@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.entities.Stairs;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.GameData;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.screens.*;
 import com.interrupt.utils.JsonUtil;
 
@@ -37,7 +38,8 @@ public class GameApplication extends Game {
 		gameManager = new GameManager(this);
         Gdx.input.setInputProcessor( input );
         gameManager.init();
-        
+        Options.loadOptions();
+
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(gameManager, input);
         gameoverScreen = new GameOverScreen(gameManager);
@@ -54,6 +56,7 @@ public class GameApplication extends Game {
 		gameManager = new GameManager(this);
         Gdx.input.setInputProcessor( input );
         gameManager.init();
+        Options.loadOptions();
 
 		com.interrupt.dungeoneer.game.Game.inEditor = true;
         mainMenuScreen = new SplashScreen();
