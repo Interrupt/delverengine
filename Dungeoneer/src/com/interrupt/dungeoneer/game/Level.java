@@ -303,33 +303,34 @@ public class Level {
 		fogEnd = 20f;
 		viewDistance = 20f;
 		
-		Array<Entity> copy_entities = new Array<Entity>(100);
-		Array<Entity> copy_non_collidable_entities = new Array<Entity>(100);
-		Array<Entity> copy_static_entities = new Array<Entity>(100);
-		
+		Array<Entity> copyEntities = new Array<>(100);
+		Array<Entity> copyNonCollidableEntities = new Array<>(100);
+		Array<Entity> copyStaticEntities = new Array<>(100);
+
 		for(int i = 0; i < entities.size; i++) {
 			Entity copy = entities.get(i);
-			if(copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance) continue;
-				
+			if (!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance))
+				continue;
+
 			if(!copy.isDynamic)
-				copy_static_entities.add(copy);
+				copyStaticEntities.add(copy);
 			else if(!copy.isSolid)
-				copy_non_collidable_entities.add(copy);
+				copyNonCollidableEntities.add(copy);
 			else
-				copy_entities.add(copy);
+				copyEntities.add(copy);
 		}
 		
-		entities = copy_entities;
-		non_collidable_entities = copy_non_collidable_entities;
-		static_entities = copy_static_entities;
+		entities = copyEntities;
+		non_collidable_entities = copyNonCollidableEntities;
+		static_entities = copyStaticEntities;
 
 		genTheme = DungeonGenerator.GetGenData(theme);
 
 		loadSurprises(genTheme);
 
-		initPrefabs();
+		initPrefabs(Source.LEVEL_START);
 
-		addEntitiesFromMarkers(editorMarkers, new Array<Vector2>(), new Boolean[width * height], new Array<Vector2>(), genTheme, 0, 0);
+		addEntitiesFromMarkers(editorMarkers, new Array<>(), new Boolean[width * height], new Array<>(), genTheme, 0, 0);
 		decorateLevel();
 
 		init(Source.LEVEL_START);
@@ -343,9 +344,9 @@ public class Level {
 	public void generate(Source source) {
 		Random levelRand = new Random();
 
-		entities = new Array<Entity>();
-		non_collidable_entities = new Array<Entity>();
-		static_entities = new Array<Entity>();
+		entities = new Array<>();
+		non_collidable_entities = new Array<>();
+		static_entities = new Array<>();
 
 		// Generate level
 		Boolean isValid = false;
@@ -354,7 +355,7 @@ public class Level {
 			Gdx.app.log("DelverGenerator", "Making level");
 
 			DungeonGenerator generator;
-			Level generated = null;
+			Level generatedLevel = null;
 
 			Progression progression = null;
 			if(Game.instance != null) {
@@ -368,15 +369,15 @@ public class Level {
 			// Try to generate a level
 			try {
 				generator = new DungeonGenerator(new Random(), dungeonLevel);
-				generated = generator.MakeDungeon(theme, roomGeneratorType, roomGeneratorChance, progression);
-				isValid = checkIsValidLevel(generated, dungeonLevel);
+				generatedLevel = generator.MakeDungeon(theme, roomGeneratorType, roomGeneratorChance, progression);
+				isValid = checkIsValidLevel(generatedLevel, dungeonLevel);
 			}
 			catch(Exception ex) {
 				Gdx.app.error("DelverGenerator", ex.getMessage());
 			}
 
 			// Did we make a valid level? Try again if not.
-			if (!isValid || generated == null) {
+			if (!isValid || generatedLevel == null) {
 				Gdx.app.log("DelverGenerator", "Bad level. Trying again");
 				continue;
 			}
@@ -384,25 +385,15 @@ public class Level {
 			progression.markDungeonAreaAsSeen(theme);
 
 			// use data from the generated level
-			width = generated.width;
-			height = generated.height;
-			tiles = generated.tiles;
-			tileMaterials = generated.tileMaterials;
+			width = generatedLevel.width;
+			height = generatedLevel.height;
+			tiles = generatedLevel.tiles;
+			tileMaterials = generatedLevel.tileMaterials;
 
-			editorMarkers = generated.editorMarkers;
-			genTheme = generated.genTheme;
+			editorMarkers = generatedLevel.editorMarkers;
+			genTheme = generatedLevel.genTheme;
 
-			for(int i = 0; i < generated.entities.size; i++) {
-				Entity copy = generated.entities.get(i);
-				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-
-				if(!copy.isDynamic)
-					static_entities.add(copy);
-				else if(!copy.isSolid)
-					non_collidable_entities.add(copy);
-				else
-					entities.add(copy);
-			}
+			entities = generatedLevel.entities;
 		}
 
 		// when generating, keep track of where the possible stair locations are
@@ -415,6 +406,8 @@ public class Level {
 
 		// mark some locations as trap-free
 		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
+
+		initPrefabs(Source.EDITOR);
 
 		// keep a list of places to avoid when making traps
 		Boolean canMakeTrap[] = new Boolean[width * height];
@@ -654,7 +647,7 @@ public class Level {
 		// mark some locations as trap-free
 		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
 
-		initPrefabs();
+		initPrefabs(Source.LEVEL_START);
 		
 		decorateLevel();
 		
@@ -1528,26 +1521,26 @@ public class Level {
 		return false;
 	}
 
-	public void initPrefabs() {
+	public void initPrefabs(Source source) {
 		// init any prefabs
 		// this is a separate pass as things like Monsters might want to check their collisions!
 
 		for(int i = 0; i < entities.size; i++) {
 			Entity e = entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 		for(int i = 0; i < non_collidable_entities.size; i++) {
 			Entity e = non_collidable_entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 		for(int i = 0; i < static_entities.size; i++) {
 			Entity e = static_entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 
@@ -3305,7 +3298,6 @@ public class Level {
 	}
 
 	public void addEntity(Entity e) {
-
 		e.init(this, Source.LEVEL_START);
 
 		if (!e.isActive) {
@@ -3762,5 +3754,12 @@ public class Level {
 
 		if(ambientSound != null && !Game.isMobile)
 			Audio.playAmbientSound(ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
+	}
+
+	public void clear() {
+		if (editorMarkers != null) editorMarkers.clear();
+		if (entities != null) entities.clear();
+		if (static_entities != null) static_entities.clear();
+		if (non_collidable_entities != null) non_collidable_entities.clear();
 	}
 }

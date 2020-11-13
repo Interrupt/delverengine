@@ -41,6 +41,7 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
+import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
 import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
@@ -54,6 +55,8 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
+import com.interrupt.dungeoneer.generator.GenTheme;
+import com.interrupt.dungeoneer.generator.RoomGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.SpriteGroupStrategy;
@@ -320,6 +323,8 @@ public class EditorApplication implements ApplicationListener {
 
 	private TileSelection entireLevelSelection;
 
+	public GeneratorInfo generatorInfo;
+
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
@@ -399,11 +404,12 @@ public class EditorApplication implements ApplicationListener {
 		loadEntities();
 		loadMonsters();
 
-        Gdx.input.setCursorCatched(false);
+		Gdx.input.setCursorCatched(false);
+		generatorInfo = new GeneratorInfo();
         initTextures();
 
         pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
-                TextureAtlas.cachedRepeatingAtlases.firstKey();
+		TextureAtlas.cachedRepeatingAtlases.firstKey();
 
 		createEmptyLevel(17, 17);
 	}
@@ -430,23 +436,69 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
+	/** Creates an empty level with given `width` and `height`. */
 	public void createEmptyLevel(int width, int height) {
 		level = new Level(width, height);
-		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
-		refresh();
-		
-		history = new EditorHistory();
-		file = new EditorFile();
-		
+
 		Tile t = new Tile();
 		t.floorHeight = -0.5f;
 		t.ceilHeight = 0.5f;
 		level.setTile(width / 2, height / 2, t);
 
+		cleanEditorState();
+		cameraController.setDefaultPositionAndRotation();
+	}
+
+	/** Generates a level based on a `template` level. */
+	public void generateLevelFromTemplate(Level template) {
+		level.clear();
+
+		level.theme = template.theme;
+		level.generated = true;
+		level.dungeonLevel = 0;
+
+		GenTheme genTheme = DungeonGenerator.GetGenData(template.theme);
+		int chunkTiles = genTheme.getChunkTileSize();
+		int mapChunks = genTheme.getMapChunks();
+		level.crop(0, 0, chunkTiles * mapChunks, chunkTiles * mapChunks);
+
+		level.roomGeneratorChance = template.roomGeneratorChance;
+		level.roomGeneratorType = template.roomGeneratorType;
+		level.generate(Level.Source.EDITOR);
+
+		cleanEditorState();
+	}
+
+	/** Generates a single room based on a `template` level. */
+	public void generateRoomFromTemplate(Level template) {
+		level.clear();
+
+		GenTheme genTheme = DungeonGenerator.GetGenData(template.theme);
+		int chunkTiles = genTheme.getChunkTileSize();
+		Level generatedLevel = new Level(chunkTiles, chunkTiles);
+
+		generatedLevel.roomGeneratorType = template.roomGeneratorType;
+
+		RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
+		generator.generate(true, true, true, true);
+
+		level.crop(0, 0, generatedLevel.width, generatedLevel.height);
+		level.paste(generatedLevel, 0, 0);
+		level.theme = template.theme;
+
+		cleanEditorState();
+	}
+
+	/** Should be called after manually setting the `level` in the editor. */
+	private void cleanEditorState() {
+		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
+		refresh();
+		
+		history = new EditorHistory();
+		file = new EditorFile();
+
 		history.saveState(level);
 		file.markClean();
-
-		cameraController.setDefaultPositionAndRotation();
 	}
 
 	@Override

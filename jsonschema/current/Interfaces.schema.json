@@ -54,6 +54,7 @@
                 {"$ref": "dungeoneer/entities/items/Armor.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Bow.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Food.schema.json"},
+                {"$ref": "dungeoneer/entities/items/FusedBomb.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Decoration.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Gun.schema.json"},
                 {"$ref": "dungeoneer/entities/items/ItemStack.schema.json"},
