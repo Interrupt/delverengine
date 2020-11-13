@@ -42,9 +42,11 @@ public class DesktopStarter {
             for (String arg : args) {
                 if (arg.toLowerCase().endsWith("debug=true")) {
                     Game.isDebugMode = true;
-                } else if (arg.toLowerCase().endsWith("debug-collision=true")) {
+                }
+                else if (arg.toLowerCase().endsWith("debug-collision=true")) {
                     Game.drawDebugBoxes = true;
-                } else if (arg.toLowerCase().endsWith("enable-mod-classes=true")) {
+                }
+                else if (arg.toLowerCase().endsWith("enable-mod-classes=true")) {
                     ModManager.setScriptingApi(new ScriptLoader());
                 }
             }
