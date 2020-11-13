@@ -30,35 +30,35 @@ public class Gold extends Item {
 	public Gold() {
 		// Make sure legacy code is supported.
 		if (autoPickup) {
-			this.isPickup = true;
+			isPickup = true;
 		}
 
-		this.tex = 88;
-		this.artType = ArtType.item;
-		this.name = StringManager.get("items.Gold.defaultNameText");
-		this.collidesWith = CollidesWith.staticOnly;
-		this.dropSound = "drops/drop_gold.mp3";
-		this.pickupSound = "pu_gold.mp3";
-		this.collision.x = 0.1f;
-		this.collision.y = 0.1f;
+		tex = 88;
+		artType = ArtType.item;
+		name = StringManager.get("items.Gold.defaultNameText");
+		collidesWith = CollidesWith.staticOnly;
+		dropSound = "drops/drop_gold.mp3";
+		pickupSound = "pu_gold.mp3";
+		collision.x = 0.1f;
+		collision.y = 0.1f;
 	}
 
 	public Gold(int amount) {
 		this();
-		this.goldAmount = amount;
+		goldAmount = amount;
 
-		if (this.goldAmount <= 0) {
-			this.goldAmount = 1;
+		if (goldAmount <= 0) {
+			goldAmount = 1;
 		}
 
-		if (this.goldAmount > 5) {
+		if (goldAmount > 5) {
 			tex = 89;
 		}
 	}
 
 	@Override
 	public String GetItemText() {
-		return MessageFormat.format(StringManager.get("items.Gold.goldItemText"), this.goldAmount);
+		return MessageFormat.format(StringManager.get("items.Gold.goldItemText"), goldAmount);
 	}
 
 	@Override
@@ -68,14 +68,14 @@ public class Gold extends Item {
 
 	@Override
 	protected void pickup(Player player) {
-		if (!this.isActive) {
+		if (!isActive) {
 			return;
 		}
 
-		player.changeGoldAmount(this.goldAmount);
-		Audio.playSound(this.pickupSound, 0.3f, 1f);
-		this.makeItemPickupAnimation(player);
+		player.changeGoldAmount(goldAmount);
+		Audio.playSound(pickupSound, 0.3f, 1f);
+		makeItemPickupAnimation(player);
 
-		this.isActive = false;
+		isActive = false;
 	}
 }
