@@ -92,6 +92,7 @@ public class JsonUtil {
         return result;
     }
 
+    /** Returns a correctly configured Json object. */
     private static Json getJson() {
         Json json = new Json() {
             @Override
