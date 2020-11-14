@@ -18,7 +18,7 @@ public class JsonUtil {
     /** Serializes the given object to the given file. */
     public static void toJson(Object object, FileHandle file) {
         if (file == null) {
-            Gdx.app.log("DelverSerialization", "Attempting to write to a null FileHandle object.");
+            Gdx.app.log("Serialization", "Attempting to write to a null FileHandle object.");
             return;
         }
 
@@ -48,7 +48,7 @@ public class JsonUtil {
             contents = contents.replace("\t", "    ");
         }
         catch (Exception ignored) {
-            Gdx.app.log("DelverSerialization", "Failed to serialize object.");
+            Gdx.app.log("Serialization", "Failed to serialize object.");
         }
 
         return contents;
@@ -69,7 +69,7 @@ public class JsonUtil {
         catch (Exception ignored) { }
 
         if (result == null) {
-            Gdx.app.log("DelverSerialization", "Failed to deserialize object. Using default value.");
+            Gdx.app.log("Serialization", String.format("Warning: Failed to deserialize file: \"%s\". Using default value.", file.toString()));
             result = defaultValueSupplier.get();
         }
 
@@ -85,7 +85,7 @@ public class JsonUtil {
             result = json_.fromJson(type, json);
         }
         catch (Exception ex) {
-            Gdx.app.log("DelverSerialization", String.format("Error: Failed to deserialize JSON: \"%s\"", json));
+            Gdx.app.log("Serialization", String.format("Error: Failed to deserialize JSON: \"%s\"", json));
             throw ex;
         }
 
@@ -96,7 +96,7 @@ public class JsonUtil {
         Json json = new Json() {
             @Override
             protected boolean ignoreUnknownField(Class type, String fieldName) {
-                Gdx.app.log("DelverSerialization", String.format("Warning: Unknown field: %s for class: %s", fieldName, type));
+                Gdx.app.log("Serialization", String.format("Warning: Unknown field: %s for class: %s", fieldName, type));
 
                 return true;
             }
