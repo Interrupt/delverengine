@@ -123,7 +123,10 @@ public class ShaderManager {
                 return loadShader("", vertexShaderFilename, fragmentShaderFilename);
             }
 
-            return null;
+            return new ShaderProgram(
+                    "uniform mat4 u_projectionViewMatrix; attribute vec4 a_position; void main() { gl_Position = u_projectionViewMatrix * a_position; }",
+                    "void main() { gl_FragColor = vec4(0, 1, 1, 1); }"
+            );
         }
     }
 }
