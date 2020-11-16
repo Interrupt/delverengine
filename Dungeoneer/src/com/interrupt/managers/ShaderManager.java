@@ -127,7 +127,7 @@ public class ShaderManager {
 
             return new ShaderProgram(
                     "uniform mat4 u_projectionViewMatrix; attribute vec4 a_position; void main() { gl_Position = u_projectionViewMatrix * a_position; }",
-                    "void main() { gl_FragColor = vec4(0, 1, 1, 1); }"
+                    "void main() { gl_FragColor = vec4(1, 0, 1, 1); }"
             );
         }
     }
