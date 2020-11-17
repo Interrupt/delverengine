@@ -1,14 +1,15 @@
 package com.interrupt.dungeoneer.editor.ui.menu.generator;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.Comparator;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
+import com.interrupt.utils.JsonUtil;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Comparator;
 
 public class GeneratorInfo {
     private Array<String> themes = new Array<String>();
@@ -63,7 +64,7 @@ public class GeneratorInfo {
             // Check for room/level definition.
             FileHandle section = Game.getInternal(mod + "/generator/" + child.name() + "/section.dat");
             if (section.exists()) {
-                SectionDefinition sectionDefinition = Game.fromJson(SectionDefinition.class, section);
+                SectionDefinition sectionDefinition = JsonUtil.fromJson(SectionDefinition.class, section);
 
                 if (!sectionDefinitions.contains(sectionDefinition, false)) {
                     sectionDefinitions.add(sectionDefinition);
