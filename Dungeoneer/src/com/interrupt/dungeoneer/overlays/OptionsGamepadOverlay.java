@@ -24,9 +24,9 @@ import com.interrupt.dungeoneer.game.GameData;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.GamepadBinding;
-import com.interrupt.dungeoneer.input.GamepadManager;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 
 import java.text.MessageFormat;
 
@@ -59,7 +59,7 @@ public class OptionsGamepadOverlay extends WindowOverlay {
 
         // check if the Jump option should be enabled
         try {
-            GameData gameData = Game.fromJson(GameData.class, Game.findInternalFileInMods("data/game.dat"));
+            GameData gameData = JsonUtil.fromJson(GameData.class, Game.findInternalFileInMods("data/game.dat"));
             if (gameData != null && gameData.playerJumpEnabled) {
                 if (!Actions.keyOrder.contains(Actions.Action.JUMP, false)) {
                     Actions.keyOrder.add(Actions.Action.JUMP);
