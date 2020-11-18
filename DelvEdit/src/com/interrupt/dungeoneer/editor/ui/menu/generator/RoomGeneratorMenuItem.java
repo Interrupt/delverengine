@@ -13,7 +13,6 @@ import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.generator.RoomGenerator;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 
 public class RoomGeneratorMenuItem extends DynamicMenuItem {
@@ -91,25 +90,9 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                                 warningDialog.show(Editor.app.ui.getStage());
                             }
                             else {
-                                Editor.app.getLevel().editorMarkers.clear();
-                                Editor.app.getLevel().entities.clear();
-                                Editor.app.getLevel().non_collidable_entities.clear();
-                                Editor.app.getLevel().static_entities.clear();
+                                Editor.app.generateRoomFromTemplate(template);
     
-                                Level generatedLevel = new Level(17, 17);
-                                generatedLevel.roomGeneratorType = template.roomGeneratorType;
-    
-                                RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
-                                generator.generate(true, true, true, true);
-    
-                                Editor.app.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
-                                Editor.app.getLevel().paste(generatedLevel, 0, 0);
-                                Editor.app.getLevel().theme = template.theme;
-    
-                                Editor.app.refresh();
-                                Editor.app.updateEditorHierarchyWindow();
-    
-                                if (Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
+                                if (!Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
                                     Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
                                     needsRefresh = true;
                                 }

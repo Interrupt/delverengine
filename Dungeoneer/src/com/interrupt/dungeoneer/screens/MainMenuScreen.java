@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -24,12 +23,16 @@ import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.game.*;
+import com.interrupt.dungeoneer.game.Colors;
+import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.Progression;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.overlays.ModsOverlay;
 import com.interrupt.dungeoneer.overlays.OptionsOverlay;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 
 import java.text.MessageFormat;
 
@@ -602,7 +605,7 @@ public class MainMenuScreen extends BaseScreen {
 			if(file.exists())
 			{
 				try {
-					saveGames[i] = Game.fromJson(Player.class, file);
+					saveGames[i] = JsonUtil.fromJson(Player.class, file);
 				}
 				catch(Exception ex) {
 					saveGames[i] = errorPlayer;
@@ -615,7 +618,7 @@ public class MainMenuScreen extends BaseScreen {
 			if(file.exists())
 			{
 				try {
-					progress[i] = Game.fromJson(Progression.class, file);
+					progress[i] = JsonUtil.fromJson(Progression.class, file);
 				}
 				catch(Exception ex) {
 					progress[i] = null;

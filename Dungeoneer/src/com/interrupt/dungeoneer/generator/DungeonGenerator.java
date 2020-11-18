@@ -12,9 +12,9 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Progression;
 import com.interrupt.dungeoneer.generator.GenTile.TileTypes;
-import com.interrupt.dungeoneer.generator.rooms.themes.RoomGeneratorTheme;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.utils.JsonUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,7 +176,7 @@ public class DungeonGenerator {
 						// load the level!
 						if(level_tile_entry.name().endsWith(".dat") || level_tile_entry.name().endsWith(".json")) {
 							String data = level_tile_entry.readString();
-							level_tile = Game.fromJson(Level.class, data);
+							level_tile = JsonUtil.fromJson(Level.class, data);
 						}
 						else if(level_tile_entry.name().endsWith(".bin")) {
                             level_tile = KryoSerializer.loadLevel(level_tile_entry.readBytes());

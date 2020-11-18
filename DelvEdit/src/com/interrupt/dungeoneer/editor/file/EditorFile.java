@@ -9,16 +9,12 @@ import com.badlogic.gdx.utils.SerializationException;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
-import com.interrupt.dungeoneer.editor.ui.EditorUi;
-import com.interrupt.dungeoneer.editor.ui.FilePicker;
-import com.interrupt.dungeoneer.editor.ui.NewLevelDialog;
-import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
-import com.interrupt.dungeoneer.editor.ui.WarningDialog;
-import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.editor.ui.*;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.utils.JsonUtil;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -174,7 +170,7 @@ public class EditorFile {
 
         // write as json
         if(fileName.endsWith(".dat")) {
-            Game.toJson(level, Gdx.files.absolute(fileName));
+            JsonUtil.toJson(level, Gdx.files.absolute(fileName));
         }
         else {
             KryoSerializer.saveLevel(Gdx.files.absolute(fileName), level);
@@ -353,7 +349,7 @@ public class EditorFile {
 
     /** Loads a `.dat` level file. */
     private Level loadDatFile(FileHandle file) {
-        Level level = Game.fromJson(Level.class, file);
+        Level level = JsonUtil.fromJson(Level.class, file);
         level.init(Level.Source.EDITOR);
 
         return level;

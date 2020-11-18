@@ -14,10 +14,10 @@ import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.ShaderManager;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 
 import java.util.Random;
 
@@ -52,7 +52,7 @@ public class SplashScreen extends BaseScreen {
 		screenName = "SplashScreen";
 
 		try {
-			splashScreenInfo = Game.fromJson(SplashScreenInfo.class, Game.findInternalFileInMods("data/splash.dat"));
+			splashScreenInfo = JsonUtil.fromJson(SplashScreenInfo.class, Game.findInternalFileInMods("data/splash.dat"));
 		}
 		catch(Exception ex) {
 			Gdx.app.error("Delver", ex.getMessage());

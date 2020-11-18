@@ -90,29 +90,11 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                                 warningDialog.show(Editor.app.ui.getStage());
                             }
                             else {
-                                Level level = Editor.app.getLevel();
-    
-                                if (level != null) {
-                                    level.editorMarkers.clear();
-                                    level.entities.clear();
-                                    level.non_collidable_entities.clear();
-                                    level.static_entities.clear();
-    
-                                    level.theme = template.theme;
-                                    level.generated = true;
-                                    level.dungeonLevel = 0;
-                                    level.crop(0, 0, 17 * 5, 17 * 5);
-                                    level.roomGeneratorChance = 0.4f;
-                                    level.roomGeneratorType = template.roomGeneratorType;
-                                    level.generate(Level.Source.EDITOR);
+                                Editor.app.generateLevelFromTemplate(template);
 
-                                    Editor.app.refresh();
-                                    Editor.app.updateEditorHierarchyWindow();
-    
-                                    if (Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
-                                        Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
-                                        needsRefresh = true;
-                                    }
+                                if (!Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
+                                    Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
+                                    needsRefresh = true;
                                 }
                             }
                         }
