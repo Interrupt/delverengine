@@ -16,6 +16,7 @@ import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
 import com.interrupt.dungeoneer.scripting.ScriptingApi;
 import com.interrupt.managers.*;
+import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.Logger;
 
 import java.util.HashMap;
@@ -29,8 +30,6 @@ public class ModManager {
     private HashMap<String, Boolean> modsEnabled = new HashMap<String, Boolean>();
 
     private transient Array<String> excludeFiles = new Array<String>();
-
-    private transient Json json = new Json();
 
     private static ScriptingApi scriptingApi = null;
 
@@ -60,7 +59,7 @@ public class ModManager {
         try {
             FileHandle progressionFile = Game.getFile(Options.getOptionsDir() + "modslist.dat");
             if(progressionFile.exists()) {
-                ModManager loaded = Game.fromJson(ModManager.class, progressionFile);
+                ModManager loaded = JsonUtil.fromJson(ModManager.class, progressionFile);
                 modsEnabled = loaded.modsEnabled;
             }
         } catch (Exception e) {
@@ -71,7 +70,7 @@ public class ModManager {
     public void saveModsEnabledList() {
         try {
             FileHandle progressionFile = Game.getFile(Options.getOptionsDir() + "modslist.dat");
-            Game.toJson(this, progressionFile);
+            JsonUtil.toJson(this, progressionFile);
         } catch (Exception e) {
             Gdx.app.error("DelverMods", e.getMessage());
         }
@@ -117,7 +116,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/excludes.dat");
                 if (modFile.exists()) {
-                    Array<String> excludes = Game.fromJson(Array.class, modFile);
+                    Array<String> excludes = JsonUtil.fromJson(Array.class, modFile);
                     if(excludes != null) {
                         excludeFiles.addAll(excludes);
                     }
@@ -137,7 +136,7 @@ public class ModManager {
                 try {
                     FileHandle modFile = Game.getInternal(filePath);
                     if (modFile.exists() && !pathIsExcluded(filePath)) {
-                        EntityManager thisModManager = Game.fromJson(EntityManager.class, modFile);
+                        EntityManager thisModManager = JsonUtil.fromJson(EntityManager.class, modFile);
                         if (entityManager == null) {
                             entityManager = thisModManager;
                         } else if (thisModManager != null)
@@ -160,7 +159,7 @@ public class ModManager {
                 try {
                     FileHandle modFile = Game.getInternal(filePath);
                     if (modFile.exists() && !pathIsExcluded(filePath)) {
-                        ItemManager thisModManager = Game.fromJson(ItemManager.class, modFile);
+                        ItemManager thisModManager = JsonUtil.fromJson(ItemManager.class, modFile);
                         if (itemManager == null) {
                             itemManager = thisModManager;
                         } else if (thisModManager != null)
@@ -183,7 +182,7 @@ public class ModManager {
                 try {
                     FileHandle modFile = Game.getInternal(filePath);
                     if (modFile.exists() && !pathIsExcluded(filePath)) {
-                        MonsterManager thisModManager = Game.fromJson(MonsterManager.class, modFile);
+                        MonsterManager thisModManager = JsonUtil.fromJson(MonsterManager.class, modFile);
                         if (monsterManager == null) {
                             monsterManager = thisModManager;
                         } else if (thisModManager != null)
@@ -205,7 +204,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/" + filename);
                 if(modFile.exists() && !pathIsExcluded(path + "/data/" + filename)) {
-                    TextureAtlas[] atlases = Game.fromJson(TextureAtlas[].class, modFile);
+                    TextureAtlas[] atlases = JsonUtil.fromJson(TextureAtlas[].class, modFile);
 
                     for (int i = 0; i < atlases.length; i++) {
                         combinedAtlases.put(atlases[i].name, atlases[i]);
@@ -233,7 +232,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/tiles.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/tiles.dat")) {
-                    TileManager tileManager = Game.fromJson(TileManager.class, modFile);
+                    TileManager tileManager = JsonUtil.fromJson(TileManager.class, modFile);
                     if(tileManager.tileData != null) combinedTileManager.tileData.putAll(tileManager.tileData);
                     if(combinedTileManager.tiles != null) combinedTileManager.tiles.putAll(tileManager.tiles);
                 }
@@ -255,7 +254,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/shaders.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/shaders.dat")) {
-                    ShaderData[] shaders = Game.fromJson(ShaderData[].class, modFile);
+                    ShaderData[] shaders = JsonUtil.fromJson(ShaderData[].class, modFile);
                     for(int i = 0; i < shaders.length; i++) {
                         ShaderData sd = shaders[i];
                         combinedShaders.shaders.put(sd.name, sd);
@@ -278,7 +277,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/animations.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/animations.dat")) {
-                    LerpedAnimationManager modManager = Game.fromJson(LerpedAnimationManager.class, modFile);
+                    LerpedAnimationManager modManager = JsonUtil.fromJson(LerpedAnimationManager.class, modFile);
                     animationManager.animations.putAll(modManager.animations);
                 }
             }
@@ -300,7 +299,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/strings.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/strings.dat")) {
-                    HashMap<String, LocalizedString> localizedStrings = Game.fromJson(HashMap.class, modFile);
+                    HashMap<String, LocalizedString> localizedStrings = JsonUtil.fromJson(HashMap.class, modFile);
                     if (!localizedStrings.isEmpty()) {
                         combinedLocalizedStrings.putAll(localizedStrings);
                     }
@@ -322,7 +321,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/game.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/game.dat")) {
-                    GameData modData = Game.fromJson(GameData.class, modFile);
+                    GameData modData = JsonUtil.fromJson(GameData.class, modFile);
                     gameData.merge(modData);
                 }
             }
@@ -340,7 +339,7 @@ public class ModManager {
         for (String path: modsFound) {
             FileHandle modFile = Game.getInternal(path + "/" + filename);
             if (modFile.exists() && !pathIsExcluded(path + "/" + filename)) {
-                GenTheme theme = Game.fromJson(GenTheme.class, modFile);
+                GenTheme theme = JsonUtil.fromJson(GenTheme.class, modFile);
 
                 if (theme.genInfos != null) {
                     if (combinedTheme.genInfos == null) {
@@ -460,7 +459,7 @@ public class ModManager {
 
     public WorkshopModData getDataForMod(String modPath) {
         try {
-            WorkshopModData data = json.fromJson(WorkshopModData.class, new FileHandle(modPath).child("modInfo.json"));
+            WorkshopModData data = JsonUtil.fromJson(WorkshopModData.class, new FileHandle(modPath).child("modInfo.json"));
             return data;
         }
         catch(Exception ex) {
