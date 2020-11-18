@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Json;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
@@ -38,10 +37,12 @@ import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.Logger;
 import com.interrupt.utils.OSUtils;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.Random;
@@ -59,18 +60,18 @@ public class Game {
 	public Player player;
 	public GameInput input;
 	public static GamepadManager gamepadManager;
-	
+
 	public boolean gameOver = false;
-	
+
 	public Level level;
 	protected int levelNum;
-	
+
 	public static float messageTimer = 0;
 	public static float messageScale = 1;
 	public static Array<String> message = new Array<String>();
 	public static Array<String> useMessage = new Array<String>();
 	public static Color useMessageColor = Color.WHITE;
-	
+
 	public static Color flashColor = new Color(1f,0f,0f,1f);
 	public static float flashTimer = 0;
 	public static float flashLength = 0;
@@ -81,13 +82,13 @@ public class Game {
 	public ItemManager itemManager;
 	public MonsterManager monsterManager;
 	public EntityManager entityManager;
-	
+
 	public static boolean isMobile = false;
 	public static boolean isDebugMode = false;
 	public static boolean drawDebugBoxes = false;
 	public static boolean ignoreEscape = false;
 	public static boolean inEditor = false;
-	
+
 	// UI stuff
 	public static Tooltip tooltip = new Tooltip();
     public static Stage ui;
@@ -106,13 +107,13 @@ public class Game {
     public MenuMode menuMode = MenuMode.Hidden;
     private boolean interactMode = false;
 	public static boolean ignoreTouch = false;
-    
+
     public static PerspectiveCamera camera;
-    
+
     public static final Random rand = new Random();
-    
+
     protected int saveLoc = 0;
-    
+
     public Progression progression = null;
 
     public static LerpedAnimationManager animationManager = new LerpedAnimationManager();
@@ -120,7 +121,7 @@ public class Game {
     public static ExecutorService threadPool = Executors.newFixedThreadPool(4);
 
     public static Pathfinding pathfinding = new Pathfinding();
-	
+
 	public Game(int saveLoc) {
 		instance = this;
 		Start(saveLoc);
@@ -167,33 +168,30 @@ public class Game {
 		}
 		EntityManager.setSingleton(entityManager);
 	}
-	
+
+	/** Create game for editor usage. */
 	public Game(Level levelToStart) {
 		instance = this;
 		level = levelToStart;
-		
+
 		// we're in the editor
 		inEditor = true;
-		
+
 		Game.flashTimer = 0;
 		message.clear();
 		useMessage.clear();
 		useMessageColor = Color.WHITE;
 		messageScale = 1;
 		this.saveLoc = 3;
-		
-		DecalManager.setQuality(Options.instance.gfxQuality);
-		
-		bag.visible = false;
-		
-		// Load the levels data file, keep the levels array null for now (try loading from save first)
-		level = levelToStart;
 
+		DecalManager.setQuality(Options.instance.gfxQuality);
+
+		bag.visible = false;
 		// Load the base game data
 		if(gameData == null) {
 			gameData = modManager.loadGameData();
 		}
-		
+
 		// load the game progress
 		progression = loadProgression(saveLoc);
 
@@ -202,12 +200,12 @@ public class Game {
 		hud = new Hud();
 
 		loadManagers();
-		
+
 		Gdx.app.log("DelverLifeCycle", "READY EDITOR ONE");
 
 		// try loading the player template
 		try {
-			Player playerTemplate = Game.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
+			Player playerTemplate = JsonUtil.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
 			if(playerTemplate != null) player = playerTemplate;
 		}
 		catch(Exception ex) {
@@ -226,18 +224,18 @@ public class Game {
 
 		progression.inventoryUpgrades = 0;
 		progression.hotbarUpgrades = 0;
-		
+
 		try {
 			player.init();
 			level.setPlayer(player);
 		}
 		catch(Exception ex) { Gdx.app.log("DelverLifeCycle", ex.getMessage()); }
-		
+
 		if(message.size > 0) messageTimer = 400;
-		
+
 		if(!isMobile)
 			GameApplication.instance.input.caughtCursor = true;
-		
+
 		GameScreen.resetDelta = true;
 	}
 
@@ -248,9 +246,9 @@ public class Game {
 
 		Array<Level> dataLevels = new Array<Level>();
 		{
-			dataLevels = Game.fromJson(Array.class, dungeonFile);
+			dataLevels = JsonUtil.fromJson(Array.class, dungeonFile);
 		}
-		
+
 		return dataLevels;
 	}
 
@@ -350,8 +348,7 @@ public class Game {
                     FileHandle sectionFile = g.child("section.dat");
                     if(sectionFile.exists()) {
                         Gdx.app.debug("Delver", "Found section file: " + sectionFile.path());
-                        Json json = new Json();
-                        SectionDefinition d = json.fromJson(SectionDefinition.class, sectionFile);
+                        SectionDefinition d = JsonUtil.fromJson(SectionDefinition.class, sectionFile);
                         sections.put(g.name(), d);
                     }
                 }
@@ -381,7 +378,7 @@ public class Game {
 
         return levels;
     }
-	
+
 	public void Start(int saveLoc)
 	{
 		loadManagers();
@@ -394,14 +391,14 @@ public class Game {
 		useMessageColor = Color.WHITE;
 		messageScale = 1;
 		this.saveLoc = saveLoc;
-		
+
 		DecalManager.setQuality(Options.instance.gfxQuality);
-		
+
 		bag.visible = false;
-		
+
 		// Load the levels data file, keep the levels array null for now (try loading from save first)
 		Array<Level> dataLevels = buildLevelLayout();
-		
+
 		// load the game progress
 		progression = loadProgression(saveLoc);
 		progression.trackMods();
@@ -410,7 +407,7 @@ public class Game {
 
 		isMobile = Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS;
 		//isMobile = true;
-		
+
 		if(!isMobile) {
 			Gdx.input.setCursorCatched(true);
 			hud = new Hud();
@@ -426,7 +423,7 @@ public class Game {
 
 			// try loading the player template
 			try {
-				Player playerTemplate = Game.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
+				Player playerTemplate = JsonUtil.fromJson(Player.class, Game.findInternalFileInMods("data/" + gameData.playerDataFile));
 				if (playerTemplate != null) player = playerTemplate;
 			} catch (Exception ex) {
 				Gdx.app.error("Delver", ex.getMessage());
@@ -466,7 +463,7 @@ public class Game {
 
 			// Now we can load the level
 			level.load();
-			
+
 			if(level.playerStartX != null && level.playerStartY != null) {
 				player.x = level.playerStartX + 0.5f;
 				player.y = level.playerStartY + 0.5f;
@@ -475,7 +472,7 @@ public class Game {
 				player.x = 0;
 				player.y = 0;
 			}
-			
+
 			player.z = level.getTile((int)player.x, (int)player.y).getFloorHeight() + 0.5f;
 			if(level.playerStartRot != null) player.rot = (float)Math.toRadians(-(level.playerStartRot + 180f));
 
@@ -487,25 +484,25 @@ public class Game {
 			saveProgression(progression, saveLoc);
 		}
 		catch(Exception ex) { Gdx.app.log("DelverLifeCycle", ex.getMessage()); }
-		
+
 		try {
 			player.init();
 		}
 		catch(Exception ex) { Gdx.app.log("DelverLifeCycle", ex.getMessage()); }
-		
+
 		if(message.size > 0) messageTimer = 400;
-		
+
 		if(!isMobile)
 			GameApplication.instance.input.caughtCursor = true;
-		
+
 		GameScreen.resetDelta = true;
 	}
-	
+
 	public void setInputHandler(GameInput input)
 	{
 		this.input = input;
 	}
-	
+
 	public static void initGamepadManager() {
 		try {
 			if(gamepadManager == null) {
@@ -516,13 +513,13 @@ public class Game {
 		}
 		catch(Exception ex) { Gdx.app.log("Delver", ex.getMessage()); }
 	}
-	
+
 	public void tick(float delta) {
 		time += delta;
-		
+
 		if(messageTimer > 0) messageTimer -= delta;
 		if(flashTimer > 0) flashTimer -= delta;
-		
+
 		Game.useMessage.clear();
 
         // Game over logic!
@@ -535,7 +532,7 @@ public class Game {
         }
 
         if (gameOver) return;
-		
+
 		level.tick(delta);
 		player.tick(level, delta, input);
 		input.tick();
@@ -548,18 +545,18 @@ public class Game {
 		else {
 			gamepadManager.menuMode = false;
 		}
-		
+
 		if(ui != null)
 			ui.act(delta);
-		
+
 		hotbar.tickUI(input);
 		bag.tickUI(input);
 		hud.tick(input);
-		
+
 		// keep the cache clean
 		CachePools.clearOnTick();
 	}
-	
+
 	public void changeLevel(Stairs stair)
 	{
 
@@ -573,7 +570,7 @@ public class Game {
 					hasOrb = true;
 				}
 			}
-			
+
 			if(!hasOrb) {
 				Game.ShowMessage(StringManager.get("game.Game.cannotLeaveText"), 4, 1f);
 			}
@@ -766,31 +763,31 @@ public class Game {
 
 		Gdx.app.log("DelverLifeCycle", "Level Changed");
 	}
-	
+
 	public void doLevelChange(Stairs stair) {
 		if(stair == null) return;
-		
+
 		Gdx.app.log("DelverLifeCycle", "Changing level: " + stair.direction);
-		
+
 		// save game on change
 		save(levelNum, player.getCurrentTravelKey());
-		
+
 		// clear memory of old level
 		level = null;
-		
+
 		// renderer doesn't need to hold onto this anymore
 		GameManager.renderer.freeLoadedLevel();
-				
+
 		if(stair.direction == StairDirection.down)
 			levelNum++;
 		else
 			levelNum--;
 
 		Array<Level> levels = buildLevelLayout();
-		
+
 		if(levelNum < 0) levelNum = 0;
 		if(levelNum > levels.size - 1) levelNum = levels.size - 1;
-		
+
 		// load if not already
 		try {
 			loadLevel(levelNum, player.getCurrentTravelKey());
@@ -798,30 +795,30 @@ public class Game {
 			Gdx.app.log("Delver", ex.getMessage());
 		}
 		level.setPlayer(player);
-		
+
 		// TODO: Generate levels!
 		if(!level.isLoaded)
 			level.load();
 		else
 			level.init(Source.LEVEL_LOAD);
-		
+
 		player.spawnX = player.x;
 		player.spawnY = player.y;
-		
+
 		player.levelNum = levelNum;
-		
+
 		if(stair.direction == StairDirection.down)
 			stair = level.up;
 		else
 			stair = level.down;
-		
+
 		if(stair != null) {
 			player.x = stair.x;
 			player.y = stair.y + 0.05f;
 			player.z = level.getTile((int)stair.x, (int)stair.y).floorHeight + 0.5f;
 			player.xa = 0;
 			player.ya = 0;
-			
+
 			if(stair.direction == StairDirection.up)
 				player.rot = (float)Math.toRadians((stair.exitRotation + 180));
 			else
@@ -837,27 +834,27 @@ public class Game {
 			if(level.playerStartRot != null)
 				player.rot = (float)Math.toRadians(-(level.playerStartRot + 90f));
 		}
-		
+
 		player.ignoreStairs = true;
-		
+
 		level.rendererDirty = true;
 		GameScreen.resetDelta = true;
-		
+
 		Gdx.app.log("DelverLifeCycle", "Level Changed");
 	}
-	
+
 	public static void ShowMessage(String newMessage, float seconds)
 	{
 		useMessageColor = Color.WHITE;
 		message.clear();
 		if(newMessage.equals("")) return;
-		
+
 		message.addAll(newMessage.split("\n"));
-		
+
 		messageTimer = 60 * seconds;
 		messageScale = 1;
 	}
-	
+
 	public static void ShowMessage(String newMessage, float seconds, float scale)
 	{
 		ShowMessage(newMessage,seconds);
@@ -868,43 +865,43 @@ public class Game {
 		ShowUseMessage(msg);
 		useMessageColor = firstLineColor;
 	}
-	
+
 	public static void ShowUseMessage(String msg) {
 		useMessageColor = Color.WHITE;
 		useMessage.clear();
 		if(useMessage.equals("")) return;
-		
+
 		useMessage.addAll(msg.split("\n"));
 	}
-	
+
 	public static void flash(Color color, int milliseconds)
 	{
 		flashColor.set(color);
 		flashTimer = milliseconds;
 		flashLength = milliseconds;
 	}
-	
-	public void OnGameOver() 
+
+	public void OnGameOver()
 	{
 		gameOver = true;
-		
+
 		if(Audio.steps != null)
 			Audio.steps.stop();
-		
+
 		if(Audio.torch != null)
 			Audio.torch.stop();
-		
+
 		// goodbye saves!
 		Gdx.app.log("DelverLifeCycle", "Game over!");
 		GameApplication.ShowGameOverScreen(false);
 	}
-	
+
 	// Save all the levels!
 	public void save()
-	{	
+	{
 		String saveDir = getSaveDir();
 		String levelDir = saveDir + "/levels/";
-		
+
 		if(gameOver)
 		{
 			FileHandle dir = getFile(saveDir);
@@ -923,17 +920,19 @@ public class Game {
 		if(travelPathKey != null) {
 			levelDir += travelPathKey + "/";
 		}
-		
+
 		Gdx.app.log("DelverLifeCycle", "saving game!");
-		
+
 		FileHandle dir = getFile(levelDir);
 		if(!dir.exists()) dir.mkdirs();
-		
+
 		try {
 			Gdx.app.log("DelverLifeCycle", "Saving options");
-			FileHandle optionsFile = getFile(Options.getOptionsDir() + "options.txt");
-			Game.toJson(Options.instance, optionsFile);
-		} catch(Exception ex) { Gdx.app.log("DelverLifeCycle", "Error saving options"); }
+			Options.saveOptions();
+		}
+		catch(Exception ex) {
+		    Gdx.app.log("DelverLifeCycle", "Error saving options");
+		}
 
 		if(level.needsSaving) {
 			Gdx.app.log("DelverLifeCycle", "Saving Level");
@@ -954,15 +953,15 @@ public class Game {
 
 			KryoSerializer.saveLevel(file, level);
 		}
-		
+
 		// save the player
 		FileHandle file = getFile(saveDir + "player.dat");
-		Game.toJson(player, file);
+		JsonUtil.toJson(player, file);
 
 		// save progress!
 		saveProgression(progression, Game.instance.getSaveSlot());
 	}
-	
+
 	// Save a level
 	public void save(int i, String travelPathKey)
 	{
@@ -972,27 +971,27 @@ public class Game {
 		if(travelPathKey != null) {
 			levelDir += travelPathKey + "/";
 		}
-		
+
 		FileHandle dir = getFile(levelDir);
 		if(!dir.exists()) dir.mkdirs();
-		
+
 		if(level != null && level.needsSaving)
 		{
 			Gdx.app.log("DelverLifeCycle", "Saving Level " + levelNum);
-			
+
 			FileHandle file = getFile(levelDir + levelNum + ".bin");
 			if(file.exists()) file.delete();
-			
+
 			Gdx.app.log("DelverLifeCycle", "Saving to " + file.path());
-			
+
 			level.preSaveCleanup();
 			KryoSerializer.saveLevel(file, level);
 		}
 		else Gdx.app.log("DelverLifeCycle", "Level " + levelNum + " did not need saving");
-		
+
 		// save the player
 		FileHandle file = getFile(saveDir + "player.dat");
-		Game.toJson(player, file);
+		JsonUtil.toJson(player, file);
 	}
 
 	public boolean levelFileExists(int levelnum, String travelPathKey) {
@@ -1012,7 +1011,7 @@ public class Game {
 		if(kryofile.exists()) return true;
 		return file.exists();
 	}
-	
+
 	public boolean loadLevel(int levelNumber, String travelPathKey) throws FileNotFoundException, IOException, ClassNotFoundException {
 		String saveDir = getSaveDir();
 		String levelDir = saveDir + "levels/";
@@ -1020,15 +1019,15 @@ public class Game {
 		if(travelPathKey != null) {
 			levelDir += travelPathKey + "/";
 		}
-		
+
 		FileHandle dir = getFile(levelDir);
 		if(!dir.exists() && dir.length() == 0) return false;
-		
+
 		FileHandle file = getFile(levelDir + levelNumber + ".dat");
 		FileHandle kryofile = getFile(levelDir + levelNumber + ".bin");
 
 		Array<Level> dataLevels = buildLevelLayout();
-		
+
 		if(kryofile.exists()) {
 			if(travelPathKey == null && levelNumber >= 0 && dataLevels.get(levelNumber) instanceof OverworldLevel) {
 				level = KryoSerializer.loadOverworldLevel(kryofile);
@@ -1042,9 +1041,9 @@ public class Game {
 			}
 		}
 		else if(file.exists()) {
-			level = Game.fromJson(SavedLevelContainer.class, file).level;
+			level = JsonUtil.fromJson(SavedLevelContainer.class, file).level;
 			level.init(Source.LEVEL_LOAD);
-			
+
 			Gdx.app.log("DelverLifeCycle", "Loading level " + levelNumber + " from " + file.path());
 		}
 		else {
@@ -1052,51 +1051,51 @@ public class Game {
 			level = dataLevels.get(levelNumber);
 			level.load();
 		}
-		
+
 		return true;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public boolean load()
 	{
 		try
-		{	
+		{
 			String saveDir = getSaveDir();
 			String levelDir = saveDir + "levels/";
-			
+
 			FileHandle dir = getFile(levelDir);
 			if(!dir.exists() && dir.length() == 0) return false;
-			
+
 			Gdx.app.log("DelverLifeCycle", "Loading game from " + dir.path());
 			for(FileHandle f : dir.list()) {
 				Gdx.app.log("DelverLifeCycle", "Found " + f.path());
 			}
-			
+
 			// load the player
 			FileHandle file = getFile(saveDir + "player.dat");
 			if(file.exists())
 			{
 				Gdx.app.log("DelverLifeCycle", "Loading player from " + file.path());
-				
-				player = Game.fromJson(Player.class, file);
+
+				player = JsonUtil.fromJson(Player.class, file);
 			}
 			else return false;
-			
+
 			levelNum = player.levelNum;
 
 			// Might need to do something if breaking changes were made between save versions
 			if(player.saveVersion != SAVE_VERSION) {
 				handleVersionMismatch(player);
 			}
-			
+
 			// load the level the player is on
 			loadLevel(levelNum, player.getCurrentTravelKey());
-			
+
 			// wtf yo
 			if(level == null) return false;
-			
+
 			Gdx.app.log("DelverLifeCycle", "Game loaded successfully");
-			
+
 			return true;
 		}
 		catch(Exception e)
@@ -1131,16 +1130,16 @@ public class Game {
 
 			return new FileHandle(file);
 		}
-		
+
 		if(Gdx.files.isExternalStorageAvailable()) return Gdx.files.external("Delver/" + file);
 		return Gdx.files.local("Delver/" + file);
 	}
-	
+
 	public static Level GetLevel()
 	{
 		return instance.level;
 	}
-	
+
 	public static ItemManager GetItemManager()
 	{
 		return instance.itemManager;
@@ -1149,12 +1148,12 @@ public class Game {
 	public static EntityManager GetEntityManager() {
 		return instance.entityManager;
 	}
-	
+
 	public static MonsterManager GetMonsterManager()
 	{
 		return instance.monsterManager;
 	}
-	
+
 	public static float GetUiSize()
 	{
 		if(Game.instance == null) {
@@ -1164,25 +1163,25 @@ public class Game {
 		if(Options.instance == null) Options.instance = new Options();
 		return uiSize * Options.instance.uiSize;
 	}
-	
+
 	public static void RefreshUI() {
 		hotbar.refresh();
 		bag.refresh();
 		hud.refreshEquipLocations();
 	}
-	
+
 	public static DragAndDropResult DragAndDropInventoryItem( Item dragging, Integer invLoc, String equipLoc ) {
-		
+
 		Item swap = null;
 		Integer mouseOverSlot = null;
 		Game.dragging = null;
-		
+
 		if(hotbar.getMouseOverSlot() != null) {
 			mouseOverSlot = hotbar.getMouseOverSlot() + hotbar.invOffset;
 		} else if(bag.visible && bag.getMouseOverSlot() != null) {
 			mouseOverSlot = bag.getMouseOverSlot() + bag.invOffset;
 		}
-		
+
 		String equipOverSlot = null;
 		for(EquipLoc loc : hud.equipLocations.values())
 		{
@@ -1191,22 +1190,22 @@ public class Game {
 		}
 
 		if(equipOverSlot != null) {
-			
+
 			if(!dragging.GetEquipLoc().equals(equipOverSlot)) return DragAndDropResult.invalid;
-			
+
 			swap = Game.instance.player.equippedItems.get(equipOverSlot);
-			
+
 			if(invLoc != null) {
 				Game.instance.player.inventory.set(invLoc, null);
 			}
-			
+
 			if(equipLoc != null) {
 				Game.instance.player.equippedItems.put(equipLoc, null);
 			}
-			
+
 			Audio.playSound(dragging.equipSound, 0.5f, Game.rand.nextFloat() * 0.1f + 0.95f);
 			Game.instance.player.equippedItems.put(equipOverSlot, dragging);
-			
+
 			if(swap != null)
 			{
 				if(invLoc != null)
@@ -1221,29 +1220,29 @@ public class Game {
 					Game.instance.level.entities.add(swap);
 				}
 			}
-			
+
 			Audio.playSound("inventory/grab_item.mp3", 0.7f, Game.rand.nextFloat() * 0.1f + 0.95f);
-			
+
 			return DragAndDropResult.equip;
 		}
 		else if(mouseOverSlot != null) {
-			
+
 			swap = Game.instance.player.inventory.get(mouseOverSlot);
-			
-			if(equipLoc != null && swap != null && !equipLoc.equals(swap.equipLoc)) return DragAndDropResult.invalid; 
-			
+
+			if(equipLoc != null && swap != null && !equipLoc.equals(swap.equipLoc)) return DragAndDropResult.invalid;
+
 			Boolean dropOnGround = invLoc == null;
 			Boolean isSwapEquipped = Game.instance.player.isHeld(swap);
 			Boolean isDraggingEquipped = Game.instance.player.isHeld(dragging);
-			
+
 			if(invLoc != null)
 				Game.instance.player.inventory.set(invLoc, null);
-			
+
 			if(equipLoc != null)
 				Game.instance.player.equippedItems.put(equipLoc, null);
-			
+
 			Game.instance.player.inventory.set(mouseOverSlot, dragging);
-			
+
 			if(swap != null)
 			{
 				if(invLoc != null)
@@ -1258,15 +1257,15 @@ public class Game {
 					swap.isActive = true;
 					Game.instance.level.entities.add(swap);
 				}
-				
+
 			}
-			
+
 			if(isSwapEquipped && !dropOnGround)
 				Game.instance.player.equip(swap, false);
-			
+
 			if(isDraggingEquipped)
 				Game.instance.player.equip(dragging, false);
-			
+
 			// Dragging from the ground can equip items
 			if(invLoc == null) {
 				if(isDraggingEquipped)
@@ -1278,31 +1277,31 @@ public class Game {
 					((QuestItem)dragging).doQuestThing();
 				}
 			}
-			
+
 			Audio.playSound("inventory/grab_item.mp3", 0.7f, Game.rand.nextFloat() * 0.1f + 0.95f);
-			
+
 			return DragAndDropResult.equip;
 		}
-			
+
 		return DragAndDropResult.drop;
 	}
-	
+
 	private String getSaveDir() {
 		return "save/" + saveLoc + "/";
 	}
-	
+
 	public static Progression loadProgression(Integer saveSlot) {
 		try {
 			//FileHandle modFile = Game.getInternal(path + "/data/items.dat");
 			FileHandle progressionFile = getFile(Options.getOptionsDir() + "game_" + saveSlot + ".dat");
-			return Game.fromJson(Progression.class, progressionFile);
+			return JsonUtil.fromJson(Progression.class, progressionFile);
 		} catch (Exception e) {
 			Gdx.app.error("Delver", e.getMessage());
 		}
-		
+
 		return new Progression();
 	}
-	
+
 	public static void saveProgression(Progression progression, Integer saveSlot) {
 		try {
 			if(progression != null) {
@@ -1315,7 +1314,7 @@ public class Game {
 					optionsDir.mkdirs();
 
 				FileHandle progressionFile = getFile(Options.getOptionsDir() + "game_" + saveSlot + ".dat");
-				Game.toJson(progression, progressionFile);
+				JsonUtil.toJson(progression, progressionFile);
 			}
 		} catch (Exception e) {
 			Gdx.app.error("Delver", e.getMessage());
@@ -1367,7 +1366,7 @@ public class Game {
 			GameManager.renderer.showMap = false;
 		}
 	}
-	
+
 	public void toggleInventory() {
 		if(menuMode != MenuMode.Inventory) {
 			setMenuMode(MenuMode.Inventory);
@@ -1385,11 +1384,11 @@ public class Game {
 			setMenuMode(MenuMode.Hidden);
 		}
 	}
-	
+
 	public void toggleInteractMode() {
 		if(menuMode == MenuMode.Inventory) toggleInventory();
 		interactMode = !interactMode;
-		
+
 		input.caughtCursor = !interactMode;
 		input.setCursorCatched(input.caughtCursor);
 	}
@@ -1403,15 +1402,15 @@ public class Game {
 	public MenuMode getMenuMode() {
 		return menuMode;
 	}
-	
+
 	public boolean getShowingMenu() {
 		return menuMode != MenuMode.Hidden;
 	}
-	
+
 	public boolean getInteractMode() {
 		return interactMode;
 	}
-	
+
 	// Grabs from an external assets dir if available, or gets internal
 	static public FileHandle getInternal(String filename)
 	{
@@ -1426,7 +1425,7 @@ public class Game {
         h = Gdx.files.internal(filename);
 
         if(!h.exists()) Gdx.app.debug("Delver", "  Still not found!");
-		
+
 		return h;
 	}
 
@@ -1437,52 +1436,14 @@ public class Game {
         return Gdx.files.internal(filename);
     }
 
-	public static <T> T fromJson(Class<T> type, FileHandle file) {
-		try {
-			Reader reader = new InputStreamReader(new FileInputStream(file.file().getAbsoluteFile()), "UTF-8");
-
-			Json json = new Json();
-			T returnValue = json.fromJson(type, reader);
-			return returnValue;
-		}
-		catch (Exception ex) {
-			Json json = new Json();
-			return json.fromJson(type, file);
-		}
-	}
-
-	public static <T> T fromJson (Class<T> type, String str) {
-		Json json = new Json();
-		return json.fromJson(type, str);
-	}
-
-	public static void toJson(Object object, FileHandle file) {
-		try {
-			Writer writer = new OutputStreamWriter(new FileOutputStream(file.file().getAbsoluteFile()), "UTF-8");
-			Json json = new Json();
-			json.toJson(object, writer);
-		}
-		catch (Exception ex) {}
-	}
-
-	public static String toJson (Object object) {
-		Json json = new Json();
-		return json.toJson(object);
-	}
-
-	public static String toJson (Object object, Class knownType) {
-		Json json = new Json();
-		return json.toJson(object, knownType);
-	}
-
 	public void clearMemory() {
 		level = null;
 	}
-	
+
 	public void updateMouseInput() {
 		if(player != null) player.updateMouseInput(input);
 	}
-	
+
 	public String getLevelName(int num) {
 		Array<Level> dungeonData = buildLevelLayout();
 		Level l = dungeonData.get(num);
@@ -1490,7 +1451,7 @@ public class Game {
 
 		return MessageFormat.format(StringManager.get("game.Game.levelNameText"), num);
 	}
-	
+
 	public int getSaveSlot() {
 		return saveLoc;
 	}

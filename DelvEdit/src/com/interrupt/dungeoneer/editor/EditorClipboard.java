@@ -1,11 +1,12 @@
 package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Clipboard;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.utils.JsonUtil;
 
 public class EditorClipboard {
     public Array<Entity> entities = new Array<>();
@@ -48,14 +49,11 @@ public class EditorClipboard {
 
         // Serialize to system clipboard.
         Clipboard systemClipboard = Gdx.app.getClipboard();
-        Json json = new Json();
-        json.setOutputType(JsonWriter.OutputType.json);
-        String contents = json.prettyPrint(json.toJson(instance), 40);
-        systemClipboard.setContents(contents);
+        systemClipboard.setContents(JsonUtil.toJson(instance));
     }
 
     private static Entity copyEntity(Entity entity) {
-        return Game.fromJson(entity.getClass(), Game.toJson(entity));
+        return JsonUtil.fromJson(entity.getClass(), JsonUtil.toJson(entity));
     }
 
     /** Serialize JSON from system clipboard and add to level. */
@@ -65,8 +63,7 @@ public class EditorClipboard {
         // Deserialize from system clipboard.
         try {
             Clipboard systemClipboard = Gdx.app.getClipboard();
-            Json json = new Json();
-            instance = json.fromJson(EditorClipboard.class, systemClipboard.getContents());
+            instance = JsonUtil.fromJson(EditorClipboard.class, systemClipboard.getContents());
         }
         catch (Exception ignored) {}
 
@@ -74,10 +71,12 @@ public class EditorClipboard {
         if (instance == null) {
             try {
                 Clipboard systemClipboard = Gdx.app.getClipboard();
-                Json json = new Json();
-                Entity e = json.fromJson(Entity.class, systemClipboard.getContents());
+                Entity e = JsonUtil.fromJson(Entity.class, systemClipboard.getContents());
                 instance = new EditorClipboard();
-                instance.entities.add(e);
+
+                if (e != null) {
+                    instance.entities.add(e);
+                }
             } catch (Exception e) {
                 Gdx.app.log("Editor", e.getMessage());
             }

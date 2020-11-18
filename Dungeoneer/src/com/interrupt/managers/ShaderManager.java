@@ -123,7 +123,12 @@ public class ShaderManager {
                 return loadShader("", vertexShaderFilename, fragmentShaderFilename);
             }
 
-            return null;
+            Gdx.app.log("DelverShaders", String.format("Warning: Failed to load shader: ( %s, %s )", vertexShaderFilename, fragmentShaderFilename));
+
+            return new ShaderProgram(
+                    "uniform mat4 u_projectionViewMatrix; attribute vec4 a_position; void main() { gl_Position = u_projectionViewMatrix * a_position; }",
+                    "void main() { gl_FragColor = vec4(1, 0, 1, 1); }"
+            );
         }
     }
 }

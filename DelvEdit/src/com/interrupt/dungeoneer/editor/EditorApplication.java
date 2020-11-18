@@ -73,6 +73,7 @@ import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 import com.noise.PerlinNoise;
 
 import javax.swing.*;
@@ -1310,14 +1311,14 @@ public class EditorApplication implements ApplicationListener {
 
 					if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
 						// Make a copy
-						Entity copy = Game.fromJson(Editor.selection.picked.getClass(), Game.toJson(Editor.selection.picked));
+						Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
 						level.entities.add(copy);
 
                         pickEntity(copy);
 
 						Array<Entity> copies = new Array<Entity>();
 						for(Entity selected : Editor.selection.selected) {
-							Entity newCopy = Game.fromJson(selected.getClass(), Game.toJson(selected));
+							Entity newCopy = JsonUtil.fromJson(selected.getClass(), JsonUtil.toJson(selected));
 							level.entities.add(newCopy);
 							copies.add(newCopy);
 						}
