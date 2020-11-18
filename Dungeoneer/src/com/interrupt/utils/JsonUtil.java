@@ -56,7 +56,7 @@ public class JsonUtil {
 
     /** Deserializes given file. */
     public static <T> T fromJson(Class<T> type, FileHandle file) {
-        return fromJson(type, file.readString());
+        return fromJson(type, file.readString("UTF-8"));
     }
 
     /** Deserializes the given file. A Supplier object will be used if the result is null. */
