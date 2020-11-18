@@ -449,7 +449,7 @@ public class EditorApplication implements ApplicationListener {
 		cameraController.setDefaultPositionAndRotation();
 	}
 
-	/** Generates a level based on a `template` level. */
+	/** Generates a level based on a <code>template</code> level. */
 	public void generateLevelFromTemplate(Level template) {
 		level.clear();
 
@@ -464,12 +464,15 @@ public class EditorApplication implements ApplicationListener {
 
 		level.roomGeneratorChance = template.roomGeneratorChance;
 		level.roomGeneratorType = template.roomGeneratorType;
+		level.spawnRates = template.spawnRates;
+		level.traps = template.traps;
+		level.trapSpawnChance = template.trapSpawnChance;
 		level.generate(Level.Source.EDITOR);
 
 		cleanEditorState();
 	}
 
-	/** Generates a single room based on a `template` level. */
+	/** Generates a single room based on a <code>template</code> level. */
 	public void generateRoomFromTemplate(Level template) {
 		level.clear();
 
@@ -484,6 +487,9 @@ public class EditorApplication implements ApplicationListener {
 
 		level.crop(0, 0, generatedLevel.width, generatedLevel.height);
 		level.paste(generatedLevel, 0, 0);
+		level.spawnRates = template.spawnRates;
+		level.traps = template.traps;
+		level.trapSpawnChance = template.trapSpawnChance;
 		level.theme = template.theme;
 
 		cleanEditorState();
