@@ -148,6 +148,11 @@
                 "description": "Prefab name."
             }
         },
+        "trapSpawnChance": {
+            "type": "number",
+            "description": "Chance to spawn a trap at a valid location.",
+            "default": 0.012
+        },
         "loadingScreenBackground": {
             "type": "string",
             "description": "Loading screen background image filepath."
