@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.game;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
@@ -22,6 +21,7 @@ import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.serializers.v2.ThreadSafeLevelSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.EntityManager;
+import com.interrupt.utils.JsonUtil;
 
 import java.util.Random;
 
@@ -445,8 +445,8 @@ public class OverworldChunk implements Pool.Poolable {
 									if(info.clusterCount > 1) num = r.nextInt(info.clusterCount) + 1;
 									if(info.performanceControlledClustering) num *= Options.instance.gfxQuality;
 									for(int i = 0; i < num; i++) {
-										String s = Game.toJson(info.spawns);
-										Array<Entity> copyList = Game.fromJson(info.spawns.getClass(), s);
+										String s = JsonUtil.toJson(info.spawns);
+										Array<Entity> copyList = JsonUtil.fromJson(info.spawns.getClass(), s);
 
 										for(Entity copy : copyList) {
 											copy.x = xOffset + x + 0.5f;
