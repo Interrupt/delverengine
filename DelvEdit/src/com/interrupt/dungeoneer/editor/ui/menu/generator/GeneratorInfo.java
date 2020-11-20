@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.editor.ui.menu.generator;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Game;
@@ -30,14 +31,18 @@ public class GeneratorInfo {
 
         Array<String> mods = Game.getModManager().modsFound;
         for (String mod : mods) {
-            refreshGenerator(mod);
-            refreshData(mod);
+            refreshModGenerator(mod);
+            refreshModData(mod);
         }
+
+        refreshGenerator();
+        refreshData();
 
         themes.sort();
     }
 
-    private void refreshGenerator(String mod) {
+    private void refreshModGenerator(String mod) {
+        Gdx.app.log("DEBUG", "Refresh Generator Mod: " + mod);
         FileHandle parent = Game.getInternal(mod + "/generator");
         if (!parent.exists() || !parent.isDirectory()) {
             return;
@@ -53,6 +58,7 @@ public class GeneratorInfo {
         for (FileHandle child : children) {
             // Check for theme definition.
             FileHandle info = Game.getInternal(mod + "/generator/" + child.name() + "/info.dat");
+            Gdx.app.log("DEBUG", "Packaged Info: " + info.path());
             if (info.exists()) {
                 String theme = child.name().toUpperCase();
 
@@ -63,6 +69,7 @@ public class GeneratorInfo {
 
             // Check for room/level definition.
             FileHandle section = Game.getInternal(mod + "/generator/" + child.name() + "/section.dat");
+            Gdx.app.log("DEBUG", "Packaged Section: " + section.path());
             if (section.exists()) {
                 SectionDefinition sectionDefinition = JsonUtil.fromJson(SectionDefinition.class, section);
 
@@ -73,7 +80,33 @@ public class GeneratorInfo {
         }
     }
 
-    private void refreshData(String mod) {
+    private void refreshGenerator() {
+        Gdx.app.log("DEBUG", "Refresh Generator");
+        Array<FileHandle> packagedInfos = Game.findPackagedFiles("info.dat");
+        for (FileHandle packagedInfo : packagedInfos) {
+            Gdx.app.log("DEBUG", "Packaged Info: " + packagedInfo.path());
+            FileHandle themeRoot = packagedInfo.parent();
+            if (themeRoot.parent().name().equals("generator")) {
+                String theme = themeRoot.name().toUpperCase();
+
+                if (!themes.contains(theme, false)) {
+                    themes.add(theme);
+                }
+            }
+        }
+
+        Array<FileHandle> packagedSections = Game.findPackagedFiles("section.dat");
+        for (FileHandle packagedSection : packagedSections) {
+            Gdx.app.log("DEBUG", "Packaged Section: " + packagedSection.path());
+            SectionDefinition sectionDefinition = JsonUtil.fromJson(SectionDefinition.class, packagedSection);
+
+            if (!sectionDefinitions.contains(sectionDefinition, false)) {
+                sectionDefinitions.add(sectionDefinition);
+            }
+        }
+    }
+
+    private void refreshModData(String mod) {
         FileHandle parent = Game.getInternal(mod + "/data/room-builders");
         if (!parent.exists() || !parent.isDirectory()) {
             return;
@@ -95,6 +128,9 @@ public class GeneratorInfo {
             }
         }
     }
+
+    // I guess we need to use either info.dat or section.dat?
+    private void refreshData() {}
 
     public Array<String> getThemes() {
         return themes;
