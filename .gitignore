@@ -1,3 +1,9 @@
+## IDE
+*.iml
+.idea/*
+!/.idea/runConfigurations
+.vscode/
+
 *.class
 
 # Package Files #
@@ -11,21 +17,14 @@
 
 **/.DS_Store
 
-save/
-Dungeoneer/save/
-DungeoneerDesktop/save
-
-*.iml
-.idea/*
-!/.idea/runConfigurations
+## Assets
+**/save/
+**/errorlog.txt
+# **/packaged_files.txt --> Should be part of the build process.
 
 Manifest.java
 
 # Gradle ignores
 .gradle
-Dungeoneer/build
-DungeoneerDesktop/build
-DelvEdit/build
-build/
+**/build/
 **/BuildConfig.java
-.vscode/*
