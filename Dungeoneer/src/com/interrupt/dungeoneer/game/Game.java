@@ -43,6 +43,7 @@ import com.interrupt.utils.OSUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.*;
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.Random;
@@ -1134,6 +1135,79 @@ public class Game {
 		if(Gdx.files.isExternalStorageAvailable()) return Gdx.files.external("Delver/" + file);
 		return Gdx.files.local("Delver/" + file);
 	}
+
+    /** Get a listing of all files under rootPath that match the given pattern. */
+    public static FileHandle[] getFiles(String rootPath, String syntaxAndPattern) {
+        Array<String> paths = new Array<>();
+        try {
+            Array<String> finalPaths = paths;
+            java.nio.file.Files.walk(Paths.get(rootPath)).forEach(path -> {
+                String p = path.toString();
+                p = p.replaceAll("\\\\", "/");
+                finalPaths.add(p);
+            });
+        }
+        catch (IOException ignored) {}
+
+        paths = filterFilePath(paths, syntaxAndPattern);
+        Array<FileHandle> result = pathsToFileHandles(paths);
+
+        return result.toArray(FileHandle.class);
+    }
+
+    /** Get a listing of all internal files that match the given pattern. */
+    public static FileHandle[] getFilesInternal(String syntaxAndPattern) {
+        Array<String> paths = new Array<>(getPackagedFiles());
+        paths = filterFilePath(paths, syntaxAndPattern);
+        Array<FileHandle> result = pathsToFileHandles(paths);
+
+        return result.toArray(FileHandle.class);
+    }
+
+    /**
+     * Filters the given set of paths using the provided syntaxAndPattern string. If no
+     * syntax is provided, the pattern will be assumed to be a glob pattern.
+     **/
+    private static Array<String> filterFilePath(Array<String> paths, String syntaxAndPattern) {
+        FileSystem fs = FileSystems.getDefault();
+
+        String[] s = syntaxAndPattern.split(":");
+        if (s.length == 1) {
+            syntaxAndPattern = "glob:" + syntaxAndPattern;
+        }
+
+        PathMatcher pm = fs.getPathMatcher(syntaxAndPattern);
+        Array<String> result = new Array<>();
+
+        for (String path : paths) {
+            try {
+                Path p = Paths.get(path);
+                if (pm.matches(p)) {
+                    result.add(path);
+                }
+            }
+            catch (InvalidPathException ignored) {}
+        }
+
+        return result;
+    }
+
+    /** Returns a set of valid FileHandles for the given paths. */
+    private static Array<FileHandle> pathsToFileHandles(Array<String> paths) {
+        Array<FileHandle> result = new Array<>();
+
+        for (String path : paths) {
+            try {
+                FileHandle fileHandle = new FileHandle(path);
+                if (fileHandle.exists()) {
+                    result.add(fileHandle);
+                }
+            }
+            catch (InvalidPathException ignored) {}
+        }
+
+        return result;
+    }
 
 	public static Level GetLevel()
 	{

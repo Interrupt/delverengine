@@ -10,6 +10,8 @@ import com.interrupt.utils.JsonUtil;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
 
 public class GeneratorInfo {
@@ -31,6 +33,7 @@ public class GeneratorInfo {
 
         Array<String> mods = Game.getModManager().modsFound;
         for (String mod : mods) {
+            if (mod.equals(".")) mod = "./assets";
             refreshModGenerator(mod);
             refreshModData(mod);
         }
@@ -43,39 +46,22 @@ public class GeneratorInfo {
 
     private void refreshModGenerator(String mod) {
         Gdx.app.log("DEBUG", "Refresh Generator Mod: " + mod);
-        FileHandle parent = Game.getInternal(mod + "/generator");
-        if (!parent.exists() || !parent.isDirectory()) {
-            return;
+
+        FileHandle[] files = Game.getFiles(mod, "./*/generator/*/info.dat");
+        for (FileHandle file : files) {
+            Path filePath = Paths.get(file.file().toString());
+            String theme = filePath.getParent().getFileName().toString().toUpperCase();
+            if (!themes.contains(theme, false)) {
+                themes.add(theme);
+            }
         }
 
-        FileHandle[] children = parent.list(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
+        files = Game.getFiles(mod, "./*/generator/*/section.dat");
+        for (FileHandle file : files) {
+            SectionDefinition sectionDefinition = JsonUtil.fromJson(SectionDefinition.class, file);
 
-        for (FileHandle child : children) {
-            // Check for theme definition.
-            FileHandle info = Game.getInternal(mod + "/generator/" + child.name() + "/info.dat");
-            Gdx.app.log("DEBUG", "Packaged Info: " + info.path());
-            if (info.exists()) {
-                String theme = child.name().toUpperCase();
-
-                if (!themes.contains(theme, false)) {
-                    themes.add(theme);
-                }
-            }
-
-            // Check for room/level definition.
-            FileHandle section = Game.getInternal(mod + "/generator/" + child.name() + "/section.dat");
-            Gdx.app.log("DEBUG", "Packaged Section: " + section.path());
-            if (section.exists()) {
-                SectionDefinition sectionDefinition = JsonUtil.fromJson(SectionDefinition.class, section);
-
-                if (!sectionDefinitions.contains(sectionDefinition, false)) {
-                    sectionDefinitions.add(sectionDefinition);
-                }
+            if (!sectionDefinitions.contains(sectionDefinition, false)) {
+                sectionDefinitions.add(sectionDefinition);
             }
         }
     }
