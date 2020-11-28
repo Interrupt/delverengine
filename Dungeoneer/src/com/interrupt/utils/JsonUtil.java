@@ -9,12 +9,6 @@ import java.util.function.Supplier;
 
 /** Helper class for working with JSON. */
 public class JsonUtil {
-    /** Serializes the given object to the specified path. */
-    public static void toJson(Object object, String path) {
-        FileHandle file = Gdx.files.local(path);
-        toJson(object, file);
-    }
-
     /** Serializes the given object to the given file. */
     public static void toJson(Object object, FileHandle file) {
         if (file == null) {

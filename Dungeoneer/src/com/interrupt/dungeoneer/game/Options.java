@@ -167,7 +167,7 @@ public class Options {
 
     /** Load options from file and update instance. */
     public static void loadOptions() {
-        FileHandle file = Gdx.files.local(getOptionsFilePath());
+        FileHandle file = Game.getFile(getOptionsFilePath());
 
         instance = JsonUtil.fromJson(Options.class, file, () -> {
             Options o = new Options(Gdx.app.getType());
@@ -183,7 +183,8 @@ public class Options {
         }
 
         try {
-            JsonUtil.toJson(instance, getOptionsFilePath());
+            FileHandle file = Game.getFile(getOptionsFilePath());
+            JsonUtil.toJson(instance, file);
         }
         catch (Exception e) {
             Gdx.app.log("Delver", "Failed to save options file.");
