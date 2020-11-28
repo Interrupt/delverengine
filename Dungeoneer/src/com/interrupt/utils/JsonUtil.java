@@ -9,12 +9,6 @@ import java.util.function.Supplier;
 
 /** Helper class for working with JSON. */
 public class JsonUtil {
-    /** Serializes the given object to the specified path. */
-    public static void toJson(Object object, String path) {
-        FileHandle file = Gdx.files.local(path);
-        toJson(object, file);
-    }
-
     /** Serializes the given object to the given file. */
     public static void toJson(Object object, FileHandle file) {
         if (file == null) {
@@ -56,7 +50,7 @@ public class JsonUtil {
 
     /** Deserializes given file. */
     public static <T> T fromJson(Class<T> type, FileHandle file) {
-        return fromJson(type, file.readString());
+        return fromJson(type, file.readString("UTF-8"));
     }
 
     /** Deserializes the given file. A Supplier object will be used if the result is null. */
