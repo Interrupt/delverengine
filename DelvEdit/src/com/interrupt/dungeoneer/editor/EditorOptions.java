@@ -1,8 +1,8 @@
 package com.interrupt.dungeoneer.editor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.utils.JsonUtil;
 
 /** Editor options container class. */
@@ -14,7 +14,7 @@ public class EditorOptions {
     }
 
     public static EditorOptions fromLocalFiles() {
-	    FileHandle file = Gdx.files.local(getEditorOptionsFilePath());
+	    FileHandle file = Game.getFile(getEditorOptionsFilePath());
 
         return JsonUtil.fromJson(EditorOptions.class, file, ()-> {
             EditorOptions eo = new EditorOptions();
@@ -24,7 +24,8 @@ public class EditorOptions {
     }
 
     public static void toLocalFiles(EditorOptions instance) {
-        JsonUtil.toJson(instance, getEditorOptionsFilePath());
+        FileHandle file = Game.getFile(getEditorOptionsFilePath());
+        JsonUtil.toJson(instance, file);
     }
 
     public void save() {
@@ -36,7 +37,7 @@ public class EditorOptions {
     }
 
     public static String getEditorOptionsFilePath() {
-        return "/save/editor.txt";
+        return "save/editor.txt";
     }
 
     public void removeRecentlyOpenedFile(String path) {
