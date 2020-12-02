@@ -5,9 +5,7 @@ import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.ModManager;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.modding.ScriptLoader;
 
 public class DesktopStarter {
     public static void main(String[] args) {
@@ -45,9 +43,6 @@ public class DesktopStarter {
                 }
                 else if (arg.toLowerCase().endsWith("debug-collision=true")) {
                     Game.drawDebugBoxes = true;
-                }
-                else if (arg.toLowerCase().endsWith("enable-mod-classes=true")) {
-                    ModManager.setScriptingApi(new ScriptLoader());
                 }
             }
         }

@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.dungeoneer.game.ModManager;
-import com.interrupt.dungeoneer.scripting.ScriptingApi;
 import com.interrupt.utils.Logger;
 
 import javax.tools.*;
@@ -178,7 +177,7 @@ public class ScriptLoader implements ScriptingApi {
                         sandboxContext.checkPermission(permission);
                     }
                     catch (SecurityException ex) {
-                        Gdx.app.error("Modding", ex.getMessage(), ex);
+                        Gdx.app.error("Scripting", ex.getMessage(), ex);
                         throw ex;
                     }
                 }
