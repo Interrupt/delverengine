@@ -110,6 +110,7 @@ public class ScriptLoader implements ScriptingApi {
                 File[] files = new File[fileHandles.length];
                 for (int ii = 0; ii < fileHandles.length; ii++) {
                     files[ii] = fileHandles[ii].file();
+                    Gdx.app.log("Scripting", "Found script: " + files[ii]);
                 }
 
                 Iterable<? extends JavaFileObject> compilationUnit
