@@ -1,17 +1,15 @@
 package com.interrupt.dungeoneer.overlays;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -21,6 +19,8 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.managers.ItemManager;
+
+import java.util.HashMap;
 
 public class DebugOverlay extends WindowOverlay {
 
@@ -343,6 +343,41 @@ public class DebugOverlay extends WindowOverlay {
         table.row();
     }
 
+    protected void addKillMonstersItem(Table table) {
+        final Label name = new Label("KILL MONSTERS", skin.get("input", LabelStyle.class));
+
+        final Overlay thisOverlay = this;
+
+        name.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                OverlayManager.instance.remove(thisOverlay);
+                for (Entity e : Game.instance.level.entities) {
+                    if (!(e instanceof Monster)) continue;
+
+                    Monster m = (Monster)e;
+                    m.takeDamage(m.maxHp * 2, Weapon.DamageType.PHYSICAL, Game.instance.player);
+                }
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                name.setStyle(skin.get("inputover", LabelStyle.class));
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                name.setStyle(skin.get("input", LabelStyle.class));
+            }
+        });
+
+        buttonOrder.add(name);
+
+        table.add(name).align(Align.left);
+
+        table.row();
+    }
+
 	protected void addRefreshItem(Table table) {
 		final Label name = new Label("REFRESH", skin.get("input", LabelStyle.class));
 
@@ -583,6 +618,7 @@ public class DebugOverlay extends WindowOverlay {
 		addGodModeOption(contentTable, "TOGGLE GODMODE");
 		addNoTargetOption(contentTable, "TOGGLE NOTARGET");
 		addRefreshItem(contentTable);
+        addKillMonstersItem(contentTable);
         addSuicideItem(contentTable);
 
 	    contentTable.add(doneBtn).padTop(4).align(Align.center).colspan(2);
