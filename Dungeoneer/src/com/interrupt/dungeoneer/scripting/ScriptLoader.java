@@ -126,12 +126,13 @@ public class ScriptLoader implements ScriptingApi {
 
                 if (!task.call()) {
                     for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                        Logger.logExceptionToFile(new Exception(diagnostic.toString()));
+                        String fileName = diagnostic.getSource().getName();
+                        Logger.logExceptionToFile("Scripting", "Failed to compile Java file: " + fileName, new Exception(diagnostic.toString()));
                     }
                 }
             }
             catch (Exception ex) {
-                Logger.logExceptionToFile(ex);
+                Logger.logExceptionToFile("Scripting", "Failed to compile Java files.", ex);
             }
         }
     }
@@ -149,7 +150,7 @@ public class ScriptLoader implements ScriptingApi {
             method.invoke(sysloader, new Object[]{url});
         }
         catch(Exception ex) {
-            Logger.logExceptionToFile(ex);
+            Logger.logExceptionToFile("Scripting", "Failed to add directory to ClassLoader", ex);
         }
     }
 

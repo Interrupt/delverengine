@@ -9,6 +9,10 @@ import java.io.PrintStream;
 
 public class Logger {
     public static void logExceptionToFile(Exception ex) {
+        logExceptionToFile("DelverGameManager", "Fatal error!", ex);
+    }
+
+    public static void logExceptionToFile(String tag, String message, Throwable ex) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         ex.printStackTrace(ps);
@@ -19,6 +23,6 @@ public class Logger {
         f.writeString(baos.toString(), true);
         f.writeString("\n", true);
 
-        Gdx.app.log("DelverGameManager", "Fatal error!", ex);
+        Gdx.app.log(tag, message, ex);
     }
 }
