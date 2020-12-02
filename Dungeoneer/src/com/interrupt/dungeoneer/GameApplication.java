@@ -34,6 +34,10 @@ public class GameApplication extends Game {
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create");
 
         Gdx.app.setLogLevel(Application.LOG_INFO);
+
+        if (com.interrupt.dungeoneer.game.Game.isDebugMode) {
+            Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        }
 		
 		gameManager = new GameManager(this);
         Gdx.input.setInputProcessor( input );
