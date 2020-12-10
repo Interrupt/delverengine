@@ -1,0 +1,65 @@
+{
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  "files.associations": {
+    "*.dat": "json"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": ["**/animations.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/animations.dat"
+    },
+    {
+      "fileMatch": ["**/dungeons-testing.dat", "**/dungeons.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/dungeons.dat"
+    },
+    {
+      "fileMatch": ["**/entities.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/entities.dat"
+    },
+    {
+      "fileMatch": ["**/game.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/game.dat"
+    },
+    {
+      "fileMatch": ["**/items.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/items.dat"
+    },
+    {
+      "fileMatch": ["**/monsters.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/monsters.dat"
+    },
+    {
+      "fileMatch": ["**/player.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/player.dat"
+    },
+    {
+      "fileMatch": ["**/shaders.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/shaders.dat"
+    },
+    {
+      "fileMatch": ["**/splash.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/splash.dat"
+    },
+    {
+      "fileMatch": ["**/spritesheets.dat", "**/walltextures.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/spritesheets.dat"
+    },
+    {
+      "fileMatch": ["**/strings.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/strings.dat"
+    },
+    {
+      "fileMatch": ["**/tiles.dat"],
+      "url": "https://delverengine.com/jsonschema/current/filetypes/tiles.dat"
+    },
+    {
+      "fileMatch": ["**/section.dat"],
+      "url": "../jsonschema/current/filetypes/section.dat"
+    }
+  ]
+}

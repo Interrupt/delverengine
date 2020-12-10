@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug (Launch) - Current File",
+      "request": "launch",
+      "mainClass": "${file}"
+    },
+    {
+      "type": "java",
+      "name": "DelvEdit",
+      "request": "launch",
+      "mainClass": "com.interrupt.dungeoneer.EditorStarter",
+      "projectName": "DelvEdit",
+      "cwd": "${workspaceFolder}/Dungeoneer/assets"
+    },
+    {
+      "type": "java",
+      "name": "DungeoneerDesktop",
+      "request": "launch",
+      "mainClass": "com.interrupt.dungeoneer.DesktopStarter",
+      "projectName": "DungeoneerDesktop",
+      "cwd": "${workspaceFolder}/Dungeoneer/assets",
+      "args": "debug=true"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Android",
+      "request": "launch",
+      "command": "gradle DungeoneerAndroid:installDebug DungeoneerAndroid:run"
+    }
+  ]
+}

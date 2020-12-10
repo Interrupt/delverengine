@@ -28,4 +28,8 @@ DungeoneerDesktop/build
 DelvEdit/build
 build/
 **/BuildConfig.java
+
+## VS Code
 .vscode/*
+!/.vscode/launch.json
+!/.vscode/settings.json
