@@ -1,10 +1,4 @@
 {
-  "files.exclude": {
-    "**/.classpath": true,
-    "**/.project": true,
-    "**/.settings": true,
-    "**/.factorypath": true
-  },
   "files.associations": {
     "*.dat": "json"
   },
