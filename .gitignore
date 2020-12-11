@@ -37,4 +37,3 @@ build/
 ## VS Code
 .vscode/*
 !/.vscode/launch.json
-!/.vscode/settings.jsonschema.json
