@@ -13,6 +13,7 @@
 
 save/
 Dungeoneer/save/
+Dungeoneer/assets/packaged_files.txt
 DungeoneerDesktop/save
 
 *.iml
