@@ -9,8 +9,10 @@ import com.interrupt.dungeoneer.scripting.ScriptLoader;
 
 public class EditorStarter {
     public static void main(String[] args) {
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "DelvEdit");
+        // We must call this first to get the correct display options
         Options.loadOptions();
+        
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "DelvEdit");
         Editor.init();
 
         // Start the null steam API
