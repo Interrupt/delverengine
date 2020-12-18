@@ -11,6 +11,8 @@ import com.interrupt.dungeoneer.modding.ScriptLoader;
 
 public class DesktopStarter {
     public static void main(String[] args) {
+        Options.loadOptions();
+
         DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();

@@ -38,7 +38,6 @@ public class GameApplication extends Game {
 		gameManager = new GameManager(this);
         Gdx.input.setInputProcessor( input );
         gameManager.init();
-        Options.loadOptions();
 
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(gameManager, input);
