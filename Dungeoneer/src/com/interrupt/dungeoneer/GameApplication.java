@@ -55,7 +55,6 @@ public class GameApplication extends Game {
 		gameManager = new GameManager(this);
         Gdx.input.setInputProcessor( input );
         gameManager.init();
-        Options.loadOptions();
 
 		com.interrupt.dungeoneer.game.Game.inEditor = true;
         mainMenuScreen = new SplashScreen();
