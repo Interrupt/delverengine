@@ -24,7 +24,11 @@ public final class OSUtils {
     }
 
     public static boolean isAndroid() {
-        String vendor = System.getProperty("java.vendor").toLowerCase();
+        String vendor = System.getProperty("java.vendor");
+        if (vendor == null) {
+            vendor = "unknown";
+        }
+        vendor = vendor.toLowerCase();
 
         return vendor.contains("android");
     }
