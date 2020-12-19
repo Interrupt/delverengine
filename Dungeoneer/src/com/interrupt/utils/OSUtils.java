@@ -1,26 +1,43 @@
 package com.interrupt.utils;
 
-public final class OSUtils
-{
-   private static String OS = null;
-   
-   public static String getOsName()
-   {
-      if(OS == null) {
-          OS = System.getProperty("os.name");
-          if(OS == null)
-              return "unknown";
-      }
-      return OS.toLowerCase();
-   }
-   
-   public static boolean isWindows()
-   {
-      return getOsName().startsWith("windows");
-   }
+public final class OSUtils {
+    private static String OS;
 
-   public static boolean isMac()
-   {
-       return getOsName().startsWith("mac");
-   }
+    static {
+        OS = System.getProperty("os.name");
+        if (OS == null) {
+            OS = "unknown";
+        }
+        OS = OS.toLowerCase();
+    }
+
+    public static boolean isWindows() {
+        return OS.startsWith("windows");
+    }
+
+    public static boolean isMac() {
+        return OS.startsWith("mac");
+    }
+
+    public static boolean isIOS() {
+        return OS.startsWith("ios");
+    }
+
+    public static boolean isAndroid() {
+        String vendor = System.getProperty("java.vendor");
+        if (vendor == null) {
+            vendor = "unknown";
+        }
+        vendor = vendor.toLowerCase();
+
+        return vendor.contains("android");
+    }
+
+    public static boolean isMobile() {
+        return isAndroid() || isIOS();
+    }
+
+    public static boolean isDesktop() {
+        return !isMobile();
+    }
 }
