@@ -12,10 +12,10 @@ import java.io.FileFilter;
 import java.util.Comparator;
 
 public class GeneratorInfo {
-    private Array<String> themes = new Array<String>();
-    private Array<String> builders = new Array<String>();
+    private Array<String> themes = new Array<>();
+    private Array<String> builders = new Array<>();
 
-    private Array<SectionDefinition> sectionDefinitions = new Array<SectionDefinition>();
+    private Array<SectionDefinition> sectionDefinitions = new Array<>();
 
     public Level lastGeneratedLevelTemplate;
     public Level lastGeneratedRoomTemplate;
@@ -30,15 +30,27 @@ public class GeneratorInfo {
 
         Array<String> mods = Game.getModManager().modsFound;
         for (String mod : mods) {
-            refreshGenerator(mod);
-            refreshData(mod);
+            // Note: This prevents duplication in editor. Data is gathered by looking into the packaged files instead.
+            if (mod.equals(".")) { continue; }
+
+            refreshModGenerator(mod);
+            refreshModData(mod);
         }
 
+        refreshInternalGenerator();
+        refreshInternalData();
+
         themes.sort();
+        sectionDefinitions.sort(new Comparator<SectionDefinition>() {
+            @Override
+            public int compare(SectionDefinition o1, SectionDefinition o2) {
+                return Integer.signum(o1.sortOrder - o2.sortOrder);
+            }
+        });
     }
 
-    private void refreshGenerator(String mod) {
-        FileHandle parent = Game.getInternal(mod + "/generator");
+    private void refreshModGenerator(String mod) {
+        FileHandle parent = Game.getFile(mod + "/" + "generator");
         if (!parent.exists() || !parent.isDirectory()) {
             return;
         }
@@ -50,9 +62,9 @@ public class GeneratorInfo {
             }
         });
 
+
         for (FileHandle child : children) {
-            // Check for theme definition.
-            FileHandle info = Game.getInternal(mod + "/generator/" + child.name() + "/info.dat");
+            FileHandle info = Game.getFile(mod + "/" + "generator" + "/" + child.name() + "/" + "info.dat");
             if (info.exists()) {
                 String theme = child.name().toUpperCase();
 
@@ -61,8 +73,7 @@ public class GeneratorInfo {
                 }
             }
 
-            // Check for room/level definition.
-            FileHandle section = Game.getInternal(mod + "/generator/" + child.name() + "/section.dat");
+            FileHandle section = Game.getFile(mod + "/" + "generator" + "/" + child.name() + "/" + "section.dat");
             if (section.exists()) {
                 SectionDefinition sectionDefinition = JsonUtil.fromJson(SectionDefinition.class, section);
 
@@ -73,8 +84,33 @@ public class GeneratorInfo {
         }
     }
 
-    private void refreshData(String mod) {
-        FileHandle parent = Game.getInternal(mod + "/data/room-builders");
+    private void refreshInternalGenerator() {
+        Array<FileHandle> packagedInfos = Game.findPackagedFiles("info.dat");
+
+        for (FileHandle packagedInfo : packagedInfos) {
+            FileHandle themeRoot = packagedInfo.parent();
+
+            if (themeRoot.parent().name().equals("generator")) {
+                String theme = themeRoot.name().toUpperCase();
+
+                if (!themes.contains(theme, false)) {
+                    themes.add(theme);
+                }
+            }
+        }
+
+        Array<FileHandle> packagedSections = Game.findPackagedFiles("section.dat");
+        for (FileHandle packagedSection : packagedSections) {
+            SectionDefinition sectionDefinition = JsonUtil.fromJson(SectionDefinition.class, packagedSection);
+
+            if (!sectionDefinitions.contains(sectionDefinition, false)) {
+                sectionDefinitions.add(sectionDefinition);
+            }
+        }
+    }
+
+    private void refreshModData(String mod) {
+        FileHandle parent = Game.getFile(mod + "/" + "data" + "/" + "room-builders");
         if (!parent.exists() || !parent.isDirectory()) {
             return;
         }
@@ -87,11 +123,24 @@ public class GeneratorInfo {
         });
 
         for (FileHandle child : children) {
-            // Check for room builders.
             String builder = child.nameWithoutExtension().toUpperCase();
 
             if (!builders.contains(builder, false)) {
                 builders.add(builder);
+            }
+        }
+    }
+
+    private void refreshInternalData() {
+        Array<FileHandle> packagedBuilders = Game.findPackagedFiles("_rooms.dat");
+
+        for (FileHandle packagedBuilder : packagedBuilders) {
+            if (packagedBuilder.parent().name().equals("room-builders")) {
+                String builder = packagedBuilder.nameWithoutExtension().toUpperCase();
+
+                if (!builders.contains(builder, false)) {
+                    builders.add(builder);
+                }
             }
         }
     }
@@ -101,15 +150,7 @@ public class GeneratorInfo {
     }
 
     public Array<SectionDefinition> getSectionDefinitions() {
-        Array<SectionDefinition> sortedSectionDefinitions = sectionDefinitions;
-        sortedSectionDefinitions.sort(new Comparator<SectionDefinition>() {
-            @Override
-            public int compare(SectionDefinition o1, SectionDefinition o2) {
-                return Integer.signum(o1.sortOrder - o2.sortOrder);
-            }
-        });
-
-        return sortedSectionDefinitions;
+        return sectionDefinitions;
     }
 
     public boolean isLevelTemplateValid(Level template) {

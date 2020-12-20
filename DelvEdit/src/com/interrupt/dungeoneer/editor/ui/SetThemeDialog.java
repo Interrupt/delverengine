@@ -31,6 +31,6 @@ public class SetThemeDialog extends Dialog {
     }
 
     public String getSelectedTheme() {
-        return themeSelect.getSelected().toString();
+        return themeSelect.getSelected();
     }
 }
