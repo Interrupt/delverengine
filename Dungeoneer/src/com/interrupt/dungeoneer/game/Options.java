@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.game;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
@@ -9,6 +8,7 @@ import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.input.GamepadBinding;
 import com.interrupt.dungeoneer.input.GamepadDefinition;
 import com.interrupt.utils.JsonUtil;
+import com.interrupt.utils.OSUtils;
 
 /** Game options container class. */
 public class Options {
@@ -89,17 +89,14 @@ public class Options {
         instance = new Options();
     }
 
-    public Options() { }
-
-    public Options(ApplicationType applicationType) {
-        if (applicationType == ApplicationType.Android || applicationType == ApplicationType.iOS) {
+    public Options() {
+        if (OSUtils.isMobile()) {
             graphicsDetailLevel = 2;
             shadowsEnabled = false;
             postProcessingQuality = 0;
             fxaaEnabled = false;
         }
     }
-
 
     public static void SetInputOptions(GamepadDefinition defaultGamepad) {
         Actions.keyBindings.put(Action.USE, Options.instance.key_use);
@@ -170,7 +167,7 @@ public class Options {
         FileHandle file = Game.getFile(getOptionsFilePath());
 
         instance = JsonUtil.fromJson(Options.class, file, () -> {
-            Options o = new Options(Gdx.app.getType());
+            Options o = new Options();
             JsonUtil.toJson(o, file);
             return o;
         });
