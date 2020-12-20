@@ -1117,24 +1117,25 @@ public class Game {
 		player.saveVersion = SAVE_VERSION;
 	}
 
-	public static FileHandle getFile(String file)
-	{
-		if(Gdx.app.getType() != ApplicationType.Android && Gdx.app.getType() != ApplicationType.iOS) {
+    public static FileHandle getFile(String file) {
+        if (OSUtils.isMac()) {
+            // OSX needs this user.dir property to figure out where it is running from, and probably linux
+            String userDir = System.getProperty("user.dir");
+            if (userDir != null) {
+                return new FileHandle(userDir + "/" + file);
+            }
+        }
 
-			if(OSUtils.isMac()) {
-				// OSX needs this user.dir property to figure out where it is running from, and probably linux
-				String userDir = System.getProperty("user.dir");
-				if (userDir != null) {
-					return new FileHandle(userDir + "/" + file);
-				}
-			}
+        if (OSUtils.isMobile() && Gdx.files != null) {
+            if (Gdx.files.isExternalStorageAvailable()) {
+                return Gdx.files.external("Delver/" + file);
+            }
 
-			return new FileHandle(file);
-		}
+            return Gdx.files.local("Delver/" + file);
+        }
 
-		if(Gdx.files.isExternalStorageAvailable()) return Gdx.files.external("Delver/" + file);
-		return Gdx.files.local("Delver/" + file);
-	}
+        return new FileHandle(file);
+    }
 
 	public static Level GetLevel()
 	{
