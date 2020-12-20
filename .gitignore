@@ -13,6 +13,7 @@
 
 save/
 Dungeoneer/save/
+Dungeoneer/assets/packaged_files.txt
 DungeoneerDesktop/save
 
 *.iml
@@ -28,4 +29,12 @@ DungeoneerDesktop/build
 DelvEdit/build
 build/
 **/BuildConfig.java
+
+## Eclipse
+.classpath
+.project
+.settings
+
+## VS Code
 .vscode/*
+!/.vscode/launch.json

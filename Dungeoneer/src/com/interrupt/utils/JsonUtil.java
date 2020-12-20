@@ -12,7 +12,7 @@ public class JsonUtil {
     /** Serializes the given object to the given file. */
     public static void toJson(Object object, FileHandle file) {
         if (file == null) {
-            Gdx.app.log("Serialization", "Attempting to write to a null FileHandle object.");
+            log("Serialization", "Attempting to write to a null FileHandle object.");
             return;
         }
 
@@ -42,7 +42,7 @@ public class JsonUtil {
             contents = contents.replace("\t", "    ");
         }
         catch (Exception ignored) {
-            Gdx.app.log("Serialization", "Failed to serialize object.");
+            log("Serialization", "Failed to serialize object.");
         }
 
         return contents;
@@ -63,7 +63,7 @@ public class JsonUtil {
         catch (Exception ignored) { }
 
         if (result == null) {
-            Gdx.app.log("Serialization", String.format("Warning: Failed to deserialize file: \"%s\". Using default value.", file.toString()));
+            log("Serialization", String.format("Warning: Failed to deserialize file: \"%s\". Using default value.", file.toString()));
             result = defaultValueSupplier.get();
         }
 
@@ -79,7 +79,7 @@ public class JsonUtil {
             result = json_.fromJson(type, json);
         }
         catch (Exception ex) {
-            Gdx.app.log("Serialization", String.format("Error: Failed to deserialize JSON: \"%s\"", json));
+            log("Serialization", String.format("Error: Failed to deserialize JSON: \"%s\"", json));
             throw ex;
         }
 
@@ -91,7 +91,7 @@ public class JsonUtil {
         Json json = new Json() {
             @Override
             protected boolean ignoreUnknownField(Class type, String fieldName) {
-                Gdx.app.log("Serialization", String.format("Warning: Unknown field: %s for class: %s", fieldName, type));
+                log("Serialization", String.format("Warning: Unknown field: %s for class: %s", fieldName, type));
 
                 return true;
             }
@@ -99,5 +99,14 @@ public class JsonUtil {
         json.setOutputType(JsonWriter.OutputType.json);
 
         return json;
+    }
+
+    private static void log(String tag, String message) {
+        if (Gdx.app == null) {
+            System.out.println("[" + tag + "] " + message);
+            return;
+        }
+
+        Gdx.app.log(tag, message);
     }
 }
