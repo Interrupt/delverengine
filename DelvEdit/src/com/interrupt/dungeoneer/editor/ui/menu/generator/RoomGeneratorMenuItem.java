@@ -7,13 +7,13 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.WarningDialog;
 import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.generator.RoomGenerator;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 
 public class RoomGeneratorMenuItem extends DynamicMenuItem {
@@ -61,6 +61,9 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                     }
 
                     menuItem.addSeparator();
+                    menuItem.addItem(new MenuItem("Settings", skin, makeSettingsAction()));
+
+                    menuItem.addSeparator();
                     String label = "Re-Generate Room"
                             + (Editor.app.generatorInfo.lastGeneratedRoomTemplate != null
                                     ? " (" + Editor.app.generatorInfo.lastGeneratedRoomTemplate.roomGeneratorType + ", "
@@ -87,12 +90,13 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                     public void actionPerformed(ActionEvent actionEvent) {
                         if (template != null) {
                             if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
-                                WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this room generator. Make sure it exists.");
+                                WarningDialog warningDialog = new WarningDialog(skin,
+                                        "We were not able to find the level template used for this room generator. Make sure it exists.");
                                 warningDialog.show(Editor.app.ui.getStage());
-                            }
-                            else {
-                                Editor.app.generateRoomFromTemplate(template);
-    
+                            } else {
+                                Editor.app.generateRoomFromTemplate(template,
+                                        Editor.app.generatorInfo.roomGeneratorSettings);
+
                                 if (!Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
                                     Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
                                     needsRefresh = true;
@@ -109,6 +113,25 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                     public void actionPerformed(ActionEvent actionEvent) {
                         makeRoomGeneratorAction(Editor.app.generatorInfo.lastGeneratedRoomTemplate)
                                 .actionPerformed(actionEvent);
+                    }
+                };
+            }
+
+            private ActionListener makeSettingsAction() {
+                return new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        RoomGeneratorSettingsDialog dialog = new RoomGeneratorSettingsDialog(EditorUi.smallSkin,
+                                Editor.app.generatorInfo.roomGeneratorSettings) {
+                            @Override
+                            protected void result(Object object) {
+                                if ((Boolean) object) {
+                                    Editor.app.generatorInfo.roomGeneratorSettings = getSettings();
+                                }
+                            }
+                        };
+
+                        dialog.show(Editor.app.ui.getStage());
                     }
                 };
             }

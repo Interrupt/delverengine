@@ -42,6 +42,7 @@ import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
 import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
+import com.interrupt.dungeoneer.editor.ui.menu.generator.RoomGeneratorSettings;
 import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
@@ -470,7 +471,7 @@ public class EditorApplication implements ApplicationListener {
 	}
 
 	/** Generates a single room based on a `template` level. */
-	public void generateRoomFromTemplate(Level template) {
+	public void generateRoomFromTemplate(Level template, RoomGeneratorSettings roomGeneratorSettings) {
 		level.clear();
 
 		GenTheme genTheme = DungeonGenerator.GetGenData(template.theme);
@@ -480,7 +481,7 @@ public class EditorApplication implements ApplicationListener {
 		generatedLevel.roomGeneratorType = template.roomGeneratorType;
 
 		RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
-		generator.generate(true, true, true, true);
+		generator.generate(roomGeneratorSettings.northExit, roomGeneratorSettings.southExit, roomGeneratorSettings.eastExit, roomGeneratorSettings.westExit);
 
 		level.crop(0, 0, generatedLevel.width, generatedLevel.height);
 		level.paste(generatedLevel, 0, 0);
