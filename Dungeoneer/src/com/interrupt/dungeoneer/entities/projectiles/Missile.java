@@ -240,22 +240,23 @@ public class Missile extends Item implements Directional {
 
     private transient Vector3 levelIntersection = new Vector3();
     private transient Vector3 intersectionNormal = new Vector3();
-    private transient Vector3 tempVec = new Vector3();
     private transient Ray ray = new Ray(new Vector3(), new Vector3());
 
-    public boolean lineCollidesWithLevel(Vector3 pos, Vector3 moveVector) {
+    public boolean lineCollidesWithLevel(Vector3 position, Vector3 nextPosition) {
         if (drawable == null) return false;
 
-        float length = moveVector.len();
-        ray.set(pos, tempVec.set(moveVector).nor());
+        v0.set(nextPosition).sub(position);
+        float distanceTraveled = v0.len();
+
+        // Ray for intersection tests.
+        ray.set(position, v0.nor());
 
         boolean hit = Collidor.intersectRayTriangles(ray, GameManager.renderer.GetCollisionTrianglesNear(this), levelIntersection, intersectionNormal);
         if (hit) {
-            float worldHitDistance = tempVec.set(ray.origin).sub(levelIntersection).len();
-            if (worldHitDistance <= length) {
-                return true;
-            }
+            float worldHitDistance = v0.set(position).sub(levelIntersection).len();
+            return worldHitDistance <= distanceTraveled;
         }
+
         return false;
     }
 
@@ -324,9 +325,8 @@ public class Missile extends Item implements Directional {
         return entityHitList;
     }
 
-    private transient Vector3 nextPos = new Vector3();
-    private transient Vector3 lastPosition = new Vector3();
-    private transient Vector3 lastPositionToNewPosition = new Vector3();
+    private transient Vector3 nextPosition = new Vector3();
+    private transient Vector3 currentPosition = new Vector3();
 
     @Override
     public void tick(Level level, float delta) {
@@ -335,11 +335,9 @@ public class Missile extends Item implements Directional {
         if (bounceTimer > 0) bounceTimer -= delta;
 
         // setup some position vectors for line checks
-        lastPosition.set(x, z + yOffset, y);
-        nextPos.set(x + xa, z + za + yOffset, y + ya);
+        currentPosition.set(x, z + yOffset, y);
+        nextPosition.set(x + xa, z + za + yOffset, y + ya);
 
-        // TODO: Joshua - Why the -1 scale?
-        lastPositionToNewPosition.set(lastPosition).sub(nextPos).scl(-1);
         workVec.set(xa, ya, za);
 
         // Moving fast enough to damage actors?
@@ -353,8 +351,8 @@ public class Missile extends Item implements Directional {
         setDirection();
 
         if (!stuck) {
-            boolean hitLevel = lineCollidesWithLevel(lastPosition, lastPositionToNewPosition);
-            Array<Entity> colliding = lineCollidesWithEntities(lastPosition, nextPos, hitLevel ? levelIntersection : null);
+            boolean hitLevel = lineCollidesWithLevel(currentPosition, nextPosition);
+            Array<Entity> colliding = lineCollidesWithEntities(currentPosition, nextPosition, hitLevel ? levelIntersection : null);
 
             if (!hitLevel && colliding.size == 0) {
                 // The space is free, arrow can move
@@ -379,8 +377,8 @@ public class Missile extends Item implements Directional {
 
             // Splash?
             Tile cTile = level.getTile((int) Math.floor(x), (int) Math.floor(y));
-            if (cTile.data.isWater && nextPos.y < cTile.floorHeight + 0.32f) {
-                if (lastPosition.y >= cTile.floorHeight + 0.32f) {
+            if (cTile.data.isWater && nextPosition.y < cTile.floorHeight + 0.32f) {
+                if (currentPosition.y >= cTile.floorHeight + 0.32f) {
                     splash(level, cTile.floorHeight + 0.5f, true, cTile);
                 }
             }
