@@ -424,8 +424,7 @@ public class EditorUi {
 
             if(resetScroll) entityPropertiesPane.setScrollY(0f);
 
-            propertiesSize.set(propertiesMenu.getWidth(), propertiesMenu.getHeight());
-            resize(stage.getWidth(), stage.getHeight());
+            resize();
 
             sidebarTable.setVisible(true);
         }
@@ -433,6 +432,10 @@ public class EditorUi {
             sidebarTable.setVisible(false);
             entityPropertiesPane.setScrollY(0f);
         }
+    }
+
+    public void resize() {
+        resize(stage.getWidth(), stage.getHeight());
     }
 
     public void resize(float width, float height) {
@@ -444,6 +447,9 @@ public class EditorUi {
         mainTable.pack();
 
         if(entityPropertiesPane != null && propertiesMenu != null) {
+            propertiesSize.set(Math.min(propertiesMenu.getWidth(), stage.getWidth() * 0.25f),
+                    propertiesMenu.getHeight());
+
             boolean fillsStage = propertiesSize.y > stage.getHeight() - menuBar.getHeight();
 
             entityPropertiesPane.setSize(propertiesSize.x + (fillsStage ? 60f : 30f), propertiesSize.y);
