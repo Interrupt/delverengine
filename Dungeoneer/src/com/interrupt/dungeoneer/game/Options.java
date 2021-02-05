@@ -98,7 +98,7 @@ public class Options {
         }
     }
 
-    public static void SetInputOptions(GamepadDefinition defaultGamepad) {
+    public static void SetKeyboardBindings() {
         Actions.keyBindings.put(Action.USE, Options.instance.key_use);
         Actions.keyBindings.put(Action.ATTACK, Options.instance.key_attack);
         Actions.keyBindings.put(Action.FORWARD, Options.instance.key_forward);
@@ -114,7 +114,9 @@ public class Options {
         Actions.keyBindings.put(Action.TURN_LEFT, Options.instance.key_turn_left);
         Actions.keyBindings.put(Action.TURN_RIGHT, Options.instance.key_turn_right);
         Actions.keyBindings.put(Action.JUMP, Options.instance.key_jump);
+    }
 
+    public static void SetGamepadBindings(GamepadDefinition defaultGamepad) {
         SetGamepadAction(Action.USE, Options.instance.gamepad_use, defaultGamepad);
         SetGamepadAction(Action.ATTACK, Options.instance.gamepad_attack, defaultGamepad);
         SetGamepadAction(Action.FORWARD, Options.instance.gamepad_forward, defaultGamepad);
@@ -171,6 +173,8 @@ public class Options {
             JsonUtil.toJson(o, file);
             return o;
         });
+
+        SetKeyboardBindings();
     }
 
     /** Save options to file. */
