@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.game;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
@@ -9,6 +8,7 @@ import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.input.GamepadBinding;
 import com.interrupt.dungeoneer.input.GamepadDefinition;
 import com.interrupt.utils.JsonUtil;
+import com.interrupt.utils.OSUtils;
 
 /** Game options container class. */
 public class Options {
@@ -89,10 +89,8 @@ public class Options {
         instance = new Options();
     }
 
-    public Options() { }
-
-    public Options(ApplicationType applicationType) {
-        if (applicationType == ApplicationType.Android || applicationType == ApplicationType.iOS) {
+    public Options() {
+        if (OSUtils.isMobile()) {
             graphicsDetailLevel = 2;
             shadowsEnabled = false;
             postProcessingQuality = 0;
@@ -100,8 +98,7 @@ public class Options {
         }
     }
 
-
-    public static void SetInputOptions(GamepadDefinition defaultGamepad) {
+    public static void SetKeyboardBindings() {
         Actions.keyBindings.put(Action.USE, Options.instance.key_use);
         Actions.keyBindings.put(Action.ATTACK, Options.instance.key_attack);
         Actions.keyBindings.put(Action.FORWARD, Options.instance.key_forward);
@@ -117,7 +114,9 @@ public class Options {
         Actions.keyBindings.put(Action.TURN_LEFT, Options.instance.key_turn_left);
         Actions.keyBindings.put(Action.TURN_RIGHT, Options.instance.key_turn_right);
         Actions.keyBindings.put(Action.JUMP, Options.instance.key_jump);
+    }
 
+    public static void SetGamepadBindings(GamepadDefinition defaultGamepad) {
         SetGamepadAction(Action.USE, Options.instance.gamepad_use, defaultGamepad);
         SetGamepadAction(Action.ATTACK, Options.instance.gamepad_attack, defaultGamepad);
         SetGamepadAction(Action.FORWARD, Options.instance.gamepad_forward, defaultGamepad);
@@ -167,13 +166,15 @@ public class Options {
 
     /** Load options from file and update instance. */
     public static void loadOptions() {
-        FileHandle file = Gdx.files.local(getOptionsFilePath());
+        FileHandle file = Game.getFile(getOptionsFilePath());
 
         instance = JsonUtil.fromJson(Options.class, file, () -> {
-            Options o = new Options(Gdx.app.getType());
+            Options o = new Options();
             JsonUtil.toJson(o, file);
             return o;
         });
+
+        SetKeyboardBindings();
     }
 
     /** Save options to file. */
@@ -183,7 +184,8 @@ public class Options {
         }
 
         try {
-            JsonUtil.toJson(instance, getOptionsFilePath());
+            FileHandle file = Game.getFile(getOptionsFilePath());
+            JsonUtil.toJson(instance, file);
         }
         catch (Exception e) {
             Gdx.app.log("Delver", "Failed to save options file.");

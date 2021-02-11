@@ -302,23 +302,30 @@ public class GamepadManager implements ControllerListener {
     	Controller first = Controllers.getControllers().first();
     	if(first != null) mapController(first);
     }
-    
-    public void mapController(Controller controller) {
-    	String controllerName = controller.getName().toLowerCase();
-    	if (controllerName.contains("microsoft corporatio controller"))
-    		controllerMapping.put(controller, new GamepadDefinition(new Xbox360OSXPad()));
-    	else if (controllerName.contains("microsoft") || controllerName.contains("xbox") || controllerName.contains("360"))
-			controllerMapping.put(controller, new GamepadDefinition(new Xbox360Pad()));
-		else if (controllerName.contains("sony"))
-			controllerMapping.put(controller, new GamepadDefinition(new SonyPad()));
-		else if(controller.getName().equals(Ouya.ID))
-			controllerMapping.put(controller, new GamepadDefinition(new Ouya()));
-		else if (controllerName.contains("moga"))
-			controllerMapping.put(controller, new GamepadDefinition(new MogaProPad()));
-		else
-			controllerMapping.put(controller, new GamepadDefinition(new Xbox360Pad()));
 
-		Options.SetInputOptions(controllerMapping.get(controller));
+    public void mapController(Controller controller) {
+        String controllerName = controller.getName().toLowerCase();
+
+        if (controllerName.contains("microsoft corporatio controller")) {
+            controllerMapping.put(controller, new GamepadDefinition(new Xbox360OSXPad()));
+        }
+        else if (controllerName.contains("microsoft") || controllerName.contains("xbox") || controllerName.contains("360")) {
+            controllerMapping.put(controller, new GamepadDefinition(new Xbox360Pad()));
+        }
+        else if (controllerName.contains("sony")) {
+            controllerMapping.put(controller, new GamepadDefinition(new SonyPad()));
+        }
+        else if (controller.getName().equals(Ouya.ID)) {
+            controllerMapping.put(controller, new GamepadDefinition(new Ouya()));
+        }
+        else if (controllerName.contains("moga")) {
+            controllerMapping.put(controller, new GamepadDefinition(new MogaProPad()));
+        }
+        else {
+            controllerMapping.put(controller, new GamepadDefinition(new Xbox360Pad()));
+        }
+
+        Options.SetGamepadBindings(controllerMapping.get(controller));
     }
     
     public Vector2 applyDeadzone(Vector2 rawInput) {
