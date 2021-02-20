@@ -32,6 +32,11 @@ import com.interrupt.managers.EntityManager;
 import java.util.Random;
 
 public class Monster extends Actor implements Directional {
+
+	public enum AmbushMode {
+		None,
+		WaitToSee
+	}
 	
 	public Integer origtex = null;
 	private float tickcount = 0;
@@ -39,6 +44,10 @@ public class Monster extends Actor implements Directional {
 	/** Is monster hostile towards the player? */
 	@EditorProperty
 	public boolean hostile = true;
+
+	/** Will the monster be quiet and still until the player is near? **/
+	@EditorProperty
+	public AmbushMode ambushMode = AmbushMode.None;
 
 	/** Distance which monster can hit. */
 	@EditorProperty
@@ -524,6 +533,11 @@ public class Monster extends Actor implements Directional {
 				rangedAttackTimer = 40 + Game.rand.nextInt(20);
 			}
 		}
+
+		// Never reset back to ambush mode after being alerted
+		if(alerted && ambushMode != AmbushMode.None) {
+			ambushMode = AmbushMode.None;
+		}
 		
 		if(alerted && playerdist > 0.7f && chasetarget && stuckWanderTimer <= 0) // When alerted, try to find a path to the player
 		{
@@ -562,8 +576,14 @@ public class Monster extends Actor implements Directional {
 			targety = player.y;
 			stuckWanderTimer = 0f;
 		}
+
+		// Wander when not alerted
+		boolean canWander = wanders && !alerted && ambushMode != AmbushMode.None;
+
+		// Wander when there is no other path to the target
+		boolean stuckWander = !canSafelyNavigateToTarget || !chasetarget || stuckWanderTimer > 0;
 		
-		if((wanders && !alerted) || !canSafelyNavigateToTarget || !chasetarget || stuckWanderTimer > 0) // Wander when not alerted
+		if(canWander || stuckWander)
 		{
 			nextTargetf -= delta;
 			
@@ -697,8 +717,9 @@ public class Monster extends Actor implements Directional {
 			txa = 0;
 			tza = 0;
 		}
-		
-		if(hostile) {
+
+		// Attack the player once we're mad and alerted
+		if(hostile && alerted) {
 			if((playerdist < collision.x + reach || playerdist < collision.x + attackStartDistance)) {
 				float zDiff = Math.abs((player.z + 0.3f) - (z + 0.3f));
 				if (zDiff < reach || zDiff < attackStartDistance) {
@@ -802,7 +823,7 @@ public class Monster extends Actor implements Directional {
 		}
 		
 		// idle sounds!
-		if(!hostile || !chasetarget) {
+		if(ambushMode == AmbushMode.None && (!hostile || !chasetarget)) {
 			if(idleSoundTimer == null) idleSoundTimer = 400f + Game.rand.nextFloat() * 400;
 			idleSoundTimer -= delta;
 			if(idleSoundTimer <= 0) {
