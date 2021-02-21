@@ -578,7 +578,7 @@ public class Monster extends Actor implements Directional {
 		}
 
 		// Wander when not alerted
-		boolean canWander = wanders && !alerted && ambushMode != AmbushMode.None;
+		boolean canWander = wanders && !alerted && ambushMode == AmbushMode.None;
 
 		// Wander when there is no other path to the target
 		boolean stuckWander = !canSafelyNavigateToTarget || !chasetarget || stuckWanderTimer > 0;
