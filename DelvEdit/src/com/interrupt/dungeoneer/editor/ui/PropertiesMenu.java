@@ -577,6 +577,8 @@ public class PropertiesMenu extends Table {
                 for (Entity entity : selectedEntities) {
                     currentField.set(entity, Integer.parseInt(val));
                 }
+
+                updateSize();
             }
         }
         catch(Exception ex) {
@@ -590,6 +592,8 @@ public class PropertiesMenu extends Table {
                 for (Entity entity : selectedEntities) {
                     currentField.set(entity, new Material(val.texAtlas, val.tex));
                 }
+
+                updateSize();
             }
         }
         catch(Exception ex) {
@@ -712,10 +716,17 @@ public class PropertiesMenu extends Table {
                     ((ProjectedDecal) entity).refresh();
                 }
             }
+
+            updateSize();
         }
         catch(Exception ex) {
             Gdx.app.error("DelvEdit", ex.getMessage());
         }
+    }
+
+    private void updateSize() {
+        pack();
+        Editor.app.ui.resize();
     }
 
     static public class DecimalsFilter implements TextField.TextFieldFilter {
