@@ -63,7 +63,6 @@ public class MainMenuScreen extends BaseScreen {
     private float fadeFactor = 1f;
 
     private static final String BASE_SAVE_DIR = "save/";
-    private static final String LOG_TAG_DELVER_LIFE_CYCLE = "DelverLifeCycle";
 	
 	public MainMenuScreen() {
 		if(splashScreenInfo != null) {
@@ -599,7 +598,7 @@ public class MainMenuScreen extends BaseScreen {
 	private void loadSavegames() {
 		FileHandle dir = Game.getFile(BASE_SAVE_DIR);
 		
-		Gdx.app.log(LOG_TAG_DELVER_LIFE_CYCLE, "Getting savegames from " + dir.path());
+		Gdx.app.log("DelverLifeCycle", "Getting savegames from " + dir.path());
 		for(int i = 0; i < saveGames.length; i++) {
 			FileHandle file = Game.getFile(BASE_SAVE_DIR + i + "/player.dat");
 			if(file.exists())
@@ -630,18 +629,18 @@ public class MainMenuScreen extends BaseScreen {
 	private void deleteSavegame(int saveLoc) {
 		try {
 			FileHandle file = Game.getFile(BASE_SAVE_DIR + saveLoc + "/");
-			Gdx.app.log(LOG_TAG_DELVER_LIFE_CYCLE, "Deleting savegame " + file.path());
+			Gdx.app.log("DelverLifeCycle", "Deleting savegame " + file.path());
 			file.deleteDirectory();
 		} catch(Exception ex) {
-            Gdx.app.error(LOG_TAG_DELVER_LIFE_CYCLE, ex.getMessage());
+            Gdx.app.error("DelverLifeCycle", ex.getMessage());
         }
 		
 		try {
 			FileHandle file = Game.getFile(BASE_SAVE_DIR + "game_" + saveLoc + ".dat");
-			Gdx.app.log(LOG_TAG_DELVER_LIFE_CYCLE, "Deleting progress " + file.path());
+			Gdx.app.log("DelverLifeCycle", "Deleting progress " + file.path());
 			file.delete();
 		} catch(Exception ex) {
-            Gdx.app.error(LOG_TAG_DELVER_LIFE_CYCLE, ex.getMessage());
+            Gdx.app.error("DelverLifeCycle", ex.getMessage());
         }
 
         makeContent();
