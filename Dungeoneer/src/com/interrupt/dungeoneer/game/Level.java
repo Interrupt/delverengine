@@ -3022,7 +3022,7 @@ public class Level {
 	    Ray r = calcRay.set(t_canSeeStart, t_canSeeEnd);
 	    Array<Entity> possibles = getEntitiesAlongLine(x, y, x2, y2);
 	    
-	    // find all the doors, should block vision
+	    // find all the doors or movers, should block vision
 	    for(Entity e : possibles) {
 	    	if(e instanceof Door) {
 	    		Door d = (Door)e;
@@ -3035,7 +3035,15 @@ public class Level {
 						return false;
 					}
 	    		}
-	    	}
+	    	} else if (e instanceof Mover) {
+				Mover m = (Mover)e;
+				if(m.isSolid) {
+					BoundingBox b = getAABB(t_intersectCheck1, e);
+					if(Intersector.intersectRayBounds(r, b, t_canSeeIntersection)) {
+						return false;
+					}
+				}
+			}
 	    }
 	    
 	    return true;
