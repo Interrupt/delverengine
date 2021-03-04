@@ -24,6 +24,11 @@
         "localizedName": "Options",
         "comment": "Text for the options button, which will open the options menu."
     },
+    "screens.MainMenuScreen.modsButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Mods",
+        "comment": "Text for the mods button, which will open the mods menu."
+    },
     "screens.MainMenuScreen.selectSaveSlot": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Select Save Slot",
