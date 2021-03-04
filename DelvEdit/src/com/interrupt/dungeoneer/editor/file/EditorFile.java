@@ -349,6 +349,7 @@ public class EditorFile {
     /** Loads a `.dat` level file. */
     private Level loadDatFile(FileHandle file) {
         Level level = JsonUtil.fromJson(Level.class, file);
+        level.postLoad();
         level.init(Level.Source.EDITOR);
 
         return level;

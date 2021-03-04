@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Array.ArrayIterator;
 import com.badlogic.gdx.utils.IntArray;
@@ -27,10 +26,10 @@ import java.util.HashMap;
 
 public class LevelSerializer {
 	private static Kryo kryo = new Kryo();
-	
+
 	static {
 		kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
-		
+
 		// register some classes
 		kryo.register(Color.class);
 		kryo.register(Vector3.class);
@@ -44,7 +43,7 @@ public class LevelSerializer {
 		kryo.register(DrawableSprite.class);
 		kryo.register(DrawableMesh.class);
 		kryo.register(Array.class);
-		
+
 		// register some serializers
 		kryo.register(Prefab.class, new PrefabSerializer());
 		kryo.register(ArrayIterator.class, new LibGdxArrayIteratorSerializer());
@@ -54,39 +53,42 @@ public class LevelSerializer {
 		kryo.register(IntArray.class, new IntArraySerializer());
 		kryo.register(HashMap.class, new HashMapSerializer());
 	}
-	
+
 	public static Level loadLevel(FileHandle file) {
 		Input input = new Input(file.read());
 		Level level = kryo.readObject(input, Level.class);
 		input.close();
+        level.postLoad();
 		return level;
 	}
-	
+
 	public static Level loadLevel(File file) {
 		try {
 			Input input = new Input(new FileInputStream(file));
 			Level level = kryo.readObject(input, Level.class);
 			input.close();
+            level.postLoad();
 			return level;
 		}
 		catch (Exception ex) {
 			return null;
 		}
 	}
-	
+
 	public static Level loadLevel(byte[] bytes) {
 		Input input = new Input(bytes);
 		Level level = kryo.readObject(input, Level.class);
 		input.close();
+        level.postLoad();
 		return level;
 	}
-	
+
 	public static void saveLevel(FileHandle file, Level level) {
 		Output output = new Output(file.write(false));
 		kryo.writeObject(output, level);
 		output.close();
 	}
-	
+
 	public static void saveLevel(File file, Level level) {
 		try {
 			Output output;
@@ -97,7 +99,7 @@ public class LevelSerializer {
 			// oops!
 		}
 	}
-	
+
 	public static Object copyObject(Object object) {
 		if(object == null) return null;
 		try {
