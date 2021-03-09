@@ -91,7 +91,9 @@ public class JsonUtil {
         Json json = new Json() {
             @Override
             protected boolean ignoreUnknownField(Class type, String fieldName) {
-                log("Serialization", String.format("Warning: Unknown field: %s for class: %s", fieldName, type));
+                if (!fieldName.equals("$schema")) {
+                    log("Serialization", String.format("Warning: Unknown field: %s for class: %s", fieldName, type));
+                }
 
                 return true;
             }
