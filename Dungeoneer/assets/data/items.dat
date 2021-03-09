@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/managers/ItemManager.schema.json",
 	unique: [
 		{
 			class: "com.interrupt.dungeoneer.entities.items.Sword",

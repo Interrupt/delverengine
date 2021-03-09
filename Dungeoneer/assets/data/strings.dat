@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/strings.dat",
     "screens.SplashScreen.pressKeyToStart": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Press any key to start",

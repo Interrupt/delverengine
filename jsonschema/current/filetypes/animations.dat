@@ -4,6 +4,9 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/filetypes/animations.dat"
+        },
         "animations": {
             "type": "object",
             "description": "Dictionary providing a mapping of animation names to animations.",
