@@ -3,6 +3,9 @@
     "title": "Splash Screen Info",
     "type": "object",
     "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/dungeoneer/screens/SplashScreenInfo.schema.json"
+        },
         "class": {
             "const": "com.interrupt.dungeoneer.screens.SplashScreenInfo",
             "description": "Fully-qualified Java class name."

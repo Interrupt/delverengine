@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/dungeoneer/entities/Player.schema.json",
 	"class": "com.interrupt.dungeoneer.entities.Player",
 	"maxHp": 8,
 	"hp": 8,

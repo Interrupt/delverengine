@@ -4,6 +4,9 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/dungeoneer/game/GameData.schema.json"
+        },
         "class": {
             "const": "com.interrupt.dungeoneer.game.GameData",
             "description": "Fully-qualified Java class name."
