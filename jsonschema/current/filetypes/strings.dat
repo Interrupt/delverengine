@@ -2,6 +2,11 @@
     "$schema": "http://json-schema.org/draft-06/schema#",
     "title": "String Table",
     "type": "object",
+    "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/filetypes/strings.dat"
+        }
+    },
     "patternProperties": {
         ".*": {
             "$ref": "../dungeoneer/game/LocalizedString.schema.json"

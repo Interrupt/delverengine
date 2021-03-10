@@ -3,6 +3,9 @@
     "title": "Player",
     "type": "object",
     "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/dungeoneer/entities/Player.schema.json"
+        },
         "class": {
             "const": "com.interrupt.dungeoneer.entities.Player",
             "description": "Fully-qualified Java class name.",

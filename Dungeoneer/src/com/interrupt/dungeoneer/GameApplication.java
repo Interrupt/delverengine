@@ -1,15 +1,17 @@
 package com.interrupt.dungeoneer;
 
 import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.entities.Stairs;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.GameData;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.screens.*;
+import com.interrupt.utils.JsonUtil;
 
 public class GameApplication extends Game {
 	
@@ -36,7 +38,7 @@ public class GameApplication extends Game {
 		gameManager = new GameManager(this);
         Gdx.input.setInputProcessor( input );
         gameManager.init();
-        
+
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(gameManager, input);
         gameoverScreen = new GameOverScreen(gameManager);
@@ -79,7 +81,7 @@ public class GameApplication extends Game {
 
 		// Only show the ending level once!
 		if(escaped) {
-			GameData gameData = com.interrupt.dungeoneer.game.Game.fromJson(GameData.class, com.interrupt.dungeoneer.game.Game.findInternalFileInMods("data/game.dat"));
+			GameData gameData = JsonUtil.fromJson(GameData.class, com.interrupt.dungeoneer.game.Game.findInternalFileInMods("data/game.dat"));
 			Level endingLevel = gameData.endingLevel;
 
 			// Warp to the ending level, if we're not there already.

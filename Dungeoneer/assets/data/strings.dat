@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/strings.dat",
     "screens.SplashScreen.pressKeyToStart": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Press any key to start",
@@ -23,6 +24,11 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Options",
         "comment": "Text for the options button, which will open the options menu."
+    },
+    "screens.MainMenuScreen.modsButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Mods",
+        "comment": "Text for the mods button, which will open the mods menu."
     },
     "screens.MainMenuScreen.selectSaveSlot": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
@@ -473,6 +479,11 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Choose your fate",
         "comment": ""
+    },
+    "overlays.LevelUpOverlay.currentStatValueLabel": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Current: {0}",
+        "comment": "Text shown on level up card. {0} is the value of the stat."
     },
     "overlays.LevelUpOverlay.ATTACK": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",

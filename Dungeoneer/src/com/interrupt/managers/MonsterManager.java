@@ -13,6 +13,9 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 
 public class MonsterManager {
+
+    public static MonsterManager instance = null;
+    public static void setSingleton(MonsterManager _instance) { instance = _instance; }
 	
 	public HashMap<String, Array<Monster>> monsters;
 	

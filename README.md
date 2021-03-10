@@ -1,4 +1,5 @@
 # [![delverengine](.media/logo.svg?sanitize=true)](https://github.com/interrupt/delverengine)
+[![License: Zlib](https://img.shields.io/badge/License-Zlib-lightgrey.svg)](https://opensource.org/licenses/Zlib) [![Discord](https://img.shields.io/discord/266998536632139776.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord&color=17cf48)](https://discord.gg/gyhmH5f)
 
 # Delver Engine Open Source
 Delver engine and editor source code release

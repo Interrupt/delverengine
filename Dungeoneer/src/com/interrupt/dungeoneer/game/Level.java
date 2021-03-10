@@ -36,9 +36,11 @@ import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
+import com.interrupt.dungeoneer.tiles.TileMaterials;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.TileManager;
+import com.interrupt.utils.JsonUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -64,6 +66,8 @@ public class Level {
 	
 	public int width, height;
 	public Tile[] tiles;
+	public TileMaterials[] tileMaterials;
+
 	public Array<Entity> entities;
 	public Array<Entity> non_collidable_entities;
 	public Array<Entity> static_entities = new Array<Entity>();
@@ -232,6 +236,8 @@ public class Level {
 		this.height = height;
 		
 		tiles = new Tile[width * height];
+		tileMaterials = new TileMaterials[width * height];
+
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
@@ -297,33 +303,34 @@ public class Level {
 		fogEnd = 20f;
 		viewDistance = 20f;
 		
-		Array<Entity> copy_entities = new Array<Entity>(100);
-		Array<Entity> copy_non_collidable_entities = new Array<Entity>(100);
-		Array<Entity> copy_static_entities = new Array<Entity>(100);
-		
+		Array<Entity> copyEntities = new Array<>(100);
+		Array<Entity> copyNonCollidableEntities = new Array<>(100);
+		Array<Entity> copyStaticEntities = new Array<>(100);
+
 		for(int i = 0; i < entities.size; i++) {
 			Entity copy = entities.get(i);
-			if(copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance) continue;
-				
+			if (!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance))
+				continue;
+
 			if(!copy.isDynamic)
-				copy_static_entities.add(copy);
+				copyStaticEntities.add(copy);
 			else if(!copy.isSolid)
-				copy_non_collidable_entities.add(copy);
+				copyNonCollidableEntities.add(copy);
 			else
-				copy_entities.add(copy);
+				copyEntities.add(copy);
 		}
 		
-		entities = copy_entities;
-		non_collidable_entities = copy_non_collidable_entities;
-		static_entities = copy_static_entities;
+		entities = copyEntities;
+		non_collidable_entities = copyNonCollidableEntities;
+		static_entities = copyStaticEntities;
 
 		genTheme = DungeonGenerator.GetGenData(theme);
 
 		loadSurprises(genTheme);
 
-		initPrefabs();
+		initPrefabs(Source.LEVEL_START);
 
-		addEntitiesFromMarkers(editorMarkers, new Array<Vector2>(), new Boolean[width * height], new Array<Vector2>(), genTheme, 0, 0);
+		addEntitiesFromMarkers(editorMarkers, new Array<>(), new Boolean[width * height], new Array<>(), genTheme, 0, 0);
 		decorateLevel();
 
 		init(Source.LEVEL_START);
@@ -337,9 +344,9 @@ public class Level {
 	public void generate(Source source) {
 		Random levelRand = new Random();
 
-		entities = new Array<Entity>();
-		non_collidable_entities = new Array<Entity>();
-		static_entities = new Array<Entity>();
+		entities = new Array<>();
+		non_collidable_entities = new Array<>();
+		static_entities = new Array<>();
 
 		// Generate level
 		Boolean isValid = false;
@@ -348,7 +355,7 @@ public class Level {
 			Gdx.app.log("DelverGenerator", "Making level");
 
 			DungeonGenerator generator;
-			Level generated = null;
+			Level generatedLevel = null;
 
 			Progression progression = null;
 			if(Game.instance != null) {
@@ -362,15 +369,15 @@ public class Level {
 			// Try to generate a level
 			try {
 				generator = new DungeonGenerator(new Random(), dungeonLevel);
-				generated = generator.MakeDungeon(theme, roomGeneratorType, roomGeneratorChance, progression);
-				isValid = checkIsValidLevel(generated, dungeonLevel);
+				generatedLevel = generator.MakeDungeon(theme, roomGeneratorType, roomGeneratorChance, progression);
+				isValid = checkIsValidLevel(generatedLevel, dungeonLevel);
 			}
 			catch(Exception ex) {
 				Gdx.app.error("DelverGenerator", ex.getMessage());
 			}
 
 			// Did we make a valid level? Try again if not.
-			if (!isValid || generated == null) {
+			if (!isValid || generatedLevel == null) {
 				Gdx.app.log("DelverGenerator", "Bad level. Trying again");
 				continue;
 			}
@@ -378,23 +385,15 @@ public class Level {
 			progression.markDungeonAreaAsSeen(theme);
 
 			// use data from the generated level
-			width = generated.width;
-			height = generated.height;
-			tiles = generated.tiles;
-			editorMarkers = generated.editorMarkers;
-			genTheme = generated.genTheme;
+			width = generatedLevel.width;
+			height = generatedLevel.height;
+			tiles = generatedLevel.tiles;
+			tileMaterials = generatedLevel.tileMaterials;
 
-			for(int i = 0; i < generated.entities.size; i++) {
-				Entity copy = generated.entities.get(i);
-				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
+			editorMarkers = generatedLevel.editorMarkers;
+			genTheme = generatedLevel.genTheme;
 
-				if(!copy.isDynamic)
-					static_entities.add(copy);
-				else if(!copy.isSolid)
-					non_collidable_entities.add(copy);
-				else
-					entities.add(copy);
-			}
+			entities = generatedLevel.entities;
 		}
 
 		// when generating, keep track of where the possible stair locations are
@@ -407,6 +406,8 @@ public class Level {
 
 		// mark some locations as trap-free
 		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
+
+		initPrefabs(Source.EDITOR);
 
 		// keep a list of places to avoid when making traps
 		Boolean canMakeTrap[] = new Boolean[width * height];
@@ -506,6 +507,21 @@ public class Level {
 		}
 	}
 
+	// Called after a level was unserialized from bytes or a file
+	public void postLoad() {
+		// Make sure the tile materials array matches the size of the tiles, and is filled
+		if(tileMaterials == null || tileMaterials.length != tiles.length) {
+			tileMaterials = new TileMaterials[tiles.length];
+		}
+
+		for(int i = 0; i < tiles.length; i++) {
+			if (tiles[i] == null)
+				continue;
+
+			tiles[i].materials = tileMaterials[i];
+		}
+	}
+
 	public void load() {
 		load(Source.LEVEL_START);
 	}
@@ -525,7 +541,7 @@ public class Level {
 			FileHandle levelFileHandle = Game.findInternalFileInMods(levelFileName);
 					
 			if(levelFileName.endsWith(".dat") || levelFileName.endsWith(".json")) {
-				openLevel = Game.fromJson(Level.class, levelFileHandle);
+				openLevel = JsonUtil.fromJson(Level.class, levelFileHandle);
 			}
 			else {
 				openLevel = KryoSerializer.loadLevel(levelFileHandle);
@@ -534,6 +550,8 @@ public class Level {
 			width = openLevel.width;
 			height = openLevel.height;
 			tiles = openLevel.tiles;
+			tileMaterials = openLevel.tileMaterials;
+
 			editorMarkers = openLevel.editorMarkers;
 			genTheme = DungeonGenerator.GetGenData(theme);
 
@@ -595,6 +613,8 @@ public class Level {
 				width = generated.width;
 				height = generated.height;
 				tiles = generated.tiles;
+				tileMaterials = generated.tileMaterials;
+
 				editorMarkers = generated.editorMarkers;
 				genTheme = generated.genTheme;
 				
@@ -627,7 +647,7 @@ public class Level {
 		// mark some locations as trap-free
 		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
 
-		initPrefabs();
+		initPrefabs(Source.LEVEL_START);
 		
 		decorateLevel();
 		
@@ -1501,26 +1521,26 @@ public class Level {
 		return false;
 	}
 
-	public void initPrefabs() {
+	public void initPrefabs(Source source) {
 		// init any prefabs
 		// this is a separate pass as things like Monsters might want to check their collisions!
 
 		for(int i = 0; i < entities.size; i++) {
 			Entity e = entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 		for(int i = 0; i < non_collidable_entities.size; i++) {
 			Entity e = non_collidable_entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 		for(int i = 0; i < static_entities.size; i++) {
 			Entity e = static_entities.get(i);
 			if(e instanceof Group) {
-				e.init(this, Source.LEVEL_START);
+				e.init(this, source);
 			}
 		}
 
@@ -1541,9 +1561,10 @@ public class Level {
 		}
 		
 		// initialize tiles
-		for(Tile tile : tiles) {
-			if(tile != null)
-				tile.init(source);
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] != null) {
+				tiles[i].init(source);
+			}
 		}
 		
 		// init the drawables
@@ -2567,6 +2588,33 @@ public class Level {
 		return collisionCache;
 	}
 
+	public Array<Entity> getEntitiesEncroaching2d(float x, float y, float collisionX, float collisionY, Entity checking) {
+		collisionCache.clear();
+		if(checking == null) return collisionCache;
+
+		Array<Entity> toCheck = spatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY));
+		toCheck.addAll(staticSpatialhash.getEntitiesAt(x, y, Math.max(collisionX, collisionY)));
+
+		for(int i = 0; i < toCheck.size; i++) {
+			Entity e = toCheck.get(i);
+			if(e != checking)
+			{
+				// simple AABB test
+				if(x > e.x - e.collision.x - collisionX) {
+					if(x < e.x + e.collision.x + collisionX) {
+						if(y > e.y - e.collision.y - collisionY) {
+							if(y < e.y + e.collision.y + collisionY) {
+								collisionCache.add(e);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return collisionCache;
+	}
+
 	// check if two entities are touching
 	public boolean entitiesAreEncroaching(Entity checking, Entity e) {
 		if (e != checking) {
@@ -2974,7 +3022,7 @@ public class Level {
 	    Ray r = calcRay.set(t_canSeeStart, t_canSeeEnd);
 	    Array<Entity> possibles = getEntitiesAlongLine(x, y, x2, y2);
 	    
-	    // find all the doors, should block vision
+	    // find all the doors or movers, should block vision
 	    for(Entity e : possibles) {
 	    	if(e instanceof Door) {
 	    		Door d = (Door)e;
@@ -2987,7 +3035,15 @@ public class Level {
 						return false;
 					}
 	    		}
-	    	}
+	    	} else if (e instanceof Mover) {
+				Mover m = (Mover)e;
+				if(m.isSolid) {
+					BoundingBox b = getAABB(t_intersectCheck1, e);
+					if(Intersector.intersectRayBounds(r, b, t_canSeeIntersection)) {
+						return false;
+					}
+				}
+			}
 	    }
 	    
 	    return true;
@@ -3250,7 +3306,6 @@ public class Level {
 	}
 
 	public void addEntity(Entity e) {
-
 		e.init(this, Source.LEVEL_START);
 
 		if (!e.isActive) {
@@ -3606,6 +3661,7 @@ public class Level {
 	}
 	
 	private void preSaveCleanup(Array<Entity> entities) {
+		// Remove any entities that we should not save
 		Array<Entity> toDelete = new Array<Entity>();
 		if(entities != null) {
 			for(Entity e : entities) {
@@ -3615,6 +3671,14 @@ public class Level {
 		}
 		for(int i = 0; i < toDelete.size; i++) {
 			entities.removeValue(toDelete.get(i), true);
+		}
+
+		// Make sure tile materials persist
+		for(int i = 0; i < tiles.length; i++) {
+			if(tiles[i] == null)
+				tileMaterials[i] = null;
+			else
+				tileMaterials[i] = tiles[i].materials;
 		}
 	}
 	
@@ -3698,5 +3762,12 @@ public class Level {
 
 		if(ambientSound != null && !Game.isMobile)
 			Audio.playAmbientSound(ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
+	}
+
+	public void clear() {
+		if (editorMarkers != null) editorMarkers.clear();
+		if (entities != null) entities.clear();
+		if (static_entities != null) static_entities.clear();
+		if (non_collidable_entities != null) non_collidable_entities.clear();
 	}
 }

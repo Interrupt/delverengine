@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.*;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.editor.file.EditorFile;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
@@ -40,6 +41,7 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
+import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
 import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
@@ -53,6 +55,8 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
+import com.interrupt.dungeoneer.generator.GenTheme;
+import com.interrupt.dungeoneer.generator.RoomGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.SpriteGroupStrategy;
@@ -67,7 +71,9 @@ import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
 import com.interrupt.helpers.FloatTuple;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
+import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 import com.noise.PerlinNoise;
 
 import javax.swing.*;
@@ -83,8 +89,6 @@ public class EditorApplication implements ApplicationListener {
 	public Level level = null;
 	public GlRenderer renderer = null;
 	public EditorFile file = null;
-
-    private EditorClipboard clipboard = null;
 
 	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
@@ -229,6 +233,7 @@ public class EditorApplication implements ApplicationListener {
     protected HashMap<Entity.ArtType, TextureRegion[]> spriteAtlases = new HashMap<Entity.ArtType, TextureRegion[]>();
 
     protected EntityManager entityManager;
+    protected MonsterManager monsterManager;
 
 	Mesh cubeMesh;
     Mesh gridMesh;
@@ -318,6 +323,8 @@ public class EditorApplication implements ApplicationListener {
 
 	private TileSelection entireLevelSelection;
 
+	public GeneratorInfo generatorInfo;
+
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
@@ -394,7 +401,21 @@ public class EditorApplication implements ApplicationListener {
 		StringManager.init();
 		Game.init();
 
-		// load the entity templates
+		loadEntities();
+		loadMonsters();
+
+		Gdx.input.setCursorCatched(false);
+		generatorInfo = new GeneratorInfo();
+        initTextures();
+
+        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
+		TextureAtlas.cachedRepeatingAtlases.firstKey();
+
+		createEmptyLevel(17, 17);
+	}
+
+	/** Load entity templates */
+	public void loadEntities() {
 		try {
 			entityManager = Game.getModManager().loadEntityManager(Game.gameData.entityDataFiles);
 			EntityManager.setSingleton(entityManager);
@@ -402,33 +423,82 @@ public class EditorApplication implements ApplicationListener {
 			// whoops
 			Gdx.app.log("Editor", "Error loading entities.dat: " + ex.getMessage());
 		}
-
-        Gdx.input.setCursorCatched(false);
-        initTextures();
-
-        pickedWallTextureAtlas = pickedWallBottomTextureAtlas = pickedFloorTextureAtlas = pickedCeilingTextureAtlas =
-                TextureAtlas.cachedRepeatingAtlases.firstKey();
-
-		createEmptyLevel(17, 17);
 	}
 
+	/** Load monster templates. */
+	public void loadMonsters() {
+		try {
+			monsterManager = Game.getModManager().loadMonsterManager(Game.gameData.monsterDataFiles);
+			MonsterManager.setSingleton(monsterManager);
+		} catch (Exception ex) {
+			// whoops
+			Gdx.app.log("Editor", "Error loading monsters.dat: " + ex.getMessage());
+		}
+	}
+
+	/** Creates an empty level with given `width` and `height`. */
 	public void createEmptyLevel(int width, int height) {
 		level = new Level(width, height);
-		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
-		refresh();
-		
-		history = new EditorHistory();
-		file = new EditorFile();
-		
+
 		Tile t = new Tile();
 		t.floorHeight = -0.5f;
 		t.ceilHeight = 0.5f;
 		level.setTile(width / 2, height / 2, t);
 
+		cleanEditorState();
+		cameraController.setDefaultPositionAndRotation();
+	}
+
+	/** Generates a level based on a `template` level. */
+	public void generateLevelFromTemplate(Level template) {
+		level.clear();
+
+		level.theme = template.theme;
+		level.generated = true;
+		level.dungeonLevel = 0;
+
+		GenTheme genTheme = DungeonGenerator.GetGenData(template.theme);
+		int chunkTiles = genTheme.getChunkTileSize();
+		int mapChunks = genTheme.getMapChunks();
+		level.crop(0, 0, chunkTiles * mapChunks, chunkTiles * mapChunks);
+
+		level.roomGeneratorChance = template.roomGeneratorChance;
+		level.roomGeneratorType = template.roomGeneratorType;
+		level.generate(Level.Source.EDITOR);
+
+		cleanEditorState();
+	}
+
+	/** Generates a single room based on a `template` level. */
+	public void generateRoomFromTemplate(Level template) {
+		level.clear();
+
+		GenTheme genTheme = DungeonGenerator.GetGenData(template.theme);
+		int chunkTiles = genTheme.getChunkTileSize();
+		Level generatedLevel = new Level(chunkTiles, chunkTiles);
+
+		generatedLevel.roomGeneratorType = template.roomGeneratorType;
+
+		RoomGenerator generator = new RoomGenerator(generatedLevel, template.roomGeneratorType);
+		generator.generate(true, true, true, true);
+
+		level.crop(0, 0, generatedLevel.width, generatedLevel.height);
+		level.paste(generatedLevel, 0, 0);
+		level.theme = template.theme;
+
+		cleanEditorState();
+	}
+
+	/** Should be called after manually setting the `level` in the editor. */
+	private void cleanEditorState() {
+		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
+		refresh();
+		
+		history = new EditorHistory();
+		file = new EditorFile();
+
 		history.saveState(level);
 		file.markClean();
-
-		cameraController.setDefaultPositionAndRotation();
 	}
 
 	@Override
@@ -730,6 +800,9 @@ public class EditorApplication implements ApplicationListener {
 			shouldDrawBox = true;
 		}
 
+		// Always draw the box when tiles are selected
+		shouldDrawBox |= selected;
+
 		// don't draw the box when freelooking
 		if(shouldDrawBox && !selected && Gdx.input.isCursorCatched()) {
 			shouldDrawBox = false;
@@ -751,10 +824,14 @@ public class EditorApplication implements ApplicationListener {
 				// Tile selection bounding
 				Editor.selection.tiles.x = Math.min(level.width - 1, Math.max(0, (int)end.x));
 				Editor.selection.tiles.y = Math.min(level.height - 1, Math.max(0, (int)end.z));
+
 				shouldDrawBox &= entireLevelSelection.contains((int)end.x, (int)end.z);
 
 				selStartX = Editor.selection.tiles.x;
 				selStartY = Editor.selection.tiles.y;
+				
+				Editor.selection.tiles.setStartTile(selStartX, selStartY);
+
 				controlPoints.clear();
 			}
 			else if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
@@ -996,16 +1073,20 @@ public class EditorApplication implements ApplicationListener {
 					Tile south = level.getTile(xx, selY + selHeight - 1);
 
 					// ceil north
-					drawLine(tempVec1.set(xx, north.ceilSlopeNE + north.ceilHeight, selY), tempVec2.set(xx + 1f,north.ceilSlopeNW + north.ceilHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthCeiling() ? Color.WHITE : Color.RED);
+					if(!north.renderSolid)
+						drawLine(tempVec1.set(xx, north.ceilSlopeNE + north.ceilHeight, selY), tempVec2.set(xx + 1f,north.ceilSlopeNW + north.ceilHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthCeiling() ? Color.WHITE : Color.RED);
 
 					// ceil south
-					drawLine(tempVec1.set(xx, south.ceilSlopeSE + south.ceilHeight, selY + selHeight), tempVec2.set(xx + 1f,south.ceilSlopeSW + south.ceilHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthCeiling() ? Color.WHITE : Color.RED);
+					if(!south.renderSolid)
+						drawLine(tempVec1.set(xx, south.ceilSlopeSE + south.ceilHeight, selY + selHeight), tempVec2.set(xx + 1f,south.ceilSlopeSW + south.ceilHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthCeiling() ? Color.WHITE : Color.RED);
 
 					// floor north
-					drawLine(tempVec1.set(xx, north.slopeNE + north.floorHeight, selY), tempVec2.set(xx + 1f,north.slopeNW + north.floorHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthFloor() ? Color.WHITE : Color.RED);
+					if(!north.renderSolid)
+						drawLine(tempVec1.set(xx, north.slopeNE + north.floorHeight, selY), tempVec2.set(xx + 1f,north.slopeNW + north.floorHeight,selY), 2f, pickedControlPoint != null && pickedControlPoint.isNorthFloor() ? Color.WHITE : Color.RED);
 
 					// floor south
-					drawLine(tempVec1.set(xx, south.slopeSE + south.floorHeight, selY + selHeight), tempVec2.set(xx + 1f,south.slopeSW + south.floorHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthFloor() ? Color.WHITE : Color.RED);
+					if(!south.renderSolid)
+						drawLine(tempVec1.set(xx, south.slopeSE + south.floorHeight, selY + selHeight), tempVec2.set(xx + 1f,south.slopeSW + south.floorHeight,selY + selHeight), 2f, pickedControlPoint != null && pickedControlPoint.isSouthFloor() ? Color.WHITE : Color.RED);
 				}
 
 				for(int yy = selY; yy < selY + selHeight; yy++) {
@@ -1013,16 +1094,20 @@ public class EditorApplication implements ApplicationListener {
 					Tile east = level.getTile(selX + selWidth - 1, yy);
 
 					// ceil west
-					drawLine(tempVec1.set(selX, west.ceilSlopeNE + west.ceilHeight, yy), tempVec2.set(selX,west.ceilSlopeSE + west.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestCeiling() ? Color.WHITE : Color.RED);
+					if(!west.renderSolid)
+						drawLine(tempVec1.set(selX, west.ceilSlopeNE + west.ceilHeight, yy), tempVec2.set(selX,west.ceilSlopeSE + west.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestCeiling() ? Color.WHITE : Color.RED);
 
 					// ceil east
-					drawLine(tempVec1.set(selX + selWidth, east.ceilSlopeNW + east.ceilHeight, yy), tempVec2.set(selX + selWidth,east.ceilSlopeSW + east.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastCeiling() ? Color.WHITE : Color.RED);
+					if(!east.renderSolid)
+						drawLine(tempVec1.set(selX + selWidth, east.ceilSlopeNW + east.ceilHeight, yy), tempVec2.set(selX + selWidth,east.ceilSlopeSW + east.ceilHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastCeiling() ? Color.WHITE : Color.RED);
 
 					// floor west
-					drawLine(tempVec1.set(selX, west.slopeNE + west.floorHeight, yy), tempVec2.set(selX,west.slopeSE + west.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestFloor() ? Color.WHITE : Color.RED);
+					if(!west.renderSolid)
+						drawLine(tempVec1.set(selX, west.slopeNE + west.floorHeight, yy), tempVec2.set(selX,west.slopeSE + west.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isWestFloor() ? Color.WHITE : Color.RED);
 
 					// floor east
-					drawLine(tempVec1.set(selX + selWidth, east.slopeNW + east.floorHeight, yy), tempVec2.set(selX + selWidth,east.slopeSW + east.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastFloor() ? Color.WHITE : Color.RED);
+					if(!east.renderSolid)
+						drawLine(tempVec1.set(selX + selWidth, east.slopeNW + east.floorHeight, yy), tempVec2.set(selX + selWidth,east.slopeSW + east.floorHeight,yy + 1), 2f, pickedControlPoint != null && pickedControlPoint.isEastFloor() ? Color.WHITE : Color.RED);
 				}
 			}
 		}
@@ -1226,14 +1311,14 @@ public class EditorApplication implements ApplicationListener {
 
 					if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
 						// Make a copy
-						Entity copy = Game.fromJson(Editor.selection.picked.getClass(), Game.toJson(Editor.selection.picked));
+						Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
 						level.entities.add(copy);
 
                         pickEntity(copy);
 
 						Array<Entity> copies = new Array<Entity>();
 						for(Entity selected : Editor.selection.selected) {
-							Entity newCopy = Game.fromJson(selected.getClass(), Game.toJson(selected));
+							Entity newCopy = JsonUtil.fromJson(selected.getClass(), JsonUtil.toJson(selected));
 							level.entities.add(newCopy);
 							copies.add(newCopy);
 						}
@@ -2116,7 +2201,9 @@ public class EditorApplication implements ApplicationListener {
         controlPoints.clear();
     }
 
-	public void testLevel() {
+	public void testLevel(boolean useCameraPosition) {
+		editorInput.resetKeys();
+
 		gameApp = new GameApplication();
 		GameApplication.editorRunning = true;
 
@@ -2127,16 +2214,35 @@ public class EditorApplication implements ApplicationListener {
 		previewLevel.genTheme = DungeonGenerator.GetGenData(previewLevel.theme);
 
 		gameApp.createFromEditor(previewLevel);
-
-		Vector3 cameraPosition = cameraController.getPosition();
-		Vector2 cameraRotation = cameraController.getRotation();
-
-		Game.instance.player.x = cameraPosition.x;
-		Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
-		Game.instance.player.z = cameraPosition.z;
-		Game.instance.player.rot = cameraRotation.x;
-		Game.instance.player.yrot = -cameraRotation.y;
 		Game.isDebugMode = true;
+
+		EditorMarker startMarker = null;
+		if (!useCameraPosition) {
+			for (EditorMarker marker : level.editorMarkers) {
+				if (marker.type == Markers.playerStart || marker.type == Markers.stairUp) {
+					startMarker = marker;
+					break;
+				}
+			}
+		}
+
+		if (!useCameraPosition && startMarker != null) {
+			Game.instance.player.x = startMarker.x + 0.5f;
+			Game.instance.player.y = startMarker.y + 0.5f;
+			Game.instance.player.z = previewLevel.getTile((int) Game.instance.player.x, (int) Game.instance.player.y)
+					.getFloorHeight() + 0.5f;
+
+			Game.instance.player.rot = (float) Math.toRadians(-(startMarker.rot + 180f));
+		} else {
+			Vector3 cameraPosition = cameraController.getPosition();
+			Vector2 cameraRotation = cameraController.getRotation();
+	
+			Game.instance.player.x = cameraPosition.x;
+			Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
+			Game.instance.player.z = cameraPosition.z;
+			Game.instance.player.rot = cameraRotation.x;
+			Game.instance.player.yrot = -cameraRotation.y;
+		}
 	}
 
 	public void initTextures() {
@@ -2863,98 +2969,6 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-    public Entity copyEntity(Entity entity) {
-        return Game.fromJson(entity.getClass(), Game.toJson(entity));
-    }
-
-    public void copy() {
-        clipboard = new EditorClipboard();
-
-        // Copy entities
-        if(Editor.selection.picked != null) {
-            Entity picked = Editor.selection.picked;
-            for (Entity e : Editor.selection.all) {
-                Entity copy = copyEntity(e);
-                copy.x -= (int) picked.x + 1;
-                copy.y -= (int) picked.y + 1;
-                copy.z -= - level.getTile((int)picked.x, (int)picked.y).getFloorHeight(0.5f, 0.5f);
-
-                clipboard.entities.add(copy);
-            }
-        }
-
-        // Copy tiles
-        if(Editor.selection.picked == null) {
-            for (TileSelectionInfo info : Editor.selection.tiles) {
-                Tile t = info.tile;
-                if (t != null) {
-                    info.tile = Tile.copy(t);
-                }
-
-                // Calculate offset
-                info.x -= Editor.selection.tiles.x;
-                info.y -= Editor.selection.tiles.y;
-
-                clipboard.tiles.add(info);
-            }
-        }
-
-        // Serialize to system clipboard.
-        Clipboard systemClipboard = Gdx.app.getClipboard();
-        String contents = new Json().toJson(clipboard);
-        systemClipboard.setContents(contents);
-    }
-
-    public void paste() {
-        // Deserialize from system clipboard.
-        try {
-            Clipboard systemClipboard = Gdx.app.getClipboard();
-            Json json = new Json();
-            clipboard = json.fromJson(EditorClipboard.class, systemClipboard.getContents());
-        }
-        catch (Exception e) {
-            Gdx.app.log("Editor", e.getMessage());
-        }
-
-        if (clipboard == null) {
-            return;
-        }
-
-        int cursorTileX = Editor.selection.tiles.x;
-        int cursorTileY = Editor.selection.tiles.y;
-
-        // Paste tiles
-        for (TileSelectionInfo info : clipboard.tiles) {
-            Tile t = info.tile;
-            if (t != null) {
-                t = Tile.copy(t);
-            }
-
-            int offsetX = info.x + cursorTileX;
-            int offsetY = info.y + cursorTileY;
-
-            level.setTile(offsetX, offsetY, t);
-            markWorldAsDirty(offsetX, offsetY, 1);
-        }
-
-        // Paste entities
-        for(Entity e : clipboard.entities) {
-            Entity copy = copyEntity(e);
-            copy.x += cursorTileX + 1;
-            copy.y += cursorTileY + 1;
-
-            Tile copyAt = level.getTileOrNull(cursorTileX, cursorTileY);
-            if(copyAt != null) {
-                copy.z = copyAt.getFloorHeight(copy.x, copy.y) + 0.5f;
-            }
-
-            addEntity(copy);
-        }
-
-        // Save undo history
-        history.saveState(level);
-    }
-
 	public void rotateAngle() {
         if(Editor.selection.picked != null) return;
 
@@ -3102,7 +3116,11 @@ public class EditorApplication implements ApplicationListener {
 
 			// Which surface should we paint?
 			if(pickedSurface.tileSurface == TileSurface.Floor) {
-				d.setPosition((int)pickedSurface.position.x + 0.5f, t.floorHeight, (int)pickedSurface.position.z + 0.5f);
+				float floorHeightOffset = 0f;
+				if(t.data.isWater)
+					floorHeightOffset = 0.08f;
+
+				d.setPosition((int)pickedSurface.position.x + 0.5f, t.floorHeight + floorHeightOffset, (int)pickedSurface.position.z + 0.5f);
 				d.setRotation(Vector3.Y, Vector3.Y);
 
 				d.setTopLeftOffset(0, 0, t.slopeNE);
@@ -3490,6 +3508,24 @@ public class EditorApplication implements ApplicationListener {
 		floodFillWallTexture(x - nextXOffset, y - nextYOffset, checkTex, checkAtlas, adjacent);
 	}
 
+	public void panSurfaceY(float amt) {
+		if(pickedSurface.isPicked) {
+			Tile t = level.getTileOrNull((int) pickedSurface.position.x, (int) pickedSurface.position.z);
+			if(t == null)
+				return;
+
+			boolean isUpperWall = pickedSurface.tileSurface == TileSurface.UpperWall;
+
+			if(isUpperWall)
+				t.offsetTopWallSurfaces(pickedSurface.edge, amt);
+			else
+				t.offsetBottomWallSurfaces(pickedSurface.edge, amt);
+
+			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
+			history.saveState(level);
+		}
+	}
+
 	public TextureRegion[] loadAtlas(String texture, int spritesHorizontal, boolean filter) {
 		Texture spriteTextures = Art.loadTexture(texture);
 
@@ -3527,14 +3563,6 @@ public class EditorApplication implements ApplicationListener {
 		Tile selectedTile = Editor.selection.tiles.first();
 		t.floorHeight = selectedTile.floorHeight;
 		t.ceilHeight = selectedTile.ceilHeight;
-
-		if(pickedSurface == null || !pickedSurface.isPicked) {
-			TextureAtlas atlas = TextureAtlas.getRepeatingAtlasByIndex(pickedWallTextureAtlas);
-			float size = atlas.rowScale * atlas.scale;
-			t.ceilHeight = size - 0.5f;
-		}
-
-		t.floorHeight = Editor.selection.tiles.getBounds().min.z;
 
 		setTile(t);
 
@@ -3723,7 +3751,7 @@ public class EditorApplication implements ApplicationListener {
         return moveMode;
     }
 
-    public Array<Triangle> GetCollisionTriangles() {
+    public Array<CollisionTriangle> GetCollisionTriangles() {
         return GlRenderer.triangleSpatialHash.getAllTriangles();
     }
 

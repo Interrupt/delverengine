@@ -16,28 +16,28 @@ import java.text.MessageFormat;
 import java.util.Random;
 
 public class Potion extends Item {
-	
+
 	public enum PotionType { health, magic, maxhealth, poison, restore, shield, paralyze }
 
 	/** Potion type. */
 	@EditorProperty
 	public PotionType potionType = PotionType.health;
-	
+
 	public Potion() { }
 
 	public Potion(float x, float y) {
 		super(x, y, 0, ItemType.potion, StringManager.get("items.Potion.defaultNameText"));
 	}
-	
+
 	public void Drink(Player player) {
 		Random r = new Random();
-		
+
 		player.history.drankPotion(this);
 		Audio.playSound("cons_drink.mp3", 0.5f);
-		
-		
+
+
 		String displayText = "";
-		
+
 		if(potionType == PotionType.health) {
 			displayText = StringManager.get("items.Potion.healDisplayText");
 			player.hp += r.nextInt(5) + 4;
@@ -60,12 +60,12 @@ public class Potion extends Item {
 		if(e != null) {
 			player.addStatusEffect(e);
 		}
-		
+
 		// remove from the inventory
 		int location = player.inventory.indexOf(this, true);
 		player.inventory.set(location, null);
 		Game.RefreshUI();
-		
+
 		// maybe add to discovered list
 		if(Game.rand.nextFloat() > 0.5f && !player.discoveredPotions.contains(potionType, true)) {
 			player.discoveredPotions.add(potionType);
@@ -76,19 +76,19 @@ public class Potion extends Item {
 			Game.ShowMessage(displayText, 1.5f, 1f);
 		}
 	}
-	
+
 	public boolean inventoryUse(Player player){
 		Drink(player);
         return true;
 	}
-	
+
 	public String GetInfoText() {
 		if(Game.instance.player.discoveredPotions.contains(potionType, true)) {
 			return GetIdentifiedName();
 		}
 		return StringManager.get("items.Potion.unidentifiedInfoText");
 	}
-	
+
 	public String GetIdentifiedName() {
 		if(potionType == PotionType.health)
 			return StringManager.get("items.Potion.healingNameText");
@@ -107,36 +107,36 @@ public class Potion extends Item {
 		else
 			return StringManager.get("items.Potion.unknownNameText");
 	}
-	
+
 	@Override
 	public void hitWorld(float xSpeed, float ySpeed, float zSpeed) {
 		super.hitWorld(xSpeed, ySpeed, zSpeed);
-		
+
 		if(Math.abs(xSpeed) > 0.02f || Math.abs(ySpeed) > 0.02f || Math.abs(zSpeed) > 0.2f) {
 			activateExplosion(false);
 		}
 	}
-	
+
 	@Override
 	public void hit(float projx, float projy, int damage, float knockback, DamageType damageType, Entity instigator) {
 		super.hit(projx, projy, damage, knockback, damageType, instigator);
 		activateExplosion(false);
 	}
-	
+
 	@Override
 	public void applyPhysicsImpulse(Vector3 impulse) {
 		super.applyPhysicsImpulse(impulse);
 		if(impulse.len() > 0.02f)
 			activateExplosion(false);
 	}
-	
+
 	@Override
 	public void encroached(Entity hit) {
 		if(hit instanceof Actor) {
 			activateExplosion(true);
 		}
 	}
-	
+
 	public float getExplosionDamageAmount(){
 		switch (potionType) {
 			case poison:
@@ -151,7 +151,7 @@ public class Potion extends Item {
 				return 8f;
 		}
 	}
-	
+
 	public DamageType getExplosionDamageType(){
 		switch (potionType) {
 			case poison:
@@ -209,7 +209,7 @@ public class Potion extends Item {
 
 		return null;
 	}
-	
+
 	public Bomb activateExplosion(boolean immediate) {
 		if(isActive) {
 			// uhoh!
@@ -221,13 +221,13 @@ public class Potion extends Item {
 			bomb.ignorePlayerCollision = ignorePlayerCollision;
 			bomb.applyStatusEffect = getStatusEffect();
 			if(immediate) bomb.countdownTimer = 0;
-			
+
 			Game.GetLevel().entities.add(bomb);
-			
+
 			Audio.playPositionedSound("potions/sfx_boil.mp3", new Vector3(x,y,z), 0.6f, 12f);
-			
+
 			this.isActive = false;
-			
+
 			return bomb;
 		}
 		return null;
@@ -238,5 +238,11 @@ public class Potion extends Item {
 		if (attackPower > 0.5f) {
 			this.activateExplosion(false);
 		}
+	}
+
+	@Override
+	public void doPickup(Player player) {
+		super.doPickup(player);
+		Drink(player);
 	}
 }

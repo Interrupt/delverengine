@@ -1,57 +1,20 @@
 package com.interrupt.dungeoneer.editor.ui;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.game.Level;
-
-import java.io.File;
-import java.io.FileFilter;
 
 public class SetThemeDialog extends Dialog {
 
-    SelectBox themeSelect;
+    SelectBox<String> themeSelect;
 
     public SetThemeDialog(Skin skin, Level level) {
         super("Set Level Theme for Testing", skin);
 
-        themeSelect = new SelectBox(skin);
+        themeSelect = new SelectBox<String>(skin);
 
-        Array<String> mods = Game.getModManager().modsFound;
-        Array<String> themes = new Array<String>();
-
-        // Go find all the mod themes
-        for(String mod : mods) {
-            FileHandle dir = Game.getFile(mod + "/generator");
-            if(dir.isDirectory()) {
-                FileHandle[] dirs = dir.list(new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return pathname.isDirectory();
-                    }
-                });
-
-                for(int i = 0; i < dirs.length; i++) {
-                    String[] path = dirs[i].path().split("/");
-                    String theme = path[path.length - 1].toUpperCase();
-                    if(!themes.contains(theme, false)) themes.add(theme);
-                }
-            }
-        }
-
-        // Now add internally packaged themes
-        Array<FileHandle> packagedThemes = Game.findPackagedFiles("info.dat");
-        for(FileHandle f : packagedThemes) {
-            FileHandle themeDir = f.parent();
-            if(themeDir.parent().name().equals("generator")) {
-                String theme = themeDir.name().toUpperCase();
-                if(!themes.contains(theme, false)) themes.add(theme);
-            }
-        }
-
-        themes.sort();
-
+        Array<String> themes = Editor.app.generatorInfo.getThemes();
         themeSelect.setItems(themes);
 
         if(level.theme != null)
@@ -68,6 +31,6 @@ public class SetThemeDialog extends Dialog {
     }
 
     public String getSelectedTheme() {
-        return themeSelect.getSelected().toString();
+        return themeSelect.getSelected();
     }
 }

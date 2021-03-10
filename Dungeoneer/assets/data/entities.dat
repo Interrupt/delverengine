@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/entities.dat",
     "entities": {
         "Areas": {
             "Spawn Blocker": {
@@ -39,6 +40,9 @@
             },
             "Status Effect Area": {
                 "class": "com.interrupt.dungeoneer.entities.areas.StatusEffectArea"
+            },
+            "Physics Force Area": {
+                "class": "com.interrupt.dungeoneer.entities.areas.PhysicsForceArea"
             }
         },
         "Camera": {

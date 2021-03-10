@@ -131,6 +131,90 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     			prefabCategoryMenu.sortItems();
     		}
 
+			for(final Entry<String, Array<Monster>> categoryEntry : Editor.app.monsterManager.monsters.entrySet()) {
+				MenuItem prefabCategoryMenu = prefabCategoryMap.get(categoryEntry.getKey());
+				MenuItem categoryMenu = entityCategoryMap.get(categoryEntry.getKey());
+
+				if (prefabCategoryMenu == null) {
+					// Normalize path.
+					String path = categoryEntry.getKey().replace("\\", "/");
+					path = "Monsters/" + path;
+
+					String[] pathParts = path.split("/");
+					StringBuilder currentPath = new StringBuilder();
+
+					MenuItem parentPrefabMenu = prefabMenu;
+					MenuItem currentPrefabMenu = null;
+					MenuItem parentEntityMenu = entityMenu;
+					MenuItem currentEntityMenu = null;
+
+					for (String part: pathParts) {
+						// Build up path.
+						if (currentPath.length() == 0) {
+							currentPath.append(part);
+						}
+						else {
+							currentPath.append("/").append(part);
+						}
+
+						// Grab cached version if they exist.
+						currentPrefabMenu = prefabCategoryMap.get(currentPath.toString());
+						currentEntityMenu = entityCategoryMap.get(currentPath.toString());
+
+						// Create if they dont.
+						if (currentPrefabMenu == null) {
+							// New prefab MenuItem
+							currentPrefabMenu = new MenuItem(part, skin);
+							prefabCategoryMap.put(currentPath.toString(), currentPrefabMenu);
+							parentPrefabMenu.addItem(currentPrefabMenu);
+
+							// New entity MenuItem
+							currentEntityMenu = new MenuItem(part, skin);
+							entityCategoryMap.put(currentPath.toString(), currentEntityMenu);
+							parentEntityMenu.addItem(currentEntityMenu);
+						}
+
+						// Update current parent.
+						parentPrefabMenu = currentPrefabMenu;
+						parentEntityMenu = currentEntityMenu;
+					}
+
+					// Assign before exiting conditional
+					prefabCategoryMenu = currentPrefabMenu;
+					categoryMenu = currentEntityMenu;
+				}
+
+				Array<Monster> monsters = categoryEntry.getValue();
+
+				for(final Monster entry : monsters) {
+					MenuItem menuItem = new MenuItem(entry.name, skin);
+					categoryMenu.addItem(menuItem);
+
+					final Entity entity = Editor.app.entityManager.Copy(entry);
+
+					menuItem.addActionListener(new ActionListener() {
+						public void actionPerformed (ActionEvent event) {
+							if(entity != null) {
+								placeEntity(entity, xPos, yPos, zPos, Editor.app.pickedSurface);
+							}
+						}
+					});
+
+					final MenuItem prefabMenuItem = new MenuItem(entry.name, skin);
+					prefabCategoryMenu.addItem(prefabMenuItem);
+
+					prefabMenuItem.addActionListener(new ActionListener() {
+						public void actionPerformed (ActionEvent event) {
+							Prefab prefab = new MonsterPrefab(categoryEntry.getKey(), prefabMenuItem.getText().toString());
+							placeEntity(prefab, xPos, yPos, zPos, Editor.app.pickedSurface);
+						}
+					});
+				}
+
+				categoryMenu.sortItems();
+				prefabCategoryMenu.sortItems();
+			}
+
     		// markers!
     		for(final Markers marker : Markers.values()) {
     			if(marker != Markers.none) {

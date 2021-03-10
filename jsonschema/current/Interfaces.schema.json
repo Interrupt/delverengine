@@ -41,6 +41,7 @@
             "oneOf": [
                 {"$ref":  "dungeoneer/entities/areas/Area.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/FogArea.schema.json"},
+                {"$ref":  "dungeoneer/entities/areas/PhysicsForceArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/SkyboxArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/SpawnBlockerArea.schema.json"},
                 {"$ref":  "dungeoneer/entities/areas/StatusEffectArea.schema.json"},
@@ -53,6 +54,7 @@
                 {"$ref": "dungeoneer/entities/items/Armor.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Bow.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Food.schema.json"},
+                {"$ref": "dungeoneer/entities/items/FusedBomb.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Decoration.schema.json"},
                 {"$ref": "dungeoneer/entities/items/Gun.schema.json"},
                 {"$ref": "dungeoneer/entities/items/ItemStack.schema.json"},

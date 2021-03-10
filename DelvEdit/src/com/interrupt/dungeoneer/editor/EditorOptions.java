@@ -1,35 +1,31 @@
 package com.interrupt.dungeoneer.editor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
+import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.utils.JsonUtil;
 
 /** Editor options container class. */
 public class EditorOptions {
     public Array<String> recentlyOpenedFiles;
 
     public EditorOptions() {
-        recentlyOpenedFiles = new Array<String>();
+        recentlyOpenedFiles = new Array<>();
     }
 
     public static EditorOptions fromLocalFiles() {
-        String path = "/save/editor.txt";
-	    Json json = new Json();
-	    FileHandle file = Gdx.files.local(path);
+	    FileHandle file = Game.getFile(getEditorOptionsFilePath());
 
-	    if (!file.exists()) {
-	        file.writeString(json.toJson(new EditorOptions()), false);
-        }
-
-	    return json.fromJson(EditorOptions.class, file);
+        return JsonUtil.fromJson(EditorOptions.class, file, ()-> {
+            EditorOptions eo = new EditorOptions();
+            JsonUtil.toJson(eo, file);
+            return eo;
+        });
     }
 
     public static void toLocalFiles(EditorOptions instance) {
-        String path = "/save/editor.txt";
-        Json json = new Json();
-        FileHandle file = Gdx.files.local(path);
-        file.writeString(json.toJson(instance), false);
+        FileHandle file = Game.getFile(getEditorOptionsFilePath());
+        JsonUtil.toJson(instance, file);
     }
 
     public void save() {
@@ -38,5 +34,18 @@ public class EditorOptions {
 
     public void dispose() {
         Editor.options.save();
+    }
+
+    public static String getEditorOptionsFilePath() {
+        return "save/editor.txt";
+    }
+
+    public void removeRecentlyOpenedFile(String path) {
+        recentlyOpenedFiles.removeValue(path, false);
+    }
+
+    public void addRecentlyOpenedFile(String path) {
+        removeRecentlyOpenedFile(path);
+        recentlyOpenedFiles.insert(0, path);
     }
 }

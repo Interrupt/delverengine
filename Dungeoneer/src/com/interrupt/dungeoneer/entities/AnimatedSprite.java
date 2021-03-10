@@ -28,7 +28,11 @@ public class AnimatedSprite extends Sprite {
 		playAnimation();
 	}
 	
-	public void editorTick(Level level, float delta) { if(animation != null) animation.animate(delta, this); }
+	public void editorTick(Level level, float delta) {
+		super.editorTick(level, delta);
+		if(animation != null) animation.animate(delta, this);
+	}
+
 	public void editorStartPreview(Level level) { if(endAnimTex > 0) this.playAnimation(new SpriteAnimation(tex, endAnimTex, animSpeed, null), true); }
 	public void editorStopPreview(Level level) {
 		if(animation != null) { 

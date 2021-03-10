@@ -24,7 +24,7 @@ import com.interrupt.managers.TileManager;
 public class Tile implements Serializable {
 	private static final long serialVersionUID = 7907569533774959788L;
 
-    public enum TileSpaceType { EMPTY, SOLID, OPEN_NW, OPEN_NE, OPEN_SW, OPEN_SE };
+	public enum TileSpaceType { EMPTY, SOLID, OPEN_NW, OPEN_NE, OPEN_SW, OPEN_SE };
 	public TileSpaceType tileSpaceType = TileSpaceType.EMPTY;
 	public transient boolean drawCeiling = true;
 	public transient boolean drawWalls = true;
@@ -70,6 +70,8 @@ public class Tile implements Serializable {
     public String bottomSouthTexAtlas = null;
     public String bottomEastTexAtlas = null;
     public String bottomWestTexAtlas = null;
+
+    public TileMaterials materials;
 	
 	public float floorHeight = -0.5f;
 	public float ceilHeight = 0.5f;
@@ -470,6 +472,10 @@ public class Tile implements Serializable {
         bottomEastTexAtlas = sbA;
         bottomSouthTexAtlas = wbA;
         bottomWestTexAtlas = nbA;
+
+        if(materials != null) {
+        	materials.rotate90();
+        }
 	}
 
 	public static Tile copy(Tile tocopy) {
@@ -548,6 +554,8 @@ public class Tile implements Serializable {
         destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
         destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
         destination.bottomSouthTexAtlas = source.bottomSouthTexAtlas;
+        destination.ceilTexRot = source.ceilTexRot;
+        destination.floorTexRot = source.floorTexRot;
         destination.isLocked = source.isLocked;
 	}
 
@@ -1023,6 +1031,96 @@ public class Tile implements Serializable {
         else if(wallTexAtlas != null) return wallTexAtlas;
         return null;
     }
+
+    public float getWallYOffset(TileEdges dir) {
+		Float found = null;
+
+		if(materials != null) {
+			TileSurface s = materials.getTopSurface(dir);
+			if(s != null) {
+				found = s.yOffset;
+			}
+		}
+
+		if(found == null) {
+			return 0;
+		}
+
+		return found;
+	}
+
+	public void offsetTopWallSurfaces(TileEdges dir, float val) {
+		if(materials == null)
+			materials = new TileMaterials();
+
+		TileSurface s = materials.getTopSurface(dir);
+		if(s == null) {
+			s = new TileSurface();
+			materials.setTopSurface(dir, s);
+		}
+
+		s.yOffset += val;
+	}
+
+	public float getBottomWallYOffset(TileEdges dir) {
+		Float found = null;
+
+		if(materials != null) {
+			TileSurface s = materials.getBottomSurface(dir);
+			if(s != null) {
+				found = s.yOffset;
+			}
+		}
+
+		if(found == null) {
+			return 0;
+		}
+
+		return found;
+	}
+
+	public void offsetBottomWallSurfaces(TileEdges dir, float val) {
+		if(materials == null)
+			materials = new TileMaterials();
+
+		TileSurface s = materials.getTopSurface(dir);
+		if(s == null) {
+			s = new TileSurface();
+			materials.setBottomSurface(dir, s);
+		}
+
+		s.yOffset += val;
+	}
+
+	public void offsetTopWallSurfaces(float amount) {
+		if(materials == null)
+			materials = new TileMaterials();
+
+		for(int i = 0; i < TileEdges.values().length; i++) {
+			TileEdges edge = TileEdges.values()[i];
+			TileSurface surface = materials.getTopSurface(edge);
+			if(surface == null) {
+				surface = new TileSurface();
+				materials.setTopSurface(edge, surface);
+			}
+			surface.yOffset += amount;
+		}
+	}
+
+	public void offsetBottomWallSurfaces(float amount) {
+		if(materials == null)
+			materials = new TileMaterials();
+
+		for(int i = 0; i < TileEdges.values().length; i++) {
+			TileEdges edge = TileEdges.values()[i];
+			TileSurface surface = materials.getBottomSurface(edge);
+			if(surface == null) {
+				surface = new TileSurface();
+				materials.setBottomSurface(edge, surface);
+			}
+			surface.yOffset += amount;
+		}
+	}
 
     public void setWallTexture(TileEdges dir, byte tex, String atlas) {
 		if(dir == TileEdges.North) {

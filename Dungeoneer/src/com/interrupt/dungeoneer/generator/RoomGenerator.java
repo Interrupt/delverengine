@@ -18,9 +18,10 @@ import com.interrupt.dungeoneer.generator.rooms.*;
 import com.interrupt.dungeoneer.generator.rooms.themes.RoomGeneratorTheme;
 import com.interrupt.dungeoneer.generator.rooms.themes.RoomPrefab;
 import com.interrupt.dungeoneer.generator.rooms.themes.RoomTheme;
+import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.EntityManager;
-import com.interrupt.dungeoneer.gfx.Material;
+import com.interrupt.utils.JsonUtil;
 import com.noise.PerlinNoise;
 
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class RoomGenerator {
 
     public void loadThemeFor(String roomGeneratorType) {
         try {
-            theme = Game.fromJson(RoomGeneratorTheme.class, Game.getModManager().findFile("data/room-builders/" + roomGeneratorType.toLowerCase() + ".dat"));
+            theme = JsonUtil.fromJson(RoomGeneratorTheme.class, Game.getModManager().findFile("data/room-builders/" + roomGeneratorType.toLowerCase() + ".dat"));
         }
         catch(Exception ex) {
             // going to be really boring!
