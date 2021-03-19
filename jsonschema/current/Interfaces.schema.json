@@ -17,6 +17,7 @@
                 {"$ref": "dungeoneer/entities/Sprite.schema.json"},
                 {"$ref": "dungeoneer/entities/projectiles/Projectile.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/BasicTrigger.schema.json"},
+                {"$ref": "dungeoneer/entities/triggers/ButtonModel.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/DamageTrigger.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/LookAtTrigger.schema.json"},
                 {"$ref": "Interfaces.schema.json#/definitions/TriggerLike"},
@@ -96,7 +97,6 @@
         },
         "TriggerLike": {
             "oneOf": [
-                {"$ref": "dungeoneer/entities/triggers/ButtonModel.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/ButtonDecal.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/ConditionalTrigger.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/LevelSwap.schema.json"},
