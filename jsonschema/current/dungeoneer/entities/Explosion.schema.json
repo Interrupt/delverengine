@@ -54,7 +54,7 @@
             "default": 3
         },
         "explosionAnimSpeed": {
-            "type": "integer",
+            "type": "number",
             "description": "Particle sprite animation speed.",
             "baseClass": "Explosion",
             "default": 22

@@ -73,7 +73,7 @@
             "default": 0
         },
         "hitParticles": {
-            "type": "int",
+            "type": "integer",
             "description": "Number of particles for each projectile hit.",
             "baseClass": "Gun",
             "default": 7
