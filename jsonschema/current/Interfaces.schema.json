@@ -24,7 +24,6 @@
                 {"$ref": "dungeoneer/entities/triggers/LevelSwap.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/LookAtTrigger.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"},
-                {"$ref": "Interfaces.schema.json#/definitions/TriggerLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/ActorLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/AreaLike"},
                 {"$ref": "Interfaces.schema.json#/definitions/ItemLike"},
