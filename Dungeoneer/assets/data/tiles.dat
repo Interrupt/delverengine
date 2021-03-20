@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/tiles.dat",
 	"tileData": {
 		"t1": {
 			"21": {

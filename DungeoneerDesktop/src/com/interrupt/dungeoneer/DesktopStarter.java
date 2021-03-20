@@ -9,6 +9,9 @@ import com.interrupt.dungeoneer.game.Options;
 
 public class DesktopStarter {
     public static void main(String[] args) {
+        // We must call this first to get the correct display options
+        Options.loadOptions();
+
         DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
