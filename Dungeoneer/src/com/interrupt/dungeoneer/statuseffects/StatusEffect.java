@@ -9,119 +9,116 @@ import com.interrupt.managers.StringManager;
 
 
 public class StatusEffect {
-	public enum StatusEffectType { BURNING, DRUNK, INVISIBLE, PARALYZE, POISON, RESTORE, SHIELD, SLOW, LEVITATE, SPEED }
+    public enum StatusEffectType { BURNING, DRUNK, INVISIBLE, PARALYZE, POISON, RESTORE, SHIELD, SLOW, LEVITATE, SPEED }
 
-	/** Name of status effect. Shown on player HUD. */
-	public String name = StringManager.get("statuseffects.StatusEffect.defaultNameText");
+    /** Name of status effect. Shown on player HUD. */
+    public String name = StringManager.get("statuseffects.StatusEffect.defaultNameText");
 
-	/** Duration of status effect in milliseconds. */
-	public float timer = 1000;
+    /** Duration of status effect in milliseconds. */
+    public float timer = 1000;
 
-	/** Speed multiplier for effected player and monsters. */
-	public float speedMod = 1;
+    /** Speed multiplier for effected player and monsters. */
+    public float speedMod = 1;
 
-	/** Damage multiplier for effected actors. */
-	public float damageMod = 1;
+    /** Damage multiplier for effected actors. */
+    public float damageMod = 1;
 
-	/** Magic damage multiplier for effected actors. */
-	public float magicDamageMod = 1;
+    /** Magic damage multiplier for effected actors. */
+    public float magicDamageMod = 1;
 
-	/** Is status effect active? */
-	public boolean active = true;
+    /** Is status effect active? */
+    public boolean active = true;
 
-	/** Show a particle effect while active? */
-	public boolean showParticleEffect = true;
+    /** Show a particle effect while active? */
+    public boolean showParticleEffect = true;
 
-	/** Shader name to draw effected actor with. */
-	public String shader = null;
+    /** Shader name to draw effected actor with. */
+    public String shader = null;
 
-	public transient Entity owner = null;
+    public transient Entity owner = null;
 
-	/** Status effect type. */
-	public StatusEffectType statusEffectType;
+    /** Status effect type. */
+    public StatusEffectType statusEffectType;
 
-	public static StatusEffect getStatusEffect(DamageType damageType) {
-		StatusEffect effect = null;
+    public static StatusEffect getStatusEffect(DamageType damageType) {
+        switch (damageType) {
+            case PHYSICAL:
+                break;
+            case MAGIC:
+                break;
+            case FIRE:
+                if(Game.rand.nextBoolean()) return new BurningEffect();
+                break;
+            case ICE:
+                return new SlowEffect();
+            case LIGHTNING:
+                break;
+            case POISON:
+                return new PoisonEffect();
+            case HEALING:
+                break;
+            case PARALYZE:
+                return new ParalyzeEffect();
+        }
+        return null;
+    }
 
-		switch (damageType) {
-			case PHYSICAL:
-				break;
-			case MAGIC:
-				break;
-			case FIRE:
-				if(Game.rand.nextBoolean()) return new BurningEffect();
-				break;
-			case ICE:
-				return new SlowEffect();
-			case LIGHTNING:
-				break;
-			case POISON:
-				return new PoisonEffect();
-			case HEALING:
-				break;
-			case PARALYZE:
-				return new ParalyzeEffect();
-		}
+    public static StatusEffect getStatusEffect(StatusEffectType effectType) {
+        switch (effectType) {
+            case BURNING:
+                return new BurningEffect();
 
-		return effect;
-	}
+            case DRUNK:
+                return new DrunkEffect();
 
-	public static StatusEffect getStatusEffect(StatusEffectType effectType) {
-		switch (effectType) {
-			case BURNING:
-				return new BurningEffect();
+            case INVISIBLE:
+                return new InvisibilityEffect();
 
-			case DRUNK:
-				return new DrunkEffect();
+            case PARALYZE:
+                return new ParalyzeEffect();
 
-			case INVISIBLE:
-				return new InvisibilityEffect();
+            case POISON:
+                return new PoisonEffect();
 
-			case PARALYZE:
-				return new ParalyzeEffect();
+            case RESTORE:
+                return new RestoreHealthEffect();
 
-			case POISON:
-				return new PoisonEffect();
+            case SHIELD:
+                return new ShieldEffect();
 
-			case RESTORE:
-				return new RestoreHealthEffect();
+            case SLOW:
+                return new SlowEffect();
 
-			case SHIELD:
-				return new ShieldEffect();
+            case SPEED:
+                return new SpeedEffect();
+        }
 
-			case SLOW:
-				return new SlowEffect();
+        return null;
+    }
 
-			case SPEED:
-				return new SpeedEffect();
-		}
+    public StatusEffect() { }
 
-		return null;
-	}
+    public void tick(Actor owner, float delta) {
+        if (this.timer > 0) {
+            this.timer -= 1 * delta;
+        }
+        else if (this.active) {
+            this.active = false;
+        }
 
-	public StatusEffect() { }
-	
-	public void tick(Actor owner, float delta) {
-		if (this.timer > 0) {
-			this.timer -= 1 * delta;
-		}
-		else if (this.active) {
-			this.active = false;
-		}
+        if (this.active) {
+            this.doTick(owner, delta);
+        }
+    }
 
-		if (this.active) {
-			this.doTick(owner, delta);
-		}
-	}
+    public void forPlayer(Player player) { }
 
-	public void forPlayer(Player player) { }
-	
-	// Override this for different status effects
-	public void doTick(Actor owner, float delta) {}
+    /** Override this for different status effects */
+    public void doTick(Actor owner, float delta) {}
 
-	// Override this for beginning any special status effects
-	public void onStatusBegin(Actor owner) {}
+    /** Override this for beginning any special status effects */
+    public void onStatusBegin(Actor owner) {}
 
-	// Override this for ending any special status effects
-	public void onStatusEnd(Actor owner) {}
+    /** Override this for ending any special status effects */
+    public void onStatusEnd(Actor owner) {}
 }
