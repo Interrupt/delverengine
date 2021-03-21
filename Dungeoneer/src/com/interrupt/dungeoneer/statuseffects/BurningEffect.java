@@ -142,4 +142,131 @@ public class BurningEffect extends StatusEffect {
 	    this.spreadMod = (owner instanceof Player) ? playerSpreadMod : baseSpreadMod;
     }
 
+    public float getDamageTimer() {
+        return damageTimer;
+    }
+
+    public void setDamageTimer(float damageTimer) {
+        this.damageTimer = damageTimer;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public int getParticleCount() {
+        return particleCount;
+    }
+
+    public void setParticleCount(int particleCount) {
+        this.particleCount = particleCount;
+    }
+
+    public float getBaseSpreadMod() {
+        return baseSpreadMod;
+    }
+
+    public void setBaseSpreadMod(float baseSpreadMod) {
+        this.baseSpreadMod = baseSpreadMod;
+    }
+
+    public float getPlayerSpreadMod() {
+        return playerSpreadMod;
+    }
+
+    public void setPlayerSpreadMod(float playerSpreadMod) {
+        this.playerSpreadMod = playerSpreadMod;
+    }
+
+    public int getStartFireTexture() {
+        return startFireTexture;
+    }
+
+    public void setStartFireTexture(int startFireTexture) {
+        this.startFireTexture = startFireTexture;
+    }
+
+    public int getStopFireTexture() {
+        return stopFireTexture;
+    }
+
+    public void setStopFireTexture(int stopFireTexture) {
+        this.stopFireTexture = stopFireTexture;
+    }
+
+    public float getAnimationSpeed() {
+        return animationSpeed;
+    }
+
+    public void setAnimationSpeed(float animationSpeed) {
+        this.animationSpeed = animationSpeed;
+    }
+
+    public float getParticleLifetime() {
+        return particleLifetime;
+    }
+
+    public void setParticleLifetime(float particleLifetime) {
+        this.particleLifetime = particleLifetime;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
+    public float getStartScale() {
+        return startScale;
+    }
+
+    public void setStartScale(float startScale) {
+        this.startScale = startScale;
+    }
+
+    public float getEndScale() {
+        return endScale;
+    }
+
+    public void setEndScale(float endScale) {
+        this.endScale = endScale;
+    }
+
+    public float getUpwardVelocity() {
+        return upwardVelocity;
+    }
+
+    public void setUpwardVelocity(float upwardVelocity) {
+        this.upwardVelocity = upwardVelocity;
+    }
+
+    public String getBurnSound() {
+        return burnSound;
+    }
+
+    public void setBurnSound(String burnSound) {
+        this.burnSound = burnSound;
+    }
+
+    public float getSoundVolume() {
+        return soundVolume;
+    }
+
+    public void setSoundVolume(float soundVolume) {
+        this.soundVolume = soundVolume;
+    }
+
+    public float getSoundRange() {
+        return soundRange;
+    }
+
+    public void setSoundRange(float soundRange) {
+        this.soundRange = soundRange;
+    }
 }
