@@ -10,9 +10,34 @@ import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.StringManager;
 
 public class BurningEffect extends StatusEffect {
-	public float damageTimer = 60;
+    // Status Effect properties
+	private float damageTimer = 60;
+    private float dtimer = 0;
+
 	public int damage = 1;
-	private float dtimer = 0;
+
+	// Fire particle properties
+	private int particleCount = 8;
+
+	private float spreadMod = 1f;
+	private float baseSpreadMod = 1f;
+	private float playerSpreadMod = 2.75f;
+
+	private int startFireTexture = 64;
+	private int stopFireTexture = 69;
+	private float animationSpeed = 40f;
+
+	private float particleLifetime = 90f;
+    private float scale = 0.5f;
+    private float startScale = 1f;
+    private float endScale = 0.125f;
+
+    private float upwardVelocity = 0.004f;
+
+	// Audio settings
+	private String burnSound = "mg_pass_poison.mp3";
+	private float soundVolume = 0.5f;
+	private float soundRange = 6f;
 
 	public BurningEffect() {
 		this(600, 160, 1);
@@ -25,25 +50,21 @@ public class BurningEffect extends StatusEffect {
 		this.damage = damage;
 		this.statusEffectType = StatusEffectType.BURNING;
 	}
-	
+
 	@Override
-	public void doTick(Actor owner, float delta) { 
+	public void doTick(Actor owner, float delta) {
 		dtimer += delta;
 
 		if(dtimer > damageTimer) {
 			dtimer = 0;
 			owner.takeDamage(damage, DamageType.PHYSICAL, null);
 			doFireEffect(owner);
-			Audio.playPositionedSound("mg_pass_poison.mp3", new Vector3(owner.x,owner.y,owner.z), 0.5f, 6f);
+			Audio.playPositionedSound(burnSound, new Vector3(owner.x,owner.y,owner.z), soundVolume, soundRange);
 		}
 
-		// put out the fire, if this is water
-		if(owner.inwater) {
-			Tile waterTile = Game.instance.level.findWaterTile(owner.x, owner.y, owner.z, owner.collision);
-			if(waterTile != null && waterTile.data != null && (waterTile.data.hurts <= 0 || waterTile.data.damageType != DamageType.FIRE)) {
-				active = false;
-			}
-		}
+		if(isEntityInWater()){
+            active = false;
+        }
 	}
 
 	public void doFireEffect(Entity owner) {
@@ -51,36 +72,14 @@ public class BurningEffect extends StatusEffect {
 			return;
 		}
 
-		for(int i = 0; i < 8; i++) {
-			float spreadMod = 1f;
-
-			if (owner instanceof Player) {
-				spreadMod = 2.75f;
-			}
-
-			float scale = 0.5f;
-			Particle p = CachePools.getParticle();
-			p.tex = 64;
-			p.lifetime = 90;
-			p.scale = scale;
-			p.startScale = 1.0f;
-			p.endScale = 0.125f;
-			p.fullbrite = true;
-			p.checkCollision = false;
-			p.floating = true;
-			p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
-			p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
-			p.z = owner.z + (Game.rand.nextFloat() * owner.collision.z) - 0.5f;
-			p.playAnimation(64, 69, 40f);
-
-			p.za = Game.rand.nextFloat() * 0.004f + 0.004f;
-
-			Game.GetLevel().SpawnNonCollidingEntity(p);
+		for(int i = 0; i < particleCount; i++) {
+		    spawnFireParticle();
 		}
 	}
 
 	@Override
 	public void onStatusBegin(Actor owner) {
+	    calculateSpreadMod();
 		doFireEffect(owner);
 		Fire fire = (Fire)owner.getAttached(Fire.class);
 
@@ -105,4 +104,42 @@ public class BurningEffect extends StatusEffect {
 		Fire fire = (Fire)owner.getAttached(Fire.class);
 		if(fire != null) fire.isActive = false;
 	}
+
+
+    /** Used for putting out the fire */
+	private boolean isEntityInWater() {
+        if(owner.inwater) {
+            Tile waterTile = Game.instance.level.findWaterTile(owner.x, owner.y, owner.z, owner.collision);
+            return waterTile.data != null && (waterTile.data.hurts <= 0 || waterTile.data.damageType != DamageType.FIRE);
+        }
+        return false;
+    }
+
+    /** Constructs new fire particle for spawning */
+    private void spawnFireParticle() {
+
+        Particle p = CachePools.getParticle();
+        p.tex = startFireTexture;
+        p.lifetime = particleLifetime;
+        p.scale = scale;
+        p.startScale = startScale;
+        p.endScale = endScale;
+        p.fullbrite = true;
+        p.checkCollision = false;
+        p.floating = true;
+        p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+        p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+        p.z = owner.z + (Game.rand.nextFloat() * owner.collision.z) - 0.5f;
+        p.playAnimation(startFireTexture, stopFireTexture, animationSpeed);
+
+        p.za = Game.rand.nextFloat() * upwardVelocity + upwardVelocity;
+
+        Game.GetLevel().SpawnNonCollidingEntity(p);
+    }
+
+    /** Calculates the Spread Modifier based on if the Entity is a Player instance */
+    private void calculateSpreadMod() {
+	    this.spreadMod = (owner instanceof Player) ? playerSpreadMod : baseSpreadMod;
+    }
+
 }
