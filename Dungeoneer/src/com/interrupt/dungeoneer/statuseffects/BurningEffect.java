@@ -55,14 +55,14 @@ public class BurningEffect extends StatusEffect {
 	public void doTick(Actor owner, float delta) {
 		dtimer += delta;
 
-		if(dtimer > damageTimer) {
+		if (dtimer > damageTimer) {
 			dtimer = 0;
 			owner.takeDamage(damage, DamageType.PHYSICAL, null);
 			doFireEffect(owner);
 			Audio.playPositionedSound(burnSound, new Vector3(owner.x,owner.y,owner.z), soundVolume, soundRange);
 		}
 
-		if(isEntityInWater()){
+		if (isEntityInWater()){
             active = false;
         }
 	}
@@ -72,7 +72,7 @@ public class BurningEffect extends StatusEffect {
 			return;
 		}
 
-		for(int i = 0; i < particleCount; i++) {
+		for (int i = 0; i < particleCount; i++) {
 		    spawnFireParticle();
 		}
 	}
@@ -84,7 +84,7 @@ public class BurningEffect extends StatusEffect {
 		Fire fire = (Fire)owner.getAttached(Fire.class);
 
 		// Attach a fire entity so that the fire can spread
-		if(fire == null) {
+		if (fire == null) {
 			Fire f = new Fire();
 			f.lifeTime = timer;
 			f.playAnimation();
@@ -102,13 +102,13 @@ public class BurningEffect extends StatusEffect {
 	public void onStatusEnd(Actor owner) {
 		this.active = false;
 		Fire fire = (Fire)owner.getAttached(Fire.class);
-		if(fire != null) fire.isActive = false;
+		if (fire != null) fire.isActive = false;
 	}
 
 
     /** Used for putting out the fire */
 	private boolean isEntityInWater() {
-        if(owner.inwater) {
+        if (owner.inwater) {
             Tile waterTile = Game.instance.level.findWaterTile(owner.x, owner.y, owner.z, owner.collision);
             return waterTile.data != null && (waterTile.data.hurts <= 0 || waterTile.data.damageType != DamageType.FIRE);
         }
