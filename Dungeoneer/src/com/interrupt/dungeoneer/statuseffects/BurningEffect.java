@@ -58,12 +58,12 @@ public class BurningEffect extends StatusEffect {
 		if (dtimer > damageTimer) {
 			dtimer = 0;
 			owner.takeDamage(damage, DamageType.PHYSICAL, null);
-			doFireEffect(owner);
+			this.doFireEffect(owner);
 			Audio.playPositionedSound(burnSound, new Vector3(owner.x,owner.y,owner.z), soundVolume, soundRange);
 		}
 
 		if (isEntityInWater()){
-            active = false;
+            this.active = false;
         }
 	}
 
@@ -73,14 +73,14 @@ public class BurningEffect extends StatusEffect {
 		}
 
 		for (int i = 0; i < particleCount; i++) {
-		    spawnFireParticle();
+		    this.spawnFireParticle();
 		}
 	}
 
 	@Override
 	public void onStatusBegin(Actor owner) {
-	    calculateSpreadMod();
-		doFireEffect(owner);
+	    this.calculateSpreadMod();
+		this.doFireEffect(owner);
 		Fire fire = (Fire)owner.getAttached(Fire.class);
 
 		// Attach a fire entity so that the fire can spread
@@ -119,6 +119,7 @@ public class BurningEffect extends StatusEffect {
     private void spawnFireParticle() {
 
         Particle p = CachePools.getParticle();
+
         p.tex = startFireTexture;
         p.lifetime = particleLifetime;
         p.scale = scale;
@@ -127,14 +128,19 @@ public class BurningEffect extends StatusEffect {
         p.fullbrite = true;
         p.checkCollision = false;
         p.floating = true;
-        p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
-        p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
-        p.z = owner.z + (Game.rand.nextFloat() * owner.collision.z) - 0.5f;
+        setParticlePosition(p);
+
         p.playAnimation(startFireTexture, stopFireTexture, animationSpeed);
 
         p.za = Game.rand.nextFloat() * upwardVelocity + upwardVelocity;
 
         Game.GetLevel().SpawnNonCollidingEntity(p);
+    }
+
+    private void setParticlePosition(Particle p) {
+        p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+        p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+        p.z = owner.z + (Game.rand.nextFloat() * owner.collision.z) - 0.5f;
     }
 
     /** Calculates the Spread Modifier based on if the Entity is a Player instance */
