@@ -23,8 +23,9 @@ public class BurningEffect extends StatusEffect {
 	private float baseSpreadMod = 1f;
 	private float playerSpreadMod = 2.75f;
 
-	private int startFireTexture = 64;
-	private int stopFireTexture = 69;
+	private int particleTexture = 64;
+	private int startTexture = 64;
+	private int stopTexture = 69;
 	private float animationSpeed = 40f;
 
 	private float particleLifetime = 90f;
@@ -120,7 +121,7 @@ public class BurningEffect extends StatusEffect {
 
         Particle p = CachePools.getParticle();
 
-        p.tex = startFireTexture;
+        p.tex = particleTexture;
         p.lifetime = particleLifetime;
         p.scale = scale;
         p.startScale = startScale;
@@ -130,7 +131,7 @@ public class BurningEffect extends StatusEffect {
         p.floating = true;
         setParticlePosition(p);
 
-        p.playAnimation(startFireTexture, stopFireTexture, animationSpeed);
+        p.playAnimation(startTexture, stopTexture, animationSpeed);
 
         p.za = Game.rand.nextFloat() * upwardVelocity + upwardVelocity;
 
@@ -188,20 +189,20 @@ public class BurningEffect extends StatusEffect {
         this.playerSpreadMod = playerSpreadMod;
     }
 
-    public int getStartFireTexture() {
-        return startFireTexture;
+    public int getStartTexture() {
+        return startTexture;
     }
 
-    public void setStartFireTexture(int startFireTexture) {
-        this.startFireTexture = startFireTexture;
+    public void setStartTexture(int startTexture) {
+        this.startTexture = startTexture;
     }
 
-    public int getStopFireTexture() {
-        return stopFireTexture;
+    public int getStopTexture() {
+        return stopTexture;
     }
 
-    public void setStopFireTexture(int stopFireTexture) {
-        this.stopFireTexture = stopFireTexture;
+    public void setStopTexture(int stopTexture) {
+        this.stopTexture = stopTexture;
     }
 
     public float getAnimationSpeed() {
