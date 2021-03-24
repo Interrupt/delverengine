@@ -11,34 +11,33 @@ import com.interrupt.managers.StringManager;
 
 public class BurningEffect extends StatusEffect {
     // Status Effect properties
-	private float damageTimer = 60;
+	public float damageTimer = 60;
     private float dtimer = 0;
 
 	public int damage = 1;
 
 	// Fire particle properties
-	private int particleCount = 8;
+	public int particleCount = 8;
 
 	private float spreadMod = 1f;
-	private float baseSpreadMod = 1f;
-	private float playerSpreadMod = 2.75f;
+    public float baseSpreadMod = 1f;
+    public float playerSpreadMod = 2.75f;
 
-	private int particleTexture = 64;
-	private int startTexture = 64;
-	private int stopTexture = 69;
-	private float animationSpeed = 40f;
+    public int startTex  = 64;
+    public int endTex = 69;
+    public float animationSpeed = 40f;
 
-	private float particleLifetime = 90f;
-    private float scale = 0.5f;
-    private float startScale = 1f;
-    private float endScale = 0.125f;
+    public float particleLifetime = 90f;
+    public float scale = 0.5f;
+    public float endScale = 0.125f;
 
-    private float upwardVelocity = 0.004f;
+    public float baseZAFactor = 0.004f;
+    public float randZAFactor = 0.004f;
 
 	// Audio settings
-	private String burnSound = "mg_pass_poison.mp3";
-	private float soundVolume = 0.5f;
-	private float soundRange = 6f;
+    public String burnSound = "mg_pass_poison.mp3";
+    public float soundVolume = 0.5f;
+    public float soundRange = 6f;
 
 	public BurningEffect() {
 		this(600, 160, 1);
@@ -59,7 +58,7 @@ public class BurningEffect extends StatusEffect {
 		if (dtimer > damageTimer) {
 			dtimer = 0;
 			owner.takeDamage(damage, DamageType.PHYSICAL, null);
-			this.doFireEffect(owner);
+			doFireEffect(owner);
 			Audio.playPositionedSound(burnSound, new Vector3(owner.x,owner.y,owner.z), soundVolume, soundRange);
 		}
 
@@ -74,14 +73,15 @@ public class BurningEffect extends StatusEffect {
 		}
 
 		for (int i = 0; i < particleCount; i++) {
-		    this.spawnFireParticle();
+		    spawnFireParticle();
 		}
 	}
 
 	@Override
 	public void onStatusBegin(Actor owner) {
-	    this.calculateSpreadMod();
-		this.doFireEffect(owner);
+        spreadMod = (owner instanceof Player) ? playerSpreadMod : baseSpreadMod;
+
+        doFireEffect(owner);
 		Fire fire = (Fire)owner.getAttached(Fire.class);
 
 		// Attach a fire entity so that the fire can spread
@@ -121,159 +121,24 @@ public class BurningEffect extends StatusEffect {
 
         Particle p = CachePools.getParticle();
 
-        p.tex = particleTexture;
+        p.tex = startTex;
         p.lifetime = particleLifetime;
         p.scale = scale;
-        p.startScale = startScale;
+        p.startScale = scale;
         p.endScale = endScale;
         p.fullbrite = true;
         p.checkCollision = false;
         p.floating = true;
-        setParticlePosition(p);
 
-        p.playAnimation(startTexture, stopTexture, animationSpeed);
+        p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+        p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
+        p.z = owner.z + (Game.rand.nextFloat() * owner.collision.z) - 0.5f;
 
-        p.za = Game.rand.nextFloat() * upwardVelocity + upwardVelocity;
+        p.za = Game.rand.nextFloat() * randZAFactor + baseZAFactor;
+
+        p.playAnimation(startTex, endTex, animationSpeed);
 
         Game.GetLevel().SpawnNonCollidingEntity(p);
     }
 
-    private void setParticlePosition(Particle p) {
-        p.x = owner.x + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
-        p.y = owner.y + (Game.rand.nextFloat() * scale - (scale * 0.5f)) * spreadMod;
-        p.z = owner.z + (Game.rand.nextFloat() * owner.collision.z) - 0.5f;
-    }
-
-    /** Calculates the Spread Modifier based on if the Entity is a Player instance */
-    private void calculateSpreadMod() {
-	    this.spreadMod = (owner instanceof Player) ? playerSpreadMod : baseSpreadMod;
-    }
-
-    public float getDamageTimer() {
-        return damageTimer;
-    }
-
-    public void setDamageTimer(float damageTimer) {
-        this.damageTimer = damageTimer;
-    }
-
-    public int getDamage() {
-        return damage;
-    }
-
-    public void setDamage(int damage) {
-        this.damage = damage;
-    }
-
-    public int getParticleCount() {
-        return particleCount;
-    }
-
-    public void setParticleCount(int particleCount) {
-        this.particleCount = particleCount;
-    }
-
-    public float getBaseSpreadMod() {
-        return baseSpreadMod;
-    }
-
-    public void setBaseSpreadMod(float baseSpreadMod) {
-        this.baseSpreadMod = baseSpreadMod;
-    }
-
-    public float getPlayerSpreadMod() {
-        return playerSpreadMod;
-    }
-
-    public void setPlayerSpreadMod(float playerSpreadMod) {
-        this.playerSpreadMod = playerSpreadMod;
-    }
-
-    public int getStartTexture() {
-        return startTexture;
-    }
-
-    public void setStartTexture(int startTexture) {
-        this.startTexture = startTexture;
-    }
-
-    public int getStopTexture() {
-        return stopTexture;
-    }
-
-    public void setStopTexture(int stopTexture) {
-        this.stopTexture = stopTexture;
-    }
-
-    public float getAnimationSpeed() {
-        return animationSpeed;
-    }
-
-    public void setAnimationSpeed(float animationSpeed) {
-        this.animationSpeed = animationSpeed;
-    }
-
-    public float getParticleLifetime() {
-        return particleLifetime;
-    }
-
-    public void setParticleLifetime(float particleLifetime) {
-        this.particleLifetime = particleLifetime;
-    }
-
-    public float getScale() {
-        return scale;
-    }
-
-    public void setScale(float scale) {
-        this.scale = scale;
-    }
-
-    public float getStartScale() {
-        return startScale;
-    }
-
-    public void setStartScale(float startScale) {
-        this.startScale = startScale;
-    }
-
-    public float getEndScale() {
-        return endScale;
-    }
-
-    public void setEndScale(float endScale) {
-        this.endScale = endScale;
-    }
-
-    public float getUpwardVelocity() {
-        return upwardVelocity;
-    }
-
-    public void setUpwardVelocity(float upwardVelocity) {
-        this.upwardVelocity = upwardVelocity;
-    }
-
-    public String getBurnSound() {
-        return burnSound;
-    }
-
-    public void setBurnSound(String burnSound) {
-        this.burnSound = burnSound;
-    }
-
-    public float getSoundVolume() {
-        return soundVolume;
-    }
-
-    public void setSoundVolume(float soundVolume) {
-        this.soundVolume = soundVolume;
-    }
-
-    public float getSoundRange() {
-        return soundRange;
-    }
-
-    public void setSoundRange(float soundRange) {
-        this.soundRange = soundRange;
-    }
 }
