@@ -11,6 +11,24 @@ import com.interrupt.dungeoneer.modding.ScriptLoader;
 
 public class DesktopStarter {
     public static void main(String[] args) {
+        if (args != null) {
+            for (String arg : args) {
+                if (arg.toLowerCase().endsWith("debug=true")) {
+                    Game.isDebugMode = true;
+                }
+                else if (arg.toLowerCase().endsWith("debug-collision=true")) {
+                    Game.drawDebugBoxes = true;
+                }
+                else if (arg.toLowerCase().endsWith("enable-mod-classes=true")) {
+                    ModManager.setScriptingApi(new ScriptLoader());
+                }
+                else if (arg.equalsIgnoreCase("--version")){
+                    System.out.println(Game.VERSION);
+                    System.exit(0);
+                }
+            }
+        }
+
         // We must call this first to get the correct display options
         Options.loadOptions();
 
@@ -40,19 +58,5 @@ public class DesktopStarter {
         config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
 
         new LwjglApplication(new GameApplication(), config);
-
-        if (args != null) {
-            for (String arg : args) {
-                if (arg.toLowerCase().endsWith("debug=true")) {
-                    Game.isDebugMode = true;
-                }
-                else if (arg.toLowerCase().endsWith("debug-collision=true")) {
-                    Game.drawDebugBoxes = true;
-                }
-                else if (arg.toLowerCase().endsWith("enable-mod-classes=true")) {
-                    ModManager.setScriptingApi(new ScriptLoader());
-                }
-            }
-        }
     }
 }
