@@ -22,7 +22,7 @@ public class DesktopStarter {
                 else if (arg.toLowerCase().endsWith("enable-mod-classes=true")) {
                     ModManager.setScriptingApi(new ScriptLoader());
                 }
-                else if (arg.equalsIgnoreCase("--version")){
+                else if (arg.toLowerCase().endsWith("version")){
                     System.out.println(Game.VERSION);
                     System.exit(0);
                 }
