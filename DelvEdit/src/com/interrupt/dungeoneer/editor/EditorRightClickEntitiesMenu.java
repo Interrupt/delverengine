@@ -1,32 +1,39 @@
 package com.interrupt.dungeoneer.editor;
 
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
 import com.interrupt.dungeoneer.entities.*;
-import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.entities.projectiles.Missile;
-import com.interrupt.dungeoneer.entities.triggers.*;
+import com.interrupt.dungeoneer.entities.triggers.ProgressionTrigger;
+import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
 import com.interrupt.helpers.TileEdges;
+import org.reflections.Reflections;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class EditorRightClickEntitiesMenu extends Scene2dMenu {
+    private static Vector3 position = new Vector3();
 
     public EditorRightClickEntitiesMenu(Skin skin, final float xPos, final float yPos, final float zPos, final Level level){
         super(skin);
 
+        position.set(xPos, yPos, zPos);
+
     	if(Editor.app.entityManager != null) {
 
     		MenuItem baseEntityMenu = new MenuItem("Basic", skin);
+    		MenuItem testEntityMenu = new MenuItem("Test", skin);
             MenuItem entityMenu = new MenuItem("Place Entity", skin);
             MenuItem prefabMenu = new MenuItem("Place Prefab", skin);
             MenuItem markersMenu = new MenuItem("Place Marker", skin);
@@ -49,6 +56,13 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 			HashMap<String, MenuItem> prefabCategoryMap = new HashMap<String, MenuItem>();
 			HashMap<String, MenuItem> entityCategoryMap = new HashMap<String, MenuItem>();
 
+			b(testEntityMenu, classPaths(), new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                }
+            });
+
+			/*
 			for(final Entry<String, OrderedMap<String, Entity>> categoryEntry : Editor.app.entityManager.entities.entrySet()) {
 				MenuItem prefabCategoryMenu = prefabCategoryMap.get(categoryEntry.getKey());
 				MenuItem categoryMenu = entityCategoryMap.get(categoryEntry.getKey());
@@ -130,6 +144,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
         		categoryMenu.sortItems();
     			prefabCategoryMenu.sortItems();
     		}
+			 */
 
 			for(final Entry<String, Array<Monster>> categoryEntry : Editor.app.monsterManager.monsters.entrySet()) {
 				MenuItem prefabCategoryMenu = prefabCategoryMap.get(categoryEntry.getKey());
@@ -235,6 +250,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
     		baseEntityMenu.sortItems();
 			entityMenu.addItemAt(baseEntityMenu, 0);
+			addItem(testEntityMenu);
 
     		addItem(entityMenu);
     		addItem(prefabMenu);
@@ -328,6 +344,10 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     	}
     }
 
+    public void placeEntity(Entity entity, Vector3 position, EditorApplication.PickedSurface surface) {
+        placeEntity(entity, position.x, position.y, position.z, surface);
+    }
+
     public void placeEntity(Entity entity, float x, float y, float z, EditorApplication.PickedSurface surface) {
 		entity.x = x;
 		entity.y = y;
@@ -362,8 +382,35 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 		Editor.app.history.saveState(Editor.app.level);
 	}
 
-    public Array<Entity> baseEntities() {
+	public HashMap<String, OrderedMap<String, Entity>> classPaths() {
+        HashMap<String, OrderedMap<String, Entity>> result = new HashMap<>();
 
+        Reflections reflections = new Reflections("com.interrupt");
+        Set<Class<? extends Entity>> classes = reflections.getSubTypesOf(Entity.class);
+
+        for (Class<? extends Entity> eClass : classes) {
+            try {
+                Entity e = eClass.newInstance();
+                String pkg = eClass.getPackage().getName();
+                //pkg = pkg.replace("com.interrupt.dungeoneer.", "");
+                pkg = pkg.replace('.', '/');
+                String name = eClass.getSimpleName();
+
+                OrderedMap<String, Entity> a = result.getOrDefault(pkg, null);
+                if (a == null) {
+                    a = new OrderedMap<>();
+                    result.put(pkg, a);
+                }
+
+                a.put(name, e);
+            }
+            catch (Exception ignored) {}
+        }
+
+        return result;
+    }
+
+    public Array<Entity> baseEntities() {
     	Array<Entity> baseEntity = new Array<Entity>();
 
     	// Basic entities
@@ -371,44 +418,44 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 		light.lightColor = com.badlogic.gdx.graphics.Color.WHITE;
 		light.range = 3;
 		baseEntity.add(light);
-		
+
 		Monster monster = new Monster();
-		monster.artType = ArtType.entity;
+		monster.artType = Entity.ArtType.entity;
 		monster.tex = 0;
 		baseEntity.add(monster);
-		
+
 		Sprite s = new Sprite();
 		s.isDynamic = false;
-		s.artType = ArtType.sprite;
+		s.artType = Entity.ArtType.sprite;
 		baseEntity.add(s);
-		
+
 		AnimatedSprite as = new AnimatedSprite();
 		s.isDynamic = false;
-		s.artType = ArtType.sprite;
+		s.artType = Entity.ArtType.sprite;
 		baseEntity.add(as);
 
 		SpriteBeam beam = new SpriteBeam();
 		beam.tex = 15;
 		baseEntity.add(beam);
-		
+
 		Door d = new Door(0,0,0);
 		baseEntity.add(d);
 
 		Key k = new Key();
 		k.name = "Key";
 		baseEntity.add(k);
-		
+
 		Model m = new Model("meshes/chair.obj");
 		m.isDynamic = false;
 		baseEntity.add(m);
-		
+
 		Breakable b = new Breakable("meshes/crate.obj", "meshes.png");
 		b.collision.set(0.25f, 0.25f, 0.5f);
 		baseEntity.add(b);
-		
+
 		SpriteDecal decal = new SpriteDecal(0,0,0);
 		baseEntity.add(decal);
-		
+
 		baseEntity.add(new ProjectedDecal());
 		baseEntity.add(new Trigger());
 		baseEntity.add(new ProgressionTrigger());
@@ -430,7 +477,87 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
         baseEntity.add(new Critter());
 		baseEntity.add(new Fire());
 		baseEntity.add(new Text());
-		
+
 		return baseEntity;
+    }
+
+    private HashMap<String, MenuItem> map = new HashMap<>();
+    public void b(MenuItem target, HashMap<String, OrderedMap<String, Entity>> entities, ActionListener callback) {
+        Skin skin = this.skin;
+        map.clear();
+
+        for(final Entry<String, OrderedMap<String, Entity>> categoryEntry : entities.entrySet()) {
+				MenuItem prefabCategoryMenu = map.get(categoryEntry.getKey());
+
+				if (prefabCategoryMenu == null) {
+					// Normalize path.
+					String path = categoryEntry.getKey().replace("\\", "/");
+					String[] pathParts = path.split("/");
+					StringBuilder currentPath = new StringBuilder();
+
+					MenuItem parentPrefabMenu = target;
+					MenuItem currentPrefabMenu = null;
+
+					for (String part: pathParts) {
+						// Build up path.
+						if (currentPath.length() == 0) {
+							currentPath.append(part);
+						}
+						else {
+							currentPath.append("/").append(part);
+						}
+
+						// Grab cached version if they exist.
+						currentPrefabMenu = map.get(currentPath.toString());
+
+						// Create if they dont.
+						if (currentPrefabMenu == null) {
+							// New prefab MenuItem
+							currentPrefabMenu = new MenuItem(part, skin);
+							map.put(currentPath.toString(), currentPrefabMenu);
+							parentPrefabMenu.addItem(currentPrefabMenu);
+						}
+
+						// Update current parent.
+						parentPrefabMenu = currentPrefabMenu;
+					}
+
+					// Assign before exiting conditional
+					prefabCategoryMenu = currentPrefabMenu;
+				}
+
+    			OrderedMap<String,Entity> categoryEntities = categoryEntry.getValue();
+
+    			for(final com.badlogic.gdx.utils.ObjectMap.Entry<String, Entity> entry : categoryEntities.entries()) {
+                    /*
+    			    MenuItem menuItem = new MenuItem(entry.key, skin);
+    		    	//categoryMenu.addItem(menuItem);
+
+    		    	final Entity entity = Editor.app.entityManager.Copy(entry.value);
+
+    		    	menuItem.addActionListener(new ActionListener() {
+    					public void actionPerformed (ActionEvent event) {
+    						if(entity != null) {
+								placeEntity(entity, position, Editor.app.pickedSurface);
+    						}
+    					}
+    				});*/
+
+    		    	final MenuItem prefabMenuItem = new MenuItem(entry.key, skin);
+    		    	prefabCategoryMenu.addItem(prefabMenuItem);
+    		    	prefabMenuItem.addActionListener(callback);
+
+    		    	/*
+    		    	prefabMenuItem.addActionListener(new ActionListener() {
+    		    		public void actionPerformed (ActionEvent event) {
+    		    			Prefab prefab = new Prefab(categoryEntry.getKey(), prefabMenuItem.getText().toString());
+							placeEntity(prefab, position, Editor.app.pickedSurface);
+    		    		}
+    		    	});
+                     */
+        		}
+
+    			prefabCategoryMenu.sortItems();
+    		}
     }
 }

@@ -14,7 +14,7 @@ public class Scene2dMenu extends Group {
     public MenuItem parentMenuItem = null;
 
     Table menuTable;
-    Skin skin;
+    public Skin skin;
 
     private boolean dirty = true;
 
