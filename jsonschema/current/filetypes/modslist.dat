@@ -1,0 +1,5 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Mod sources and installed mods",
+    "$ref": "../dungeoneer/game/ModManager.schema.json"
+}

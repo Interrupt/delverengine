@@ -102,6 +102,12 @@
                 {"$ref": "dungeoneer/entities/triggers/LevelSwap.schema.json"},
                 {"$ref": "dungeoneer/entities/triggers/Trigger.schema.json"}
             ]
+        },
+        "ModSourceLike": {
+            "oneOf": [
+                {"$ref": "dungeoneer/modding/GitHubRepoModSource.schema.json"},
+                {"$ref": "dungeoneer/modding/LocalFileSystemModSource.schema.json"}
+            ]
         }
     }
 }

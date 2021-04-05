@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Json;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.api.steam.workshop.WorkshopModData;
 import com.interrupt.dungeoneer.entities.Door;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -14,6 +12,9 @@ import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
+import com.interrupt.dungeoneer.modding.InternalFileSystemModSource;
+import com.interrupt.dungeoneer.modding.ModSource;
+import com.interrupt.dungeoneer.modding.SteamWorkshopModSource;
 import com.interrupt.dungeoneer.scripting.ScriptingApi;
 import com.interrupt.managers.*;
 import com.interrupt.utils.JsonUtil;
@@ -22,6 +23,11 @@ import com.interrupt.utils.Logger;
 import java.util.HashMap;
 
 public class ModManager {
+    /** Array of sources to look for mod content. */
+    private Array<ModSource> sources = new Array<>();
+
+    /** Array of default sources to look for mod content. */
+    private transient Array<ModSource> defaultSources = new Array<>();
 
     private transient Array<String> allMods = new Array<String>();
 
@@ -56,10 +62,18 @@ public class ModManager {
     }
 
     private void loadModsEnabledList() {
+        defaultSources.clear();
+        sources.clear();
+
+        // Add default mod sources.
+        defaultSources.add(new InternalFileSystemModSource("mods"));
+        defaultSources.add(new SteamWorkshopModSource());
+
         try {
             FileHandle progressionFile = Game.getFile(Options.getOptionsDir() + "modslist.dat");
             if(progressionFile.exists()) {
                 ModManager loaded = JsonUtil.fromJson(ModManager.class, progressionFile);
+                sources = loaded.sources;
                 modsEnabled = loaded.modsEnabled;
             }
         } catch (Exception e) {
@@ -89,13 +103,13 @@ public class ModManager {
         // add the default search paths
         allMods.add(".");
 
-        FileHandle fh = Game.getInternal("mods");
-        for(FileHandle h : fh.list()) {
-            if(h.isDirectory()) allMods.add("mods/" + h.name());
+        for (ModSource source : defaultSources) {
+            allMods.addAll(source.getInstalledMods());
         }
 
-        // add any mods subscribed in Steam Workshop
-        allMods.addAll(SteamApi.api.getWorkshopFolders());
+        for (ModSource source : sources) {
+            allMods.addAll(source.getInstalledMods());
+        }
     }
 
     private void filterMods() {
@@ -421,8 +435,8 @@ public class ModManager {
         if(modsEnabled == null)
             return true;
 
-        Boolean enabled = modsEnabled.get(mod);
-        return enabled == null || enabled;
+            Boolean enabled = modsEnabled.get(mod);
+            return enabled == null || enabled;
     }
 
     // Call refresh after changing this!
