@@ -435,8 +435,8 @@ public class ModManager {
         if(modsEnabled == null)
             return true;
 
-            Boolean enabled = modsEnabled.get(mod);
-            return enabled == null || enabled;
+        Boolean enabled = modsEnabled.get(mod);
+        return enabled == null || enabled;
     }
 
     // Call refresh after changing this!
