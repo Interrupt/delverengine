@@ -432,11 +432,11 @@ public class ModManager {
     }
 
     public boolean checkIfModIsEnabled(String mod) {
-        if(modsEnabled == null)
+        if (modsEnabled == null) {
             return true;
+        }
 
-        Boolean enabled = modsEnabled.get(mod);
-        return enabled == null || enabled;
+        return modsEnabled.getOrDefault(mod, true);
     }
 
     // Call refresh after changing this!
