@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Mod Manager",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/dungeoneer/game/ModManager.schema.json"
+        },
+        "class": {
+            "const": "com.interrupt.dungeoneer.game.ModManager",
+            "description": "Fully-qualified Java class name."
+        },
+        "sources": {
+            "type": "array",
+            "description": "Array of mod sources",
+            "items": {
+                "$ref": "../../Interfaces.schema.json#/definitions/ModSourceLike"
+            }
+        },
+        "modsEnabled": {
+            "type": "object",
+            "description": "Dictionary providing a mapping of enabled/disabled mods.",
+            "patternProperties": {
+                ".*": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

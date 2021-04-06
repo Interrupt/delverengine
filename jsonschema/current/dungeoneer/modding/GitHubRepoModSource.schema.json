@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "GitHub Mod Source",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/dungeoneer/modding/GitHubRepoModSource.schema.json"
+        },
+        "class": {
+            "const": "com.interrupt.dungeoneer.modding.LocalFileSystemModSource",
+            "description": "Fully-qualified Java class name."
+        },
+        "url": {
+            "type": "string",
+            "description": "The URL of the GitHub repository to search for mod content."
+        }
+    }
+}
