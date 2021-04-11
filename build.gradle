@@ -17,7 +17,7 @@ allprojects {
         roboVMVersion = '2.3.9'
         kryoVersion = '2.24.0'
         reflectionsVersion = '0.9.12'
-        inkVersion = '0.7.3'
+        inkVersion = '1.0.0'
     }
 
     repositories {
@@ -58,6 +58,6 @@ project(":Dungeoneer") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         api "com.esotericsoftware.kryo:kryo:$kryoVersion"
-        api "com.bladecoder.ink:blade-ink:1.0.0"
+        api "com.bladecoder.ink:blade-ink:$inkVersion"
     }
 }
