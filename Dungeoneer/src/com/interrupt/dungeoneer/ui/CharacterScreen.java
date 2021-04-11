@@ -102,7 +102,7 @@ public class CharacterScreen {
         Table playerTable = new Table();
         makeRow(playerTable,"Level", Integer.toString(player.level));
         makeRow(playerTable,"XP", player.exp + "/" + player.getNextLevel());
-        makeRow(playerTable,"Gold", Integer.toString(player.gold));
+        makeRow(playerTable,"Gold", Integer.toString(player.getGoldAmount()));
         contentTable.add(playerTable).colspan(4);
         contentTable.row();
 

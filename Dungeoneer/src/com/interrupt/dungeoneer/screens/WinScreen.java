@@ -100,7 +100,7 @@ public class WinScreen extends StatsScreen {
         // save the updated progress
         if(Game.instance != null && Game.instance.progression != null) {
             final Progression progression = Game.instance.progression;
-            progression.gold = Game.instance.player.gold;
+            progression.gold = Game.instance.player.getGoldAmount();
             progression.won = true;
             progression.wins++;
             Game.saveProgression(progression, Game.instance.getSaveSlot());
