@@ -58,6 +58,6 @@ project(":Dungeoneer") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         api "com.esotericsoftware.kryo:kryo:$kryoVersion"
-        api "com.bladecoder.ink:blade-ink:$inkVersion"
+        api "com.bladecoder.ink:blade-ink:1.0.0"
     }
 }
