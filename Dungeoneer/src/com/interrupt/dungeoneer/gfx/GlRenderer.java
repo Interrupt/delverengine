@@ -2017,8 +2017,12 @@ public class GlRenderer {
 			if(handMaxLerpTime > 1) handMaxLerpTime = 1f;
 		}
 
-		handMaxDirection.lerp(handLagRotation, 0.6f);
-		forwardDirection.set(camera.direction).lerp(handLagRotation, 0.6f);
+		float handLagStrength = Game.instance.player.handLagStrength;
+		if (!Options.instance.handLagEnabled) {
+		    handLagStrength = 0;
+        }
+		handMaxDirection.lerp(handLagRotation, handLagStrength);
+		forwardDirection.set(camera.direction).lerp(handLagRotation, handLagStrength);
 		downDirection.set(camera.up).nor();
 
 		handLagRotation.set(handMaxDirection);

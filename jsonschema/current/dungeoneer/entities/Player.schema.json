@@ -53,6 +53,12 @@
             "baseClass": "Player",
             "default": 0.3
         },
+        "handLagStrength": {
+            "type": "number",
+            "description": "Hand lag amount.",
+            "baseClass": "Player",
+            "default": 0.6
+        },
         "keys": {
             "type": "number",
             "description": "Player key count.",

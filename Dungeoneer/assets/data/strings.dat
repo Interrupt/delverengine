@@ -135,6 +135,11 @@
         "localizedName": "UI Size ",
         "comment": "Label for UI size slider."
     },
+    "screens.OptionsScreen.handLagLabel": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Hand Lag ",
+        "comment": "Label for hand lag slider."
+    },
     "screens.OptionsScreen.showHudLabel": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Show Hud ",

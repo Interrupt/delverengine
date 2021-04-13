@@ -73,6 +73,9 @@ public class Player extends Actor {
 	/** Head bob height. */
 	public float headBobHeight = 0.3f;
 
+	/** Hand lag strength. */
+	public float handLagStrength = 0.6f;
+
 	public boolean hasAttacked;
 
 	private float attackSpeed = 1;
