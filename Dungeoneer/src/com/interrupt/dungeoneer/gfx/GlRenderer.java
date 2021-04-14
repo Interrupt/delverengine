@@ -2005,7 +2005,7 @@ public class GlRenderer {
 			if(handMaxLerpTime < 0) handMaxLerpTime = 0;
 
 			// Give non-ranged items a max angle to look up
-			if(!(heldItem instanceof Bow || heldItem instanceof Wand || heldItem instanceof Gun)) {
+			if(!(heldItem instanceof Bow || heldItem instanceof Wand || heldItem instanceof Gun || !Options.instance.handLagEnabled || Game.instance.player.handLagStrength <= 0f)) {
 				if (handMaxDirection.y > 0.25f)
 					handMaxDirection.y = Interpolation.exp5.apply(0.25f, handMaxDirection.y, handMaxLerpTime);
 			}
@@ -2143,46 +2143,89 @@ public class GlRenderer {
 	}
 
 	protected void drawOffhandItem() {
-
-		if(game.player.isHoldingTwoHanded()) return;
+	    if(game.player.isHoldingTwoHanded()) return;
 		if(offhandLagRotation == null) offhandLagRotation = new Vector3(camera.direction);
 
 		Item heldItem = game.player.GetHeldOffhandItem();
 		if(heldItem == null) return;
 
-		Vector3 rotation = heldRotation;
-		Vector3 transform = heldTransform;
+		Vector3 rotation = heldRotation.set(0,0,0);
+		Vector3 transform = heldTransform.set(0,0,0);
+		int texOffset = 0;
 
 		// hand bob
 		cameraBob.set(game.player.xa, game.player.ya);
-		transform.y += game.player.headbob * 0.35f;
+		transform.y -= game.player.headbob * 0.35f;
 
-		TextureRegion held = heldItem.getHeldInventoryTextureRegion(0);
+		TextureRegion held = heldItem.getHeldInventoryTextureRegion(texOffset);
 		TextureAtlas atlas = heldItem.getTextureAtlas();
 
 		// Move the hands down as we look up
 		handMaxDirectionOffhand.set(camera.direction);
 		if(Game.instance.player.handAnimateTimer <= 0 && Game.instance.player.attackCharge <= 0) {
-			offhandMaxLerpTime -= 3f * Gdx.graphics.getDeltaTime();
-			if(offhandMaxLerpTime < 0) offhandMaxLerpTime = 0f;
+			handMaxLerpTime -= 2.5f * Gdx.graphics.getDeltaTime();
+			if(handMaxLerpTime < 0) handMaxLerpTime = 0;
+
+			// Give non-ranged items a max angle to look up
+			if(!(!Options.instance.handLagEnabled || Game.instance.player.handLagStrength <= 0f)) {
+				if (handMaxDirectionOffhand.y > 0.25f)
+					handMaxDirectionOffhand.y = Interpolation.exp5.apply(0.25f, handMaxDirection.y, handMaxLerpTime);
+			}
+
+			handMaxDirectionOffhand = handMaxDirectionOffhand.nor();
 		}
 		else {
-			offhandMaxLerpTime += 3f * Gdx.graphics.getDeltaTime();
-			if(offhandMaxLerpTime > 1) offhandMaxLerpTime = 1f;
+			handMaxLerpTime += 0.1f * Gdx.graphics.getDeltaTime();
+			if(handMaxLerpTime > 1) handMaxLerpTime = 1f;
 		}
 
-		if (handMaxDirectionOffhand.y > 0.25f)
-			handMaxDirectionOffhand.y = Interpolation.exp5.apply(0.25f, handMaxDirectionOffhand.y, offhandMaxLerpTime);
-		handMaxDirectionOffhand = handMaxDirectionOffhand.nor();
-
-		float handLagStrength = Game.instance.player.handLagStrength;
+        float handLagStrength = Game.instance.player.handLagStrength;
         if (!Options.instance.handLagEnabled) {
             handLagStrength = 0;
         }
+		handMaxDirectionOffhand.lerp(offhandLagRotation, handLagStrength);
 		forwardDirection.set(camera.direction).lerp(offhandLagRotation, handLagStrength);
 		downDirection.set(camera.up).nor();
 
 		offhandLagRotation.set(handMaxDirectionOffhand);
+
+		// Handle drawable meshes. First, make sure a model is loaded if this was just in the inventory
+		if(heldItem.shouldUseMesh(true))
+			heldItem.updateHeldDrawable();
+
+		if(heldItem.drawable instanceof DrawableMesh) {
+			heldItem.x = camera.position.x;
+			heldItem.z = camera.position.y + 0.5f - heldItem.yOffset; // Bump the held item up a bit, but negate the yOffset
+			heldItem.y = camera.position.z;
+
+			// translate forward
+			heldItem.x += handMaxDirectionOffhand.x * (transform.z + 0.24f);
+			heldItem.z += handMaxDirectionOffhand.y * (transform.z + 0.24f);
+			heldItem.y += handMaxDirectionOffhand.z * (transform.z + 0.24f);
+
+			// translate right
+			heldItem.x += rightDirection.x * (transform.x + 0.12f);
+			heldItem.z += rightDirection.y * (transform.x + 0.12f);
+			heldItem.y += rightDirection.z * (transform.x + 0.12f);
+
+			// translate down
+			heldItem.x += downDirection.x * (transform.y - 0.14f);
+			heldItem.z += downDirection.y * (transform.y - 0.14f);
+			heldItem.y += downDirection.z * (transform.y - 0.14f);
+
+			((DrawableMesh)heldItem.drawable).dir.set(camera.direction);
+			((DrawableMesh)heldItem.drawable).rotX = rotation.x;
+			((DrawableMesh)heldItem.drawable).rotY = rotation.y;
+			((DrawableMesh)heldItem.drawable).rotZ = rotation.z;
+			heldItem.drawable.update(heldItem);
+
+			Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
+			renderMesh((DrawableMesh)heldItem.drawable, modelShaderInfo);
+			Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+			Gdx.gl.glDepthFunc(GL20.GL_ALWAYS);
+			return;
+		}
 
 		DDecal sd = decalPool.obtain();
 		usedDecals.add(sd);
@@ -2193,7 +2236,7 @@ public class GlRenderer {
 		sd.setScale(heldItem.scale * atlas.scale * 0.5f);
 		sd.setTextureRegion(held);
 		sd.setTextureAtlas(atlas);
-		sd.setPosition(camera.position.x, camera.position.y - 0.07f, camera.position.z);
+		sd.setPosition(camera.position.x, camera.position.y, camera.position.z);
 		sd.setRotation(camera.direction, camera.up);
 		sd.setBlending(-1, -1);
 
@@ -2216,24 +2259,23 @@ public class GlRenderer {
 			sd.rotateY(-150f);
 
 		// translate forward
-		sd.translateX(forwardDirection.x * (0.24f));
-		sd.translateY(forwardDirection.y * (0.24f));
-		sd.translateZ(forwardDirection.z * (0.24f));
+		sd.translateX(handMaxDirectionOffhand.x * (transform.z + 0.24f));
+		sd.translateY(handMaxDirectionOffhand.y * (transform.z + 0.24f));
+		sd.translateZ(handMaxDirectionOffhand.z * (transform.z + 0.24f));
 
 		// translate right
-		sd.translateX(rightDirection.x * (0.12f + headRotation.z * 0.004f));
-		sd.translateY(rightDirection.y * (0.12f + headRotation.z * 0.004f));
-		sd.translateZ(rightDirection.z * (0.12f + headRotation.z * 0.004f));
+		sd.translateX(rightDirection.x * (transform.x + 0.12f));
+		sd.translateY(rightDirection.y * (transform.x + 0.12f));
+		sd.translateZ(rightDirection.z * (transform.x + 0.12f));
 
 		// translate down
-		float bob = game.player.headbob * 0.35f;
-		sd.translateX(downDirection.x * ((bob - 0.07f) - headRotation.z * 0.001f));
-		sd.translateY(downDirection.y * ((bob - 0.07f) - headRotation.z * 0.001f));
-		sd.translateZ(downDirection.z * ((bob - 0.07f) - headRotation.z * 0.001f));
+		sd.translateX(downDirection.x * (transform.y - 0.14f));
+		sd.translateY(downDirection.y * (transform.y - 0.14f));
+		sd.translateZ(downDirection.z * (transform.y - 0.14f));
 
-		sd.rotateX(0);
-		sd.rotateY(0);
-		sd.rotateZ(0);
+		sd.rotateX(rotation.x);
+		sd.rotateY(rotation.y);
+		sd.rotateZ(rotation.z);
 
 		if(heldItem.fullbrite) {
 			sd.setColor(heldItem.color);
@@ -2241,8 +2283,8 @@ public class GlRenderer {
 		else {
 			// set the color from the lightmap at the decal position
 			Color lightmapColor = GetLightmapAt(sd.getPosition().x, sd.getPosition().y, sd.getPosition().z);
-			heldItemOffhandColor.lerp(lightmapColor.r, lightmapColor.g, lightmapColor.b, 1f, 4.5f * Gdx.graphics.getDeltaTime());
-			sd.setColor(heldItemOffhandColor.r, heldItemOffhandColor.g, heldItemOffhandColor.b, 1.0f);
+			heldItemColor.lerp(lightmapColor.r, lightmapColor.g, lightmapColor.b, 1f, 4.5f * Gdx.graphics.getDeltaTime());
+			sd.setColor(heldItemColor.r, heldItemColor.g, heldItemColor.b, 1.0f);
 		}
 
 		// draw!
