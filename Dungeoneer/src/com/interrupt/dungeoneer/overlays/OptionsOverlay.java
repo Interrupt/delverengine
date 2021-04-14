@@ -4,15 +4,18 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
+import com.interrupt.utils.JsonUtil;
 
 public class OptionsOverlay extends WindowOverlay {
 
@@ -202,7 +205,16 @@ public class OptionsOverlay extends WindowOverlay {
         mainTable.row();
 
         // Hand lag
-        if (Game.instance.player.handLagStrength > 0f) {
+        Player playerData;
+        if (Game.instance != null && Game.instance.player != null) {
+            playerData = Game.instance.player;
+        }
+        else {
+            FileHandle file = Game.findInternalFileInMods("data/player.dat");
+            playerData = JsonUtil.fromJson(Player.class, file, Player::new);
+        }
+
+        if (playerData.handLagStrength > 0f) {
             Label handLagLabel = new Label(StringManager.get("screens.OptionsScreen.handLagLabel"), skin.get(Label.LabelStyle.class));
             mainTable.add(handLagLabel);
 
