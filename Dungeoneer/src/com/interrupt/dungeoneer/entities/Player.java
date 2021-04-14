@@ -76,6 +76,9 @@ public class Player extends Actor {
 	/** Hand lag strength. */
 	public float handLagStrength = 0.6f;
 
+    /** Offhand lag strength. */
+	public float offhandLagStrength = 0.8f;
+
 	public boolean hasAttacked;
 
 	private float attackSpeed = 1;

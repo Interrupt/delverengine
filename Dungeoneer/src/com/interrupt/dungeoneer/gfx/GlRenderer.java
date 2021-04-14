@@ -2179,12 +2179,12 @@ public class GlRenderer {
 			if(handMaxLerpTime > 1) handMaxLerpTime = 1f;
 		}
 
-        float handLagStrength = Game.instance.player.handLagStrength;
+        float offhandLagStrength = Game.instance.player.offhandLagStrength;
         if (!Options.instance.handLagEnabled) {
-            handLagStrength = 0;
+            offhandLagStrength = 0;
         }
-		handMaxDirectionOffhand.lerp(offhandLagRotation, handLagStrength);
-		forwardDirection.set(camera.direction).lerp(offhandLagRotation, handLagStrength);
+		handMaxDirectionOffhand.lerp(offhandLagRotation, offhandLagStrength);
+		forwardDirection.set(camera.direction).lerp(offhandLagRotation, offhandLagStrength);
 		downDirection.set(camera.up).nor();
 
 		offhandLagRotation.set(handMaxDirectionOffhand);

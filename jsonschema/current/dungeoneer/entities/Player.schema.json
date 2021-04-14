@@ -59,6 +59,12 @@
             "baseClass": "Player",
             "default": 0.6
         },
+        "offhandLagStrength": {
+            "type": "number",
+            "description": "Offhand lag amount.",
+            "baseClass": "Player",
+            "default": 0.8
+        },
         "keys": {
             "type": "number",
             "description": "Player key count.",
