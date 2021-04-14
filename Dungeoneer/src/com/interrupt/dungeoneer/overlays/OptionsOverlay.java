@@ -202,16 +202,18 @@ public class OptionsOverlay extends WindowOverlay {
         mainTable.row();
 
         // Hand lag
-        Label handLagLabel = new Label(StringManager.get("screens.OptionsScreen.handLagLabel"), skin.get(Label.LabelStyle.class));
-        mainTable.add(handLagLabel);
+        if (Game.instance.player.handLagStrength > 0f) {
+            Label handLagLabel = new Label(StringManager.get("screens.OptionsScreen.handLagLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(handLagLabel);
 
-        handLag = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
-        handLag.setChecked(Options.instance.handLagEnabled);
+            handLag = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
+            handLag.setChecked(Options.instance.handLagEnabled);
 
-        addGamepadButtonOrder(handLag, handLagLabel);
+            addGamepadButtonOrder(handLag, handLagLabel);
 
-        mainTable.add(handLag);
-        mainTable.row();
+            mainTable.add(handLag);
+            mainTable.row();
+        }
 
         // Fullscreen Mode
         if(!(Gdx.app.getType() == Application.ApplicationType.Android || Gdx.app.getType() == Application.ApplicationType.iOS)) {
