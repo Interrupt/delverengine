@@ -75,6 +75,10 @@ public class ModManager {
                 ModManager loaded = JsonUtil.fromJson(ModManager.class, progressionFile);
                 sources = loaded.sources;
                 modsEnabled = loaded.modsEnabled;
+
+                for (ModSource source : sources) {
+                    source.init();
+                }
             }
         } catch (Exception e) {
             Gdx.app.error("DelverMods", e.getMessage());

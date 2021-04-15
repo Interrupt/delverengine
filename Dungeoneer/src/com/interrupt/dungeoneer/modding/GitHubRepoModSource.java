@@ -13,6 +13,11 @@ public class GitHubRepoModSource implements ModSource {
     }
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public Array<String> getInstalledMods() {
         return new Array<>();
     }

@@ -8,4 +8,9 @@ public class LocalFileSystemModSource extends AbstractFileSystemModSource {
     protected FileHandle getRootHandle() {
         return Game.getFile(root);
     }
+
+    @Override
+    public void init() {
+
+    }
 }
