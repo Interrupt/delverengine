@@ -1,5 +1,7 @@
 package com.interrupt.dungeoneer.modding;
 
+import com.badlogic.gdx.files.FileHandle;
+import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.modding.modio.*;
 import com.interrupt.dungeoneer.net.ObjectResponseListener;
 import com.interrupt.dungeoneer.net.RestEndpoint;
@@ -28,8 +30,12 @@ public class ModIOModSource extends LocalFileSystemModSource {
                 for (ModObject mod : mods.data) {
                     String url = mod.modfile.download.binary_url;
                     String filename = mod.modfile.filename;
+                    String filepath = root + "/" + filename;
 
-                    DownloadUtils.downloadFile(url, root + "/" + filename);
+                    FileHandle f = Game.getFile(filepath);
+                    if (!f.exists()) {
+                        DownloadUtils.downloadFile(url, filepath);
+                    }
                 }
             }
         });
