@@ -25,7 +25,6 @@ public class DownloadResponseListener extends HttpResponseListenerAdapter {
             return;
         }
 
-        String cd = httpResponse.getHeader("Content-Disposition");
         InputStream input = httpResponse.getResultAsStream();
         OutputStream output = Game.getFile(filename).write(false);
 
