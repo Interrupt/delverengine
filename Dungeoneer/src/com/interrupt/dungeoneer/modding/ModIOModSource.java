@@ -32,8 +32,8 @@ public class ModIOModSource extends LocalFileSystemModSource {
                     String filename = mod.modfile.filename;
                     String filepath = root + "/" + filename;
 
-                    FileHandle f = Game.getFile(filepath);
-                    if (!f.exists()) {
+                    FileHandle file = Game.getFile(filepath);
+                    if (!file.exists()) {
                         DownloadUtils.downloadFile(url, filepath);
                     }
                 }
