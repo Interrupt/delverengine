@@ -36,6 +36,8 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredMessage;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredMusic;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredShop;
 import com.interrupt.dungeoneer.game.*;
+import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpFrame;
+import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.dungeoneer.gfx.decals.DDecal;
 import com.interrupt.dungeoneer.gfx.drawables.*;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
@@ -2152,6 +2154,18 @@ public class GlRenderer {
 		Vector3 rotation = heldRotation.set(0,0,0);
 		Vector3 transform = heldTransform.set(0,0,0);
 		int texOffset = 0;
+
+        if (heldItem instanceof Weapon) {
+            Weapon weapon = (Weapon)heldItem;
+            String animationName = weapon.attackAnimation;
+            LerpedAnimation animation = Game.animationManager.getAnimation(animationName);
+            if (animation != null) {
+                LerpFrame frame = animation.frames.get(0);
+                rotation.set(frame.rotation);
+                transform.set(-frame.transform.x, frame.transform.y, frame.transform.z);
+                texOffset = animation.curTexOffset;
+            }
+        }
 
 		// hand bob
 		cameraBob.set(game.player.xa, game.player.ya);
