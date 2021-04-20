@@ -1972,6 +1972,7 @@ public class GlRenderer {
 		Vector3 rotation = heldRotation.set(0,0,0);
 		Vector3 transform = heldTransform.set(0,0,0);
 		int texOffset = 0;
+		Vector3 offset = game.player.handOffset;
 
 		if(game.player.handAnimation != null) {
 			rotation.set(game.player.handAnimation.curRotation);
@@ -2039,19 +2040,19 @@ public class GlRenderer {
 			heldItem.y = camera.position.z;
 
 			// translate forward
-			heldItem.x += handMaxDirection.x * (transform.z + 0.28f);
-			heldItem.z += handMaxDirection.y * (transform.z + 0.28f);
-			heldItem.y += handMaxDirection.z * (transform.z + 0.28f);
+			heldItem.x += handMaxDirection.x * (transform.z + offset.z);
+			heldItem.z += handMaxDirection.y * (transform.z + offset.z);
+			heldItem.y += handMaxDirection.z * (transform.z + offset.z);
 
 			// translate right
-			heldItem.x += rightDirection.x * (transform.x - 0.12f);
-			heldItem.z += rightDirection.y * (transform.x - 0.12f);
-			heldItem.y += rightDirection.z * (transform.x - 0.12f);
+			heldItem.x += rightDirection.x * (transform.x + offset.x);
+			heldItem.z += rightDirection.y * (transform.x + offset.x);
+			heldItem.y += rightDirection.z * (transform.x + offset.x);
 
 			// translate down
-			heldItem.x += downDirection.x * (transform.y - 0.07f);
-			heldItem.z += downDirection.y * (transform.y - 0.07f);
-			heldItem.y += downDirection.z * (transform.y - 0.07f);
+			heldItem.x += downDirection.x * (transform.y + offset.y);
+			heldItem.z += downDirection.y * (transform.y + offset.y);
+			heldItem.y += downDirection.z * (transform.y + offset.y);
 
 			((DrawableMesh)heldItem.drawable).dir.set(camera.direction);
 			((DrawableMesh)heldItem.drawable).rotX = rotation.x;
@@ -2099,19 +2100,19 @@ public class GlRenderer {
 			sd.rotateY(100f);
 
 		// translate forward
-		sd.translateX(handMaxDirection.x * (transform.z + 0.28f));
-		sd.translateY(handMaxDirection.y * (transform.z + 0.28f));
-		sd.translateZ(handMaxDirection.z * (transform.z + 0.28f));
+		sd.translateX(handMaxDirection.x * (transform.z + offset.z));
+		sd.translateY(handMaxDirection.y * (transform.z + offset.z));
+		sd.translateZ(handMaxDirection.z * (transform.z + offset.z));
 
 		// translate right
-		sd.translateX(rightDirection.x * (transform.x - 0.12f));
-		sd.translateY(rightDirection.y * (transform.x - 0.12f));
-		sd.translateZ(rightDirection.z * (transform.x - 0.12f));
+		sd.translateX(rightDirection.x * (transform.x + offset.x));
+		sd.translateY(rightDirection.y * (transform.x + offset.x));
+		sd.translateZ(rightDirection.z * (transform.x + offset.x));
 
 		// translate down
-		sd.translateX(downDirection.x * (transform.y - 0.07f));
-		sd.translateY(downDirection.y * (transform.y - 0.07f));
-		sd.translateZ(downDirection.z * (transform.y - 0.07f));
+		sd.translateX(downDirection.x * (transform.y + offset.y));
+		sd.translateY(downDirection.y * (transform.y + offset.y));
+		sd.translateZ(downDirection.z * (transform.y + offset.y));
 
 		sd.rotateX(rotation.x);
 		sd.rotateY(rotation.y);
@@ -2155,6 +2156,7 @@ public class GlRenderer {
 		Vector3 rotation = heldRotation.set(0,0,0);
 		Vector3 transform = heldTransform.set(0,0,0);
 		int texOffset = 0;
+        Vector3 offset = game.player.offhandOffset;
 
         if (heldItem instanceof Weapon) {
             Weapon weapon = (Weapon)heldItem;
@@ -2214,19 +2216,19 @@ public class GlRenderer {
 			heldItem.y = camera.position.z;
 
 			// translate forward
-			heldItem.x += handMaxDirectionOffhand.x * (transform.z + 0.24f);
-			heldItem.z += handMaxDirectionOffhand.y * (transform.z + 0.24f);
-			heldItem.y += handMaxDirectionOffhand.z * (transform.z + 0.24f);
+			heldItem.x += handMaxDirectionOffhand.x * (transform.z + offset.z);
+			heldItem.z += handMaxDirectionOffhand.y * (transform.z + offset.z);
+			heldItem.y += handMaxDirectionOffhand.z * (transform.z + offset.z);
 
 			// translate right
-			heldItem.x += rightDirection.x * (transform.x + 0.12f);
-			heldItem.z += rightDirection.y * (transform.x + 0.12f);
-			heldItem.y += rightDirection.z * (transform.x + 0.12f);
+			heldItem.x += rightDirection.x * (transform.x + offset.x);
+			heldItem.z += rightDirection.y * (transform.x + offset.x);
+			heldItem.y += rightDirection.z * (transform.x + offset.x);
 
 			// translate down
-			heldItem.x += downDirection.x * (transform.y - 0.14f);
-			heldItem.z += downDirection.y * (transform.y - 0.14f);
-			heldItem.y += downDirection.z * (transform.y - 0.14f);
+			heldItem.x += downDirection.x * (transform.y + offset.y);
+			heldItem.z += downDirection.y * (transform.y + offset.y);
+			heldItem.y += downDirection.z * (transform.y + offset.y);
 
 			((DrawableMesh)heldItem.drawable).dir.set(camera.direction);
 			((DrawableMesh)heldItem.drawable).rotX = rotation.x;
@@ -2274,19 +2276,19 @@ public class GlRenderer {
 			sd.rotateY(-150f);
 
 		// translate forward
-		sd.translateX(handMaxDirectionOffhand.x * (transform.z + 0.24f));
-		sd.translateY(handMaxDirectionOffhand.y * (transform.z + 0.24f));
-		sd.translateZ(handMaxDirectionOffhand.z * (transform.z + 0.24f));
+		sd.translateX(handMaxDirectionOffhand.x * (transform.z + offset.z));
+		sd.translateY(handMaxDirectionOffhand.y * (transform.z + offset.z));
+		sd.translateZ(handMaxDirectionOffhand.z * (transform.z + offset.z));
 
 		// translate right
-		sd.translateX(rightDirection.x * (transform.x + 0.12f));
-		sd.translateY(rightDirection.y * (transform.x + 0.12f));
-		sd.translateZ(rightDirection.z * (transform.x + 0.12f));
+		sd.translateX(rightDirection.x * (transform.x + offset.x));
+		sd.translateY(rightDirection.y * (transform.x + offset.x));
+		sd.translateZ(rightDirection.z * (transform.x + offset.x));
 
 		// translate down
-		sd.translateX(downDirection.x * (transform.y - 0.14f));
-		sd.translateY(downDirection.y * (transform.y - 0.14f));
-		sd.translateZ(downDirection.z * (transform.y - 0.14f));
+		sd.translateX(downDirection.x * (transform.y + offset.y));
+		sd.translateY(downDirection.y * (transform.y + offset.y));
+		sd.translateZ(downDirection.z * (transform.y + offset.y));
 
 		sd.rotateX(rotation.x);
 		sd.rotateY(rotation.y);
