@@ -2169,7 +2169,7 @@ public class GlRenderer {
 
 		// hand bob
 		cameraBob.set(game.player.xa, game.player.ya);
-		transform.y -= game.player.headbob * 0.35f;
+		transform.y += game.player.headbob * 0.35f;
 
 		TextureRegion held = heldItem.getHeldInventoryTextureRegion(texOffset);
 		TextureAtlas atlas = heldItem.getTextureAtlas();
