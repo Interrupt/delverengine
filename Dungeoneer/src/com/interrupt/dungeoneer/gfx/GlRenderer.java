@@ -2131,6 +2131,7 @@ public class GlRenderer {
 		DecalBatch spriteBatch = invisible ? getDecalBatch("invisible", Entity.BlendMode.ALPHA) : getDecalBatch(heldItem.getShader(), heldItem.blendMode);
 		spriteBatch.add(sd);
 		spriteBatch.flush();
+		clearBoundTexture();
 
 		// update item position, for attachment stuff
 		heldItem.setPosition(sd.getX() + game.player.xa, sd.getZ() + game.player.ya, sd.getY() + 0.35f + game.player.za);
@@ -2305,6 +2306,7 @@ public class GlRenderer {
 		DecalBatch spriteBatch = invisible ? getDecalBatch("invisible", Entity.BlendMode.ALPHA) : getDecalBatch(heldItem.getShader(), heldItem.blendMode);
 		spriteBatch.add(sd);
 		spriteBatch.flush();
+		clearBoundTexture();
 
 		// update item position, for attachment stuff
 		heldItem.setPosition(sd.getX() + game.player.xa, sd.getZ() + game.player.ya, sd.getY() + 0.35f + game.player.za);
