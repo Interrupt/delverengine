@@ -2132,6 +2132,8 @@ public class GlRenderer {
 		DecalBatch spriteBatch = invisible ? getDecalBatch("invisible", Entity.BlendMode.ALPHA) : getDecalBatch(heldItem.getShader(), heldItem.blendMode);
 		spriteBatch.add(sd);
 		spriteBatch.flush();
+
+		// Clear bound texture after rendering a DecalBatch
 		clearBoundTexture();
 
 		// update item position, for attachment stuff
@@ -2308,6 +2310,8 @@ public class GlRenderer {
 		DecalBatch spriteBatch = invisible ? getDecalBatch("invisible", Entity.BlendMode.ALPHA) : getDecalBatch(heldItem.getShader(), heldItem.blendMode);
 		spriteBatch.add(sd);
 		spriteBatch.flush();
+
+		// Clear bound texture after rendering a DecalBatch
 		clearBoundTexture();
 
 		// update item position, for attachment stuff
