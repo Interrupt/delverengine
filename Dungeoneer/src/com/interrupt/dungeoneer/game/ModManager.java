@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Json;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.api.steam.workshop.WorkshopModData;
 import com.interrupt.dungeoneer.entities.Door;
@@ -91,7 +90,12 @@ public class ModManager {
 
         FileHandle fh = Game.getInternal("mods");
         for(FileHandle h : fh.list()) {
-            if(h.isDirectory()) allMods.add("mods/" + h.name());
+            if(h.isDirectory()) {
+                allMods.add("mods/" + h.name());
+            }
+            else if (h.extension().equals("zip")) {
+                allMods.add("mods/" + h.name());
+            }
         }
 
         // add any mods subscribed in Steam Workshop

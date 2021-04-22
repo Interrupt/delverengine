@@ -33,6 +33,7 @@ import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
+import com.interrupt.files.ZipFileHandle;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
@@ -45,9 +46,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.zip.ZipFile;
 
 public class Game {
 	/** Engine version */
@@ -1424,6 +1427,25 @@ public class Game {
         Gdx.app.debug("Delver", " Not found, looking internally");
 
         h = Gdx.files.internal(filename);
+
+        if(!h.exists()) Gdx.app.debug("Delver", " Not found, looking for zip files");
+
+        if (filename.contains(".zip")) {
+            int i = filename.indexOf(".zip") + ".zip".length();
+
+            String zipFilePath = filename.substring(0, i);
+            String zipEntryName = filename.substring(i);
+            if (zipEntryName.startsWith("/")) zipEntryName = zipEntryName.substring(1);
+
+            try {
+                FileHandle f = Gdx.files.internal(zipFilePath);
+                ZipFile z = new ZipFile(f.file());
+                h = new ZipFileHandle(z, f.file(), zipEntryName);
+            }
+            catch (Exception ignored) {
+                Gdx.app.log("Delver", "Unable to open zip: " + zipFilePath);
+            }
+        }
 
         if(!h.exists()) Gdx.app.debug("Delver", "  Still not found!");
 
