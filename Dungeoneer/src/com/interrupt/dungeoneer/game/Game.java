@@ -257,7 +257,7 @@ public class Game {
 	private static String[] getPackagedFiles() {
 		// find packaged files
 		Gdx.app.debug("Delver", "Looking in packaged_files");
-		FileHandle allAssets = getInternal("packaged_files.txt");
+		FileHandle allAssets = resolveFile("packaged_files.txt");
 		if(allAssets != null)  return allAssets.readString().split("\\r?\\n");
 		else return new String[] { };
 	}
@@ -292,7 +292,7 @@ public class Game {
                     String sub = s.substring(path.length());
                     if(!sub.contains("/")) {
                         Gdx.app.debug("Delver", "Found in packaged_files: " + i);
-                        FileHandle f = getInternal(s);
+                        FileHandle f = resolveFile(s);
                         if (f.exists() && !files.contains(f, false)) {
                             files.add(f);
                         }
@@ -316,7 +316,7 @@ public class Game {
 		for (int i = 0; i < packagedFiles.length; i++) {
 			String s = packagedFiles[i];
 			if (s.endsWith(filename)) {
-				FileHandle f = getInternal(s);
+				FileHandle f = resolveFile(s);
 				if (f.exists() && !files.contains(f, false)) {
 					files.add(f);
 				}
@@ -342,7 +342,7 @@ public class Game {
         for(String folder : Game.modManager.modsFound) {
             Gdx.app.debug("Delver", "Looking in " + folder);
 
-            FileHandle generatorFolder = getInternal(folder + "/generator");
+            FileHandle generatorFolder = resolveFile(folder + "/generator");
 
             Gdx.app.debug("Delver", "Looking for files in " + generatorFolder.path());
             for(FileHandle g : listDirectory(generatorFolder)) {
@@ -1394,6 +1394,7 @@ public class Game {
 		return interactMode;
 	}
 
+    /** Gets a file directly from the given path. */
     public static FileHandle getFile(String path) {
         if (OSUtils.isMac()) {
             // OSX needs this user.dir property to figure out where it is running from, and probably linux
@@ -1414,8 +1415,16 @@ public class Game {
         return new FileHandle(path);
     }
 
-    // Grabs from an external assets dir if available, or gets internal
-    static public FileHandle getInternal(String path) {
+    /** Gets a file according to resolution order. <br>
+     * Resolution Priority Order:
+     * <ol>
+     *   <li> assets directory
+     *   <li> assets.zip file
+     *   <li> zip file
+     *   <li> local file/JAR file
+     * </ol>
+     */
+    static public FileHandle resolveFile(String path) {
         Gdx.app.debug("Delver", "Looking for " + path);
 
         // Check for an assets directory. E.g. assets/font.png
@@ -1432,7 +1441,7 @@ public class Game {
         h = getZip(path);
         if (h.exists()) return h;
 
-        // Check inside JAR file
+        // Check inside JAR file/local file
         Gdx.app.debug("Delver", " Not found, looking internally");
         h = Gdx.files.internal(path);
 
@@ -1458,7 +1467,7 @@ public class Game {
             result = new ZipFileHandle(z, f.file(), zipEntryName);
         }
         catch (Exception ignored) {
-            Gdx.app.log("Delver", "Unable to open zip: " + zipFilePath);
+            Gdx.app.debug("Delver", "Unable to open zip: " + zipFilePath);
         }
 
         return result;

@@ -312,7 +312,7 @@ public class AssetPicker extends Dialog {
 
             Gdx.app.log("DelvEdit", "Looking for files in: " + modFolderPath);
 
-            FileHandle gf = Game.getInternal(modFolderPath);
+            FileHandle gf = Game.resolveFile(modFolderPath);
             if(gf.exists()) {
                 for(FileHandle entry : Game.listDirectory(gf)) {
                     AssetListItem item = new AssetListItem(path + "/" + entry.name(), entry.name(), entry.extension().equals(""), path);

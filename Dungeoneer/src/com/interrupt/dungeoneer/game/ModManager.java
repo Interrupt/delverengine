@@ -88,7 +88,7 @@ public class ModManager {
         // add the default search paths
         allMods.add(".");
 
-        FileHandle fh = Game.getInternal("mods");
+        FileHandle fh = Game.resolveFile("mods");
         for(FileHandle h : fh.list()) {
             if(h.isDirectory()) {
                 allMods.add("mods/" + h.name());
@@ -118,7 +118,7 @@ public class ModManager {
     private void loadExcludesList() {
         for(String path : modsFound) {
             try {
-                FileHandle modFile = Game.getInternal(path + "/data/excludes.dat");
+                FileHandle modFile = Game.resolveFile(path + "/data/excludes.dat");
                 if (modFile.exists()) {
                     Array<String> excludes = JsonUtil.fromJson(Array.class, modFile);
                     if(excludes != null) {
@@ -138,7 +138,7 @@ public class ModManager {
             for (String path : modsFound) {
                 String filePath = path + "/data/" + filename;
                 try {
-                    FileHandle modFile = Game.getInternal(filePath);
+                    FileHandle modFile = Game.resolveFile(filePath);
                     if (modFile.exists() && !pathIsExcluded(filePath)) {
                         EntityManager thisModManager = JsonUtil.fromJson(EntityManager.class, modFile);
                         if (entityManager == null) {
@@ -161,7 +161,7 @@ public class ModManager {
             for (String path : modsFound) {
                 String filePath = path + "/data/" + filename;
                 try {
-                    FileHandle modFile = Game.getInternal(filePath);
+                    FileHandle modFile = Game.resolveFile(filePath);
                     if (modFile.exists() && !pathIsExcluded(filePath)) {
                         ItemManager thisModManager = JsonUtil.fromJson(ItemManager.class, modFile);
                         if (itemManager == null) {
@@ -184,7 +184,7 @@ public class ModManager {
             for (String path : modsFound) {
                 String filePath = path + "/data/" + filename;
                 try {
-                    FileHandle modFile = Game.getInternal(filePath);
+                    FileHandle modFile = Game.resolveFile(filePath);
                     if (modFile.exists() && !pathIsExcluded(filePath)) {
                         MonsterManager thisModManager = JsonUtil.fromJson(MonsterManager.class, modFile);
                         if (monsterManager == null) {
@@ -206,7 +206,7 @@ public class ModManager {
 
         for(String path : modsFound) {
             try {
-                FileHandle modFile = Game.getInternal(path + "/data/" + filename);
+                FileHandle modFile = Game.resolveFile(path + "/data/" + filename);
                 if(modFile.exists() && !pathIsExcluded(path + "/data/" + filename)) {
                     TextureAtlas[] atlases = JsonUtil.fromJson(TextureAtlas[].class, modFile);
 
@@ -234,7 +234,7 @@ public class ModManager {
 
         for(String path : modsFound) {
             try {
-                FileHandle modFile = Game.getInternal(path + "/data/tiles.dat");
+                FileHandle modFile = Game.resolveFile(path + "/data/tiles.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/tiles.dat")) {
                     TileManager tileManager = JsonUtil.fromJson(TileManager.class, modFile);
                     if(tileManager.tileData != null) combinedTileManager.tileData.putAll(tileManager.tileData);
@@ -256,7 +256,7 @@ public class ModManager {
 
         for(String path: modsFound) {
             try {
-                FileHandle modFile = Game.getInternal(path + "/data/shaders.dat");
+                FileHandle modFile = Game.resolveFile(path + "/data/shaders.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/shaders.dat")) {
                     ShaderData[] shaders = JsonUtil.fromJson(ShaderData[].class, modFile);
                     for(int i = 0; i < shaders.length; i++) {
@@ -279,7 +279,7 @@ public class ModManager {
 
         for(String path : modsFound) {
             try {
-                FileHandle modFile = Game.getInternal(path + "/data/animations.dat");
+                FileHandle modFile = Game.resolveFile(path + "/data/animations.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/animations.dat")) {
                     LerpedAnimationManager modManager = JsonUtil.fromJson(LerpedAnimationManager.class, modFile);
                     animationManager.animations.putAll(modManager.animations);
@@ -301,7 +301,7 @@ public class ModManager {
 
         for(String path : modsFound) {
             try {
-                FileHandle modFile = Game.getInternal(path + "/data/strings.dat");
+                FileHandle modFile = Game.resolveFile(path + "/data/strings.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/strings.dat")) {
                     HashMap<String, LocalizedString> localizedStrings = JsonUtil.fromJson(HashMap.class, modFile);
                     if (!localizedStrings.isEmpty()) {
@@ -323,7 +323,7 @@ public class ModManager {
 
         for(String path : modsFound) {
             try {
-                FileHandle modFile = Game.getInternal(path + "/data/game.dat");
+                FileHandle modFile = Game.resolveFile(path + "/data/game.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/game.dat")) {
                     GameData modData = JsonUtil.fromJson(GameData.class, modFile);
                     gameData.merge(modData);
@@ -341,7 +341,7 @@ public class ModManager {
     public GenTheme loadTheme(String filename) {
         GenTheme combinedTheme = new GenTheme();
         for (String path: modsFound) {
-            FileHandle modFile = Game.getInternal(path + "/" + filename);
+            FileHandle modFile = Game.resolveFile(path + "/" + filename);
             if (modFile.exists() && !pathIsExcluded(path + "/" + filename)) {
                 GenTheme theme = JsonUtil.fromJson(GenTheme.class, modFile);
 
@@ -441,7 +441,7 @@ public class ModManager {
         for(int i = 0; i < modsFound.size; i++) {
             String path = modsFound.get(i);
             if(!pathIsExcluded(path + "/" + filename)) {
-                FileHandle modFile = Game.getInternal(path + "/" + filename);
+                FileHandle modFile = Game.resolveFile(path + "/" + filename);
                 if (modFile.exists()) foundHandle = modFile;
             }
         }
@@ -486,7 +486,7 @@ public class ModManager {
         ArrayMap<FileHandle, FileHandle[]> filesByDirectory = new ArrayMap<FileHandle, FileHandle[]>();
 
         for (String path: modsFound) {
-            FileHandle modFile = Game.getInternal(path + "/" + folder);
+            FileHandle modFile = Game.resolveFile(path + "/" + folder);
             if (modFile.exists() && modFile.isDirectory()) {
                 FileHandle[] files = findRecursively(modFile, suffix);
                 if(files.length > 0) {
@@ -501,7 +501,7 @@ public class ModManager {
     public Array<FileHandle> getFileInAllMods(String file) {
         Array<FileHandle> files = new Array<FileHandle>();
         for (String path: modsFound) {
-            FileHandle modFile = Game.getInternal(path + "/" + file);
+            FileHandle modFile = Game.resolveFile(path + "/" + file);
             if (modFile.exists()) {
                 files.add(modFile);
             }

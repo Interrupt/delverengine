@@ -56,14 +56,14 @@ public class EditorUi {
     Viewport viewport;
 
     public EditorUi() {
-        defaultSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.json"),
-                new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.atlas")));
+        defaultSkin = new Skin(Game.resolveFile("ui/editor/HoloSkin/Holo-dark-hdpi.json"),
+                new TextureAtlas(Game.resolveFile("ui/editor/HoloSkin/Holo-dark-hdpi.atlas")));
 
-        mediumSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.json"),
-                new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.atlas")));
+        mediumSkin = new Skin(Game.resolveFile("ui/editor/HoloSkin/Holo-dark-mdpi.json"),
+                new TextureAtlas(Game.resolveFile("ui/editor/HoloSkin/Holo-dark-mdpi.atlas")));
 
-        smallSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-ldpi.json"),
-                new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-ldpi.atlas")));
+        smallSkin = new Skin(Game.resolveFile("ui/editor/HoloSkin/Holo-dark-ldpi.json"),
+                new TextureAtlas(Game.resolveFile("ui/editor/HoloSkin/Holo-dark-ldpi.atlas")));
 
         viewport = new FillViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage = new Stage(viewport);
