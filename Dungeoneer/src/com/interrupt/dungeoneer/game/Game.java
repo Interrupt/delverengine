@@ -1415,7 +1415,8 @@ public class Game {
         return new FileHandle(path);
     }
 
-    /** Gets a file according to resolution order. <br>
+    /**
+     * Gets a file according to resolution order. <br>
      * Resolution Priority Order:
      * <ol>
      *   <li> assets directory
@@ -1449,6 +1450,9 @@ public class Game {
 
         return h;
     }
+
+    @Deprecated
+    static public FileHandle getInternal(String path) { return resolveFile(path); }
 
     /** Returns a ZipFileHandle for an asset inside a zip file. */
     static private FileHandle getZip(String filename) {
