@@ -1118,26 +1118,6 @@ public class Game {
 		player.saveVersion = SAVE_VERSION;
 	}
 
-    public static FileHandle getFile(String file) {
-        if (OSUtils.isMac()) {
-            // OSX needs this user.dir property to figure out where it is running from, and probably linux
-            String userDir = System.getProperty("user.dir");
-            if (userDir != null) {
-                return new FileHandle(userDir + "/" + file);
-            }
-        }
-
-        if (OSUtils.isMobile() && Gdx.files != null) {
-            if (Gdx.files.isExternalStorageAvailable()) {
-                return Gdx.files.external("Delver/" + file);
-            }
-
-            return Gdx.files.local("Delver/" + file);
-        }
-
-        return new FileHandle(file);
-    }
-
 	public static Level GetLevel()
 	{
 		return instance.level;
@@ -1414,27 +1394,47 @@ public class Game {
 		return interactMode;
 	}
 
+    public static FileHandle getFile(String path) {
+        if (OSUtils.isMac()) {
+            // OSX needs this user.dir property to figure out where it is running from, and probably linux
+            String userDir = System.getProperty("user.dir");
+            if (userDir != null) {
+                return new FileHandle(userDir + "/" + path);
+            }
+        }
+
+        if (OSUtils.isMobile() && Gdx.files != null) {
+            if (Gdx.files.isExternalStorageAvailable()) {
+                return Gdx.files.external("Delver/" + path);
+            }
+
+            return Gdx.files.local("Delver/" + path);
+        }
+
+        return new FileHandle(path);
+    }
+
     // Grabs from an external assets dir if available, or gets internal
-    static public FileHandle getInternal(String filename) {
-        Gdx.app.debug("Delver", "Looking for " + filename);
+    static public FileHandle getInternal(String path) {
+        Gdx.app.debug("Delver", "Looking for " + path);
 
         // Check for an assets directory. E.g. assets/font.png
-        if (filename.startsWith("./")) filename = filename.substring(2);
-        FileHandle h = getFile("assets/" + filename);
+        if (path.startsWith("./")) path = path.substring(2);
+        FileHandle h = getFile("assets/" + path);
         if (h.exists()) return h;
 
         // Check for an assets.zip file. E.g. assets.zip/font.png
         Gdx.app.debug("Delver", " Not found, looking for zip files");
-        h = getZip("assets.zip/" + filename);
+        h = getZip("assets.zip/" + path);
         if (h.exists()) return h;
 
         // Check for a zip file. Eg. mods/example-mod.zip/font.png
-        h = getZip(filename);
+        h = getZip(path);
         if (h.exists()) return h;
 
         // Check inside JAR file
         Gdx.app.debug("Delver", " Not found, looking internally");
-        h = Gdx.files.internal(filename);
+        h = Gdx.files.internal(path);
 
         if (!h.exists()) Gdx.app.debug("Delver", "  Still not found!");
 
