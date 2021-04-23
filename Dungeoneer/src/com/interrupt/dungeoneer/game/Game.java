@@ -1414,42 +1414,55 @@ public class Game {
 		return interactMode;
 	}
 
-	// Grabs from an external assets dir if available, or gets internal
-	static public FileHandle getInternal(String filename)
-	{
-	    Gdx.app.debug("Delver", "Looking for " + filename);
+    // Grabs from an external assets dir if available, or gets internal
+    static public FileHandle getInternal(String filename) {
+        Gdx.app.debug("Delver", "Looking for " + filename);
 
-		if(filename.startsWith("./")) filename = filename.substring(2);
-		FileHandle h = getFile("assets/" + filename);
-		if(h.exists()) return h;
+        // Check for an assets directory. E.g. assets/font.png
+        if (filename.startsWith("./")) filename = filename.substring(2);
+        FileHandle h = getFile("assets/" + filename);
+        if (h.exists()) return h;
 
+        // Check for an assets.zip file. E.g. assets.zip/font.png
+        Gdx.app.debug("Delver", " Not found, looking for zip files");
+        h = getZip("assets.zip/" + filename);
+        if (h.exists()) return h;
+
+        // Check for a zip file. Eg. mods/example-mod.zip/font.png
+        h = getZip(filename);
+        if (h.exists()) return h;
+
+        // Check inside JAR file
         Gdx.app.debug("Delver", " Not found, looking internally");
-
         h = Gdx.files.internal(filename);
 
-        if(!h.exists()) Gdx.app.debug("Delver", " Not found, looking for zip files");
+        if (!h.exists()) Gdx.app.debug("Delver", "  Still not found!");
 
-        if (filename.contains(".zip")) {
-            int i = filename.indexOf(".zip") + ".zip".length();
+        return h;
+    }
 
-            String zipFilePath = filename.substring(0, i);
-            String zipEntryName = filename.substring(i);
-            if (zipEntryName.startsWith("/")) zipEntryName = zipEntryName.substring(1);
+    /** Returns a ZipFileHandle for an asset inside a zip file. */
+    static private FileHandle getZip(String filename) {
+        FileHandle result = Gdx.files.internal(filename);
 
-            try {
-                FileHandle f = Gdx.files.internal(zipFilePath);
-                ZipFile z = new ZipFile(f.file());
-                h = new ZipFileHandle(z, f.file(), zipEntryName);
-            }
-            catch (Exception ignored) {
-                Gdx.app.log("Delver", "Unable to open zip: " + zipFilePath);
-            }
+        if (!filename.contains(".zip")) return result;
+
+        int i = filename.indexOf(".zip") + ".zip".length();
+        String zipFilePath = filename.substring(0, i);
+        String zipEntryName = filename.substring(i);
+        if (zipEntryName.startsWith("/")) zipEntryName = zipEntryName.substring(1);
+
+        try {
+            FileHandle f = Gdx.files.internal(zipFilePath);
+            ZipFile z = new ZipFile(f.file());
+            result = new ZipFileHandle(z, f.file(), zipEntryName);
+        }
+        catch (Exception ignored) {
+            Gdx.app.log("Delver", "Unable to open zip: " + zipFilePath);
         }
 
-        if(!h.exists()) Gdx.app.debug("Delver", "  Still not found!");
-
-		return h;
-	}
+        return result;
+    }
 
     static public FileHandle findInternalFileInMods(String filename) {
 		if(filename == null) return null;
