@@ -5,9 +5,14 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -67,6 +72,52 @@ public class ZipFileHandle extends FileHandle {
         int dotIndex = path.lastIndexOf('.');
         if (dotIndex == -1) return path;
         return path.substring(0, dotIndex);
+    }
+
+    @Override
+    public FileHandle parent() {
+        Path parent = Paths.get(entry.getName()).getParent();
+        return new ZipFileHandle(archive, file, parent.toString() + "/");
+    }
+
+    @Override
+    public String toString() {
+        return (file.getPath() + "/" + entry.getName()).replace('\\', '/');
+    }
+
+    @Override
+    public FileHandle[] list() {
+        String name = entry.getName();
+        Path base = Paths.get(name);
+
+        Array<String> children = new Array<>();
+        for (String e : entries) {
+            if (e.startsWith(name) && !e.equals(name)) {
+                Path relative = base.relativize(Paths.get(e));
+                Path firstPart = relative.subpath(0, 1);
+                Path child = base.resolve(firstPart);
+                String cs = child.toString();
+
+                if (cs.length() < e.length()) {
+                    int i = cs.length();
+                    if (e.charAt(i) == '/') cs += "/";
+                }
+
+                if (!children.contains(cs, false)) children.add(cs);
+            }
+        }
+
+        FileHandle[] result = new FileHandle[children.size];
+        for (int i = 0; i < children.size; i++) {
+            result[i] = new ZipFileHandle(archive, file, children.get(i));
+        }
+
+        return result;
+    }
+
+    @Override
+    public File file() {
+        throw new GdxRuntimeException("Cannot get a FileHandle for a ZipFileHandle object");
     }
 
     @Override
