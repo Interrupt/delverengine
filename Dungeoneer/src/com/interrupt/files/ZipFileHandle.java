@@ -87,23 +87,25 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public FileHandle[] list() {
-        String name = entry.getName();
-        Path base = Paths.get(name);
+        Path basePath = Paths.get(entry.getName());
 
         Array<String> children = new Array<>();
-        for (String e : entries) {
-            if (e.startsWith(name) && !e.equals(name)) {
-                Path relative = base.relativize(Paths.get(e));
-                Path firstPart = relative.subpath(0, 1);
-                Path child = base.resolve(firstPart);
-                String cs = child.toString();
+        for (String entry : entries) {
+            Path entryPath = Paths.get(entry);
 
-                if (cs.length() < e.length()) {
-                    int i = cs.length();
-                    if (e.charAt(i) == '/') cs += "/";
+            if (isChildPath(basePath, entryPath)) {
+                Path relativePath = basePath.relativize(entryPath);
+                Path firstPart = relativePath.subpath(0, 1);
+                String child = basePath.resolve(firstPart).toString();
+
+                if (child.length() < entry.length()) {
+                    int i = child.length();
+                    if (entry.charAt(i) == '/') child += "/";
                 }
 
-                if (!children.contains(cs, false)) children.add(cs);
+                if (!children.contains(child, false)) {
+                    children.add(child);
+                }
             }
         }
 
@@ -113,6 +115,10 @@ public class ZipFileHandle extends FileHandle {
         }
 
         return result;
+    }
+
+    private boolean isChildPath(Path parent, Path child) {
+        return child.startsWith(parent) && !child.equals(parent);
     }
 
     @Override
