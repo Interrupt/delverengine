@@ -1,6 +1,7 @@
 package com.interrupt.files;
 
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -251,5 +252,28 @@ public class ZipFileHandle extends FileHandle {
     @Override
     public String toString() {
         return (file.getPath() + "/" + entry.getName()).replace('\\', '/');
+    }
+
+    /** Returns a ZipFileHandle for an asset inside a zip file. */
+    static public FileHandle get(String name) {
+        FileHandle handle = Gdx.files.internal(name);
+
+        if (!name.contains(".zip")) return handle;
+
+        int i = name.indexOf(".zip") + ".zip".length();
+        String zipFilePath = name.substring(0, i);
+        String zipEntryName = name.substring(i);
+        if (zipEntryName.startsWith("/")) zipEntryName = zipEntryName.substring(1);
+
+        try {
+            FileHandle f = Gdx.files.internal(zipFilePath);
+            ZipFile z = new ZipFile(f.file());
+            handle = new ZipFileHandle(z, f.file(), zipEntryName);
+        }
+        catch (Exception ignored) {
+            Gdx.app.debug("Delver", "Unable to open zip: " + zipFilePath);
+        }
+
+        return handle;
     }
 }

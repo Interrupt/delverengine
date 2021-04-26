@@ -49,7 +49,6 @@ import java.util.Comparator;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.ZipFile;
 
 public class Game {
 	/** Engine version */
@@ -1435,11 +1434,11 @@ public class Game {
 
         // Check for an assets.zip file. E.g. assets.zip/font.png
         Gdx.app.debug("Delver", " Not found, looking for zip files");
-        h = getZip("assets.zip/" + path);
+        h = ZipFileHandle.get("assets.zip/" + path);
         if (h.exists()) return h;
 
         // Check for a zip file. Eg. mods/example-mod.zip/font.png
-        h = getZip(path);
+        h = ZipFileHandle.get(path);
         if (h.exists()) return h;
 
         // Check inside JAR file/local file
@@ -1453,29 +1452,6 @@ public class Game {
 
     @Deprecated
     static public FileHandle getInternal(String path) { return resolveFile(path); }
-
-    /** Returns a ZipFileHandle for an asset inside a zip file. */
-    static private FileHandle getZip(String filename) {
-        FileHandle result = Gdx.files.internal(filename);
-
-        if (!filename.contains(".zip")) return result;
-
-        int i = filename.indexOf(".zip") + ".zip".length();
-        String zipFilePath = filename.substring(0, i);
-        String zipEntryName = filename.substring(i);
-        if (zipEntryName.startsWith("/")) zipEntryName = zipEntryName.substring(1);
-
-        try {
-            FileHandle f = Gdx.files.internal(zipFilePath);
-            ZipFile z = new ZipFile(f.file());
-            result = new ZipFileHandle(z, f.file(), zipEntryName);
-        }
-        catch (Exception ignored) {
-            Gdx.app.debug("Delver", "Unable to open zip: " + zipFilePath);
-        }
-
-        return result;
-    }
 
     static public FileHandle findInternalFileInMods(String filename) {
 		if(filename == null) return null;
