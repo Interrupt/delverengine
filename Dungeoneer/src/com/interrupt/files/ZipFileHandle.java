@@ -93,12 +93,12 @@ public class ZipFileHandle extends FileHandle {
     }
 
     @Override
-    public ByteBuffer map () {
+    public ByteBuffer map() {
         throw new GdxRuntimeException("Error ZipFileHandle objects do not support memory mapping");
     }
 
     @Override
-    public ByteBuffer map (FileChannel.MapMode mode) {
+    public ByteBuffer map(FileChannel.MapMode mode) {
         throw new GdxRuntimeException("Error ZipFileHandle objects do not support memory mapping");
     }
 
@@ -175,17 +175,17 @@ public class ZipFileHandle extends FileHandle {
     }
 
     @Override
-    public FileHandle[] list (FileFilter filter) {
+    public FileHandle[] list(FileFilter filter) {
         throw new GdxRuntimeException("Unsupported method");
     }
 
     @Override
-    public FileHandle[] list (FilenameFilter filter) {
+    public FileHandle[] list(FilenameFilter filter) {
         throw new GdxRuntimeException("Unsupported method");
     }
 
     @Override
-    public FileHandle[] list (String suffix) {
+    public FileHandle[] list(String suffix) {
         throw new GdxRuntimeException("Unsupported method");
     }
 
@@ -234,6 +234,7 @@ public class ZipFileHandle extends FileHandle {
     public void emptyDirectory() {
         throw new GdxRuntimeException("Unsupported method");
     }
+
     @Override
     public void emptyDirectory(boolean preserveTree) {
         throw new GdxRuntimeException("Unsupported method");
@@ -263,7 +264,8 @@ public class ZipFileHandle extends FileHandle {
         int i = name.indexOf(".zip") + ".zip".length();
         String zipFilePath = name.substring(0, i);
         String zipEntryName = name.substring(i);
-        if (zipEntryName.startsWith("/")) zipEntryName = zipEntryName.substring(1);
+        if (zipEntryName.startsWith("/"))
+            zipEntryName = zipEntryName.substring(1);
 
         try {
             FileHandle f = Gdx.files.internal(zipFilePath);
