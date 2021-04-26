@@ -23,6 +23,7 @@ public class ZipFileHandle extends FileHandle {
     public ZipFileHandle(ZipFile archive, File file, String name) {
         super(file, Files.FileType.Internal);
         this.archive = archive;
+        name = name.replace("\\", "/");
         entry = archive.getEntry(name);
         if (entry == null) {
             entry = new ZipEntry(name);
@@ -153,7 +154,7 @@ public class ZipFileHandle extends FileHandle {
             if (entryPath.startsWith(basePath) && !entryPath.equals(basePath)) {
                 Path relativePath = basePath.relativize(entryPath);
                 Path firstPart = relativePath.subpath(0, 1);
-                String child = basePath.resolve(firstPart).toString();
+                String child = basePath.resolve(firstPart).toString().replace("\\", "/");
 
                 if (child.length() < entry.length()) {
                     int i = child.length();
@@ -186,7 +187,36 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public FileHandle[] list(String suffix) {
-        throw new GdxRuntimeException("Unsupported method");
+        Path basePath = Paths.get(entry.getName());
+
+        Array<String> children = new Array<>();
+        for (String entry : entries) {
+            Path entryPath = Paths.get(entry);
+
+            if (!entryPath.startsWith(basePath)) continue;
+            if (entryPath.equals(basePath)) continue;
+            if (!entry.endsWith(suffix)) continue;
+
+            Path relativePath = basePath.relativize(entryPath);
+            Path firstPart = relativePath.subpath(0, 1);
+            String child = basePath.resolve(firstPart).toString().replace("\\", "/");
+
+            if (child.length() < entry.length()) {
+                int i = child.length();
+                if (entry.charAt(i) == '/') child += "/";
+            }
+
+            if (!children.contains(child, false)) {
+                children.add(child);
+            }
+        }
+
+        FileHandle[] handles = new FileHandle[children.size];
+        for (int i = 0; i < children.size; i++) {
+            handles[i] = new ZipFileHandle(archive, file, children.get(i));
+        }
+
+        return handles;
     }
 
     @Override
