@@ -249,14 +249,6 @@ public class ZipFileHandle extends FileHandle {
     }
 
     @Override
-    public int hashCode () {
-        int hash = 1;
-        hash = hash * 37 + type.hashCode();
-        hash = hash * 67 + path().hashCode();
-        return hash;
-    }
-
-    @Override
     public String toString() {
         return (file.getPath() + "/" + entry.getName()).replace('\\', '/');
     }
