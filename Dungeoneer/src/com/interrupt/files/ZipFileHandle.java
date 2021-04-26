@@ -5,10 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -75,70 +72,13 @@ public class ZipFileHandle extends FileHandle {
     }
 
     @Override
-    public FileHandle parent() {
-        Path parent = Paths.get(entry.getName()).getParent();
-        return new ZipFileHandle(archive, file, parent.toString() + "/");
-    }
-
-    @Override
-    public String toString() {
-        return (file.getPath() + "/" + entry.getName()).replace('\\', '/');
-    }
-
-    @Override
-    public FileHandle[] list() {
-        Path basePath = Paths.get(entry.getName());
-
-        Array<String> children = new Array<>();
-        for (String entry : entries) {
-            Path entryPath = Paths.get(entry);
-
-            if (isChildPath(basePath, entryPath)) {
-                Path relativePath = basePath.relativize(entryPath);
-                Path firstPart = relativePath.subpath(0, 1);
-                String child = basePath.resolve(firstPart).toString();
-
-                if (child.length() < entry.length()) {
-                    int i = child.length();
-                    if (entry.charAt(i) == '/') child += "/";
-                }
-
-                if (!children.contains(child, false)) {
-                    children.add(child);
-                }
-            }
-        }
-
-        FileHandle[] result = new FileHandle[children.size];
-        for (int i = 0; i < children.size; i++) {
-            result[i] = new ZipFileHandle(archive, file, children.get(i));
-        }
-
-        return result;
-    }
-
-    private boolean isChildPath(Path parent, Path child) {
-        return child.startsWith(parent) && !child.equals(parent);
+    public Files.FileType type() {
+        return Files.FileType.Internal;
     }
 
     @Override
     public File file() {
         throw new GdxRuntimeException("Cannot get a FileHandle for a ZipFileHandle object");
-    }
-
-    @Override
-    public boolean exists() {
-        return entries.contains(entry.getName(), false);
-    }
-
-    @Override
-    public long length() {
-        return entry.getSize();
-    }
-
-    @Override
-    public long lastModified() {
-        return entry.getTime();
     }
 
     @Override
@@ -152,8 +92,13 @@ public class ZipFileHandle extends FileHandle {
     }
 
     @Override
-    public ByteBuffer map(FileChannel.MapMode mode) {
-        throw new GdxRuntimeException("Cannot map a ZipFileHandle");
+    public ByteBuffer map () {
+        throw new GdxRuntimeException("Error ZipFileHandle objects do not support memory mapping");
+    }
+
+    @Override
+    public ByteBuffer map (FileChannel.MapMode mode) {
+        throw new GdxRuntimeException("Error ZipFileHandle objects do not support memory mapping");
     }
 
     @Override
@@ -197,7 +142,122 @@ public class ZipFileHandle extends FileHandle {
     }
 
     @Override
+    public FileHandle[] list() {
+        Path basePath = Paths.get(entry.getName());
+
+        Array<String> children = new Array<>();
+        for (String entry : entries) {
+            Path entryPath = Paths.get(entry);
+
+            if (entryPath.startsWith(basePath) && !entryPath.equals(basePath)) {
+                Path relativePath = basePath.relativize(entryPath);
+                Path firstPart = relativePath.subpath(0, 1);
+                String child = basePath.resolve(firstPart).toString();
+
+                if (child.length() < entry.length()) {
+                    int i = child.length();
+                    if (entry.charAt(i) == '/') child += "/";
+                }
+
+                if (!children.contains(child, false)) {
+                    children.add(child);
+                }
+            }
+        }
+
+        FileHandle[] handles = new FileHandle[children.size];
+        for (int i = 0; i < children.size; i++) {
+            handles[i] = new ZipFileHandle(archive, file, children.get(i));
+        }
+
+        return handles;
+    }
+
+    @Override
+    public FileHandle[] list (FileFilter filter) {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+
+    @Override
+    public FileHandle[] list (FilenameFilter filter) {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+
+    @Override
+    public FileHandle[] list (String suffix) {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+
+    @Override
     public boolean isDirectory() {
         return entry.isDirectory();
+    }
+
+    @Override
+    public FileHandle child(String name) {
+        return super.child(name);
+    }
+
+    @Override
+    public FileHandle sibling(String name) {
+        return super.sibling(name);
+    }
+
+    @Override
+    public FileHandle parent() {
+        Path parent = Paths.get(entry.getName()).getParent();
+        return new ZipFileHandle(archive, file, parent.toString() + "/");
+    }
+
+    @Override
+    public void mkdirs() {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+
+    @Override
+    public boolean exists() {
+        return entries.contains(entry.getName(), false);
+    }
+
+    @Override
+    public boolean delete() {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+
+    @Override
+    public boolean deleteDirectory() {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+
+    @Override
+    public void emptyDirectory() {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+    @Override
+    public void emptyDirectory(boolean preserveTree) {
+        throw new GdxRuntimeException("Unsupported method");
+    }
+
+    @Override
+    public long length() {
+        return entry.getSize();
+    }
+
+    @Override
+    public long lastModified() {
+        return entry.getTime();
+    }
+
+    @Override
+    public int hashCode () {
+        int hash = 1;
+        hash = hash * 37 + type.hashCode();
+        hash = hash * 67 + path().hashCode();
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return (file.getPath() + "/" + entry.getName()).replace('\\', '/');
     }
 }
