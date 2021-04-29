@@ -26,6 +26,9 @@ public class ZipUtils {
             FileHandle file;
             while (es.hasMoreElements()) {
                 entry = es.nextElement();
+
+                if (entry.isDirectory()) continue;
+
                 InputStream is = zf.getInputStream(entry);
                 file = path.child(entry.getName());
                 OutputStream os = file.write(false);
