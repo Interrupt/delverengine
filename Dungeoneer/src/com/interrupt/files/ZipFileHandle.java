@@ -4,7 +4,6 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -80,7 +79,7 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public File file() {
-        throw new GdxRuntimeException("Cannot get a FileHandle for a ZipFileHandle object");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -95,22 +94,22 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public ByteBuffer map() {
-        throw new GdxRuntimeException("Error ZipFileHandle objects do not support memory mapping");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ByteBuffer map(FileChannel.MapMode mode) {
-        throw new GdxRuntimeException("Error ZipFileHandle objects do not support memory mapping");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public OutputStream write(boolean append) {
-        throw new GdxRuntimeException("Cannot write to a ZipFileHandle");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void write(InputStream input, boolean append) {
-        throw new GdxRuntimeException("Cannot write to a ZipFileHandle");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -120,7 +119,7 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public Writer writer(boolean append, String charset) {
-        throw new GdxRuntimeException("Cannot write to a ZipFileHandle");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -130,17 +129,17 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public void writeString(String string, boolean append, String charset) {
-        throw new GdxRuntimeException("Cannot write to a ZipFileHandle");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void writeBytes(byte[] bytes, boolean append) {
-        throw new GdxRuntimeException("Cannot write to a ZipFileHandle");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void writeBytes(byte[] bytes, int offset, int length, boolean append) {
-        throw new GdxRuntimeException("Cannot write to a ZipFileHandle");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -177,12 +176,12 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public FileHandle[] list(FileFilter filter) {
-        throw new GdxRuntimeException("Unsupported method");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public FileHandle[] list(FilenameFilter filter) {
-        throw new GdxRuntimeException("Unsupported method");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -195,11 +194,12 @@ public class ZipFileHandle extends FileHandle {
 
             if (!entryPath.startsWith(basePath)) continue;
             if (entryPath.equals(basePath)) continue;
-            if (!entry.endsWith(suffix)) continue;
 
             Path relativePath = basePath.relativize(entryPath);
             Path firstPart = relativePath.subpath(0, 1);
             String child = basePath.resolve(firstPart).toString().replace("\\", "/");
+
+            if (!child.endsWith(suffix)) continue;
 
             if (child.length() < entry.length()) {
                 int i = child.length();
@@ -242,7 +242,7 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public void mkdirs() {
-        throw new GdxRuntimeException("Unsupported method");
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -252,22 +252,22 @@ public class ZipFileHandle extends FileHandle {
 
     @Override
     public boolean delete() {
-        throw new GdxRuntimeException("Unsupported method");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean deleteDirectory() {
-        throw new GdxRuntimeException("Unsupported method");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void emptyDirectory() {
-        throw new GdxRuntimeException("Unsupported method");
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void emptyDirectory(boolean preserveTree) {
-        throw new GdxRuntimeException("Unsupported method");
+        throw new UnsupportedOperationException();
     }
 
     @Override
