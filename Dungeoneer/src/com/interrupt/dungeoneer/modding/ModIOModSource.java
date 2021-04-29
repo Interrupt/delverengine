@@ -15,7 +15,7 @@ public class ModIOModSource extends LocalFileSystemModSource {
 
     private final String rootPath = "https://api.test.mod.io/v1";
     private transient RestEndpoint api;
-    private String allModsRoute;
+    private transient String allModsRoute;
     private transient String downloadsPath;
     private transient String contentPath;
 
