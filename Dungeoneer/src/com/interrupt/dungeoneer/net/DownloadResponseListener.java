@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.net;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.net.HttpStatus;
 import com.badlogic.gdx.utils.StreamUtils;
 import com.interrupt.dungeoneer.game.Game;
@@ -13,9 +14,11 @@ import java.io.OutputStream;
 /** Listener for downloading a file to disk. */
 public class DownloadResponseListener extends HttpResponseListenerAdapter {
     private final String filename;
+    private final DownloadListener callback;
 
-    public DownloadResponseListener(String filename) {
+    public DownloadResponseListener(String filename, DownloadListener callback) {
         this.filename = filename;
+        this.callback = callback;
     }
 
     @Override
@@ -26,7 +29,8 @@ public class DownloadResponseListener extends HttpResponseListenerAdapter {
         }
 
         InputStream input = httpResponse.getResultAsStream();
-        OutputStream output = Game.getFile(filename).write(false);
+        FileHandle file = Game.getFile(filename);
+        OutputStream output = file.write(false);
 
         try {
             Gdx.app.log("Network", "Download starting: " + filename);
@@ -39,6 +43,17 @@ public class DownloadResponseListener extends HttpResponseListenerAdapter {
         }
         finally {
             StreamUtils.closeQuietly(input);
+            callback.completed(file);
         }
+    }
+
+    @Override
+    public void failed(Throwable t) {
+        callback.failed(t);
+    }
+
+    @Override
+    public void cancelled() {
+        callback.cancelled();
     }
 }
