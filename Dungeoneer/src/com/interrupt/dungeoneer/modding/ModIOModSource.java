@@ -16,13 +16,29 @@ public class ModIOModSource extends LocalFileSystemModSource {
     private final String rootPath = "https://api.test.mod.io/v1";
     private transient RestEndpoint api;
     private String allModsRoute;
+    private transient String downloadsPath;
+    private transient String contentPath;
 
     @Override
     public void init() {
         api = new RestEndpoint(rootPath, apiKey);
         allModsRoute = "/games/" + gameID + "/mods";
-        root = ".mods/modio/" + gameID;
+
+        if (root == null || root.isEmpty()) {
+            root = ".mods/modio/";
+        }
+
+        if (!root.endsWith("/")) root += "/";
+
+        downloadsPath = root + ".downloads/";
+        contentPath = root + "content/";
+
         refresh();
+    }
+
+    @Override
+    protected FileHandle getRootHandle() {
+        return Game.getFile(contentPath);
     }
 
     public void refresh() {
@@ -32,7 +48,7 @@ public class ModIOModSource extends LocalFileSystemModSource {
                 for (ModObject mod : mods.data) {
                     String url = mod.modfile.download.binary_url;
                     String filename = mod.modfile.filename;
-                    String filepath = ".mods/modio/.downloads/" + filename;
+                    String filepath = downloadsPath + filename;
 
                     FileHandle file = Game.getFile(filepath);
                     if (!file.exists()) {
@@ -42,7 +58,7 @@ public class ModIOModSource extends LocalFileSystemModSource {
                             new DownloadListenerAdapter() {
                                 @Override
                                 public void completed(FileHandle file) {
-                                    FileHandle path = Game.getFile(root + "/" + mod.id + "/");
+                                    FileHandle path = Game.getFile(contentPath + "/" + mod.id + "/");
                                     ZipUtils.extract(file, path);
                                 }
                             }
