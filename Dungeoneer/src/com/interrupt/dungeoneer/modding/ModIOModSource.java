@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.net.DownloadListenerAdapter;
 import com.interrupt.dungeoneer.net.ObjectResponseListener;
 import com.interrupt.dungeoneer.net.RestEndpoint;
 import com.interrupt.utils.DownloadUtils;
+import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.ZipUtils;
 
 public class ModIOModSource extends LocalFileSystemModSource {
@@ -17,7 +18,7 @@ public class ModIOModSource extends LocalFileSystemModSource {
     private transient RestEndpoint api;
     private transient String allModsRoute;
     private transient String downloadsPath;
-    private transient String contentPath;
+    private transient String modsPath;
 
     @Override
     public void init() {
@@ -31,14 +32,14 @@ public class ModIOModSource extends LocalFileSystemModSource {
         if (!root.endsWith("/")) root += "/";
 
         downloadsPath = root + ".downloads/";
-        contentPath = root + "content/";
+        modsPath = root + "mods/";
 
         refresh();
     }
 
     @Override
     protected FileHandle getRootHandle() {
-        return Game.getFile(contentPath);
+        return Game.getFile(modsPath);
     }
 
     public void refresh() {
@@ -58,8 +59,17 @@ public class ModIOModSource extends LocalFileSystemModSource {
                             new DownloadListenerAdapter() {
                                 @Override
                                 public void completed(FileHandle file) {
-                                    FileHandle path = Game.getFile(contentPath + "/" + mod.id + "/");
+                                    FileHandle path = Game.getFile(modsPath + "/" + mod.id + "/");
                                     ZipUtils.extract(file, path);
+
+                                    FileHandle modInfoPath = path.child("modInfo.json");
+                                    if (!modInfoPath.exists()) {
+                                        ModInfo modInfo = new ModInfo();
+                                        modInfo.id = mod.id;
+                                        modInfo.name = mod.name;
+
+                                        JsonUtil.toJson(modInfo, modInfoPath);
+                                    }
                                 }
                             }
                         );
