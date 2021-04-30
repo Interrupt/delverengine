@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.net;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.net.HttpStatus;
 import com.badlogic.gdx.utils.StreamUtils;
@@ -12,7 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /** Listener for downloading a file to disk. */
-public class DownloadResponseListener extends HttpResponseListenerAdapter {
+public class DownloadResponseListener implements HttpResponseListener {
     private final String filename;
     private final DownloadListener callback;
 
@@ -32,18 +33,27 @@ public class DownloadResponseListener extends HttpResponseListenerAdapter {
         FileHandle file = Game.getFile(filename);
         OutputStream output = file.write(false);
 
+        long bytesTotal = Long.parseLong(httpResponse.getHeader("Content-Length"));
+        byte[] buffer = new byte[8192];
+        int bytesRead = -1;
+        long bytesReceived = 0;
+
         try {
             Gdx.app.log("Network", "Download starting: " + filename);
-            StreamUtils.copyStream(input, output);
+
+            while ((bytesRead = input.read(buffer, 0, buffer.length)) != -1) {
+                output.write(buffer, 0, bytesRead);
+                bytesReceived += bytesRead;
+
+                callback.progress(new DownloadProgress(bytesReceived, bytesTotal));
+            }
+
             Gdx.app.log("Network", "Download complete: " + filename);
+            callback.completed(file);
         }
         catch (IOException exception) {
             Gdx.app.error("Network", "Download failed.", exception);
             failed(exception);
-        }
-        finally {
-            StreamUtils.closeQuietly(input);
-            callback.completed(file);
         }
     }
 
