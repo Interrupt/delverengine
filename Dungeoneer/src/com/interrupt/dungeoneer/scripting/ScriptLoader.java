@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.dungeoneer.game.ModManager;
-import com.interrupt.dungeoneer.scripting.ScriptingApi;
 import com.interrupt.utils.Logger;
 
 import javax.tools.*;
@@ -36,12 +35,12 @@ public class ScriptLoader implements ScriptingApi {
     @Override
     public void loadScripts(ModManager modManager) {
         ArrayMap<FileHandle, FileHandle[]> needsCompiling = modManager.getFilesForModsWithSuffix(modFolder, ".java");
-        if(needsCompiling.size > 0) {
+        if (needsCompiling.size > 0) {
             // Setup the compiler
             compiler = ToolProvider.getSystemJavaCompiler();
 
             // try to compile
-            if(compiler != null) {
+            if (compiler != null) {
                 diagnostics = new DiagnosticCollector<JavaFileObject>();
                 fileManager = compiler.getStandardFileManager(diagnostics, null, null);
 
@@ -58,10 +57,10 @@ public class ScriptLoader implements ScriptingApi {
 
         // Go collect all the new class files
         ArrayMap<FileHandle, FileHandle[]> classFiles = modManager.getFilesForModsWithSuffix(modFolder, ".class");
-        for(int i = 0; i < classFiles.size; i++) {
+        for (int i = 0; i < classFiles.size; i++) {
             FileHandle[] mod_classes = classFiles.getValueAt(i);
 
-            for(int ii = 0; ii < mod_classes.length; ii++) {
+            for (int ii = 0; ii < mod_classes.length; ii++) {
                 FileHandle classFile = mod_classes[ii];
 
                 String classFilePath = classFile.pathWithoutExtension();
@@ -73,7 +72,7 @@ public class ScriptLoader implements ScriptingApi {
         }
 
         // Sandbox any new packages if we found them
-        if(modClassNames.size > 0) {
+        if (modClassNames.size > 0) {
             // Make sandbox permissions, only gets read access to files and no network access
             Permissions permissions = new Permissions();
             permissions.add(new FilePermission("<<ALL FILES>>", "read"));
@@ -82,14 +81,14 @@ public class ScriptLoader implements ScriptingApi {
             permissions.add(new RuntimePermission("accessDeclaredMembers"));
 
             ProtectionDomain protectionDomain = new ProtectionDomain(null, permissions);
-            AccessControlContext accessContext = new AccessControlContext(new ProtectionDomain[] { protectionDomain });
+            AccessControlContext accessContext = new AccessControlContext(new ProtectionDomain[]{protectionDomain});
 
             System.setSecurityManager(new SandboxSecurityManager(modClassNames, accessContext));
         }
 
         // Finally, let the game know about these new classes
         Array<FileHandle> classFolders = modManager.getFileInAllMods(modFolder);
-        for(int i = 0; i < classFolders.size; i++) {
+        for (int i = 0; i < classFolders.size; i++) {
             FileHandle dir = classFolders.get(i);
             addDirectoryToClassLoader(dir);
         }
@@ -102,7 +101,7 @@ public class ScriptLoader implements ScriptingApi {
     }
 
     private void compileFiles(ArrayMap<FileHandle, FileHandle[]> filesByDirectory) {
-        for(int i = 0; i < filesByDirectory.size; i++) {
+        for (int i = 0; i < filesByDirectory.size; i++) {
             try {
                 FileHandle dir = filesByDirectory.getKeyAt(i);
                 FileHandle[] fileHandles = filesByDirectory.getValueAt(i);
@@ -111,6 +110,7 @@ public class ScriptLoader implements ScriptingApi {
                 File[] files = new File[fileHandles.length];
                 for (int ii = 0; ii < fileHandles.length; ii++) {
                     files[ii] = fileHandles[ii].file();
+                    Gdx.app.log("Scripting", "Found script: " + files[ii]);
                 }
 
                 Iterable<? extends JavaFileObject> compilationUnit
@@ -126,12 +126,13 @@ public class ScriptLoader implements ScriptingApi {
 
                 if (!task.call()) {
                     for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                        Logger.logExceptionToFile(new Exception(diagnostic.toString()));
+                        String fileName = diagnostic.getSource().getName();
+                        Logger.logExceptionToFile("Scripting", "Failed to compile Java file: " + fileName, new Exception(diagnostic.toString()));
                     }
                 }
             }
             catch (Exception ex) {
-                Logger.logExceptionToFile(ex);
+                Logger.logExceptionToFile("Scripting", "Failed to compile Java files.", ex);
             }
         }
     }
@@ -148,8 +149,8 @@ public class ScriptLoader implements ScriptingApi {
             method.setAccessible(true);
             method.invoke(sysloader, new Object[]{url});
         }
-        catch(Exception ex) {
-            Logger.logExceptionToFile(ex);
+        catch (Exception ex) {
+            Logger.logExceptionToFile("Scripting", "Failed to add directory to ClassLoader", ex);
         }
     }
 
@@ -159,7 +160,7 @@ public class ScriptLoader implements ScriptingApi {
         private final AccessControlContext sandboxContext;
 
         SandboxSecurityManager(Array<String> classNamesToRestrict, AccessControlContext sandboxContext) {
-            for(String className : classNamesToRestrict) {
+            for (String className : classNamesToRestrict) {
                 checkedClassNames.put(className, true);
             }
             this.sandboxContext = sandboxContext;
@@ -173,12 +174,12 @@ public class ScriptLoader implements ScriptingApi {
         @Override
         public void checkPermission(Permission permission) {
             for (Class<?> clasS : this.getClassContext()) {
-                if(checkedClassNames.containsKey(clasS.getName())) {
+                if (checkedClassNames.containsKey(clasS.getName())) {
                     try {
                         sandboxContext.checkPermission(permission);
                     }
                     catch (SecurityException ex) {
-                        Gdx.app.error("Modding", ex.getMessage(), ex);
+                        Gdx.app.error("Scripting", ex.getMessage(), ex);
                         throw ex;
                     }
                 }

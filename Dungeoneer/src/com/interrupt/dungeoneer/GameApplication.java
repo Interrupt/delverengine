@@ -34,7 +34,7 @@ public class GameApplication extends Game {
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create");
 
         Gdx.app.setLogLevel(Application.LOG_INFO);
-		
+
 		gameManager = new GameManager(this);
         Gdx.input.setInputProcessor( input );
         gameManager.init();

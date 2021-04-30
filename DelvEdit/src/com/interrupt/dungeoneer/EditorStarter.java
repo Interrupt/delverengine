@@ -4,18 +4,13 @@ import com.interrupt.api.steam.NullSteamApi;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.ModManager;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.scripting.ScriptLoader;
 
 public class EditorStarter {
     public static void main(String[] args) {
         if (args != null) {
             for (String arg : args) {
-                if (arg.toLowerCase().endsWith("enable-mod-classes=true")) {
-                    ModManager.setScriptingApi(new ScriptLoader());
-                }
-                else if (arg.toLowerCase().endsWith("version")){
+                if (arg.toLowerCase().endsWith("version")){
                     System.out.println(Game.VERSION);
                     System.exit(0);
                 }
