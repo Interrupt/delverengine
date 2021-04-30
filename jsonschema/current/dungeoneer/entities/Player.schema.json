@@ -53,6 +53,38 @@
             "baseClass": "Player",
             "default": 0.3
         },
+        "handLagStrength": {
+            "type": "number",
+            "description": "Hand lag amount.",
+            "baseClass": "Player",
+            "default": 0.6
+        },
+        "offhandLagStrength": {
+            "type": "number",
+            "description": "Offhand lag amount.",
+            "baseClass": "Player",
+            "default": 0.8
+        },
+        "handOffset": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Hand offset.",
+            "baseClass": "Player",
+            "default": {
+                "x": -0.12,
+                "y": -0.07,
+                "z": 0.28
+            }
+        },
+        "offhandOffset": {
+            "$ref": "../../gdx/Vector3.schema.json",
+            "description": "Offhand offset.",
+            "baseClass": "Player",
+            "default": {
+                "x": 0.12,
+                "y": -0.14,
+                "z": 0.24
+            }
+        },
         "keys": {
             "type": "number",
             "description": "Player key count.",
