@@ -29,6 +29,7 @@ public class Options {
     public boolean useMouseScroller = true;
     public boolean hideUI = false;
     public boolean headBobEnabled = true;
+    public boolean handLagEnabled = true;
     public boolean shadowsEnabled = true;
     public boolean fxaaEnabled = false;
 

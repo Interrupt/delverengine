@@ -73,6 +73,18 @@ public class Player extends Actor {
 	/** Head bob height. */
 	public float headBobHeight = 0.3f;
 
+	/** Hand lag strength. */
+	public float handLagStrength = 0.6f;
+
+    /** Offhand lag strength. */
+	public float offhandLagStrength = 0.8f;
+
+	/** Hand offset */
+	public Vector3 handOffset = new Vector3(-0.12f, -0.07f, 0.28f);
+
+	/** Offhand offset */
+	public Vector3 offhandOffset = new Vector3(0.12f, -0.14f, 0.24f);
+
 	public boolean hasAttacked;
 
 	private float attackSpeed = 1;

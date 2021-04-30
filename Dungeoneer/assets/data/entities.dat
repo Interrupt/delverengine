@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/entities.dat",
     "entities": {
         "Areas": {
             "Spawn Blocker": {

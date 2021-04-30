@@ -493,7 +493,7 @@ public class EditorApplication implements ApplicationListener {
 	private void cleanEditorState() {
 		entireLevelSelection = TileSelection.Rect(0, 0, level.width, level.height);
 		refresh();
-		
+
 		history = new EditorHistory();
 		file = new EditorFile();
 
@@ -829,7 +829,7 @@ public class EditorApplication implements ApplicationListener {
 
 				selStartX = Editor.selection.tiles.x;
 				selStartY = Editor.selection.tiles.y;
-				
+
 				Editor.selection.tiles.setStartTile(selStartX, selStartY);
 
 				controlPoints.clear();
@@ -2236,7 +2236,7 @@ public class EditorApplication implements ApplicationListener {
 		} else {
 			Vector3 cameraPosition = cameraController.getPosition();
 			Vector2 cameraRotation = cameraController.getRotation();
-	
+
 			Game.instance.player.x = cameraPosition.x;
 			Game.instance.player.y = cameraPosition.y - Game.instance.player.eyeHeight;
 			Game.instance.player.z = cameraPosition.z;
@@ -3885,6 +3885,6 @@ public class EditorApplication implements ApplicationListener {
     }
 
 	public void setTitle(String title) {
-		Gdx.graphics.setTitle(title + " - DelvEdit");
+		Gdx.graphics.setTitle(title + " - DelvEdit - " + Game.VERSION);
 	}
 }

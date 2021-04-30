@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/strings.dat",
     "screens.SplashScreen.pressKeyToStart": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Press any key to start",
@@ -23,6 +24,11 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Options",
         "comment": "Text for the options button, which will open the options menu."
+    },
+    "screens.MainMenuScreen.modsButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Mods",
+        "comment": "Text for the mods button, which will open the mods menu."
     },
     "screens.MainMenuScreen.selectSaveSlot": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
@@ -128,6 +134,11 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "UI Size ",
         "comment": "Label for UI size slider."
+    },
+    "screens.OptionsScreen.handLagLabel": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Hand Lag ",
+        "comment": "Label for hand lag slider."
     },
     "screens.OptionsScreen.showHudLabel": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",

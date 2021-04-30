@@ -1,4 +1,5 @@
 {
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/animations.dat",
     "animations": {
         "swordAttack": {
             "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",

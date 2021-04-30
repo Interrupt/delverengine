@@ -51,7 +51,7 @@ import java.util.concurrent.Executors;
 
 public class Game {
 	/** Engine version */
-	public static String VERSION = "v1.3.0";
+	public static String VERSION = "v1.4.0";
 
     /** The save game version, gets saved in the player */
     public static int SAVE_VERSION = 1;

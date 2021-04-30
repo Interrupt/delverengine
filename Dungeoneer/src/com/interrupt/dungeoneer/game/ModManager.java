@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Json;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.api.steam.workshop.WorkshopModData;
 import com.interrupt.dungeoneer.entities.Door;
@@ -14,6 +13,7 @@ import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
+import com.interrupt.dungeoneer.scripting.ScriptLoader;
 import com.interrupt.dungeoneer.scripting.ScriptingApi;
 import com.interrupt.managers.*;
 import com.interrupt.utils.JsonUtil;
@@ -31,7 +31,7 @@ public class ModManager {
 
     private transient Array<String> excludeFiles = new Array<String>();
 
-    private static ScriptingApi scriptingApi = null;
+    private static ScriptingApi scriptingApi = new ScriptLoader();
 
     public ModManager() { }
 

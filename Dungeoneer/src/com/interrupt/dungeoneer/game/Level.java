@@ -1288,7 +1288,6 @@ public class Level {
 					}
 				}
 				else if(marker.type == Markers.door) {
-					// make a door
 					Door door = null;
 
 					if(genTheme != null && genTheme.doors != null && genTheme.doors.size > 0) {
@@ -1306,9 +1305,9 @@ public class Level {
 					SpawnEntity(door);
 					door.placeFromPrefab(this);
 
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
+					// Make sure traps cannot spawn around door locations.
+					if(canMakeTrap != null && x >= 0 && x < width && y >= 0 && y < height) {
+						canMakeTrap[x + y * width] = false;
 					}
 				}
 				else if(marker.type == Markers.decor || (marker.type == Markers.decorPile && genTheme != null && genTheme.decorations != null)) {
@@ -1613,7 +1612,7 @@ public class Level {
 		if(tiles[x + y * width] == null) return Tile.solidWall;
 		return tiles[x + y * width];
 	}
-	
+
 	public void setTile(int x, int y, Tile t) {
 		if(x >= 0 && x < width && y >= 0 && y < height) {
 			tiles[x + y * width] = t;
@@ -3022,7 +3021,7 @@ public class Level {
 	    Ray r = calcRay.set(t_canSeeStart, t_canSeeEnd);
 	    Array<Entity> possibles = getEntitiesAlongLine(x, y, x2, y2);
 	    
-	    // find all the doors, should block vision
+	    // find all the doors or movers, should block vision
 	    for(Entity e : possibles) {
 	    	if(e instanceof Door) {
 	    		Door d = (Door)e;
@@ -3035,7 +3034,15 @@ public class Level {
 						return false;
 					}
 	    		}
-	    	}
+	    	} else if (e instanceof Mover) {
+				Mover m = (Mover)e;
+				if(m.isSolid) {
+					BoundingBox b = getAABB(t_intersectCheck1, e);
+					if(Intersector.intersectRayBounds(r, b, t_canSeeIntersection)) {
+						return false;
+					}
+				}
+			}
 	    }
 	    
 	    return true;
