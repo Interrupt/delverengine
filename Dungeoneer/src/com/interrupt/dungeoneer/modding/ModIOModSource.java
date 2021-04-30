@@ -1,11 +1,14 @@
 package com.interrupt.dungeoneer.modding;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Net.HttpRequest;
+import com.badlogic.gdx.net.HttpRequestBuilder;
 import com.badlogic.gdx.files.FileHandle;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.modding.modio.*;
 import com.interrupt.dungeoneer.net.DownloadListenerAdapter;
 import com.interrupt.dungeoneer.net.ObjectResponseListener;
-import com.interrupt.dungeoneer.net.RestEndpoint;
 import com.interrupt.utils.DownloadUtils;
 import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.ZipUtils;
@@ -14,17 +17,11 @@ public class ModIOModSource extends LocalFileSystemModSource {
     private int gameID;
     private String apiKey;
 
-    private final String rootPath = "https://api.test.mod.io/v1";
-    private transient RestEndpoint api;
-    private transient String allModsRoute;
     private transient String downloadsPath;
     private transient String modsPath;
 
     @Override
     public void init() {
-        api = new RestEndpoint(rootPath, apiKey);
-        allModsRoute = "/games/" + gameID + "/mods";
-
         if (root == null || root.isEmpty()) {
             root = ".mods/modio/";
         }
@@ -43,7 +40,16 @@ public class ModIOModSource extends LocalFileSystemModSource {
     }
 
     public void refresh() {
-        api.get(allModsRoute, new ObjectResponseListener<GetMods>(GetMods.class) {
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
+        HttpRequest request = requestBuilder
+            .newRequest()
+            .method(Net.HttpMethods.GET)
+            .header("User-Agent", "delverengine/" + Game.VERSION)
+            .url("https://api.test.mod.io/v1/games/" + gameID + "/mods")
+            .content("api_key=" + apiKey)
+            .build();
+
+        Gdx.net.sendHttpRequest(request, new ObjectResponseListener<GetMods>(GetMods.class) {
             @Override
             public void handleObjectResponse(GetMods mods) {
                 for (ModObject mod : mods.data) {
