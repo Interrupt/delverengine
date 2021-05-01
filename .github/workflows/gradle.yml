@@ -12,7 +12,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -33,6 +32,10 @@ jobs:
     - name: Build DelvEdit
       run: ./gradlew DelvEdit:dist
 
+  dist:
+    runs-on: ubuntu-latest
+  
+    steps:
     - name: Bundle Game Jar
       uses: actions/upload-artifact@v2
       with:
