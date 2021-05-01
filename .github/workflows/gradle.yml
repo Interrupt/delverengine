@@ -33,10 +33,14 @@ jobs:
     - name: Build DelvEdit
       run: ./gradlew DelvEdit:dist
 
-    - name: Upload Jars
+    - name: Bundle Game Jar
       uses: actions/upload-artifact@v2
       with:
         name: jars
-        path: |
-          DungeoneerDesktop/build/libs/game.jar
-          DelvEdit/build/libs/editor.jar
+        path: DungeoneerDesktop/build/libs/game.jar
+
+    - name: Bundle Editor Jar
+      uses: actions/upload-artifact@v2
+      with:
+        name: jars
+        path: DelvEdit/build/libs/editor.jar
