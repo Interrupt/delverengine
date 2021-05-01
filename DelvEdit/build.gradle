@@ -27,6 +27,7 @@ task dist(type: Jar) {
     manifest {
         attributes 'Main-Class': project.mainClassName
     }
+    archiveName('editor.jar')
 
     dependsOn 'processResources'
     dependsOn configurations.runtimeClasspath
