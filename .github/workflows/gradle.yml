@@ -16,16 +16,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
         java-version: '8'
         distribution: 'adopt'
+        
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build Dungeoneer
-      run: ./gradlew Dungeoneer:build
+      
     - name: Build DungeoneerDesktop
-      run: ./gradlew DungeoneerDesktop:build
+      run: ./gradlew DungeoneerDesktop:dist
+      
     - name: Build DelvEdit
-      run: ./gradlew DelvEdit:build
+      run: ./gradlew DelvEdit:dist
+
+    - name: Upload Jars
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: |
+          DungeoneerDesktop/build/libs/DungeoneerDesktop*.jar
+          DelvEdit/build/libs/DelvEdit*.jar
