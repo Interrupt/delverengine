@@ -16,7 +16,12 @@ public class JsonUtil {
             return;
         }
 
-        file.writeString(toJson(object), false, "UTF-8");
+        try {
+            file.writeString(toJson(object), false, "UTF-8");
+        }
+        catch (Exception ex) {
+            Gdx.app.log("Serialization", ex.getMessage());
+        }
     }
 
     /** Serializes an object to a standardized JSON format. */

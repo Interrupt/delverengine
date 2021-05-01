@@ -10,6 +10,8 @@ import com.interrupt.dungeoneer.input.GamepadDefinition;
 import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.OSUtils;
 
+import java.util.function.Supplier;
+
 /** Game options container class. */
 public class Options {
     transient public static Options instance;
@@ -169,10 +171,13 @@ public class Options {
     public static void loadOptions() {
         FileHandle file = Game.getFile(getOptionsFilePath());
 
-        instance = JsonUtil.fromJson(Options.class, file, () -> {
-            Options o = new Options();
-            JsonUtil.toJson(o, file);
-            return o;
+        instance = JsonUtil.fromJson(Options.class, file, new Supplier<Options>() {
+            @Override
+            public Options get() {
+                Options o = new Options();
+                JsonUtil.toJson(o, file);
+                return o;
+            }
         });
 
         SetKeyboardBindings();

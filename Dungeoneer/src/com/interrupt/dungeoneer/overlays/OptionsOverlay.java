@@ -17,6 +17,8 @@ import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
 import com.interrupt.utils.JsonUtil;
 
+import java.util.function.Supplier;
+
 public class OptionsOverlay extends WindowOverlay {
 
     private Slider musicVolume;
@@ -211,7 +213,12 @@ public class OptionsOverlay extends WindowOverlay {
         }
         else {
             FileHandle file = Game.findInternalFileInMods("data/player.dat");
-            playerData = JsonUtil.fromJson(Player.class, file, Player::new);
+            playerData = JsonUtil.fromJson(Player.class, file, new Supplier<Player>() {
+                @Override
+                public Player get() {
+                    return new Player();
+                }
+            });
         }
 
         if (playerData.handLagStrength > 0f) {
