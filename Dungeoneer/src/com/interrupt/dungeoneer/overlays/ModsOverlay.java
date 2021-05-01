@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.overlays;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -42,6 +43,8 @@ public class ModsOverlay extends WindowOverlay {
 		};
 
 		ui.addListener(listener);
+
+		Game.modManager.refresh();
 	}
 
 	@Override
@@ -62,7 +65,7 @@ public class ModsOverlay extends WindowOverlay {
 				OverlayManager.instance.remove(thisOverlay);
 			}
 		});
-		
+
 		Table contentTable = new Table();
 
 	    Label headerText = new Label("Manage Mods",skin.get(LabelStyle.class));
@@ -109,14 +112,14 @@ public class ModsOverlay extends WindowOverlay {
 		}
 
 		contentTable.add(scrollPane).fillX().expand().maxHeight(135).row();
-	    
+
 	    contentTable.add(backBtn).align(Align.left).expand().padTop(8);
 
 	    ui.setScrollFocus(scrollPane);
-	    
+
 	    buttonOrder.clear();
 	    buttonOrder.add(backBtn);
-		
+
 		return contentTable;
 	}
 }

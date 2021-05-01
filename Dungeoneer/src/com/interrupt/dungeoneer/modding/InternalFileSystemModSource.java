@@ -12,4 +12,9 @@ public class InternalFileSystemModSource extends AbstractFileSystemModSource {
     protected FileHandle getRootHandle() {
         return Game.getInternal(root);
     }
+
+    @Override
+    public void init() {
+
+    }
 }

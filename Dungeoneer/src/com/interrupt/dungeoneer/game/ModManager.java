@@ -13,6 +13,7 @@ import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
 import com.interrupt.dungeoneer.modding.InternalFileSystemModSource;
+import com.interrupt.dungeoneer.modding.ModInfo;
 import com.interrupt.dungeoneer.modding.ModSource;
 import com.interrupt.dungeoneer.modding.SteamWorkshopModSource;
 import com.interrupt.dungeoneer.scripting.ScriptingApi;
@@ -75,6 +76,10 @@ public class ModManager {
                 ModManager loaded = JsonUtil.fromJson(ModManager.class, progressionFile);
                 sources = loaded.sources;
                 modsEnabled = loaded.modsEnabled;
+
+                for (ModSource source : sources) {
+                    source.init();
+                }
             }
         } catch (Exception e) {
             Gdx.app.error("DelverMods", e.getMessage());
@@ -481,11 +486,24 @@ public class ModManager {
         }
     }
 
+    public ModInfo getModInfo(String path) {
+        try {
+            return JsonUtil.fromJson(ModInfo.class, new FileHandle(path).child("modInfo.json"));
+        }
+        catch (Exception ignored) {
+            return null;
+        }
+    }
+
     public String getModName(String modFolder) {
         if(Game.modManager != null) {
             WorkshopModData data = getDataForMod(modFolder);
             if(data != null && data.title != null && !data.title.isEmpty())
                 return data.title;
+
+            ModInfo modInfo = getModInfo(modFolder);
+            if (modInfo != null && modInfo.name != null && !modInfo.name.isEmpty())
+                return modInfo.name;
         }
 
         FileHandle path = new FileHandle(modFolder);
