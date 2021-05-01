@@ -26,7 +26,10 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
-    - name: Build DungeoneerDesktop
+    - name: Build DungeoneerAndroid Debug
+      run: ./gradlew DungeoneerAndroid:assembleDebug
+    
+    - name: Build DungeoneerAndroid Release
       run: ./gradlew DungeoneerAndroid:assembleRelease
       
     - name: Bundle Debug Apk
@@ -38,5 +41,5 @@ jobs:
     - name: Bundle Release Apk
       uses: actions/upload-artifact@v2
       with:
-        name: jars
+        name: apks
         path: DungeoneerAndroid/build/outputs/apk/release/DungeoneerAndroid-release-unsigned.apk
