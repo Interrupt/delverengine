@@ -1126,10 +1126,9 @@ public class Game {
         }
 
         if (OSUtils.isMobile() && Gdx.files != null) {
-            // External storage always throws an excpetion regardless of permissions.
-            /*if (Gdx.files.isExternalStorageAvailable()) {
+            if (Gdx.files.isExternalStorageAvailable()) {
                 return Gdx.files.external("Delver/" + file);
-            }*/
+            }
 
             return Gdx.files.local("Delver/" + file);
         }
