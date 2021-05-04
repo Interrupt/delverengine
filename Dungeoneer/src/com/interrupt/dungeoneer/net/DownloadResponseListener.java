@@ -5,7 +5,6 @@ import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.net.HttpStatus;
-import com.badlogic.gdx.utils.StreamUtils;
 import com.interrupt.dungeoneer.game.Game;
 
 import java.io.IOException;
@@ -33,7 +32,9 @@ public class DownloadResponseListener implements HttpResponseListener {
         FileHandle file = Game.getFile(filename);
         OutputStream output = file.write(false);
 
-        long bytesTotal = Long.parseLong(httpResponse.getHeader("Content-Length"));
+        String contentLength = httpResponse.getHeader("Content-Length");
+        boolean supportsProgress = !contentLength.isEmpty();
+        long bytesTotal = supportsProgress ? Long.parseLong(contentLength) : 0;
         byte[] buffer = new byte[8192];
         int bytesRead = -1;
         long bytesReceived = 0;
@@ -45,7 +46,9 @@ public class DownloadResponseListener implements HttpResponseListener {
                 output.write(buffer, 0, bytesRead);
                 bytesReceived += bytesRead;
 
-                callback.progress(new DownloadProgress(bytesReceived, bytesTotal));
+                if (supportsProgress) {
+                    callback.progress(new DownloadProgress(bytesReceived, bytesTotal));
+                }
             }
 
             Gdx.app.log("Network", "Download complete: " + filename);
