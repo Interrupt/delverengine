@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.modding;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.interrupt.dungeoneer.game.Game;
@@ -66,7 +67,7 @@ public class GitHubRepoModSource extends LocalFileSystemModSource {
                             FileHandle modInfoPath = root.child("modInfo.json");
                             if (!modInfoPath.exists()) {
                                 ModInfo modInfo = new ModInfo();
-                                modInfo.id = 0;
+                                modInfo.id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
                                 modInfo.name = root.nameWithoutExtension();
 
                                 JsonUtil.toJson(modInfo, modInfoPath);
