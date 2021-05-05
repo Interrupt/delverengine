@@ -62,6 +62,7 @@ public class ModIOModSource extends LocalFileSystemModSource {
                         DownloadUtils.downloadFile(
                             url,
                             filepath,
+                            null,
                             new DownloadListenerAdapter() {
                                 @Override
                                 public void completed(FileHandle file) {
