@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.overlays;
 
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -10,11 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.Audio;
-import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.ModManager;
-import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.managers.StringManager;
 
 public class ModsOverlay extends WindowOverlay {
@@ -54,7 +49,7 @@ public class ModsOverlay extends WindowOverlay {
 
 		final Overlay thisOverlay = this;
 
-		TextButton backBtn = new TextButton(" " + StringManager.get("overlays.PauseOverlay.backButton") + " ", skin.get(TextButtonStyle.class));
+		TextButton backBtn = new TextButton(" " + StringManager.get("overlays.ModsOverlay.backButton") + " ", skin.get(TextButtonStyle.class));
 		backBtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -62,7 +57,7 @@ public class ModsOverlay extends WindowOverlay {
 				OverlayManager.instance.remove(thisOverlay);
 			}
 		});
-		
+
 		Table contentTable = new Table();
 
 	    Label headerText = new Label("Manage Mods",skin.get(LabelStyle.class));
@@ -109,14 +104,14 @@ public class ModsOverlay extends WindowOverlay {
 		}
 
 		contentTable.add(scrollPane).fillX().expand().maxHeight(135).row();
-	    
+
 	    contentTable.add(backBtn).align(Align.left).expand().padTop(8);
 
 	    ui.setScrollFocus(scrollPane);
-	    
+
 	    buttonOrder.clear();
 	    buttonOrder.add(backBtn);
-		
+
 		return contentTable;
 	}
 }
