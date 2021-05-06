@@ -4,20 +4,19 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.input.Actions;
-import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.managers.StringManager;
 
 public class PauseOverlay extends WindowOverlay {
-	
+
 	public PauseOverlay() { }
 
 	@Override
@@ -35,7 +34,7 @@ public class PauseOverlay extends WindowOverlay {
 	public void onShow() {
 		super.onShow();
 		Audio.setMusicVolume(0.3f);
-		
+
 		final Overlay thisOverlay = this;
 		InputListener listener = new com.badlogic.gdx.scenes.scene2d.InputListener() {
 			@Override
@@ -57,9 +56,9 @@ public class PauseOverlay extends WindowOverlay {
 
 	@Override
 	public Table makeContent() {
-		
+
 		final Overlay thisOverlay = this;
-		
+
 		TextButton backBtn = new TextButton(" " + StringManager.get("overlays.PauseOverlay.backButton") + " ", skin.get(TextButtonStyle.class));
 		backBtn.addListener(new ClickListener() {
 			@Override
@@ -76,7 +75,7 @@ public class PauseOverlay extends WindowOverlay {
 				OverlayManager.instance.push(new OptionsOverlay());
 			}
 		});
-		
+
 		TextButton controlsBtn = new TextButton(" " + StringManager.get("overlays.PauseOverlay.quitButton") + " ", skin.get(TextButtonStyle.class));
 		controlsBtn.addListener(new ClickListener() {
 			@Override
@@ -85,24 +84,23 @@ public class PauseOverlay extends WindowOverlay {
 				GameApplication.ShowMainMenuScreen();
 			}
 		});
-		
+
 		Table contentTable = new Table();
 	    Label pauseText = new Label(StringManager.get("overlays.PauseOverlay.pauseHeader"),skin.get(LabelStyle.class));
-	    contentTable.add(pauseText);
+	    contentTable.add(pauseText).padBottom(8f);
 	    contentTable.row();
-	    
-	    contentTable.add(backBtn);
-		contentTable.add(optionsBtn).padLeft(4).padRight(4);
-	    contentTable.add(controlsBtn);
-	    
-	    contentTable.getCell(pauseText).padBottom(8f).colspan(3);
-	    contentTable.getCell(backBtn);
-	    
+
+	    contentTable.add(backBtn).padBottom(1f).fillX();
+	    contentTable.row();
+		contentTable.add(optionsBtn).padBottom(1f).fillX();
+	    contentTable.row();
+	    contentTable.add(controlsBtn).fillX();
+
 	    buttonOrder.clear();
 	    buttonOrder.add(backBtn);
 	    buttonOrder.add(optionsBtn);
 	    buttonOrder.add(controlsBtn);
-		
+
 		return contentTable;
 	}
 }
