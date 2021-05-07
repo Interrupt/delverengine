@@ -530,9 +530,14 @@
         "localizedName": "CLOSE",
         "comment": "Text for the close button on the message overlay."
     },
-    "overlays.PauseOverlay.backButton": {
+    "overlays.ModsOverlay.backButton": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Back",
+        "comment": "Text for the back button mod manager."
+    },
+    "overlays.PauseOverlay.backButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Resume",
         "comment": "Text for the back button on the pause screen. Goes back to playing the game."
     },
     "overlays.PauseOverlay.quitButton": {
