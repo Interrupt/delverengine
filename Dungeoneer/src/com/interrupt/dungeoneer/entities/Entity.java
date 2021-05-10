@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TagSet;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.collision.Collision;
@@ -29,6 +30,9 @@ public class Entity {
 
 	@EditorProperty( group = "Visual" )
 	public Drawable drawable;
+
+	@EditorProperty
+	public TagSet tags = new TagSet();
 
 	/** Position x-component. */
 	public float x;
