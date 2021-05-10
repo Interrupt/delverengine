@@ -20,8 +20,12 @@ public class GeneratorInfo {
     public Level lastGeneratedLevelTemplate;
     public Level lastGeneratedRoomTemplate;
 
+    public RoomGeneratorSettings roomGeneratorSettings;
+
     public GeneratorInfo() {
         refresh();
+
+        roomGeneratorSettings = new RoomGeneratorSettings();
     }
 
     public void refresh() {
