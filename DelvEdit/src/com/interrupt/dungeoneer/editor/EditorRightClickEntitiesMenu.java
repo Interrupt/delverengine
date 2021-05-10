@@ -360,6 +360,8 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 		Editor.app.refreshLights();
 		Editor.app.history.saveState(Editor.app.level);
+
+		Editor.app.updateEditorHierarchyWindow();
 	}
 
     public Array<Entity> baseEntities() {

@@ -312,6 +312,7 @@ public class EditorFile {
 
             Editor.app.clearEntitySelection();
             Editor.app.viewSelected();
+            Editor.app.updateEditorHierarchyWindow();
         } else {
             Editor.options.removeRecentlyOpenedFile(file.path());
             showWarningDialog("File does not exist. Cannot load '" + name + "'.");

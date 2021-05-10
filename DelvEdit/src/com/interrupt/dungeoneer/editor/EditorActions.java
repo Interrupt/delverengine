@@ -56,6 +56,7 @@ public class EditorActions {
     public ActionListener flattenCeiling;
     public ActionListener toggleSimulation;
     public ActionListener viewSelectedAction;
+    public ActionListener showHierarchyAction;
 
     public EditorActions() {
         initActions();
@@ -65,6 +66,7 @@ public class EditorActions {
         newAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 Editor.app.file.create();
+                Editor.app.updateEditorHierarchyWindow();
             }
         };
 
@@ -84,6 +86,7 @@ public class EditorActions {
         openAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 Editor.app.file.open();
+                Editor.app.updateEditorHierarchyWindow();
             }
         };
 
@@ -139,6 +142,7 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Editor.app.doDelete();
+                Editor.app.updateEditorHierarchyWindow();
             }
         };
 
@@ -167,6 +171,7 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Editor.app.undo();
+                Editor.app.updateEditorHierarchyWindow();
             }
         };
 
@@ -174,6 +179,7 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Editor.app.redo();
+                Editor.app.updateEditorHierarchyWindow();
             }
         };
 
@@ -195,6 +201,7 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Editor.app.clearSelection();
+                Editor.app.ui.editorHierarchyWindow.deselect();
             }
         };
 
@@ -279,6 +286,7 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 EditorClipboard.copy();
+                Editor.app.updateEditorHierarchyWindow();
             }
         };
 
@@ -286,6 +294,7 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 EditorClipboard.paste();
+                Editor.app.updateEditorHierarchyWindow();
             }
         };
 
@@ -398,6 +407,13 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Editor.app.flattenCeiling();
+            }
+        };
+
+        showHierarchyAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Editor.app.showEditorHierarchyWindow();
             }
         };
     }
