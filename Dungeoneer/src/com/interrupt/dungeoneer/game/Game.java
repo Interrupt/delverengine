@@ -625,6 +625,7 @@ public class Game {
 			level.fogEnd = warp.fogEnd;
 			level.fogStart = warp.fogStart;
 			level.skyLightColor = new Color(warp.skyLightColor);
+			level.trapSpawnChance = warp.trapSpawnChance;
 			level.viewDistance = level.fogEnd + 2;
 			level.isDirty = true;
 			level.levelName = warp.levelName;

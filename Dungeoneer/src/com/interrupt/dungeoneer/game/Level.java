@@ -162,6 +162,9 @@ public class Level {
 
 	/** Array of trap prefab names. */
 	public String[] traps = {"ProximitySpikes"};
+
+	/** Chance to spawn a trap at a valid location. */
+	public float trapSpawnChance = 0.012f;
 	
 	private float monsterSpawnTimer = 0;
 	
@@ -295,6 +298,7 @@ public class Level {
 		load(Source.EDITOR);
 	}
 	
+	/** Prepares a level for testing in the editor. */
 	public void loadFromEditor() {
 		needsSaving = false;
 		spawnMonsters = false;
@@ -327,11 +331,108 @@ public class Level {
 		genTheme = DungeonGenerator.GetGenData(theme);
 
 		loadSurprises(genTheme);
-
 		initPrefabs(Source.LEVEL_START);
-
-		addEntitiesFromMarkers(editorMarkers, new Array<>(), new Boolean[width * height], new Array<>(), genTheme, 0, 0);
 		decorateLevel();
+
+		Array<Vector2> stairLocations = new Array<>();
+		Array<Vector2> trapAvoidLocs = new Array<>();
+		Boolean[] canMakeTrap = new Boolean[width*height];
+		for(int i = 0; i < width * height; i++) canMakeTrap[i] = true;
+
+		addEntitiesFromMarkers(editorMarkers, trapAvoidLocs, canMakeTrap, stairLocations, genTheme, 0, 0);
+
+		if (generated) {
+			Random levelRand = new Random();
+
+			if(stairLocations.size > 0) {
+				trapAvoidLocs.addAll(stairLocations);
+
+				// if this is the first floor, only add the stairs down. Otherwise make up and down
+				Vector2 downLoc = stairLocations.get(levelRand.nextInt(stairLocations.size));
+				stairLocations.removeValue(downLoc, true);
+
+				// stairs down
+				Tile downTile = getTile((int) downLoc.x, (int) downLoc.y);
+				down = spawnStairs(StairDirection.down, (int) downLoc.x, (int) downLoc.y, downTile.floorHeight);
+
+				for(int i = 0; i< stairLocations.size; i++) {
+					if(objectivePrefab != null && !objectivePrefab.isEmpty()) {
+						// We have an objective to try to spawn on this level!
+						try {
+							String[] prefabInfo = objectivePrefab.split("/+");
+							Entity objective = EntityManager.instance.getEntity(prefabInfo[0], prefabInfo[1]);
+							if(objective != null) {
+								objective.x = stairLocations.get(i).x + 0.5f;
+								objective.y = stairLocations.get(i).y + 0.5f;
+								entities.add(objective);
+							}
+						}
+						catch(Exception ex) {
+							Gdx.app.error("Delver", "Could not spawn objective item: " + objectivePrefab);
+						}
+
+						objectivePrefab = null;
+					}
+					else {
+						// Make good loot!
+						int num = levelRand.nextInt(5);
+						Item itm = null;
+
+						if (num == 0) {
+							itm = Game.GetItemManager().GetRandomArmor(Game.instance.player.level + levelRand.nextInt(2));
+						} else if (num == 1) {
+							itm = Game.GetItemManager().GetRandomWeapon(Game.instance.player.level + levelRand.nextInt(2));
+						} else if (num == 2) {
+							itm = Game.GetItemManager().GetRandomWand();
+						} else if (num == 3) {
+							itm = Game.GetItemManager().GetRandomPotion();
+						} else if (num == 4) {
+							itm = Game.GetItemManager().GetRandomRangedWeapon(Game.instance.player.level + levelRand.nextInt(2));
+						}
+
+						if (itm != null) {
+							itm.x = stairLocations.get(i).x + 0.5f;
+							itm.y = stairLocations.get(i).y + 0.5f;
+							entities.add(itm);
+						}
+					}
+				}
+			}
+	
+			for(int x = 0; x < width; x++) {
+				for(int y = 0; y < width; y++) {
+					Tile c = getTileOrNull(x,y);
+					
+					// make traps on empty and flat areas
+					if(c != null && canMakeTrap[x + y * width] && c.CanSpawnHere() && c.isFlat()) {
+						boolean makeTrap = levelRand.nextFloat() <= trapSpawnChance;
+						
+						if(makeTrap) {
+							boolean canMake = true;
+							for(Vector2 avoidLoc : trapAvoidLocs) {
+								if( Math.abs(x - avoidLoc.x) < 6 && Math.abs(y - avoidLoc.y) < 6 ) {
+									canMake = false;
+								}
+							}
+							
+							if(canMake && traps != null && traps.length > 0) {
+								Prefab p = new Prefab("Traps", traps[levelRand.nextInt(traps.length)]);
+								p.x = x + 0.5f;
+								p.y = y + 0.5f;
+								p.z = c.getFloorHeight(x, y) + 0.5f;
+								p.collision.set(0.49f, 0.49f, 0.5f);
+	
+								// Make sure there is actually room to do this
+								if(checkEntityCollision(p.x, p.y, p.z, p.collision, null) == null) {
+									entities.add(p);
+									p.init(this, Source.LEVEL_START);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
 		init(Source.LEVEL_START);
 
@@ -342,8 +443,6 @@ public class Level {
 	}
 
 	public void generate(Source source) {
-		Random levelRand = new Random();
-
 		entities = new Array<>();
 		non_collidable_entities = new Array<>();
 		static_entities = new Array<>();
@@ -396,69 +495,12 @@ public class Level {
 			entities = generatedLevel.entities;
 		}
 
-		// when generating, keep track of where the possible stair locations are
-		Array<Vector2> stairLocations = new Array<Vector2>();
-
 		Tile.solidWall.wallTex = (byte) defaultWallTex;
 		Tile.solidWall.wallBottomTex = (byte) defaultWallTex;
 		Tile.solidWall.ceilTex = (byte) defaultCeilTex;
 		Tile.solidWall.floorTex = (byte) defaultFloorTex;
 
-		// mark some locations as trap-free
-		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
-
-		initPrefabs(Source.EDITOR);
-
-		// keep a list of places to avoid when making traps
-		Boolean canMakeTrap[] = new Boolean[width * height];
-		for(int i = 0; i < width * height; i++) canMakeTrap[i] = true;
-
-		if(stairLocations != null && stairLocations.size > 0) {
-			trapAvoidLocs.addAll(stairLocations);
-		}
-
-		// place stairs if needed, need to know their locations before generating entities
-		if(stairLocations.size > 0 && generated && source != Source.EDITOR) {
-			if(makeStairsDown) {
-				// if this is the first floor, only add the stairs down. Otherwise make up and down
-				Vector2 downLoc = stairLocations.get(levelRand.nextInt(stairLocations.size));
-				stairLocations.removeValue(downLoc, true);
-
-				// stairs down
-				Tile downTile = getTile((int) downLoc.x, (int) downLoc.y);
-			}
-		}
-
-		for(int x = 0; x < width; x++) {
-			for(int y = 0; y < width; y++) {
-				Tile c = getTileOrNull(x,y);
-
-				// make traps on empty and flat areas
-				if(c != null && canMakeTrap[x + y * width] && c.CanSpawnHere() && c.isFlat()) {
-
-					boolean makeTrap = levelRand.nextFloat() <= 0.012f;
-
-					if(makeTrap) {
-
-						boolean canMake = true;
-						for(Vector2 avoidLoc : trapAvoidLocs) {
-							if( Math.abs(x - avoidLoc.x) < 6 && Math.abs(y - avoidLoc.y) < 6 ) {
-								canMake = false;
-							}
-						}
-
-						if(canMake && traps != null && traps.length > 0) {
-							Prefab p = new Prefab("Traps", traps[levelRand.nextInt(traps.length)]);
-							p.x = x + 0.5f;
-							p.y = y + 0.5f;
-							p.z = c.getFloorHeight(x, y) + 0.5f;
-							entities.add(p);
-							p.init(this, source);
-						}
-					}
-				}
-			}
-		}
+		initPrefabs(source);
 	}
 
 	private void overrideTileTextures(Tile cur) {
@@ -730,7 +772,7 @@ public class Level {
 					// make traps on empty and flat areas
 					if(c != null && canMakeTrap[x + y * width] && c.CanSpawnHere() && c.isFlat()) {
 						
-						boolean makeTrap = levelRand.nextFloat() <= 0.012f;
+						boolean makeTrap = levelRand.nextFloat() <= trapSpawnChance;
 						
 						if(makeTrap) {
 							

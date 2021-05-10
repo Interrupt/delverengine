@@ -1,22 +1,13 @@
 package com.interrupt.dungeoneer.entities.triggers;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.DynamicLight;
-import com.interrupt.dungeoneer.entities.Particle;
-import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.PositionedSound;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.game.TravelInfo;
 import com.interrupt.managers.StringManager;
 
-import java.util.Random;
 import java.util.UUID;
 
 public class TriggeredWarp extends Trigger {
@@ -73,6 +64,9 @@ public class TriggeredWarp extends Trigger {
 	public Color skyLightColor = new Color(0.2f, 0.2f, 0.3f, 1.0f);
 
 	@EditorProperty(group = "Level Appearance")
+	public float trapSpawnChance = 0.012f;
+
+	@EditorProperty(group = "Level Appearance")
 	public String loadingScreenBackground = null;
 
 	@EditorProperty( group = "Level Audio", type = "FILE_PICKER", params = "audio", include_base = false )
@@ -118,6 +112,7 @@ public class TriggeredWarp extends Trigger {
 		}
 	}
 
+	@Override
 	public String getUseVerb() {
 		String useVerbLocalized = StringManager.get("triggers.Trigger.useVerbs." + useVerb);
 		if (useVerbLocalized.startsWith("triggers.")) {
@@ -129,10 +124,10 @@ public class TriggeredWarp extends Trigger {
 
 	@Override
 	public void init(Level level, Level.Source source) {
-		if(source == Level.Source.LEVEL_START) {
-			if(travelPath == null)
-				travelPath = UUID.randomUUID().toString();
+		if(source == Level.Source.LEVEL_START && travelPath == null) {
+			travelPath = UUID.randomUUID().toString();
 		}
+
 		super.init(level, source);
 	}
 }
