@@ -37,7 +37,7 @@ public class Monster extends Actor implements Directional {
 		None,
 		WaitToSee
 	}
-	
+
 	public Integer origtex = null;
 	private float tickcount = 0;
 
@@ -63,7 +63,7 @@ public class Monster extends Actor implements Directional {
 	/** Move speed. */
 	@EditorProperty
 	public float speed;
-	
+
 	public float targetx, targety, targetz;
 	public float last_targetx, last_targety;
 	public float last_picked_targetx, last_picked_targety;
@@ -71,9 +71,9 @@ public class Monster extends Actor implements Directional {
 	/** Does monster wander around? */
 	@EditorProperty
 	public boolean wanders = true;
-	
+
 	public transient boolean canSafelyNavigateToTarget = true;
-	
+
 	private transient float nextTargetf = 0f;
 
 	/** Time interval between monster attacks. */
@@ -99,11 +99,11 @@ public class Monster extends Actor implements Directional {
 	/** Vertical offset for projectile. */
 	@EditorProperty
 	public float projectileOffset = 0f;
-	
+
 	private float attacktimer = 0;
 	private float rangedAttackTimer = 0;
 	private float regenManaTimer = 0;
-	
+
 	private float stuntime = 0;
 	private float postAttackMoveWaitTimer = 0;
 
@@ -115,10 +115,10 @@ public class Monster extends Actor implements Directional {
 
 	/** Does monster attempt to keep distance between themselves and the player? */
 	public boolean keepDistance = false;
-	
+
 	private int lastWander = 0;
 	private boolean waiting = false;
-	
+
 	private float bleedTimer = 0;
 
 	/** Monster name. */
@@ -127,7 +127,7 @@ public class Monster extends Actor implements Directional {
 	/** Does monster chase after it's target? */
 	@EditorProperty
 	public Boolean chasetarget = true;
-	
+
 	public boolean ranged = false;
 
 	/** Does monster have an attack animation? */
@@ -200,7 +200,7 @@ public class Monster extends Actor implements Directional {
 
 	/** Monster rotation. */
 	public Vector3 rotation = new Vector3(Vector3.X);
-	
+
 	private float soundVolume = 0.45f;
 
 	private float deathDelay = 22f;
@@ -238,7 +238,7 @@ public class Monster extends Actor implements Directional {
 
 	/** Decal to place when monster is hurt. */
 	protected ProjectedDecal bloodSplatterDecal = new ProjectedDecal(ArtType.sprite, 17, 0.5f);
-	
+
 	private transient float targetdist;
 	private transient float pxdir;
 	private transient float pydir;
@@ -289,6 +289,9 @@ public class Monster extends Actor implements Directional {
 	public float spawnMomentumTransfer = 1.0f;
 
 	private transient Entity attackTarget = null;
+    /** Sound played while monster is idle. */
+    @EditorProperty
+    private Float viewDistance = 17.0f;
 
 	public Monster() {
 		// for ranged monsters
@@ -296,12 +299,12 @@ public class Monster extends Actor implements Directional {
 		mp = maxMp;
 
 		stepHeight = 0.4f;
-		
+
 		attacktimer = 30;
 		rangedAttackTimer = 30;
-		
-		mass = 2f;
 
+		mass = 2f;
+        viewDistance = 17.0f;
 		collision.x = 0.3f;
 		collision.y = 0.3f;
 		collision.z = 0.6f;
@@ -318,24 +321,24 @@ public class Monster extends Actor implements Directional {
 		artType = ArtType.entity;
 		origtex = tex;
 		isSolid = true;
-		
+
 		collision.x = 0.3f;
 		collision.y = 0.3f;
 		collision.z = 0.6f;
-		
+
 		bounces = false;
-		
+
 		Random random = new Random();
 		tickcount = random.nextInt(1000);
-		
+
 		speed = 0.004f;
-		
+
 		targetx = x;
 		targety = y;
-		
+
 		stepHeight = 0.4f;
 	}
-	
+
 	public void Init(Level level, int playerLevel)
 	{
 		// If the player is scaling faster than the level difficulty, bump up a little bit
@@ -358,7 +361,7 @@ public class Monster extends Actor implements Directional {
 
 		this.level = Math.max(calcedDifficulty, baseLevel);
 		initLevel( this.level );
-		
+
 		this.init(level, Source.LEVEL_START);
 
 		ranged = true;
@@ -422,13 +425,13 @@ public class Monster extends Actor implements Directional {
 		if(origtex == null) origtex = tex;
 		tickStatusEffects(delta);
 		stepUpTick(delta);
-		
+
 		Player player = GameManager.getGame().player;
 		if(Math.abs(player.x - x) > 17 || Math.abs(player.y - y) > 17) {
 			if(walkAmbientSound != null) walkAmbientSound.pause();
 			return;
 		}
-		
+
 		// sorry mob, you be dead
 		if(!isAlive())
 		{
@@ -440,27 +443,27 @@ public class Monster extends Actor implements Directional {
 			else {
 				die(level);
 			}
-			
+
 			super.tick(level, delta);
 			return;
 		}
-		
+
 		if(hp <= maxHp / 2.0)
 		{
 			bleed(level);
 		}
-		
+
 		// run away when health is low
 		if(!fleeing && hp <= maxHp / 4.0f) {
 			Audio.playPositionedSound(fleeSound, new Vector3(x, y, z), soundVolume, 1f, 12f);
 			fleeing = true;
 		}
-		
+
 		// tick some timers (TODO: MAKE A TIMER HELPER)
 		if(attacktimer > 0) attacktimer -= delta;
 		if(rangedAttackTimer > 0) rangedAttackTimer -= delta;
 		regenManaTimer += delta;
-		
+
 		if(regenManaTimer > 60) {
 			regenManaTimer = Game.rand.nextInt(5);
 			if(mp < maxMp) mp++;
@@ -489,16 +492,16 @@ public class Monster extends Actor implements Directional {
 
 		last_targetx = targetx;
 		last_targety = targety;
-		
+
 		boolean canSeePlayer = false;
-		
+
 		if(hostile) {
-			canSeePlayer = level.canSeeIncludingDoors(x, y, player.x, player.y, 17);
+			canSeePlayer = level.canSeeIncludingDoors(x, y, player.x, player.y, viewDistance);
 
 			// Reset attack timers if we lose track of the player
 			if(!canSeePlayer && attacktimer < 30) attacktimer = 30;
 			if(!canSeePlayer && rangedAttackTimer < 30) rangedAttackTimer = 30;
-			
+
 			pxdir = player.x - x;
 			pydir = player.y - y;
 			playerdist = GlRenderer.FastSqrt(pxdir * pxdir + pydir * pydir);
@@ -512,14 +515,14 @@ public class Monster extends Actor implements Directional {
 				}
 			}
 		}
-			
+
 		foundPath = false;
-		
+
 		if(keepDistance && hp > maxHp / 4.0f) {
 			if(playerdist < 3 && alerted) fleeing = true;
 			else fleeing = false;
 		}
-		
+
 		// Turn alerted if the player is visible
 		if(hostile && (!alerted && canSeePlayer) && !fleeing)
 		{
@@ -538,7 +541,7 @@ public class Monster extends Actor implements Directional {
 		if(alerted && ambushMode != AmbushMode.None) {
 			ambushMode = AmbushMode.None;
 		}
-		
+
 		if(alerted && playerdist > 0.7f && chasetarget && stuckWanderTimer <= 0) // When alerted, try to find a path to the player
 		{
 			nextTargetf -= delta;
@@ -550,7 +553,7 @@ public class Monster extends Actor implements Directional {
 				}
 
 				nextTargetf = 50f;
-				
+
 				// try to find a path to the player, or stop being alerted if the player ran away
 				foundPath = findPathToPlayer(level);
 				if(!foundPath && !canSeePlayer) alerted = false;
@@ -564,7 +567,7 @@ public class Monster extends Actor implements Directional {
 						canSafelyNavigateToTarget = false;
 					}
 				}
-				
+
 				if(foundPath && floating) {
 					targetz = level.getTile((int)targetx, (int)targety).getFloorHeight() + 0.2f;
 				}
@@ -582,18 +585,18 @@ public class Monster extends Actor implements Directional {
 
 		// Wander when there is no other path to the target
 		boolean stuckWander = !canSafelyNavigateToTarget || !chasetarget || stuckWanderTimer > 0;
-		
+
 		if(canWander || stuckWander)
 		{
 			nextTargetf -= delta;
-			
+
 			if(waiting && nextTargetf < 0) waiting = false;
-			
+
 			if(!waiting && (targetdist < 0.05 || nextTargetf < 0))
 			{
 				if(nextTargetf < 0) lastWander = -1;
 				nextTargetf = 100;
-				
+
 				int xPos = (int)x;
 				int yPos = (int)y;
 
@@ -601,9 +604,9 @@ public class Monster extends Actor implements Directional {
 				Tile south = level.getTile(xPos, yPos + 1);
 				Tile east = level.getTile(xPos - 1, yPos);
 				Tile west = level.getTile(xPos + 1, yPos);
-				
+
 				int tryAt = random.nextInt(5);
-				
+
 				// handle dead ends
 				if(lastWander == 0 && !canMoveTo(north) && !canMoveTo(east) && !canMoveTo(west))
 				{
@@ -621,7 +624,7 @@ public class Monster extends Actor implements Directional {
 				{
 					lastWander = -1;
 				}
-				
+
 				// wander at random, avoid reversing direction
 				if(tryAt == 0 && lastWander != 1 && canDrylyMoveTo(north))
 				{
@@ -664,37 +667,37 @@ public class Monster extends Actor implements Directional {
 						nextTargetf = 220f;
 					}
 				}
-				
-				Tile targetTile = level.getTile((int)targetx, (int)targety); 
+
+				Tile targetTile = level.getTile((int)targetx, (int)targety);
 				targetz = targetTile.floorHeight;
-				
+
 				if(floating) {
 					targetz = targetTile.floorHeight;
 					targetz += Game.rand.nextFloat() * (targetTile.ceilHeight - targetTile.floorHeight - collision.z);
 				}
 			}
 		}
-		
+
 		txa = targetx - x;
 		tza = targety - y;
 		tya = targetz - z;
-		
+
 		length = GlRenderer.FastSqrt(txa * txa + tza * tza);
-		
+
 		if(length > 0.25f)
 		{
 			txa /= length;
 			tza /= length;
 			tya /= length;
 		}
-		
+
 		if(stuntime > 0) {
 			stuntime -= 1;
-			
+
 			txa = 0;
 			tza = 0;
 		}
-		
+
 		if(hurtAnimation != null && hurtAnimation.playing) {
 			txa = 0;
 			tza = 0;
@@ -729,7 +732,7 @@ public class Monster extends Actor implements Directional {
 				rangedAttack(player);
 			}
 		}
-		
+
 		if(walkSound != null) {
 			try {
 				if(walkAmbientSound == null) {
@@ -743,17 +746,17 @@ public class Monster extends Actor implements Directional {
 					else {
 						walkAmbientSound.volume = 0f;
 					}
-					
+
 					walkAmbientSound.x = x;
 					walkAmbientSound.y = y;
 					walkAmbientSound.z = z;
-					
+
 					walkAmbientSound.tick(level, delta);
 				}
 			}
 			catch(Exception ex) { }
 		}
-		
+
 		float calcSpeed = getSpeed();
 
 		if(isOnFloor || isOnEntity || floating) {
@@ -764,7 +767,7 @@ public class Monster extends Actor implements Directional {
 			t_dirWork.set(txa, tza, 0).nor();
 			setDirection(t_dirWork);
 		}
-		
+
 		if(floating) {
 			float flyingSpeed = calcSpeed * 4f;
 			za += (tya * calcSpeed * 2f) * delta;
@@ -773,26 +776,26 @@ public class Monster extends Actor implements Directional {
 		}
 
 		z += za;
-		
+
 		super.tick(level, delta);
-		
+
 		tickcount += delta;
-		
+
 		if(stuntime <= 0) {
 			tex = (int)(tickcount / 16) % 2 + origtex;
 		}
-		
+
 		if(spells != null && spells.size > 0 && hostile && canSeePlayer && alerted && stuntime <= 0 && attacktimer <= 0 && !isParalyzed()) {
-			
+
 			int pickedSpell = Game.rand.nextInt(spells.size);
 			Spell picked = spells.get(pickedSpell);
 
 			setDirectionTowards(player);
-			
+
 			if(mp >= picked.mpCost && playerdist < picked.maxDistanceToTarget && playerdist > picked.minDistanceToTarget) {
 				stuntime = 30;
 				attacktimer = projectileAttackTime + Game.rand.nextInt(30);
-				
+
 				if(castAnimation != null && castAnimation.actions != null) {
 					// TODO: has to be a better way to do this
 					for(Array<AnimationAction> aa : castAnimation.actions.values()) {
@@ -812,7 +815,7 @@ public class Monster extends Actor implements Directional {
 				else {
 					Vector3 dir = new Vector3(player.x, player.z, player.y).sub(x, z + projectileOffset, y).nor();
 					picked.cast(this, dir);
-					
+
 					if(attackAnimation != null) {
 						attackAnimation.play();
 					}
@@ -821,7 +824,7 @@ public class Monster extends Actor implements Directional {
 
 			postAttackMoveWaitTimer = postAttackMoveWaitTime;
 		}
-		
+
 		// idle sounds!
 		if(ambushMode == AmbushMode.None && (!hostile || !chasetarget)) {
 			if(idleSoundTimer == null) idleSoundTimer = 400f + Game.rand.nextFloat() * 400;
@@ -831,7 +834,7 @@ public class Monster extends Actor implements Directional {
 				idleSoundTimer = null;
 			}
 		}
-		
+
 		if(walkAnimation != null && !walkAnimation.playing)
 			walkAnimation.loop();
 
@@ -852,11 +855,11 @@ public class Monster extends Actor implements Directional {
 		}
 
 		if(statusEffects == null || statusEffects.size <= 0) return baseSpeed;
-		
+
 		for(StatusEffect s : statusEffects) {
 			if(s.active) baseSpeed *= s.speedMod;
 		}
-		
+
 		return baseSpeed;
 	}
 
@@ -930,7 +933,7 @@ public class Monster extends Actor implements Directional {
 			targety = picked.loc.y;
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -943,7 +946,7 @@ public class Monster extends Actor implements Directional {
 		}
 
 		alertValue = 1f;
-				
+
 		knockback = Math.min(knockback * 1.1f, 0.6f);
 		xa = projx * (knockback);
 		ya = projy * (knockback);
@@ -1068,18 +1071,18 @@ public class Monster extends Actor implements Directional {
 			}
 		}
 	}
-	
+
 	public void die(Level level)
 	{
 		boolean splattered = hp < -500f;
 		isActive = false;
 		this.clearStatusEffects();
-		
+
 		Game.instance.player.history.addMonsterKill(this);
 		if (this.givesExp) {
 			Game.instance.player.addExperience(3 + this.level);
 		}
-		
+
 		dieEffect(level);
 
 		if(!splattered) {
@@ -1102,12 +1105,12 @@ public class Monster extends Actor implements Directional {
 				Game.instance.level.entities.add(proj);
 			}
 		}
-		
+
 		if(walkAmbientSound != null) {
 			walkAmbientSound.stop();
             walkAmbientSound = null;
 		}
-		
+
 		// spawn a corpse if there is an animation for it
 		if(dieAnimation != null && !splattered) {
 			Corpse corpse = new Corpse(this);
@@ -1121,18 +1124,18 @@ public class Monster extends Actor implements Directional {
 			level.trigger(this, triggersOnDeath, name);
 		}
 	}
-	
+
 	public void bleed(Level level)
 	{
 		if(tickcount > bleedTimer)
 		{
 			Random r = new Random();
 			bleedTimer = tickcount + 10 + r.nextInt(80);
-			
+
 			float xPos = x + r.nextFloat() * 0.4f - 0.2f;
 			float yPos = y + r.nextFloat() * 0.4f - 0.2f;
 			float zPos = z + r.nextFloat() * 0.4f - 0.2f;
-			
+
 			if(bloodType != BloodType.Bone) {
 				Game.GetLevel().SpawnNonCollidingEntity( CachePools.getParticle(xPos, yPos, zPos + 0.2f, (xPos - x) * 0.01f, (yPos - y) * 0.01f, 0, 420 + r.nextInt(600), 1f, 0f, Actor.getBloodTexture(bloodType), Actor.getBloodColor(bloodType), false));
 			}
@@ -1280,7 +1283,7 @@ public class Monster extends Actor implements Directional {
 			return;
 
 		float zoffset = 0.3f;
-		
+
 		Vector3 dir = new Vector3(target.x, target.y, target.z + zoffset).sub(new Vector3(x, y, z + zoffset));
 		if(dir.len() > reach + rangeBoost + collision.x) return;
 
@@ -1306,12 +1309,12 @@ public class Monster extends Actor implements Directional {
 			target.hit(dir.x, dir.y, dealt, knockback, damageType, this);
 		}
 	}
-	
+
 	public void encroached(Player player)
 	{
 		attack(player);
 	}
-	
+
 	public void encroached(Entity hit)
 	{
 		float speedStuckMod = 0.9f / getSpeed();
@@ -1359,34 +1362,34 @@ public class Monster extends Actor implements Directional {
 		if(hostile) return null;
 		return useTrigger;
 	}
-	
+
 	private boolean canMoveTo(Tile check)
 	{
 		if(check.blockMotion || check.data.hurts > 0 || !check.hasRoomFor(0.65f)) return false;
 		if(floating) return true;
-		
+
 		float checkZ = z;
 		if(fleeing && check.getFloorHeight() < checkZ) return true;
 		if(Math.abs(check.getFloorHeight() + 0.5f - checkZ) > 0f + stepHeight) return false;
 		return true;
 	}
-	
+
 	private boolean canMoveTo(Tile check, Tile from)
 	{
 		if(check.blockMotion || check.data.hurts > 0 || !check.hasRoomFor(0.65f)) return false;
 		if(floating) return true;
-		
+
 		float checkZ = Math.min(z, from.getFloorHeight() + 0.5f);
 		if(Math.abs(check.getFloorHeight() + 0.5f - checkZ) > 0f + stepHeight) return false;
 		return true;
 	}
-	
+
 	private boolean canDrylyMoveTo(Tile check)
 	{
 		if(check.data.isWater && !floating) return false;
 		return canMoveTo(check);
 	}
-	
+
 	@Override
 	public void init(Level level, Source source) {
 		if(source != Source.LEVEL_LOAD) {
@@ -1408,7 +1411,7 @@ public class Monster extends Actor implements Directional {
 		if(attackAnimation == null && hasAttackAnim) {
 			attackAnimation = new SpriteAnimation(tex + 2, tex + 2, 24f, null);
 		}
-		
+
 		// preload some sounds
 		/*if(!Game.isMobile) {
 			Audio.preload(dieSound);
@@ -1428,20 +1431,20 @@ public class Monster extends Actor implements Directional {
 			}
 		}
 	}
-	
+
 	public void stun(float stunTime) {
 		this.stuntime = stunTime;
 	}
-	
+
 	public void delayAttack(float attackDelayTime) {
 		this.attacktimer = attackDelayTime;
 	}
-	
+
 	public void onDispose() {
 		super.onDispose();
 		if(walkAmbientSound != null) walkAmbientSound.onDispose();
 	}
-	
+
 	@Override
 	public void updateDrawable() {
 		super.updateDrawable();
