@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -19,26 +18,19 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
 
 public class Hotbar {
-
-    protected TextureRegion itemTextures[];
     public final Map<Integer, MultiTouchButton> itemButtons = new HashMap<>();
     public final Map<Integer, Boolean> wasPressedLast = new HashMap<>();
     public final Map<Integer, Boolean> isDragging = new HashMap<>();
-    private Integer mouseOverSlot = null;
-
     public int columns = 6;
     public int rows = 1;
     public int invOffset = 0;
-
     public float yOffset = 0;
-
     public boolean visible = true;
-
     public Item dragging = null;
-
-    public Integer lastUiTouchPointer = null;
-
     public Integer gamepadPosition = null;
+
+    private Integer mouseOverSlot = null;
+    private Integer lastUiTouchPointer = null;
 
     public Hotbar(int columns, int rows, int invOffset) {
         this.columns = columns;
@@ -46,8 +38,7 @@ public class Hotbar {
         this.invOffset = invOffset;
     }
 
-    public void init(TextureRegion itemTextures[]) {
-        this.itemTextures = itemTextures;
+    public void init() {
         refresh();
     }
 
