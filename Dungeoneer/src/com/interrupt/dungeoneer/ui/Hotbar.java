@@ -1,32 +1,29 @@
 package com.interrupt.dungeoneer.ui;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.GameInput;
+import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
 
 public class Hotbar {
 
     protected TextureRegion itemTextures[];
-    public final HashMap<Integer, MultiTouchButton> itemButtons = new HashMap<Integer, MultiTouchButton>();
-    public final HashMap<Integer, Boolean> wasPressedLast = new HashMap<Integer, Boolean>();
-    public final HashMap<Integer, Boolean> isDragging = new HashMap<Integer, Boolean>();
+    public final Map<Integer, MultiTouchButton> itemButtons = new HashMap<>();
+    public final Map<Integer, Boolean> wasPressedLast = new HashMap<>();
+    public final Map<Integer, Boolean> isDragging = new HashMap<>();
     private Integer mouseOverSlot = null;
 
     public int columns = 6;
