@@ -99,7 +99,7 @@ public class Hotbar {
         initButtons();
     }
 
-    public void initButtons() {
+    private void initButtons() {
         final float uiSize = Game.GetUiSize();
 
         for (int y = 0; y < rows; y++) {
@@ -202,7 +202,7 @@ public class Hotbar {
                                     .DragAndDropInventoryItem(Game.instance.player.inventory.get(i), i, null);
 
                             if (movedItem == DragAndDropResult.drop) {
-                                Item dragging = Game.instance.player.inventory.get(i);
+                                Item draggedItem = Game.instance.player.inventory.get(i);
                                 Game.instance.player.dropItemFromInv(i, Game.GetLevel(), 0, 0);
 
                                 Vector3 levelIntersection = new Vector3();
@@ -215,9 +215,9 @@ public class Hotbar {
                                     distance = ray.origin.sub(levelIntersection).len();
                                 }
 
-                                dragging.xa = ray.direction.x * 0.28f * Math.min(1, distance / 6.0f);
-                                dragging.za = ray.direction.y * 0.5f * Math.min(1, distance / 6.0f) + 0.04f;
-                                dragging.ya = ray.direction.z * 0.28f * Math.min(1, distance / 6.0f);
+                                draggedItem.xa = ray.direction.x * 0.28f * Math.min(1, distance / 6.0f);
+                                draggedItem.za = ray.direction.y * 0.5f * Math.min(1, distance / 6.0f) + 0.04f;
+                                draggedItem.ya = ray.direction.z * 0.28f * Math.min(1, distance / 6.0f);
                             }
 
                             Game.RefreshUI();
