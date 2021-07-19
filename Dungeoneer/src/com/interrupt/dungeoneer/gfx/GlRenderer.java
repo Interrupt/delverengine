@@ -417,8 +417,8 @@ public class GlRenderer {
 		Gdx.app.log("DelverLifeCycle", "Initializing HUD");
 
 		Game.ui.clear();
-		Game.hotbar.init(itemTextures.getSpriteRegions());
-		Game.bag.init(itemTextures.getSpriteRegions());
+		Game.hotbar.init();
+		Game.bag.init();
 		Game.hud.init(itemTextures.getSpriteRegions());
 	}
 
