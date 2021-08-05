@@ -90,7 +90,7 @@ public class Breakable extends Model {
 	@EditorProperty
 	public float breakDelay = 0f;
 
-	private transient float breakDelayTimer = 0f;
+	private float breakDelayTimer = 0f;
 
 	private transient Array<Entity> entityStandingOnUsCache = new Array<>();
 
