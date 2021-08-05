@@ -21,55 +21,72 @@ import java.util.Random;
 public class Breakable extends Model {
 	public Breakable() { isDynamic = true; shadowType = ShadowType.BLOB; }
 
+    /** Current health. */
 	@EditorProperty
 	public int hp = 2;
 
+	/** Starting possible gib range sprite index. */
 	@EditorProperty
 	public int gibSpriteTexStart = 40;
 
+	/** Ending possible gib range sprite index. */
 	@EditorProperty
 	public int gibSpriteTexEnd = 42;
 
+	/** Number of gib particles to create. */
 	@EditorProperty
 	public int gibNum = 8;
 
+	/** Gib particle lifetime. */
 	@EditorProperty
 	public float gibLifetime = 2000f;
 
+	/** Sound played when broken. */
 	@EditorProperty
 	public String breakSound = "break/break_wood_01.mp3,break/break_wood_02.mp3,break/break_wood_03.mp3";
 
+	/** Chance that loot is dropped. */
 	@EditorProperty(group = "Loot")
 	public float lootSpawnChance = 0.225f;
 
+	/** Can the loot dropped be gold? */
 	@EditorProperty(group = "Loot")
 	public boolean lootCanBeGold = true;
 
+	/** Chance that a surprise is spawned. */
 	@EditorProperty(group = "Loot")
 	public float surpriseSpawnChance = 0.1f;
 
+	/** Draw breakable as a sprite? */
     @EditorProperty
     public boolean drawAsSprite = false;
 
+    /** Entity to send trigger event when triggered. */
 	@EditorProperty(group = "Triggers")
 	public String triggerWhenBreaks = null;
 
+	/** Does this break when stepped on? */
 	@EditorProperty
 	public boolean breaksWhenSteppedOn = false;
 
+	/** Gib particle initial velocity range. */
 	public Vector3 gibVelocity = new Vector3(0.03f,0.03f,0.04f);
 
+	/** Magnitude of shake effect. */
 	@EditorProperty
 	public float shakeAmount = 4f;
 
+	/** Can this be pushed? */
 	@EditorProperty
 	public boolean canBePushed = false;
 
+	/** Can this break? */
 	@EditorProperty
 	public boolean canBreak = true;
 
 	public transient float shakeTimer = 0f;
 
+	/** Time to delay break in milliseconds. */
 	@EditorProperty
 	public float breakDelay = 0f;
 
@@ -77,6 +94,7 @@ public class Breakable extends Model {
 
 	private transient Array<Entity> entityStandingOnUsCache = new Array<>();
 
+	/** List of random Entities to spawn when broken. */
 	public Array<Entity> spawns = new Array<Entity>();
 
 	public Breakable(String meshFile, String textureFile) {
