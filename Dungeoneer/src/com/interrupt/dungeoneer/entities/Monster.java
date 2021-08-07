@@ -417,8 +417,8 @@ public class Monster extends Actor implements Directional {
 		return Game.rand.nextFloat() <= (painChance + (damageMod * 0.5f));
 	}
 
-	protected boolean shouldFlee() {
-	    return hp <= maxHp * fleeThreshold;
+    protected boolean shouldFlee() {
+        return hp <= maxHp * fleeThreshold;
     }
 
 	@Override
