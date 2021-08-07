@@ -196,6 +196,12 @@
             "baseClass": "Monster",
             "default": 0.75
         },
+        "fleeThreshold": {
+            "type": "number",
+            "description": "Will flee the player when health below this percent.",
+            "baseClass": "Monster",
+            "default": 0.25
+        },
         "rotation": {
             "$ref": "../../gdx/Vector3.schema.json",
             "description": "Monster rotation.",
