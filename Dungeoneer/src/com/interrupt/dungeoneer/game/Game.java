@@ -34,6 +34,7 @@ import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
 import com.interrupt.managers.EntityManager;
+import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
@@ -93,8 +94,8 @@ public class Game {
 	public static Tooltip tooltip = new Tooltip();
     public static Stage ui;
 
-    public static Hotbar hotbar = new Hotbar(6,1,0);
-    public static Hotbar bag = new Hotbar(6,3,6);
+    public static Hotbar hotbar;
+    public static Hotbar bag;
     public static Hud hud = null;
 
     public static CharacterScreen characterScreen = null;
@@ -167,6 +168,8 @@ public class Game {
 			entityManager = new EntityManager();
 		}
 		EntityManager.setSingleton(entityManager);
+
+        loadHUDManager(modManager);
 	}
 
 	/** Create game for editor usage. */
@@ -186,7 +189,6 @@ public class Game {
 
 		DecalManager.setQuality(Options.instance.gfxQuality);
 
-		bag.visible = false;
 		// Load the base game data
 		if(gameData == null) {
 			gameData = modManager.loadGameData();
@@ -200,6 +202,8 @@ public class Game {
 		hud = new Hud();
 
 		loadManagers();
+
+        bag.visible = false;
 
 		Gdx.app.log("DelverLifeCycle", "READY EDITOR ONE");
 
@@ -1523,4 +1527,24 @@ public class Game {
 
 		return min;
 	}
+
+    private void loadHUDManager(ModManager modManager) {
+        HUDManager hudManager = modManager.loadHUDManager();
+
+        if (null == hudManager) {
+            hudManager = new HUDManager();
+            ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
+        }
+
+        // FIXME: Make the enclosing method "static" or remove this set. sonarlint(java:S2696)
+        hotbar = hudManager.quickSlots;
+        if (null == hotbar) {
+            hotbar = new Hotbar(6, 1, 0);
+        }
+
+        bag = hudManager.backpack;
+        if (null == bag) {
+            bag = new Hotbar(6, 3, 6);
+        }
+    }
 }

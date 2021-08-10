@@ -1,0 +1,9 @@
+{
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/hud.dat",
+    "quickSlots": {
+        "class": "com.interrupt.dungeoneer.ui.Hotbar"
+    },
+    "backpack": {
+        "class": "com.interrupt.dungeoneer.ui.Hotbar"
+    }
+}

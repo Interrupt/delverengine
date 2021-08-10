@@ -32,6 +32,8 @@ public class Hotbar {
     private Integer mouseOverSlot = null;
     private Integer lastUiTouchPointer = null;
 
+    public Hotbar() {}
+
     public Hotbar(int columns, int rows, int invOffset) {
         this.columns = columns;
         this.rows = rows;
