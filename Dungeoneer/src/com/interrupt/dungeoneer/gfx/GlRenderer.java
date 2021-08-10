@@ -666,13 +666,7 @@ public class GlRenderer {
 		uiBatch.setColor(Color.WHITE);
 
 		if(OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput) {
-			// Draw crosshair
-			if (showCrosshair()) {
-				if(!Options.instance.hideUI) {
-					float crosshairSize = 18f;
-					drawText("+", -0.5f * crosshairSize, -0.65f * crosshairSize, crosshairSize, crosshairColor);
-				}
-			}
+			drawCrosshair();
 
 			int textYPos = 0;
 			if (Game.messageTimer > 0 && !OverlayManager.instance.shouldPauseGame()) {
@@ -761,6 +755,37 @@ public class GlRenderer {
 			drawGamepadCursor();
 		}
 	}
+
+    private void drawCrosshair() {
+        if (!shouldDrawCrosshair()) {
+            return;
+        }
+
+        float crosshairSize = 18f;
+        drawText(
+            "+",
+            -0.5f * crosshairSize,
+            -0.65f * crosshairSize,
+            crosshairSize,
+            crosshairColor
+        );
+    }
+
+    private boolean shouldDrawCrosshair() {
+        Item held = game.player.GetHeldItem();
+        if (held == null) {
+            return false;
+        }
+
+        if (Options.instance.hideUI) {
+            return false;
+        }
+
+        return Options.instance.alwaysShowCrosshair
+            || held.itemType == Item.ItemType.bow
+            || held.itemType == Item.ItemType.junk
+            || held.itemType == Item.ItemType.wand;
+    }
 
 	public void updateShaderAttributes() {
 		Color ambientColor = Color.BLACK;
@@ -4074,16 +4099,4 @@ public class GlRenderer {
 		entityPickColor.set(r / 255f, g / 255f, b / 255f, 1f);
 		entitiesForPicking.put(index, e);
 	}
-
-	public boolean showCrosshair() {
-        Item held = game.player.GetHeldItem();
-        if (held == null) {
-            return false;
-        }
-
-        return Options.instance.alwaysShowCrosshair
-            || held.itemType == Item.ItemType.bow
-            || held.itemType == Item.ItemType.junk
-            || held.itemType == Item.ItemType.wand;
-    }
 }
