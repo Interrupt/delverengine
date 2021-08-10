@@ -49,6 +49,7 @@ public class OptionsOverlay extends WindowOverlay {
     private Table mainTable;
 
     private CheckBox showUI;
+    private CheckBox showCrosshair;
     private CheckBox headBob;
     private CheckBox handLag;
 
@@ -190,6 +191,18 @@ public class OptionsOverlay extends WindowOverlay {
         addGamepadButtonOrder(showUI, showHudLabel);
 
         mainTable.add(showUI);
+        mainTable.row();
+
+        // Show Crosshair
+        Label showCrosshairLabel = new Label(StringManager.get("screens.OptionsScreen.showCrosshairLabel"),skin.get(Label.LabelStyle.class));
+        mainTable.add(showCrosshairLabel);
+
+        showCrosshair = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
+        showCrosshair.setChecked(Options.instance.alwaysShowCrosshair);
+
+        addGamepadButtonOrder(showCrosshair, showCrosshairLabel);
+
+        mainTable.add(showCrosshair);
         mainTable.row();
 
         // Head Bob
@@ -349,6 +362,7 @@ public class OptionsOverlay extends WindowOverlay {
         Options.instance.sfxVolume = sfxVolume.getValue();
         Options.instance.graphicsDetailLevel = (int)gfxQuality.getValue();
         Options.instance.hideUI = !showUI.isChecked();
+        Options.instance.alwaysShowCrosshair = showCrosshair.isChecked();
         Options.instance.headBobEnabled = headBob.isChecked();
         Options.instance.handLagEnabled = handLag.isChecked();
         if(fullscreenMode != null) Options.instance.fullScreen = fullscreenMode.isChecked();

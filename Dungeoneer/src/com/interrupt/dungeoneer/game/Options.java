@@ -22,16 +22,18 @@ public class Options {
     public Action mouseButton2Action = Action.USE;
     public Action mouseButton3Action = Action.INVENTORY;
     public float musicVolume = 0.5f;
-    public float uiSize = 1;
     public float sfxVolume = 1f;
     public float gfxQuality = 1f;
     public boolean fullScreen = false;
     public boolean useMouseScroller = true;
-    public boolean hideUI = false;
     public boolean headBobEnabled = true;
     public boolean handLagEnabled = true;
     public boolean shadowsEnabled = true;
     public boolean fxaaEnabled = false;
+
+    public float uiSize = 1;
+    public boolean hideUI = false;
+    public boolean alwaysShowCrosshair = false;
 
     public int key_use = Keys.E;
     public int key_attack = Keys.SPACE;
