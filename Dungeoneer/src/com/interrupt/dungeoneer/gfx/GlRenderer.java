@@ -29,7 +29,6 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
-import com.interrupt.dungeoneer.entities.Item.ItemType;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.entities.projectiles.Projectile;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredMessage;
@@ -667,14 +666,7 @@ public class GlRenderer {
 		uiBatch.setColor(Color.WHITE);
 
 		if(OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput) {
-			// show crosshair if a ranged weapon is held
-			Item held = game.player.GetHeldItem();
-			if (held != null && (held.itemType == ItemType.bow || held.itemType == ItemType.junk || held.itemType == ItemType.wand)) {
-				if(!Options.instance.hideUI) {
-					float crosshairSize = 18f;
-					drawText("+", -0.5f * crosshairSize, -0.65f * crosshairSize, crosshairSize, crosshairColor);
-				}
-			}
+			drawCrosshair();
 
 			int textYPos = 0;
 			if (Game.messageTimer > 0 && !OverlayManager.instance.shouldPauseGame()) {
@@ -763,6 +755,37 @@ public class GlRenderer {
 			drawGamepadCursor();
 		}
 	}
+
+    private void drawCrosshair() {
+        if (!shouldDrawCrosshair()) {
+            return;
+        }
+
+        float crosshairSize = 18f;
+        drawText(
+            "+",
+            -0.5f * crosshairSize,
+            -0.65f * crosshairSize,
+            crosshairSize,
+            crosshairColor
+        );
+    }
+
+    private boolean shouldDrawCrosshair() {
+        Item held = game.player.GetHeldItem();
+        if (held == null) {
+            return false;
+        }
+
+        if (Options.instance.hideUI) {
+            return false;
+        }
+
+        return Options.instance.alwaysShowCrosshair
+            || held.itemType == Item.ItemType.bow
+            || held.itemType == Item.ItemType.junk
+            || held.itemType == Item.ItemType.wand;
+    }
 
 	public void updateShaderAttributes() {
 		Color ambientColor = Color.BLACK;

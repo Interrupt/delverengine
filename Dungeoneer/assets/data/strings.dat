@@ -145,6 +145,11 @@
         "localizedName": "Show Hud ",
         "comment": "Label for UI size slider."
     },
+    "screens.OptionsScreen.showCrosshairLabel": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Always Show Crosshair",
+        "comment": "Label for always show crosshair checkbox."
+    },
     "screens.OptionsScreen.headBobLabel": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Head Bob ",
