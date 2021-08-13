@@ -53,13 +53,13 @@ public class SpatialHash {
 		int startY = (int)(y / cellSize - colSize);
 		int endY = (int)(y / cellSize + colSize);
 
-        temp.clear();
+		temp.clear();
 
         // Guard from super high values causing an infinite loop here
 		if(startX == Integer.MAX_VALUE || startX == Integer.MIN_VALUE)
-		    return temp;
-        if(startY == Integer.MAX_VALUE || startY == Integer.MIN_VALUE)
-            return temp;
+			return temp;
+		if(startY == Integer.MAX_VALUE || startY == Integer.MIN_VALUE)
+			return temp;
 
 		for(int xi = startX; xi <= endX; xi++) {
 			for(int yi = startY; yi <= endY; yi++) {
