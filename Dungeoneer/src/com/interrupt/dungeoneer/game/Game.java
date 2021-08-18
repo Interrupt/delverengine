@@ -83,6 +83,7 @@ public class Game {
 	public ItemManager itemManager;
 	public MonsterManager monsterManager;
 	public EntityManager entityManager;
+    public static HUDManager hudManager;
 
 	public static boolean isMobile = false;
 	public static boolean isDebugMode = false;
@@ -94,8 +95,6 @@ public class Game {
 	public static Tooltip tooltip = new Tooltip();
     public static Stage ui;
 
-    public static Hotbar hotbar;
-    public static Hotbar bag;
     public static Hud hud = null;
 
     public static CharacterScreen characterScreen = null;
@@ -203,7 +202,7 @@ public class Game {
 
 		loadManagers();
 
-        bag.visible = false;
+        hudManager.backpack.visible = false;
 
 		Gdx.app.log("DelverLifeCycle", "READY EDITOR ONE");
 
@@ -398,7 +397,7 @@ public class Game {
 
 		DecalManager.setQuality(Options.instance.gfxQuality);
 
-		bag.visible = false;
+		hudManager.backpack.visible = false;
 
 		// Load the levels data file, keep the levels array null for now (try loading from save first)
 		Array<Level> dataLevels = buildLevelLayout();
@@ -553,8 +552,8 @@ public class Game {
 		if(ui != null)
 			ui.act(delta);
 
-		hotbar.tickUI(input);
-		bag.tickUI(input);
+        hudManager.quickSlots.tickUI(input);
+		hudManager.backpack.tickUI(input);
 		hud.tick(input);
 
 		// keep the cache clean
@@ -1170,8 +1169,8 @@ public class Game {
 	}
 
 	public static void RefreshUI() {
-		hotbar.refresh();
-		bag.refresh();
+		hudManager.quickSlots.refresh();
+		hudManager.backpack.refresh();
 		hud.refreshEquipLocations();
 	}
 
@@ -1181,10 +1180,10 @@ public class Game {
 		Integer mouseOverSlot = null;
 		Game.dragging = null;
 
-		if(hotbar.getMouseOverSlot() != null) {
-			mouseOverSlot = hotbar.getMouseOverSlot() + hotbar.invOffset;
-		} else if(bag.visible && bag.getMouseOverSlot() != null) {
-			mouseOverSlot = bag.getMouseOverSlot() + bag.invOffset;
+		if(hudManager.quickSlots.getMouseOverSlot() != null) {
+			mouseOverSlot = hudManager.quickSlots.getMouseOverSlot() + hudManager.quickSlots.invOffset;
+		} else if(hudManager.backpack.visible && hudManager.backpack.getMouseOverSlot() != null) {
+			mouseOverSlot = hudManager.backpack.getMouseOverSlot() + hudManager.backpack.invOffset;
 		}
 
 		String equipOverSlot = null;
@@ -1356,7 +1355,7 @@ public class Game {
 		}
 
 		// Show the proper bag slots
-		Game.bag.visible = menuMode == MenuMode.Inventory;
+		Game.hudManager.backpack.visible = menuMode == MenuMode.Inventory;
 		for(EquipLoc loc : hud.equipLocations.values())
 		{
 			loc.visible = menuMode != MenuMode.Hidden;
@@ -1528,23 +1527,12 @@ public class Game {
 		return min;
 	}
 
-    private void loadHUDManager(ModManager modManager) {
-        HUDManager hudManager = modManager.loadHUDManager();
+    private static void loadHUDManager(ModManager modManager) {
+        hudManager = modManager.loadHUDManager();
 
         if (null == hudManager) {
             hudManager = new HUDManager();
             ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
-        }
-
-        // FIXME: Make the enclosing method "static" or remove this set. sonarlint(java:S2696)
-        hotbar = hudManager.quickSlots;
-        if (null == hotbar) {
-            hotbar = new Hotbar(6, 1, 0);
-        }
-
-        bag = hudManager.backpack;
-        if (null == bag) {
-            bag = new Hotbar(6, 3, 6);
         }
     }
 }

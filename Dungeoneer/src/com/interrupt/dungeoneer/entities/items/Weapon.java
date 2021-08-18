@@ -31,7 +31,7 @@ public class Weapon extends Item {
 	public static String damageTypeToString(DamageType dType) {
 		return StringManager.get("items.Weapon.damageType." + dType.toString().toUpperCase());
 	}
-	
+
 	public Weapon() { }
 
 	/** Base amount of damage to deal */
@@ -53,7 +53,7 @@ public class Weapon extends Item {
 	/** Length of attack animation */
 	@EditorProperty
 	public float speed = 0.5f;
-	
+
 	@EditorProperty
 	public float chargespeed = 1;
 
@@ -89,13 +89,13 @@ public class Weapon extends Item {
 	public Weapon(float x, float y, int tex, ItemType itemType, String name) {
 		super(x, y, tex, itemType, name);
 	}
-	
+
 	public int doAttackRoll(float attackPower, Player p)
-	{	
+	{
 		Random r = new Random();
 		int dmg = (int)(getBaseDamage() * attackPower);
 		dmg += r.nextInt(getRandDamage() + 1 + p.getDamageStatBoost());
-		
+
 		dmg += getElementalDamage();
 
 		wasUsed();
@@ -127,7 +127,7 @@ public class Weapon extends Item {
 		// TODO: Audio and particle cues for weapon break
         if(this.brokenTex >= 0) {
             this.tex = this.brokenTex;
-            Game.hotbar.refresh();
+            Game.hudManager.quickSlots.refresh();
         }
 
 		this.reach = this.reach * 0.75f;
@@ -137,19 +137,19 @@ public class Weapon extends Item {
 	public String GetItemText() {
 		int dmg = getBaseDamage();
 		int rdmg = getRandDamage();
-		
+
 		String dmgType = Weapon.damageTypeToString(this.damageType);
 		//if(damageType == DamageType.PHYSICAL) dmgType = "DMG";
-		
+
 		String infoText = MessageFormat.format(StringManager.get("items.Weapon.damageRangeText"), dmg, (dmg + rdmg), dmgType.toLowerCase());
 		if(getElementalDamage() > 0)
 			infoText += "\n" + MessageFormat.format(StringManager.get("items.Weapon.elementalDamageText"), getElementalDamage(), Weapon.damageTypeToString(getDamageType()));
-		
+
 		if(twoHanded) infoText += "\n"+ StringManager.get("items.Weapon.twoHandedText");
-		
+
 		return infoText;
 	}
-	
+
 	public int getBaseDamage() {
 		int dmgMod = 0;
 		if(this.itemCondition != null) dmgMod = (this.itemCondition.ordinal() * 2) - 4;
@@ -161,15 +161,15 @@ public class Weapon extends Item {
 		// item scaling
         if(itemLevel > 1)
 		    dmgMod += (itemLevel * 0.75f);
-		
+
 		return Math.max(1, baseDamage + dmgMod);
 	}
-	
+
 	public int getElementalDamage() {
 		if(!identified || enchantment == null || enchantment.damageType == DamageType.PHYSICAL) return 0;
 		return enchantment.damageMod;
 	}
-	
+
 	public int getRandDamage() {
 		int dmgMod = 0;
 
@@ -187,12 +187,12 @@ public class Weapon extends Item {
 	public float getChargeSpeed() {
 		return speed;
 	}
-	
+
 	public DamageType getDamageType() {
 		if(enchantment != null) return enchantment.damageType;
 		return damageType;
 	}
-	
+
 	public Color getEnchantmentColor() {
 		return Weapon.getEnchantmentColor(this.getDamageType());
 	}
@@ -240,10 +240,10 @@ public class Weapon extends Item {
         }
         return null;
     }
-	
+
 	// override this
 	public void doAttack(Player p, Level lvl, float attackPower) { }
-	
+
 	// and this
 	public void tickAttack(Player p, Level lvl, float time) { }
 

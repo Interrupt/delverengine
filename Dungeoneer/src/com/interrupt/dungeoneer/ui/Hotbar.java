@@ -58,9 +58,9 @@ public class Hotbar {
         if (Game.ui == null || !visible)
             return;
 
-        if (this == Game.hotbar) {
+        if (this == Game.hudManager.quickSlots) {
             columns = Game.instance.player.hotbarSize;
-        } else if (this == Game.bag) {
+        } else if (this == Game.hudManager.backpack) {
             invOffset = Game.instance.player.hotbarSize;
             rows = (int) Math.ceil((Game.instance.player.inventorySize - invOffset) / columns) + 1;
             if ((Game.instance.player.inventorySize - invOffset) % columns == 0)

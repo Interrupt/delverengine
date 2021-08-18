@@ -40,6 +40,7 @@ import com.interrupt.dungeoneer.statuseffects.*;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
+import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -262,8 +263,8 @@ public class Player extends Actor {
 		if(canAddInventorySlot()) {
 			inventorySize++;
 			inventory.add(null);
-			Game.bag.refresh();
-			Game.hotbar.refresh();
+			Game.hudManager.backpack.refresh();
+			Game.hudManager.quickSlots.refresh();
 
 			if(inventorySize - hotbarSize >= 35) {
 				SteamApi.api.achieve("SQUID3");
@@ -280,8 +281,8 @@ public class Player extends Actor {
 			hotbarSize++;
 			inventorySize++;
 			inventory.add(null);
-			Game.bag.refresh();
-			Game.hotbar.refresh();
+			Game.hudManager.backpack.refresh();
+			Game.hudManager.quickSlots.refresh();
 
 			if(hotbarSize >= 9) {
 				SteamApi.api.achieve("SQUID4");
@@ -2059,8 +2060,8 @@ public class Player extends Actor {
 		int itempos = inventory.indexOf(item, true);
 		if(itempos >= 0) inventory.set(inventory.indexOf(item, true), null);
 
-		Game.hotbar.refresh();
-		Game.bag.refresh();
+		Game.hudManager.quickSlots.refresh();
+		Game.hudManager.backpack.refresh();
 		Game.hud.refreshEquipLocations();
 	}
 
@@ -2150,7 +2151,7 @@ public class Player extends Actor {
 
 	public void DoHotbarAction(final int hotbarSlot) {
 		int location = hotbarSlot - 1;
-		if(location < 0 || location >= inventory.size || location + 1 > Game.hotbar.columns) return;
+		if(location < 0 || location >= inventory.size || location + 1 > Game.hudManager.quickSlots.columns) return;
 		UseInventoryItem(location);
 	}
 
