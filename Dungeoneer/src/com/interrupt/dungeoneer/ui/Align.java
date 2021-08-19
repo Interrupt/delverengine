@@ -1,13 +1,13 @@
 package com.interrupt.dungeoneer.ui;
 
 public enum Align {
-    bottom_left,
-    bottom_center,
-    bottom_right,
-    center_left,
-    center,
-    center_right,
-    top_left,
-    top_center,
-    top_right,
+    BOTTOM_LEFT,
+    BOTTOM_CENTER,
+    BOTTOM_RIGHT,
+    CENTER_LEFT,
+    CENTER,
+    CENTER_RIGHT,
+    TOP_LEFT,
+    TOP_CENTER,
+    TOP_RIGHT,
 }

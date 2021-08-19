@@ -93,25 +93,25 @@ public class Canvas implements Disposable {
         int y = element.y;
 
         switch (element.anchor) {
-            case bottom_left:
+            case BOTTOM_LEFT:
                 break;
 
-            case bottom_center:
+            case BOTTOM_CENTER:
                 x -= actor.getWidth() / 2;
                 x += width / 2;
                 break;
 
-            case bottom_right:
+            case BOTTOM_RIGHT:
                 x = width - x;
                 x -= actor.getWidth();
                 break;
 
-            case center_left:
+            case CENTER_LEFT:
                 y -= actor.getHeight() / 2;
                 y += height / 2;
                 break;
 
-            case center:
+            case CENTER:
                 x -= actor.getWidth() / 2;
                 x += width / 2;
 
@@ -119,7 +119,7 @@ public class Canvas implements Disposable {
                 y += height / 2;
                 break;
 
-            case center_right:
+            case CENTER_RIGHT:
                 x = width - x;
                 x -= actor.getWidth();
 
@@ -127,12 +127,12 @@ public class Canvas implements Disposable {
                 y += height / 2;
                 break;
 
-            case top_left:
+            case TOP_LEFT:
                 y = height - y;
                 y -= actor.getHeight();
                 break;
 
-            case top_center:
+            case TOP_CENTER:
                 x -= actor.getWidth() / 2;
                 x += width / 2;
 
@@ -140,7 +140,7 @@ public class Canvas implements Disposable {
                 y -= actor.getHeight();
                 break;
 
-            case top_right:
+            case TOP_RIGHT:
                 x = width - x;
                 x -= actor.getWidth();
 
