@@ -42,7 +42,15 @@ public class Canvas implements Disposable {
         layout();
     }
 
+    private void reinit() {
+        stage.dispose();
+        stage = null;
+        viewport = null;
+        init();
+    }
+
     private void layout() {
+        viewport.apply();
         for (Element child : children) {
             positionActor(child.getActor(), child);
         }
@@ -58,13 +66,7 @@ public class Canvas implements Disposable {
     }
 
     public void resize (int width, int height) {
-        calculateScaling();
-        viewport.setWorldSize(width, height);
-        viewport.update(width, height, true);
-
-        stage.dispose();
-        stage = null;
-        init();
+        reinit();
     }
 
     private void calculateScaling() {
