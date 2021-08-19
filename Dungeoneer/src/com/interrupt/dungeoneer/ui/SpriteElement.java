@@ -9,7 +9,7 @@ public class SpriteElement extends Element {
     public int tex;
 
     @Override
-    public Actor getActor() {
+    public Actor createActor() {
         TextureAtlas atlas = TextureAtlas.getCachedRegion(spriteAtlas);
         Image image = new Image(atlas.getClippedSprite(tex));
         image.setPosition(x, y);

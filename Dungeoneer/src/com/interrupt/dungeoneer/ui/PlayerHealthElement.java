@@ -8,7 +8,7 @@ import com.interrupt.dungeoneer.game.Game;
 
 public class PlayerHealthElement extends Element {
     @Override
-    public Actor getActor() {
+    public Actor createActor() {
         Label label = new Label("HEALTH: 10/10", UiSkin.getSkin()) {
             @Override
             public void act(float delta) {

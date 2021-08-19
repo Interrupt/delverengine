@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -32,18 +33,19 @@ public class Canvas implements Disposable {
             stage = new Stage(viewport);
 
             for (Element child : children) {
-                Actor actor = child.getActor();
-                positionActor(actor, child);
-                stage.addActor(actor);
+                child.init();
+                child.setCanvas(this);
+                stage.addActor(child.getActor());
             }
         }
+
+        layout();
     }
 
-    private void reinit() {
-        viewport = null;
-        stage.dispose();
-        stage = null;
-        init();
+    private void layout() {
+        for (Element child : children) {
+            positionActor(child.getActor(), child);
+        }
     }
 
     public void draw() {
@@ -59,7 +61,10 @@ public class Canvas implements Disposable {
         calculateScaling();
         viewport.setWorldSize(width, height);
         viewport.update(width, height, true);
-        reinit();
+
+        stage.dispose();
+        stage = null;
+        init();
     }
 
     private void calculateScaling() {
@@ -90,66 +95,107 @@ public class Canvas implements Disposable {
     }
 
     public void positionActor(Actor actor, Element element) {
+        Vector2 origin = new Vector2();
+        Vector2 position = new Vector2(element.x, element.y);
+        Vector2 offset = new Vector2();
+
         int x = element.x;
         int y = element.y;
+
+        Align pivot = element.pivot;
+        if (pivot.equals(Align.UNSET)) {
+            pivot = element.anchor;
+        }
+
+        switch (pivot) {
+            case BOTTOM_LEFT:
+                break;
+
+            case BOTTOM_CENTER:
+                offset.x = -(int)(actor.getWidth() / 2);
+                break;
+
+            case BOTTOM_RIGHT:
+                offset.x = -(int)(actor.getWidth());
+                break;
+
+            case CENTER_LEFT:
+                offset.y = -(int)(actor.getHeight() / 2);
+                break;
+
+            case CENTER:
+                offset.x = -(int)(actor.getWidth() / 2);
+                offset.y = -(int)(actor.getHeight() / 2);
+                break;
+
+            case CENTER_RIGHT:
+                offset.x = -(int)(actor.getWidth());
+                offset.y = -(int)(actor.getHeight() / 2);
+                break;
+
+            case TOP_LEFT:
+                offset.y = -(int)(actor.getHeight());
+                break;
+
+            case TOP_CENTER:
+                offset.x = -(int)(actor.getWidth() / 2);
+                offset.y = -(int)(actor.getHeight());
+                break;
+
+            case TOP_RIGHT:
+                offset.x = -(int)(actor.getWidth());
+                offset.y = -(int)(actor.getHeight());
+                break;
+        }
 
         switch (element.anchor) {
             case BOTTOM_LEFT:
                 break;
 
             case BOTTOM_CENTER:
-                x -= actor.getWidth() / 2;
-                x += width / 2;
+                origin.x = width / 2;
                 break;
 
             case BOTTOM_RIGHT:
-                x = width - x;
-                x -= actor.getWidth();
+                origin.x = width;
+                position.x *= -1;
                 break;
 
             case CENTER_LEFT:
-                y -= actor.getHeight() / 2;
-                y += height / 2;
+                origin.y = height / 2;
                 break;
 
             case CENTER:
-                x -= actor.getWidth() / 2;
-                x += width / 2;
-
-                y -= actor.getHeight() / 2;
-                y += height / 2;
+                origin.x = width / 2;
+                origin.y = height / 2;
                 break;
 
             case CENTER_RIGHT:
-                x = width - x;
-                x -= actor.getWidth();
-
-                y -= actor.getHeight() / 2;
-                y += height / 2;
+                origin.x = width;
+                origin.y = height / 2;
+                position.x *= -1;
                 break;
 
             case TOP_LEFT:
-                y = height - y;
-                y -= actor.getHeight();
+                origin.y = height;
+                position.y *= -1;
                 break;
 
             case TOP_CENTER:
-                x -= actor.getWidth() / 2;
-                x += width / 2;
-
-                y = height - y;
-                y -= actor.getHeight();
+                origin.x = width / 2;
+                origin.y = height;
+                position.y *= -1;
                 break;
 
             case TOP_RIGHT:
-                x = width - x;
-                x -= actor.getWidth();
-
-                y = height - y;
-                y -= actor.getHeight();
+                origin.x += width;
+                origin.y += height;
+                position.x *= -1;
+                position.y *= -1;
                 break;
-
         }
-        actor.setPosition(x, y);
+
+        position.add(origin).add(offset);
+        actor.setPosition(position.x, position.y);
     }
 }

@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.ui;
 
 public enum Align {
+    UNSET,
     BOTTOM_LEFT,
     BOTTOM_CENTER,
     BOTTOM_RIGHT,

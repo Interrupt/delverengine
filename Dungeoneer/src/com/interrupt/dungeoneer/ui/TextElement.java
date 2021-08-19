@@ -9,7 +9,7 @@ public class TextElement extends Element{
     public Color color = Color.WHITE;
 
     @Override
-    public Actor getActor() {
+    public Actor createActor() {
         Label label = new Label(text, UiSkin.getSkin());
         label.setPosition(x, y);
         label.setColor(color.r, color.g, color.b, 1f);

@@ -7,8 +7,25 @@ public class Element {
     public int y = 0;
 
     public Align anchor = Align.BOTTOM_LEFT;
+    public Align pivot = Align.UNSET;
+
+    protected Canvas canvas;
+
+    private Actor actor;
+
+    public void init() {
+        actor = createActor();
+    }
+
+    public Actor createActor() {
+        return new Actor();
+    }
 
     public Actor getActor() {
-        return new Actor();
+        return actor;
+    }
+
+    public void setCanvas(Canvas c) {
+        canvas = c;
     }
 }

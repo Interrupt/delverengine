@@ -9,7 +9,7 @@ public class ImageElement extends Element {
     public String image;
 
     @Override
-    public Actor getActor() {
+    public Actor createActor() {
         Image actor = new Image(new Texture(Game.getInternal(image)));
         actor.setPosition(x, y);
 
