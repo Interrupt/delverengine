@@ -12,11 +12,11 @@ public class Canvas implements Disposable {
     private Viewport viewport;
     private Stage stage;
 
-    private final int minWidth = 640;
-    private final int minHeight = 360;
+    private int minWidth = 640;
+    private int minHeight = 360;
 
-    public int width = minWidth;
-    public int height = minHeight;
+    private int width = minWidth;
+    private int height = minHeight;
 
     public Array<Element> children = new Array<>();
 
