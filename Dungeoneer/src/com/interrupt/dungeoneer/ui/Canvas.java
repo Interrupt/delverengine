@@ -50,7 +50,6 @@ public class Canvas implements Disposable {
     }
 
     private void layout() {
-        viewport.apply();
         for (Element child : children) {
             positionActor(child.getActor(), child);
         }
