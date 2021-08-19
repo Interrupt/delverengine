@@ -63,19 +63,20 @@ public class Canvas implements Disposable {
     }
 
     private void calculateScaling() {
-        int scale = 1;
         int displayWidth = Gdx.graphics.getWidth();
         int displayHeight = Gdx.graphics.getHeight();
+        int maxPixelScale = Math.min(displayWidth / minWidth, displayHeight / minHeight);
 
-        for (int i = 4; i > 1; i--) {
+        int pixelScale = 1;
+        for (int i = maxPixelScale; i > 1; i--) {
             if (displayWidth / i >= minWidth && displayHeight / i >= minHeight) {
-                scale = i;
+                pixelScale = i;
                 break;
             }
         }
 
-        width = displayWidth / scale;
-        height = displayHeight / scale;
+        width = displayWidth / pixelScale;
+        height = displayHeight / pixelScale;
 
         if (width < minWidth || height < minHeight) {
             width = minWidth;
