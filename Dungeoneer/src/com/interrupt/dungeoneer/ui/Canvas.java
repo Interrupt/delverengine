@@ -12,8 +12,11 @@ public class Canvas implements Disposable {
     private Viewport viewport;
     private Stage stage;
 
-    public int width = 640;
-    public int height = 360;
+    private final int minWidth = 640;
+    private final int minHeight = 360;
+
+    public int width = minWidth;
+    public int height = minHeight;
 
     public Array<Element> children = new Array<>();
 
@@ -64,8 +67,8 @@ public class Canvas implements Disposable {
         int displayWidth = Gdx.graphics.getWidth();
         int displayHeight = Gdx.graphics.getHeight();
 
-        for (int i = 4; i > 0; i--) {
-            if (displayWidth / i >= 640 && displayHeight / i >= 360) {
+        for (int i = 4; i > 1; i--) {
+            if (displayWidth / i >= minWidth && displayHeight / i >= minHeight) {
                 scale = i;
                 break;
             }
@@ -73,6 +76,11 @@ public class Canvas implements Disposable {
 
         width = displayWidth / scale;
         height = displayHeight / scale;
+
+        if (width < minWidth || height < minHeight) {
+            width = minWidth;
+            height = minHeight;
+        }
     }
 
     @Override
