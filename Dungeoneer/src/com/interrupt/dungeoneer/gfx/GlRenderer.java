@@ -403,7 +403,8 @@ public class GlRenderer {
 		postProcessBatch = new SpriteBatch();
 		postProcessBatch.disableBlending();
 
-		Game.ui = new Stage(new FillViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+		Game.viewport = new FillViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		Game.ui = new Stage(Game.viewport);
 
 		if(GameManager.gameHasStarted) {
 			Gdx.app.log("DelverLifeCycle", " Hud");
@@ -424,7 +425,7 @@ public class GlRenderer {
 	}
 
 	public void render(Game game) {
-
+        Game.viewport.apply();
 		time += Gdx.graphics.getDeltaTime();
 
 		boolean inCutscene = cutsceneCamera != null && cutsceneCamera.isActive;
@@ -714,46 +715,49 @@ public class GlRenderer {
 			}
 		}
 
-		drawUi();
+		// TODO: Migrate the Player UI then remove the below.
+		//drawUi();
 
 		uiBatch.end();
 
-		if(!game.gameOver)
-		{
-			if(!Options.instance.hideUI || Game.instance.getShowingMenu()) Game.ui.draw();
+        Game.canvas.draw();
+        Game.viewport.apply();
 
-			float uiSize = Game.GetUiSize();
+		if(game.gameOver) return;
 
-			Item hoverItm = Game.hud.getMouseOverItem();
-			if(hoverItm == null) hoverItm = game.player.hovering;
+        if(!Options.instance.hideUI || Game.instance.getShowingMenu()) Game.ui.draw();
 
-			if(Game.isMobile) {
-				hoverItm = Game.hotbar.dragging;
-				if(hoverItm == null) hoverItm = Game.bag.dragging;
-				if(hoverItm == null) hoverItm = Game.hud.dragging;
-			}
+        float uiSize = Game.GetUiSize();
 
-			if(hoverItm != null && (OverlayManager.instance.current() == null || !OverlayManager.instance.shouldPauseGame()))
-			{
-				uiBatch.begin();
+        Item hoverItm = Game.hud.getMouseOverItem();
+        if(hoverItm == null) hoverItm = game.player.hovering;
 
-				Integer uiTouchPointer = game.input.uiTouchPointer;
-				if(uiTouchPointer == null) uiTouchPointer = 0;
+        if(Game.isMobile) {
+            hoverItm = Game.hotbar.dragging;
+            if(hoverItm == null) hoverItm = Game.bag.dragging;
+            if(hoverItm == null) hoverItm = Game.hud.dragging;
+        }
 
-				if(Game.isMobile) {
-					this.drawTextOnScreen(hoverItm.GetInfoText(), Gdx.input.getX(uiTouchPointer) - Gdx.graphics.getWidth() / 2 + uiSize * 1.25f, -Gdx.input.getY(uiTouchPointer) + Gdx.graphics.getHeight() / 2, uiSize / 5, Color.WHITE, Color.BLACK);
-				} else {
-					Game.tooltip.show(game.input.getPointerX(uiTouchPointer), -game.input.getPointerY(uiTouchPointer) + Gdx.graphics.getHeight(), hoverItm);
-				}
+        if(hoverItm != null && (OverlayManager.instance.current() == null || !OverlayManager.instance.shouldPauseGame()))
+        {
+            uiBatch.begin();
 
-				uiBatch.end();
-			}
-			else if(Game.tooltip.isShowingItem()) {
-				Game.tooltip.hide();
-			}
+            Integer uiTouchPointer = game.input.uiTouchPointer;
+            if(uiTouchPointer == null) uiTouchPointer = 0;
 
-			drawGamepadCursor();
-		}
+            if(Game.isMobile) {
+                this.drawTextOnScreen(hoverItm.GetInfoText(), Gdx.input.getX(uiTouchPointer) - Gdx.graphics.getWidth() / 2 + uiSize * 1.25f, -Gdx.input.getY(uiTouchPointer) + Gdx.graphics.getHeight() / 2, uiSize / 5, Color.WHITE, Color.BLACK);
+            } else {
+                Game.tooltip.show(game.input.getPointerX(uiTouchPointer), -game.input.getPointerY(uiTouchPointer) + Gdx.graphics.getHeight(), hoverItm);
+            }
+
+            uiBatch.end();
+        }
+        else if(Game.tooltip.isShowingItem()) {
+            Game.tooltip.hide();
+        }
+
+        drawGamepadCursor();
 	}
 
     private void drawCrosshair() {

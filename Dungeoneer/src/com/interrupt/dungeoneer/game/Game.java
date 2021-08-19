@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
@@ -92,6 +93,8 @@ public class Game {
 	// UI stuff
 	public static Tooltip tooltip = new Tooltip();
     public static Stage ui;
+    public static Viewport viewport;
+    public static Canvas canvas;
 
     public static Hotbar hotbar = new Hotbar(6,1,0);
     public static Hotbar bag = new Hotbar(6,3,6);
@@ -123,6 +126,11 @@ public class Game {
     public static Pathfinding pathfinding = new Pathfinding();
 
 	public Game(int saveLoc) {
+		// TODO: This needs to live in the HudManager
+	    FileHandle file = Game.getInternal("/data/hud.dat");
+	    canvas = JsonUtil.fromJson(Canvas.class, file);
+	    canvas.init();
+
 		instance = this;
 		Start(saveLoc);
 	}
@@ -548,6 +556,9 @@ public class Game {
 
 		if(ui != null)
 			ui.act(delta);
+
+		if (canvas != null)
+		    canvas.act(delta);
 
 		hotbar.tickUI(input);
 		bag.tickUI(input);

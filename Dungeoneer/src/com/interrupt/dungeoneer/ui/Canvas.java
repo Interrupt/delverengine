@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -20,6 +21,7 @@ public class Canvas implements Disposable {
 
     public void init() {
         if (viewport == null) {
+            calculateScaling();
             viewport = new FitViewport(width, height);
         }
 
@@ -28,9 +30,17 @@ public class Canvas implements Disposable {
 
             for (Element child : children) {
                 Actor actor = child.getActor();
+                positionActor(actor, child);
                 stage.addActor(actor);
             }
         }
+    }
+
+    private void reinit() {
+        viewport = null;
+        stage.dispose();
+        stage = null;
+        init();
     }
 
     public void draw() {
@@ -43,7 +53,26 @@ public class Canvas implements Disposable {
     }
 
     public void resize (int width, int height) {
+        calculateScaling();
+        viewport.setWorldSize(width, height);
         viewport.update(width, height, true);
+        reinit();
+    }
+
+    private void calculateScaling() {
+        int scale = 1;
+        int displayWidth = Gdx.graphics.getWidth();
+        int displayHeight = Gdx.graphics.getHeight();
+
+        for (int i = 4; i > 0; i--) {
+            if (displayWidth / i >= 640 && displayHeight / i >= 360) {
+                scale = i;
+                break;
+            }
+        }
+
+        width = displayWidth / scale;
+        height = displayHeight / scale;
     }
 
     @Override
@@ -51,11 +80,67 @@ public class Canvas implements Disposable {
         stage.dispose();
     }
 
-    public void setDebug(boolean enabled) {
-        stage.setDebugAll(enabled);
-    }
+    public void positionActor(Actor actor, Element element) {
+        int x = element.x;
+        int y = element.y;
 
-    public boolean getDebug() {
-        return stage.isDebugAll();
+        switch (element.anchor) {
+            case bottom_left:
+                break;
+
+            case bottom_center:
+                x -= actor.getWidth() / 2;
+                x += width / 2;
+                break;
+
+            case bottom_right:
+                x -= actor.getWidth();
+                x += width;
+                break;
+
+            case center_left:
+                y -= actor.getHeight() / 2;
+                y += height / 2;
+                break;
+
+            case center:
+                x -= actor.getWidth() / 2;
+                x += width / 2;
+
+                y -= actor.getHeight() / 2;
+                y += height / 2;
+                break;
+
+            case center_right:
+                x -= actor.getWidth();
+                x += width;
+
+                y -= actor.getHeight() / 2;
+                y += height / 2;
+                break;
+
+            case top_left:
+                y -= actor.getHeight();
+                y += height;
+                break;
+
+            case top_center:
+                x -= actor.getWidth() / 2;
+                x += width / 2;
+
+                y -= actor.getHeight();
+                y += height;
+                break;
+
+            case top_right:
+                x -= actor.getWidth();
+                x += width;
+
+                y -= actor.getHeight();
+                y += height;
+                break;
+
+        }
+        actor.setPosition(x, y);
     }
 }

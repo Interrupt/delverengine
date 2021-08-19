@@ -9,45 +9,43 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
-import com.interrupt.dungeoneer.gfx.Tesselator;
 import com.interrupt.dungeoneer.metrics.MetricsCore;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 
 import java.util.Map.Entry;
 
 public class GameScreen implements Screen {
-	
+
 	GameManager gameManager;
-	
+
 	public GameInput input;
     private boolean running = true;
-    
+
     public boolean saveOnPause = true;
-    
+
     private int curWidth;
     private int curHeight;
-    
+
     public boolean didStart = false;
     public static float cDelta = 0;
-    
+
     public int saveLoc = 0;
-    
+
     private long nextSecond = System.currentTimeMillis() + 1000;
     private int fpsCount = 0;
-    
+
     public static boolean resetDelta = true;
-    
+
     public OverlayManager overlayManager = OverlayManager.instance;
 
 	private Level editorLevel = null;
-    
+
     public GameScreen(Level level, GameManager gameManager, GameInput input) {
     	this.gameManager = gameManager;
 		this.input = input;
 		this.editorLevel  = level;
     }
-	
+
 	public GameScreen(GameManager gameManager, GameInput input) {
 		this.gameManager = gameManager;
 		this.input = input;
@@ -108,7 +106,7 @@ public class GameScreen implements Screen {
 			}
 		}
 	}
-	
+
 	@Override
 	public void pause() {
 		if(Game.isMobile) {
@@ -116,10 +114,10 @@ public class GameScreen implements Screen {
 			doPause();
 		}
 	}
-	
+
 	public void doPause() {
 		running = false;
-		
+
 		try {
 			Audio.steps.stop();
 			Audio.torch.stop();
@@ -127,7 +125,7 @@ public class GameScreen implements Screen {
 			Audio.stopLoopingSounds();
 		}
 		catch(Exception e) { }
-		
+
 		try {
 			if(saveOnPause)
 				GameManager.getGame().save();
@@ -135,9 +133,9 @@ public class GameScreen implements Screen {
                 GameManager.getGame().level.preSaveCleanup();
 		}
 		catch(Exception ex) {
-			
+
 		}
-		
+
 		OverlayManager.instance.reset();
 	}
 
@@ -150,16 +148,18 @@ public class GameScreen implements Screen {
 			GameManager.renderer.setSize(width, height);
 			OverlayManager.instance.resize(width, height);
 		}
+
+		Game.canvas.resize(width, height);
 	}
 
 	@Override
 	public void resume() {
 		if(Game.isMobile) {
 			Gdx.app.log("DelverGameScreen", "Resume");
-			
+
 			resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			gameManager.init();
-			
+
 			didStart = false;
 			GameApplication.SetScreen( new MainMenuScreen());
 		}
@@ -171,24 +171,24 @@ public class GameScreen implements Screen {
 	@Override
 	public void show() {
 		Gdx.app.log("DelverGameScreen", "Show");
-		
+
 		Audio.disposeAudio("door_beginning.mp3,floor_descend.mp3");
 		Audio.init();
-		
+
 		if(!didStart) {
 			Gdx.app.log("DelverGameScreen", "Starting game");
-			
+
 			if(editorLevel == null) gameManager.startGame(saveLoc);
 			else gameManager.startGame(editorLevel);
-			
+
 			didStart = true;
 		}
-		
+
 		Gdx.app.log("DelverGameScreen", "Init player");
 		running = true;
 		Game.instance.player.init();
 		saveOnPause = editorLevel == null ? true : false;
-		
+
 		if(Options.instance.enableMusic) {
 			Gdx.app.log("DelverGameScreen", "Playing music");
 			if(Game.instance.player.isHoldingOrb)
@@ -196,24 +196,24 @@ public class GameScreen implements Screen {
 			else
 				Audio.playMusic(Game.instance.level.music, Game.instance.level.loopMusic);
 		}
-		
+
 		if(Game.instance.level.ambientSound != null && !Game.isMobile)
 			Audio.playAmbientSound(Game.instance.level.ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
-		
+
 		if(Game.isMobile) Gdx.input.setCatchBackKey( true );
-		
+
 		Gdx.app.log("DelverGameScreen", "Finished showing");
 	}
-	
+
 	@Override
 	public void hide() {
 		Gdx.app.log("DelverGameScreen", "Hide");
-		
+
 		doPause();
-		
+
 		if(Game.isMobile) Gdx.input.setCatchBackKey( false );
 		Audio.stopLoopingSounds();
-		
+
 		if(editorLevel != null) GameApplication.editorRunning = false;
 	}
 

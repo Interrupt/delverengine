@@ -77,7 +77,7 @@ public class Gun extends Weapon {
 	public Gun(float x, float y) {
 		super(x, y, 16, ItemType.wand, StringManager.get("items.Gun.defaultNameText")); speed = 0.01f;
 	}
-	
+
 	public String GetInfoText() {
 		return super.GetInfoText();
 	}
@@ -86,7 +86,7 @@ public class Gun extends Weapon {
     public String GetItemText() {
         return super.GetItemText();
     }
-	
+
 	@Override
 	public void doAttack(Player p, Level lvl, float attackPower) {
 
@@ -320,6 +320,21 @@ public class Gun extends Weapon {
             }
         }
         return false;
+    }
+
+    public int getAmmoCount() {
+        if(ammoType == null || ammoType.equals(""))
+	        return -1;
+
+        int count = 0;
+        for (Item item : Game.instance.player.inventory) {
+            if (!(item instanceof ItemStack)) continue;
+            ItemStack stack = (ItemStack)item;
+            if (!stack.stackType.equals(ammoType)) continue;
+            count += stack.count;
+        }
+
+        return count;
     }
 
     @Override
