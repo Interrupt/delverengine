@@ -319,8 +319,8 @@ public class GlRenderer {
 
 		// Reset UI and inventory
 		if(Game.instance != null && Game.instance.player != null) {
-			if(Game.hotbar != null)
-				Game.hotbar.refresh();
+			if(Game.hudManager.quickSlots != null)
+				Game.hudManager.quickSlots.refresh();
 
 			Game.instance.player.resetInventoryDrawables();
 		}
@@ -418,8 +418,8 @@ public class GlRenderer {
 		Gdx.app.log("DelverLifeCycle", "Initializing HUD");
 
 		Game.ui.clear();
-		Game.hotbar.init(itemTextures.getSpriteRegions());
-		Game.bag.init(itemTextures.getSpriteRegions());
+		Game.hudManager.quickSlots.init();
+		Game.hudManager.backpack.init();
 		Game.hud.init(itemTextures.getSpriteRegions());
 	}
 
@@ -612,11 +612,11 @@ public class GlRenderer {
 		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
 		uiBatch.setProjectionMatrix(camera2D.combined);
 
-		Game.bag.yOffset = 1.7f;
+		Game.hudManager.backpack.yOffset = 1.7f;
 
 		if(!Options.instance.hideUI || Game.instance.getShowingMenu()) {
-			drawInventory(Game.hotbar);
-			drawInventory(Game.bag);
+			drawInventory(Game.hudManager.quickSlots);
+			drawInventory(Game.hudManager.backpack);
 			drawInventory(Game.hud.equipLocations);
 		}
 
@@ -728,8 +728,8 @@ public class GlRenderer {
 			if(hoverItm == null) hoverItm = game.player.hovering;
 
 			if(Game.isMobile) {
-				hoverItm = Game.hotbar.dragging;
-				if(hoverItm == null) hoverItm = Game.bag.dragging;
+				hoverItm = Game.hudManager.quickSlots.dragging;
+				if(hoverItm == null) hoverItm = Game.hudManager.backpack.dragging;
 				if(hoverItm == null) hoverItm = Game.hud.dragging;
 			}
 
@@ -1798,7 +1798,7 @@ public class GlRenderer {
 			}
 		}
 
-		if(hotbar == Game.hotbar) {
+		if(hotbar == Game.hudManager.quickSlots) {
 			for(int x = 0; x < hotbar.columns; x++) {
 				float xPos = -((uiSize * invLength) / 2.0f) + uiSize * x + (uiSize * 0.05f);
 				float yPos = camera2D.viewportHeight / 2 - (0 + 1) * uiSize + (uiSize * 0.05f);

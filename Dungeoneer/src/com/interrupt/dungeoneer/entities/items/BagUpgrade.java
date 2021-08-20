@@ -72,8 +72,8 @@ public class BagUpgrade extends Item {
             player.inventory.set(location, null);
         }
 
-        Game.bag.refresh();
-        Game.hotbar.refresh();
+        Game.hudManager.backpack.refresh();
+        Game.hudManager.quickSlots.refresh();
 
         Audio.playSound("inventory/open_inventory.mp3", 0.9f);
     }

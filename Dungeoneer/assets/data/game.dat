@@ -4,5 +4,6 @@
     "monsterDataFiles": ["monsters.dat"],
     "itemDataFiles": ["items.dat"],
     "playerDataFile": "player.dat",
+    "hudDataFile": "hud.dat",
     "playerJumpEnabled": true
 }
