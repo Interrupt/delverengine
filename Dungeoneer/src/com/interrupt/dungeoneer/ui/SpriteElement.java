@@ -12,7 +12,6 @@ public class SpriteElement extends Element {
     public Actor createActor() {
         TextureAtlas atlas = TextureAtlas.getCachedRegion(spriteAtlas);
         Image image = new Image(atlas.getClippedSprite(tex));
-        image.setPosition(x, y);
 
         return image;
     }

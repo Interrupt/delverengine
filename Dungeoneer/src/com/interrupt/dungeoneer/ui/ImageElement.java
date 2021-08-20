@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.ui;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -10,9 +11,11 @@ public class ImageElement extends Element {
 
     @Override
     public Actor createActor() {
-        Image actor = new Image(new Texture(Game.getInternal(image)));
-        actor.setPosition(x, y);
+        FileHandle file = Game.getInternal(image);
+        if (!file.exists()) {
+            return null;
+        }
 
-        return actor;
+        return new Image(new Texture(file));
     }
 }
