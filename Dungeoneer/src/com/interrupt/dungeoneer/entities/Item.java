@@ -142,6 +142,10 @@ public class Item extends Entity {
 	public transient String lastMeshFile = null;
 	public transient String lastTextureFile = null;
 
+    /** Should we draw a crosshair for this item when being equipped? */
+    @EditorProperty(group = "HUD")
+    public boolean showCrosshair = false;
+
 	private static final transient Entity pickupHelper = new Entity();
 
 	public Item() {

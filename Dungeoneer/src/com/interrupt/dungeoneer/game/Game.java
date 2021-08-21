@@ -555,6 +555,7 @@ public class Game {
         hudManager.quickSlots.tickUI(input);
 		hudManager.backpack.tickUI(input);
 		hud.tick(input);
+        hudManager.draw();
 
 		// keep the cache clean
 		CachePools.clearOnTick();
