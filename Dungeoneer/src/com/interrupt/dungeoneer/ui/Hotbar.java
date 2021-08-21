@@ -21,9 +21,16 @@ public class Hotbar {
     public final Map<Integer, MultiTouchButton> itemButtons = new HashMap<>();
     public final Map<Integer, Boolean> wasPressedLast = new HashMap<>();
     public final Map<Integer, Boolean> isDragging = new HashMap<>();
+
+    /** The column count. */
     public int columns = 6;
+
+    /** The row count. */
     public int rows = 1;
+
+    /** The row offset. */
     public int invOffset = 0;
+
     public float yOffset = 0;
     public boolean visible = true;
     public Item dragging = null;
