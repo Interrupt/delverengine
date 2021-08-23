@@ -147,9 +147,8 @@ public class GameScreen implements Screen {
 			curHeight = height;
 			GameManager.renderer.setSize(width, height);
 			OverlayManager.instance.resize(width, height);
+		    Game.canvas.resize(width, height);
 		}
-
-		Game.canvas.resize(width, height);
 	}
 
 	@Override
