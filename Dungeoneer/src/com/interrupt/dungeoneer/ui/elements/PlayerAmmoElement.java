@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui;
+package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,10 +8,11 @@ import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.items.Gun;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.ui.UiSkin;
 
 public class PlayerAmmoElement extends Element {
     public Color color = Color.WHITE;
-    
+
     @Override
     public Actor createActor() {
         Label label = new Label(String.valueOf(getAmmoCount()), UiSkin.getSkin()) {

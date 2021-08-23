@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui;
+package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;

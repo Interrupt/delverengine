@@ -1,10 +1,11 @@
-package com.interrupt.dungeoneer.ui;
+package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.ui.UiSkin;
 
 public class PlayerHealthElement extends Element {
     @Override

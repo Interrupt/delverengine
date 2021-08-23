@@ -1,8 +1,9 @@
-package com.interrupt.dungeoneer.ui;
+package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.interrupt.dungeoneer.ui.Align;
 
-public class Element {
+public abstract class Element {
     public int x = 0;
     public int y = 0;
 
@@ -17,9 +18,7 @@ public class Element {
         actor = createActor();
     }
 
-    public Actor createActor() {
-        return new Actor();
-    }
+    protected abstract Actor createActor();
 
     public Actor getActor() {
         return actor;

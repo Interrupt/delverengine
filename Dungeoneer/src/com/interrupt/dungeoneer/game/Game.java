@@ -34,6 +34,7 @@ import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
+import com.interrupt.dungeoneer.ui.elements.Canvas;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
@@ -49,6 +50,7 @@ import java.util.Comparator;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 public class Game {
 	/** Engine version */
@@ -128,8 +130,15 @@ public class Game {
 	public Game(int saveLoc) {
 		// TODO: This needs to live in the HudManager
 	    FileHandle file = Game.getInternal("/data/hud.dat");
-	    canvas = JsonUtil.fromJson(Canvas.class, file);
-	    canvas.init();
+	    if (file.exists()) {
+            canvas = JsonUtil.fromJson(Canvas.class, file, new Supplier<Canvas>() {
+                @Override
+                public Canvas get() {
+                    return new Canvas();
+                }
+            });
+            canvas.init();
+        }
 
 		instance = this;
 		Start(saveLoc);
