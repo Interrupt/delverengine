@@ -720,7 +720,9 @@ public class GlRenderer {
 
 		uiBatch.end();
 
-        Game.canvas.draw();
+		if (Game.canvas != null) {
+            Game.canvas.draw();
+        }
         Game.viewport.apply();
 
 		if(game.gameOver) return;
