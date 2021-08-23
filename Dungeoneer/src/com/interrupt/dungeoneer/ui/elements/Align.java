@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui;
+package com.interrupt.dungeoneer.ui.elements;
 
 public enum Align {
     UNSET,

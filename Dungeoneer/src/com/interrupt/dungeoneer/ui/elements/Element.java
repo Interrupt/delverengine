@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.interrupt.dungeoneer.ui.Align;
 
 public abstract class Element {
     public int x = 0;
