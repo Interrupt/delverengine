@@ -128,18 +128,6 @@ public class Game {
     public static Pathfinding pathfinding = new Pathfinding();
 
 	public Game(int saveLoc) {
-		// TODO: This needs to live in the HudManager
-	    FileHandle file = Game.getInternal("/data/hud.dat");
-	    if (file.exists()) {
-            canvas = JsonUtil.fromJson(Canvas.class, file, new Supplier<Canvas>() {
-                @Override
-                public Canvas get() {
-                    return new Canvas();
-                }
-            });
-            canvas.init();
-        }
-
 		instance = this;
 		Start(saveLoc);
 	}
@@ -504,6 +492,7 @@ public class Game {
 
 		try {
 			player.init();
+			initHud();
 		}
 		catch(Exception ex) { Gdx.app.log("DelverLifeCycle", ex.getMessage()); }
 
@@ -563,11 +552,11 @@ public class Game {
 			gamepadManager.menuMode = false;
 		}
 
-		if(ui != null)
-			ui.act(delta);
-
 		if (canvas != null)
 		    canvas.act(delta);
+
+		if(ui != null)
+			ui.act(delta);
 
 		hotbar.tickUI(input);
 		bag.tickUI(input);
@@ -576,6 +565,20 @@ public class Game {
 		// keep the cache clean
 		CachePools.clearOnTick();
 	}
+
+	public void initHud() {
+        // TODO: This needs to live in the HudManager
+        FileHandle file = Game.getInternal("/data/hud.dat");
+        if (file.exists()) {
+            canvas = JsonUtil.fromJson(Canvas.class, file, new Supplier<Canvas>() {
+                @Override
+                public Canvas get() {
+                    return new Canvas();
+                }
+            });
+            canvas.init();
+        }
+    }
 
 	public void changeLevel(Stairs stair)
 	{
