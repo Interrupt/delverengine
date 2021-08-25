@@ -60,13 +60,6 @@ public class PlayerHotbarElement extends Element {
                     }
                 });
 
-                button.addListener(new EventListener() {
-                    @Override
-                    public boolean handle(Event event) {
-                        return false;
-                    }
-                });
-
                 slot.add(button);
             }
 
