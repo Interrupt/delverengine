@@ -1,30 +1,28 @@
 package com.interrupt.dungeoneer;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.entities.Stairs;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.GameData;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.screens.*;
 import com.interrupt.utils.JsonUtil;
 
+import static com.interrupt.dungeoneer.game.Game.inputMultiplexer;
+
 public class GameApplication extends Game {
-	
+
 	protected GameManager gameManager = null;
 	public GameInput input = new GameInput();
-	
+
     public GameScreen mainScreen;
     public GameOverScreen gameoverScreen;
     public LevelChangeScreen levelChangeScreen;
     public SplashScreen mainMenuScreen;
 
     public WinScreen winScreen;
-    
+
     public static GameApplication instance;
     public static boolean editorRunning = false;
 
@@ -36,7 +34,8 @@ public class GameApplication extends Game {
         Gdx.app.setLogLevel(Application.LOG_INFO);
 
 		gameManager = new GameManager(this);
-        Gdx.input.setInputProcessor( input );
+		inputMultiplexer.addProcessor(input);
+        Gdx.input.setInputProcessor(inputMultiplexer);
         gameManager.init();
 
         mainMenuScreen = new SplashScreen();
@@ -44,16 +43,17 @@ public class GameApplication extends Game {
         gameoverScreen = new GameOverScreen(gameManager);
         levelChangeScreen = new LevelChangeScreen(gameManager);
         winScreen = new WinScreen(gameManager);
-        
+
         setScreen(new SplashScreen());
 	}
-	
+
 	public void createFromEditor(Level level) {
 		instance = this;
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create From Editor");
-		
+
 		gameManager = new GameManager(this);
-        Gdx.input.setInputProcessor( input );
+		inputMultiplexer.addProcessor(input);
+        Gdx.input.setInputProcessor(inputMultiplexer);
         gameManager.init();
 
 		com.interrupt.dungeoneer.game.Game.inEditor = true;
@@ -61,7 +61,7 @@ public class GameApplication extends Game {
         mainScreen = new GameScreen(level, gameManager, input);
         gameoverScreen = new GameOverScreen(gameManager);
         levelChangeScreen = new LevelChangeScreen(gameManager);
-        
+
         setScreen(mainScreen);
 	}
 
@@ -71,12 +71,12 @@ public class GameApplication extends Game {
 		mainScreen.dispose();
 		SteamApi.api.dispose();
 	}
-	
+
 	public static void ShowMainScreen() {
-		Gdx.input.setInputProcessor( instance.input );
+		Gdx.input.setInputProcessor(inputMultiplexer);
 		instance.setScreen(instance.mainScreen);
 	}
-	
+
 	public static void ShowGameOverScreen(boolean escaped) {
 
 		// Only show the ending level once!
@@ -124,7 +124,7 @@ public class GameApplication extends Game {
 		instance.levelChangeScreen.stair = stair;
 		instance.levelChangeScreen.triggeredWarp = null;
 		instance.mainScreen.saveOnPause = false;
-		
+
 		instance.setScreen(instance.levelChangeScreen);
 	}
 
@@ -135,15 +135,15 @@ public class GameApplication extends Game {
 
 		instance.setScreen(instance.levelChangeScreen);
 	}
-	
+
 	public static void SetScreen(Screen newScreen) {
 		instance.setScreen(newScreen);
 	}
-	
+
 	public static void SetSaveLocation(int saveLoc) {
 		instance.mainScreen.saveLoc = saveLoc;
 	}
-	
+
 	public static void ShowMainMenuScreen() {
 		instance.mainScreen.didStart = false;
 		instance.setScreen(new MainMenuScreen());

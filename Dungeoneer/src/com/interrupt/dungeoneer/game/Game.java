@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.game;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -62,6 +63,7 @@ public class Game {
 	public float time = 0;
 	public Player player;
 	public GameInput input;
+	public static InputMultiplexer inputMultiplexer = new InputMultiplexer();
 	public static GamepadManager gamepadManager;
 
 	public boolean gameOver = false;
@@ -577,6 +579,7 @@ public class Game {
                 }
             });
             canvas.init();
+            inputMultiplexer.addProcessor(canvas);
         }
     }
 

@@ -3,7 +3,9 @@ package com.interrupt.dungeoneer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -19,14 +21,11 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Art;
-import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
-import com.interrupt.dungeoneer.gfx.Tesselator;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.ControllerState.DPAD;
 import com.interrupt.dungeoneer.ui.UiSkin;
@@ -109,13 +108,17 @@ public class BaseScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+		Game.inputMultiplexer.removeProcessor(ui);
 	}
 
 	@Override
 	public void hide() {
 		Gdx.app.log(screenName, "LibGdx Hide");
 		running = false;
+
+		if (ui != null) {
+            Game.inputMultiplexer.removeProcessor(ui);
+        }
 	}
 
 	@Override
@@ -146,7 +149,7 @@ public class BaseScreen implements Screen {
 		}
 
 		if(ui != null) {
-			Gdx.input.setInputProcessor(ui);
+			Gdx.input.setInputProcessor(Game.inputMultiplexer);
 			ui.setViewport(viewport);
 		}
 
@@ -166,6 +169,10 @@ public class BaseScreen implements Screen {
 		Gdx.app.log(screenName, "LibGdx Show");
 
 		running = true;
+
+		if (ui != null) {
+            Game.inputMultiplexer.addProcessor(ui);
+        }
 
 		if(showMouse && Gdx.input.isCursorCatched()) {
 			Gdx.input.setCursorCatched(false);

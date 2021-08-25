@@ -27,18 +27,18 @@ public class SplashScreen extends BaseScreen {
     private Interpolation lerp = Interpolation.swing;
     private float fadeStartTick = 0;
     private float fadeEndTick = 200;
-    
+
     private boolean isFadingOut = false;
-    
+
     private String splashText = "";
-    
+
     private Color whiteColor = new Color(Color.WHITE);
     private Color greyColor = new Color(Color.DARK_GRAY);
     private Color blackColor = new Color(Color.BLACK);
     private Color fadeColor = new Color();
 
     private String[] splashTexts = { StringManager.get("screens.SplashScreen.pressKeyToStart") };
-    
+
     protected Texture logoTexture = null;
 
 	ShaderProgram logoShader = null;
@@ -47,7 +47,7 @@ public class SplashScreen extends BaseScreen {
 	private float nextFlashTime = 15;
 
 	Random r = new Random();
-	
+
 	public SplashScreen() {
 		screenName = "SplashScreen";
 
@@ -59,10 +59,10 @@ public class SplashScreen extends BaseScreen {
 		}
 
 		splashLevel = splashScreenInfo.backgroundLevel;
-		
+
 		Game.init();
 		Options.loadOptions();
-		
+
 		// load the entity templates
 		EntityManager entityManager = Game.getModManager().loadEntityManager(Game.gameData.entityDataFiles);
 		EntityManager.setSingleton(entityManager);
@@ -73,8 +73,11 @@ public class SplashScreen extends BaseScreen {
 		catch(Exception ex) {
 			Gdx.app.error("Delver", ex.getMessage());
 		}
+
+		ui = new Stage(viewport);
+        Gdx.input.setInputProcessor(Game.inputMultiplexer);
 	}
-	
+
 	@Override
 	public void show() {
 		super.show();
@@ -93,13 +96,12 @@ public class SplashScreen extends BaseScreen {
 		fadeEndTick = 200;
 		isFadingOut = false;
 		tickCount = 30;
-		
+
 		Options.loadOptions();
 
 		if(splashScreenInfo.music != null)
 			Audio.playMusic(splashScreenInfo.music, true);
 
-        ui = new Stage(viewport);
         ui.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -113,36 +115,34 @@ public class SplashScreen extends BaseScreen {
                 return super.keyTyped(event, character);
             }
         });
-
-        Gdx.input.setInputProcessor(ui);
 	}
-	
-	@Override
+
+    @Override
 	public void draw(float delta) {
-		
+
 		renderer = GameManager.renderer;
 		gl = renderer.getGL();
-		
+
 		float lTime = Math.min((tickCount - fadeStartTick) / (fadeEndTick - fadeStartTick), 1);
 		float fade = 0;
 		if(lTime > 0)
 			fade = lerp.apply(lTime);
-		
+
 		if(!isFadingOut)
 			backgroundColor.set(Color.WHITE).mul(fade);
 		else
 			backgroundColor.set(Color.WHITE);
-		
+
 		super.draw(delta);
-		
+
 		whiteColor.set(Color.WHITE).mul(fade);
 		greyColor.set(Color.DARK_GRAY).mul(fade, fade, fade, fade * 0.75f);
         blackColor.set(Color.BLACK).mul(fade, fade, fade, fade * 0.75f);
-		
+
 		renderer.uiBatch.enableBlending();
 
 		float uiScale = Game.getDynamicUiScale();
-		
+
 		if(logoTexture != null) {
 			ShaderProgram defaultShader = renderer.uiBatch.getShader();
 
@@ -156,7 +156,7 @@ public class SplashScreen extends BaseScreen {
 			if(logoShader != null) {
 				logoShader.setUniformf("u_time", time);
 			}
-			
+
 			float logoSize = uiScale * 650;
 
 			float backgroundScale = logoTexture.getWidth() / logoTexture.getHeight();
@@ -168,13 +168,13 @@ public class SplashScreen extends BaseScreen {
 
 			renderer.uiBatch.setShader(defaultShader);
 		}
-		
+
 		// draw the welcome text
 		float fontSize = uiScale * 140;
-		
+
 		renderer.uiBatch.setProjectionMatrix(renderer.camera2D.combined);
 		renderer.uiBatch.begin();
-		
+
 		float yPos = (int)((1 * -fontSize * 3.25f) / 2 + fontSize * 3.25f);
 
         if(!isFadingOut) {
@@ -182,7 +182,7 @@ public class SplashScreen extends BaseScreen {
         }
 
         renderer.drawCenteredText("2018 Priority Interrupt Games", -yPos - fontSize * 1.7f, fontSize * 0.15f, greyColor, blackColor);
-		
+
 		renderer.uiBatch.end();
 
 		if(!isFadingOut && 1f - whiteColor.r > 0f)
@@ -197,10 +197,10 @@ public class SplashScreen extends BaseScreen {
             fadeStartTick = tickCount + 60;
         }
     }
-	
+
 	@Override
 	public void tick(float delta) {
-		
+
 		tickCount += delta * 80f;
 		time += delta * 2f;
 
