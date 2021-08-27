@@ -234,6 +234,7 @@ public class Game {
 
 		try {
 			player.init();
+			initHud();
 			level.setPlayer(player);
 		}
 		catch(Exception ex) { Gdx.app.log("DelverLifeCycle", ex.getMessage()); }
@@ -1312,6 +1313,26 @@ public class Game {
 
 		return DragAndDropResult.drop;
 	}
+
+    public static void SwapInventoryItems(int sourceIndex, int destIndex) {
+        Player player = Game.instance.player;
+        Array<Item> inventory = player.inventory;
+        Item source = inventory.get(sourceIndex);
+        Item dest = inventory.get(destIndex);
+
+        boolean isSourceHeld = player.isHeld(source);
+        boolean isDestHeld = player.isHeld(dest);
+
+        inventory.set(sourceIndex, dest);
+        inventory.set(destIndex, source);
+
+        if (isSourceHeld) {
+            player.equip(source, false);
+        }
+        else if (isDestHeld) {
+            player.equip(dest, false);
+        }
+    }
 
 	private String getSaveDir() {
 		return "save/" + saveLoc + "/";

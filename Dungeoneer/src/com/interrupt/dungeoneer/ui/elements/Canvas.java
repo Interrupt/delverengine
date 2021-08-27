@@ -7,8 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Predicate;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.interrupt.dungeoneer.ui.ActorWalker;
+import com.interrupt.dungeoneer.ui.ActorVisitor;
 
 public class Canvas implements InputProcessor, Disposable {
     private Viewport viewport;
@@ -65,7 +68,7 @@ public class Canvas implements InputProcessor, Disposable {
         stage.act(delta);
     }
 
-    public void resize (int width, int height) {
+    public void resize () {
         reinit();
     }
 
@@ -197,6 +200,42 @@ public class Canvas implements InputProcessor, Disposable {
         position.add(origin).add(offset);
         actor.setPosition(position.x, position.y);
     }
+
+    private final ActorWalker walker = new ActorWalker();
+
+    /**
+     * Finds all children in stage hierarchy of the given type and that satisfy
+     * the given predicate.
+     * @param type Class of object to find
+     * @param predicate Predicate to filter potential results against.
+     * @return An Array of Actors
+     */
+    public <T extends Actor> Array<T> find(Class<T> type, Predicate<T> predicate) {
+        Array<T> result = new Array<>();
+        walker.walk(stage, new ActorVisitor<T>() {
+            @Override
+            public boolean filter(T actor) {
+                return actor.getClass() == type && predicate.evaluate(actor);
+            }
+
+            @Override
+            public void visit(T actor) {
+                result.add(actor);
+            }
+        });
+
+        return result;
+    }
+
+    public <T extends Actor> Array<T> find(Class<T> type) {
+        return find(type, new Predicate<T>() {
+            @Override
+            public boolean evaluate(T arg0) {
+                return true;
+            }
+        });
+    }
+
 
     @Override
     public boolean keyDown(int keycode) {
