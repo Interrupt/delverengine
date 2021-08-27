@@ -34,7 +34,7 @@ public class PlayerBagElement extends Element {
 
         // Build out slots
         for (int i = Game.instance.player.hotbarSize; i < Game.instance.player.inventorySize; i++) {
-            InventorySlot slot = new InventorySlot(i, image);
+            InventorySlot slot = new InventorySlot(image, i);
             slotWidth = (int)Math.max(slotWidth, slot.getWidth());
             slotHeight = (int)Math.max(slotHeight, slot.getHeight());
             group.addActor(slot);

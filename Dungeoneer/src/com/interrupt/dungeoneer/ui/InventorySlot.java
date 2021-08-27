@@ -10,7 +10,7 @@ import com.interrupt.dungeoneer.game.Game;
 public class InventorySlot extends ItemSlot {
     public int index;
 
-    public InventorySlot(int index, String image) {
+    public InventorySlot(String image, int index) {
         super(image);
         this.index = index;
 

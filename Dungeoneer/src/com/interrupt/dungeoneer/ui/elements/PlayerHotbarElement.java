@@ -19,7 +19,7 @@ public class PlayerHotbarElement extends Element {
 
                 if (value != Game.instance.player.hotbarSize) {
                     for (int i = value; i < Game.instance.player.hotbarSize; i++) {
-                        addActor(new InventorySlot(i, image));
+                        addActor(new InventorySlot(image, i));
                     }
                     value = Game.instance.player.hotbarSize;
                     Game.canvas.resize();
@@ -31,7 +31,7 @@ public class PlayerHotbarElement extends Element {
 
         // Build out slots
         for (int i = 0; i < Game.instance.player.hotbarSize; i++) {
-            group.addActor(new InventorySlot(i, image));
+            group.addActor(new InventorySlot(image, i));
         }
 
         group.pack();

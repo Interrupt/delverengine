@@ -9,6 +9,6 @@ public class PlayerInventorySlotElement extends Element {
 
     @Override
     protected Actor createActor() {
-        return new InventorySlot(index, image);
+        return new InventorySlot(image, index);
     }
 }
