@@ -1,6 +1,8 @@
 package com.interrupt.dungeoneer.ui;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.game.Game;
@@ -19,6 +21,16 @@ public class InventorySlot extends ItemSlot {
             slotNumberLabel.setAlignment(Align.bottomLeft);
             addActor(slotNumberLabel);
         }
+
+        addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Item item = getItem();
+                if (item != null) {
+                    Game.instance.player.UseInventoryItem(index);
+                }
+            }
+        });
     }
 
     @Override
