@@ -215,7 +215,7 @@ public class Canvas implements InputProcessor, Disposable {
         walker.walk(stage, new ActorVisitor<T>() {
             @Override
             public boolean filter(T actor) {
-                return actor.getClass() == type && predicate.evaluate(actor);
+                return type.isAssignableFrom(actor.getClass()) && predicate.evaluate(actor);
             }
 
             @Override
