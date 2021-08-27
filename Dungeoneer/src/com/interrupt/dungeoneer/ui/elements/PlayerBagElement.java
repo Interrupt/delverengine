@@ -19,11 +19,11 @@ public class PlayerBagElement extends Element {
                 super.act(delta);
 
                 if (value != Game.instance.player.inventorySize) {
-                    value = Game.instance.player.inventorySize;
-                    /*for (int i = value; i < Game.instance.player.hotbarSize; i++) {
-                        addActor(new InventorySlot(i, image));
+                    for (int i = value; i < Game.instance.player.inventorySize; i++) {
+                        addActor(new InventorySlot(image, i));
                     }
-                    Game.canvas.resize();*/
+                    value = Game.instance.player.inventorySize;
+                    Game.canvas.resize();
                 }
             }
         };
@@ -40,7 +40,7 @@ public class PlayerBagElement extends Element {
             group.addActor(slot);
         }
 
-        int rows = Math.round((Game.instance.player.inventorySize - Game.instance.player.hotbarSize) / (float)columns);
+        int rows = (int)Math.ceil((Game.instance.player.inventorySize - Game.instance.player.hotbarSize) / (float)columns);
         group.setHeight(slotHeight * rows);
         group.setWidth(slotWidth * columns);
         group.rowAlign(Align.left);
