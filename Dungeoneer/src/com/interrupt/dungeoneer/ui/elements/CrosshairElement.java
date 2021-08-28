@@ -1,18 +1,24 @@
 package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 
-public class Crosshair extends Element {
+public class CrosshairElement extends Element {
+    public Color color = Color.WHITE;
     public String imagePath = "ui/crosshair.png";
-    public float imageScale = 0.4f;
+
+    private Image image;
+    private Item heldItem;
 
     @Override
     public Actor createActor() {
@@ -21,15 +27,26 @@ public class Crosshair extends Element {
             return null;
         }
 
-        Image image = new Image(new Texture(file)) {
+        image = new Image(new Texture(file)) {
             @Override
             public void act(float delta) {
                 this.setVisible(shouldDrawCrosshair());
+
+                String path = imagePath;
+                if (heldItem.crosshairImagePath != null && !heldItem.crosshairImagePath.isEmpty()) {
+                    path = heldItem.crosshairImagePath;
+                }
+
+                FileHandle file = Game.getInternal(path);
+                if (!file.exists()) {
+                    return;
+                }
+
+                image.setDrawable(new TextureRegionDrawable(new TextureRegion(new Texture(file))));
             }
         };
 
-        image.setScale(imageScale);
-        image.setColor(1f, 1f, 1f, 0.35f);
+        image.setColor(color.r, color.g, color.b, 0.35f);
 
         return image;
     }
@@ -53,7 +70,7 @@ public class Crosshair extends Element {
             return true;
         }
 
-        Item heldItem = Game.instance.player.GetHeldItem();
+        heldItem = Game.instance.player.GetHeldItem();
         if (heldItem == null) {
             return false;
         }
