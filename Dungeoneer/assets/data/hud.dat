@@ -2,7 +2,7 @@
     "class": "com.interrupt.dungeoneer.ui.elements.Canvas",
     "children": [
         {
-            "class": "com.interrupt.dungeoneer.ui.elements.Crosshair",
+            "class": "com.interrupt.dungeoneer.ui.elements.CrosshairElement",
             "anchor": "CENTER"
         }
     ]
