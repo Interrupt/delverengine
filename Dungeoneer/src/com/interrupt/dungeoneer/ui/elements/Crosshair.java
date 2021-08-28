@@ -29,7 +29,8 @@ public class Crosshair extends Element {
         };
 
         label.setPosition(x, y);
-        label.setColor(color.r, color.g, color.b, 1f);
+        label.setColor(color.r, color.g, color.b, 0.35f);
+        label.setScale(18f);
         label.setAlignment(Align.center);
 
         return label;
