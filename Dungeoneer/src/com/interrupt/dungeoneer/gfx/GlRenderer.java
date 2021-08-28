@@ -763,18 +763,18 @@ public class GlRenderer {
 	}
 
     private void drawCrosshair() {
-        if (!shouldDrawCrosshair()) {
-            return;
-        }
+        // if (!shouldDrawCrosshair()) {
+        //     return;
+        // }
 
-        float crosshairSize = 18f;
-        drawText(
-            "+",
-            -0.5f * crosshairSize,
-            -0.65f * crosshairSize,
-            crosshairSize,
-            crosshairColor
-        );
+        // float crosshairSize = 18f;
+        // drawText(
+        //     "+",
+        //     -0.5f * crosshairSize,
+        //     -0.65f * crosshairSize,
+        //     crosshairSize,
+        //     crosshairColor
+        // );
     }
 
     private boolean shouldDrawCrosshair() {

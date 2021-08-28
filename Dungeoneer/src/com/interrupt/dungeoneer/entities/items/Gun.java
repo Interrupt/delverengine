@@ -72,11 +72,18 @@ public class Gun extends Weapon {
 	/** Projectile to fire. Will use hitscan if null. */
 	public Projectile projectile = null;
 
-    public Gun() { itemType = ItemType.wand; chargesAttack = false; }
+    public Gun() {
+        itemType = ItemType.wand;
+        chargesAttack = false;
+        showCrosshair = true;
+    }
 
-	public Gun(float x, float y) {
-		super(x, y, 16, ItemType.wand, StringManager.get("items.Gun.defaultNameText")); speed = 0.01f;
-	}
+    public Gun(float x, float y) {
+        super(x, y, 16, ItemType.wand, StringManager.get("items.Gun.defaultNameText"));
+
+        speed = 0.01f;
+        showCrosshair = true;
+    }
 
 	public String GetInfoText() {
 		return super.GetInfoText();
