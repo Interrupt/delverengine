@@ -105,9 +105,11 @@ public class Critter extends AnimatedSprite {
 
             tempCalc.set(wanderTarget.x - x, wanderTarget.y - y, wanderTarget.z - z).scl(moveSpeed);
 
-            xa *= moveFriction * delta;
-            ya *= moveFriction * delta;
-            za *= moveFriction * delta;
+            // This is not accurate friction but critters should not do anything too expensive
+            float cappedDelta = Math.min(delta, 1.0f);
+            xa *= moveFriction * cappedDelta;
+            ya *= moveFriction * cappedDelta;
+            za *= moveFriction * cappedDelta;
 
             xa += tempCalc.x * 0.1f;
             ya += tempCalc.y * 0.1f;
