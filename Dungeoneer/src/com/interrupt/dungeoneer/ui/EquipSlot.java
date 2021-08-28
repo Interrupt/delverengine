@@ -24,6 +24,7 @@ public class EquipSlot extends ItemSlot {
     @Override
     public void setItem(Item item) {
         Game.instance.player.equippedItems.put(equipLoc, item);
+        Game.instance.player.equip(item);
     }
 
     @Override
