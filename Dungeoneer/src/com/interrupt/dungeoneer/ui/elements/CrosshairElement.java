@@ -18,7 +18,6 @@ public class CrosshairElement extends Element {
     public String imagePath = "ui/crosshair.png";
 
     private Image image;
-    private Item heldItem;
 
     @Override
     public Actor createActor() {
@@ -30,7 +29,12 @@ public class CrosshairElement extends Element {
         image = new Image(new Texture(file)) {
             @Override
             public void act(float delta) {
-                this.setVisible(shouldDrawCrosshair());
+                boolean shouldDraw = shouldDrawCrosshair();
+                this.setVisible(shouldDraw);
+
+                if (!shouldDraw) return;
+
+                Item heldItem = Game.instance.player.GetHeldItem();
 
                 String path = imagePath;
                 if (heldItem.crosshairImagePath != null && !heldItem.crosshairImagePath.isEmpty()) {
@@ -70,7 +74,7 @@ public class CrosshairElement extends Element {
             return true;
         }
 
-        heldItem = Game.instance.player.GetHeldItem();
+        Item heldItem = Game.instance.player.GetHeldItem();
         if (heldItem == null) {
             return false;
         }
