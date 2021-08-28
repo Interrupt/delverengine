@@ -140,8 +140,7 @@
                         "a": 1
                     },
                     "fullbrite": true
-                },
-                "crosshairImagePath": "ui/crosshair-special.png"
+                }
             },
             {
                 "class": "com.interrupt.dungeoneer.entities.items.ItemStack",

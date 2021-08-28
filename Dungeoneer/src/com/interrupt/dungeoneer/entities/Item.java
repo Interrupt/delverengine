@@ -146,10 +146,6 @@ public class Item extends Entity {
     @EditorProperty(group = "HUD")
     public boolean showCrosshair = false;
 
-    /** File path to a specific crosshair image texture. */
-    @EditorProperty(group = "HUD")
-    public String crosshairImagePath = null;
-
 	private static final transient Entity pickupHelper = new Entity();
 
 	public Item() {
