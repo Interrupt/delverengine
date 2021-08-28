@@ -1,34 +1,37 @@
 package com.interrupt.dungeoneer.ui.elements;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
-import com.interrupt.dungeoneer.ui.UiSkin;
 
 public class Crosshair extends Element {
-    public String text = "+";
-    public Color color = Color.WHITE;
+    public String imagePath = "ui/crosshair.png";
+    public float imageScale = 0.4f;
 
     @Override
     public Actor createActor() {
-        Label label = new Label(text, UiSkin.getSkin()) {
+        FileHandle file = Game.getInternal(imagePath);
+        if (!file.exists()) {
+            return null;
+        }
+
+        Image image = new Image(new Texture(file)) {
             @Override
             public void act(float delta) {
                 this.setVisible(shouldDrawCrosshair());
             }
         };
 
-        label.setPosition(x, y);
-        label.setColor(color.r, color.g, color.b, 0.35f);
-        label.setAlignment(Align.center);
+        image.setScale(imageScale);
+        image.setColor(1f, 1f, 1f, 0.35f);
 
-        return label;
+        return image;
     }
 
     private boolean shouldDrawCrosshair() {
