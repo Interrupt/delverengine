@@ -45,7 +45,7 @@ public class ItemSlot extends Stack {
             public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
                 if (target == null) {
                     // Show item if not a valid drop
-                    updateItemTexture(getItem());
+                    showItem();
                 }
             }
 
@@ -91,7 +91,7 @@ public class ItemSlot extends Stack {
                 dragAndDrop.setDragActorPosition(x, -y);
 
                 // Hide item while dragging
-                updateItemTexture(null);
+                hideItem();
                 return payload;
             }
         });
@@ -106,8 +106,14 @@ public class ItemSlot extends Stack {
         updateItemTexture(item);
     }
 
+    /** Is slot empty? */
     public boolean isEmpty() {
         return getItem() == null;
+    }
+
+    /** Can given item be placed into slot? */
+    public boolean allows(Item item) {
+        return true;
     }
 
     public void updateItemTexture(Item i) {
@@ -117,6 +123,14 @@ public class ItemSlot extends Stack {
         }
 
         itemImage.setDrawable(new TextureRegionDrawable(i.getInventoryTextureRegion()));
+    }
+
+    public void showItem() {
+        updateItemTexture(getItem());
+    }
+
+    public void hideItem() {
+        updateItemTexture(null);
     }
 
     @Override
@@ -130,20 +144,24 @@ public class ItemSlot extends Stack {
     }
 
     public static void swapItems(ItemSlot fromSlot, ItemSlot toSlot) {
-        if (fromSlot.equals(toSlot)) {
-            return;
-        }
-
         Player player = Game.instance.player;
         Item fromItem = fromSlot.getItem();
         Item toItem = toSlot.getItem();
 
+        // Check if swap is allowed.
+        if (fromSlot.equals(toSlot) || !fromSlot.allows(toItem) || !toSlot.allows(fromItem)) {
+            fromSlot.showItem();
+            return;
+        }
+
         boolean isFromItemHeld = player.isHeld(fromItem);
         boolean isToItemHeld = player.isHeld(toItem);
 
+        // Perform swap
         fromSlot.setItem(toItem);
         toSlot.setItem(fromItem);
 
+        // Make sure held item is correct.
         if (isFromItemHeld) {
             player.equip(fromItem, false);
         }

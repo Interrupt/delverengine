@@ -25,4 +25,9 @@ public class EquipSlot extends ItemSlot {
     public void setItem(Item item) {
         Game.instance.player.equippedItems.put(equipLoc, item);
     }
+
+    @Override
+    public boolean allows(Item item) {
+        return item == null || item.equipLoc.equals(equipLoc);
+    }
 }
