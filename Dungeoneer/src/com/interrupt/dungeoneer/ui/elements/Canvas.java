@@ -37,13 +37,17 @@ public class Canvas implements InputProcessor, Disposable {
             stage = new Stage(viewport);
 
             for (Element child : children) {
-                child.init();
-                child.setCanvas(this);
-                stage.addActor(child.getActor());
+                add(child);
             }
         }
+    }
 
-        layout();
+    public void add(Element child) {
+        child.init();
+        child.setCanvas(this);
+        Actor actor = child.getActor();
+        stage.addActor(actor);
+        positionActor(actor, child);
     }
 
     private void reinit() {
@@ -51,12 +55,6 @@ public class Canvas implements InputProcessor, Disposable {
         stage = null;
         viewport = null;
         init();
-    }
-
-    private void layout() {
-        for (Element child : children) {
-            positionActor(child.getActor(), child);
-        }
     }
 
     public void draw() {
