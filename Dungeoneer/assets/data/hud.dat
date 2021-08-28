@@ -48,7 +48,8 @@
         //     "anchor": "bottom_right"
         // },
         {
-            "class": "com.interrupt.dungeoneer.ui.elements.Crosshair"
+            "class": "com.interrupt.dungeoneer.ui.elements.Crosshair",
+            "anchor": "CENTER"
         }
     ]
 }

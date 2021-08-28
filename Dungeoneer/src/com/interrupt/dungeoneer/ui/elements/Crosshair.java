@@ -15,10 +15,6 @@ public class Crosshair extends Element {
     public String text = "+";
     public Color color = Color.WHITE;
 
-    public Crosshair() {
-        anchor = com.interrupt.dungeoneer.ui.elements.Align.CENTER;
-    }
-
     @Override
     public Actor createActor() {
         Label label = new Label(text, UiSkin.getSkin()) {
