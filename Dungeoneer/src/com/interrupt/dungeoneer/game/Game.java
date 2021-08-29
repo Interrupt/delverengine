@@ -571,7 +571,7 @@ public class Game {
 
 	public void initHud() {
         // TODO: This needs to live in the HudManager
-        FileHandle file = Game.getInternal("/data/hud.dat");
+        FileHandle file = Game.getInternal("./data/hud.dat");
         if (file.exists()) {
             canvas = JsonUtil.fromJson(Canvas.class, file, new Supplier<Canvas>() {
                 @Override

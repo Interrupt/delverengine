@@ -157,7 +157,6 @@ public class GlRenderer {
 	protected Color tempColor = new Color();
 	protected Color tempColor1 = new Color();
 	protected Color tempColor2 = new Color();
-	protected Color crosshairColor = new Color(1f,1f,1f,0.35f);
 
 	protected String keystr = "";
 	protected String lvlText = "";
@@ -667,8 +666,6 @@ public class GlRenderer {
 		uiBatch.setColor(Color.WHITE);
 
 		if(OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput) {
-			drawCrosshair();
-
 			int textYPos = 0;
 			if (Game.messageTimer > 0 && !OverlayManager.instance.shouldPauseGame()) {
 				float fontSize = Math.min(camera2D.viewportWidth, camera2D.viewportHeight) / 15;
@@ -761,37 +758,6 @@ public class GlRenderer {
 
         drawGamepadCursor();
 	}
-
-    private void drawCrosshair() {
-        if (!shouldDrawCrosshair()) {
-            return;
-        }
-
-        float crosshairSize = 18f;
-        drawText(
-            "+",
-            -0.5f * crosshairSize,
-            -0.65f * crosshairSize,
-            crosshairSize,
-            crosshairColor
-        );
-    }
-
-    private boolean shouldDrawCrosshair() {
-        Item held = game.player.GetHeldItem();
-        if (held == null) {
-            return false;
-        }
-
-        if (Options.instance.hideUI) {
-            return false;
-        }
-
-        return Options.instance.alwaysShowCrosshair
-            || held.itemType == Item.ItemType.bow
-            || held.itemType == Item.ItemType.junk
-            || held.itemType == Item.ItemType.wand;
-    }
 
 	public void updateShaderAttributes() {
 		Color ambientColor = Color.BLACK;

@@ -1,51 +1,9 @@
 {
-    "class": "com.interrupt.dungeoneer.ui.Canvas",
+    "class": "com.interrupt.dungeoneer.ui.elements.Canvas",
     "children": [
         {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "TOP_LEFT",
-            "anchor": "top_left"
-        },
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "TOP_CENTER",
-            "anchor": "top_center"
-        },
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "TOP_RIGHT",
-            "anchor": "top_right"
-        },
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "CENTER_LEFT",
-            "anchor": "center_left"
-        },
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "CENTER",
-            "anchor": "center"
-        },
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "CENTER_RIGHT",
-            "anchor": "center_right"
-        }
-        ,
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "BOTTOM_LEFT",
-            "anchor": "bottom_left"
-        },
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "BOTTOM_CENTER",
-            "anchor": "bottom_center"
-        },
-        {
-            "class": "com.interrupt.dungeoneer.ui.TextElement",
-            "text": "BOTTOM_RIGHT",
-            "anchor": "bottom_right"
+            "class": "com.interrupt.dungeoneer.ui.elements.CrosshairElement",
+            "anchor": "CENTER"
         }
     ]
 }
