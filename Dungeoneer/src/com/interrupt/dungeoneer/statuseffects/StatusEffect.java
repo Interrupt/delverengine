@@ -9,7 +9,7 @@ import com.interrupt.managers.StringManager;
 
 
 public class StatusEffect {
-	public enum StatusEffectType { BURNING, DRUNK, INVISIBLE, PARALYZE, POISON, RESTORE, SHIELD, SLOW, LEVITATE, SPEED }
+	public enum StatusEffectType { BURNING, DRUNK, INVISIBLE, PARALYZE, POISON, RESTORE, SHIELD, SLOW, LEVITATE, SPEED, SLOWTIME }
 
 	/** Name of status effect. Shown on player HUD. */
 	public String name = StringManager.get("statuseffects.StatusEffect.defaultNameText");
@@ -94,6 +94,9 @@ public class StatusEffect {
 
 			case SPEED:
 				return new SpeedEffect();
+
+            case SLOWTIME:
+                return new SlowTimeEffect();
 		}
 
 		return null;

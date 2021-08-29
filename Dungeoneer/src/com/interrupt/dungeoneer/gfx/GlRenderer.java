@@ -425,7 +425,7 @@ public class GlRenderer {
 
 	public void render(Game game) {
 
-		time += Gdx.graphics.getDeltaTime();
+		time += Gdx.graphics.getDeltaTime() * game.GetGameTimeSpeed();
 
 		boolean inCutscene = cutsceneCamera != null && cutsceneCamera.isActive;
 

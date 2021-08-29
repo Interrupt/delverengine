@@ -114,6 +114,9 @@ public class Game {
 
     protected int saveLoc = 0;
 
+    protected float gameTimeSpeed = 1.0f;
+    protected float playerTimeSpeed = 1.0f;
+
     public Progression progression = null;
 
     public static LerpedAnimationManager animationManager = new LerpedAnimationManager();
@@ -518,7 +521,9 @@ public class Game {
 	}
 
 	public void tick(float delta) {
-		time += delta;
+	    // The speed of time can be changed, but we still want to know the original delta
+	    float timeModifiedDelta = delta * gameTimeSpeed;
+		time += timeModifiedDelta;
 
 		if(messageTimer > 0) messageTimer -= delta;
 		if(flashTimer > 0) flashTimer -= delta;
@@ -536,8 +541,10 @@ public class Game {
 
         if (gameOver) return;
 
-		level.tick(delta);
-		player.tick(level, delta, input);
+        // Entities should update using the time modified delta
+		level.tick(timeModifiedDelta);
+		player.tick(level, delta * playerTimeSpeed, input);
+
 		input.tick();
         Audio.tick(delta, player, level);
 		Game.pathfinding.tick(delta);
@@ -1491,6 +1498,15 @@ public class Game {
 		}
 		return 0;
 	}
+
+	public void SetGameTimeSpeed(float worldSpeedModifier, float playerSpeedModifier) {
+        gameTimeSpeed = worldSpeedModifier;
+        playerTimeSpeed = playerSpeedModifier;
+    }
+
+    public float GetGameTimeSpeed() {
+	    return gameTimeSpeed;
+    }
 
 	public void recalculateUiScale() {
 		uiSize = 80f * Game.getDynamicUiScale();
