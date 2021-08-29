@@ -17,7 +17,7 @@
         },
         "invOffset": {
             "type": "integer",
-            "description": "The row offset."
+            "description": "The offset used to give the N first slots to a different hotbar (quickslots)."
         }
     },
     "required": ["class"]

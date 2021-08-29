@@ -28,7 +28,7 @@ public class Hotbar {
     /** The row count. */
     public int rows = 1;
 
-    /** The row offset. */
+    /** The offset used to give the N first slots to a different hotbar (quickslots). */
     public int invOffset = 0;
 
     public float yOffset = 0;
