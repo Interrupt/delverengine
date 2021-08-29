@@ -14,8 +14,8 @@
             "durability": 1000,
             "knockback": 0.1,
             "reach": 0.45,
-            "speed": 1,
-            "chargespeed": 1,
+            "speed": 1.0,
+            "chargespeed": 1.0,
             "cost": 1000,
             "pickupSound": "pu_metal.mp3",
             "attackAnimation": "daggerAttack",
@@ -39,8 +39,8 @@
                 "randDamage": 1,
                 "knockback": 0.1,
                 "reach": 0.45,
-                "speed": 1,
-                "chargespeed": 1,
+                "speed": 1.0,
+                "chargespeed": 1.0,
                 "cost": 5,
                 "wallHitSound": "clang.mp3,clang_02.mp3,clang_03.mp3,clang_04.mp3",
                 "pickupSound": "pu_metal.mp3",
@@ -102,10 +102,10 @@
                 "roll": 45,
                 "fireSound": "pistol-shot.mp3",
                 "hitEffect": {
-                    "shakeAmount": 2,
-                    "shakeDistance": 2,
+                    "shakeAmount": 2.0,
+                    "shakeDistance": 2.0,
                     "lightMod": 0.2,
-                    "explosionLightLifetime": 6,
+                    "explosionLightLifetime": 6.0,
                     "particleCount": 0,
                     "damage": 0,
                     "tex": 18,
@@ -119,10 +119,10 @@
                     "scale": 0.3
                 },
                 "muzzleFlash": {
-                    "shakeAmount": 2,
-                    "shakeDistance": 2,
+                    "shakeAmount": 2.0,
+                    "shakeDistance": 2.0,
                     "lightMod": 0.2,
-                    "explosionLightLifetime": 6,
+                    "explosionLightLifetime": 6.0,
                     "particleCount": 0,
                     "damage": 0,
                     "tex": 18,
@@ -133,12 +133,7 @@
                     "explodeSound": null,
                     "impulseAmount": 0,
                     "scale": 0.4,
-                    "color": {
-                        "r": 0.9,
-                        "g": 0.6,
-                        "b": 0.2,
-                        "a": 1
-                    },
+                    "color": { "r": 0.9, "g": 0.6, "b": 0.2, "a": 1.0 },
                     "fullbrite": true
                 }
             },
@@ -205,9 +200,7 @@
                 "yOffset": -0.125,
                 "cost": 8,
                 "pickupSound": "pu_gen_v2.mp3",
-                "baseMods": {
-                    "moveSpeedMod": -1
-                }
+                "baseMods": { "moveSpeedMod": -1 }
             }
         ]
     },
@@ -246,17 +239,13 @@
                     "explosion": {
                         "explosionStartTex": 36,
                         "explosionEndTex": 39,
-                        "explosionAnimSpeed": 15,
+                        "explosionAnimSpeed": 15.0,
                         "lightMod": 0.45,
                         "explosionLightStartColor": {
-                            "r": 0.949,
-                            "g": 0.345,
-                            "b": 0.9176
+                            "r": 0.9490, "g": 0.3450, "b": 0.9176
                         },
                         "explosionLightEndColor": {
-                            "r": 0.6172,
-                            "g": 0.0937,
-                            "b": 0.7695
+                            "r": 0.6172, "g": 0.0937, "b": 0.7695
                         },
                         "explosionLightLifetime": 10,
                         "particleCount": 5,
@@ -265,7 +254,7 @@
                         "shakeDistance": 0.25,
                         "particleForce": 0.5,
                         "scale": 0.75,
-                        "randomRoll": 45
+                        "randomRoll": 45.0
                     }
                 },
                 "spellColor": {
@@ -291,7 +280,7 @@
             "autoFireTime": 10,
             "tex": 1,
             "spriteAtlas": "wands",
-            "yOffset": 0,
+            "yOffset": 0.0,
             "cost": 45
         }
     ],
@@ -394,11 +383,7 @@
         {
             "class": "com.interrupt.dungeoneer.entities.items.Decoration",
             "itemType": "junk",
-            "collision": {
-                "x": 0.1,
-                "y": 0.1,
-                "z": 0.2
-            },
+            "collision": { "x": 0.1, "y": 0.1, "z": 0.2 },
             "tex": 3,
             "mass": 0.7,
             "name": "Test Lamp",
