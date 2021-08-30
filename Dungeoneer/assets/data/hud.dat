@@ -4,7 +4,7 @@
         {
             "class": "com.interrupt.dungeoneer.ui.elements.PlayerHotbarElement",
             "anchor": "TOP_CENTER",
-            "image": "hud_slots.png"
+            "image": "ui/hud_slot.png"
         },
         {
             "class": "com.interrupt.dungeoneer.ui.elements.ModalGroupElement",
@@ -17,28 +17,28 @@
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
-                    "image": "hud_slots.png",
+                    "image": "ui/hud_slot.png",
                     "equipLoc": "HAT"
                 },
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
                     "y": 32,
-                    "image": "hud_slots.png",
+                    "image": "ui/hud_slot.png",
                     "equipLoc": "ARMOR"
                 },
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
                     "y": 64,
-                    "image": "hud_slots.png",
+                    "image": "ui/hud_slot.png",
                     "equipLoc": "PANTS"
                 },
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
                     "x": 32,
-                    "image": "hud_slots.png",
+                    "image": "ui/hud_slot.png",
                     "equipLoc": "OFFHAND"
                 },
                 {
@@ -46,7 +46,7 @@
                     "anchor": "TOP_LEFT",
                     "x": 32,
                     "y": 32,
-                    "image": "hud_slots.png",
+                    "image": "ui/hud_slot.png",
                     "equipLoc": "RING"
                 },
                 {
@@ -54,14 +54,14 @@
                     "anchor": "TOP_LEFT",
                     "x": 32,
                     "y": 64,
-                    "image": "hud_slots.png",
+                    "image": "ui/hud_slot.png",
                     "equipLoc": "AMULET"
                 },
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerBagElement",
                     "anchor": "TOP_LEFT",
                     "x": 72,
-                    "image": "hud_slots.png"
+                    "image": "ui/hud_slot.png"
                 }
             ]
         },
