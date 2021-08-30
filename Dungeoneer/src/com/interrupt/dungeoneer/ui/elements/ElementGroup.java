@@ -88,7 +88,6 @@ public class ElementGroup extends Element {
 
             case BOTTOM_RIGHT:
                 origin.x = width;
-                position.x *= -1;
                 break;
 
             case CENTER_LEFT:
@@ -103,25 +102,20 @@ public class ElementGroup extends Element {
             case CENTER_RIGHT:
                 origin.x = width;
                 origin.y = height / 2;
-                position.x *= -1;
                 break;
 
             case TOP_LEFT:
                 origin.y = height;
-                position.y *= -1;
                 break;
 
             case TOP_CENTER:
                 origin.x = width / 2;
                 origin.y = height;
-                position.y *= -1;
                 break;
 
             case TOP_RIGHT:
                 origin.x += width;
                 origin.y += height;
-                position.x *= -1;
-                position.y *= -1;
                 break;
         }
 
