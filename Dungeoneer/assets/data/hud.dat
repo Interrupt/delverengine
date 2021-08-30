@@ -9,7 +9,7 @@
         {
             "class": "com.interrupt.dungeoneer.ui.elements.ModalGroupElement",
             "anchor": "TOP_CENTER",
-            "y": 64,
+            "y": -48,
             "width": 264,
             "height": 96,
             "mode": "Inventory",
@@ -23,14 +23,14 @@
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
-                    "y": 32,
+                    "y": -32,
                     "image": "ui/hud_slot.png",
                     "equipLoc": "ARMOR"
                 },
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
-                    "y": 64,
+                    "y": -64,
                     "image": "ui/hud_slot.png",
                     "equipLoc": "PANTS"
                 },
@@ -45,7 +45,7 @@
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
                     "x": 32,
-                    "y": 32,
+                    "y": -32,
                     "image": "ui/hud_slot.png",
                     "equipLoc": "RING"
                 },
@@ -53,7 +53,7 @@
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
                     "anchor": "TOP_LEFT",
                     "x": 32,
-                    "y": 64,
+                    "y": -64,
                     "image": "ui/hud_slot.png",
                     "equipLoc": "AMULET"
                 },
