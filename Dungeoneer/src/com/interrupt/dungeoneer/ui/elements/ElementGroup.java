@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 public class ElementGroup extends Element {
     public int width;
     public int height;
-    public Array<Element> children;
+    public Array<Element> children = new Array<>();
 
     @Override
     protected Actor createActor() {
