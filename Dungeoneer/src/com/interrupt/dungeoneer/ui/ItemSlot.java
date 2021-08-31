@@ -44,8 +44,12 @@ public class ItemSlot extends Stack {
             @Override
             public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
                 if (target == null) {
-                    // Show item if not a valid drop
-                    showItem();
+                    // Drop item from slot into level.
+                    // TODO: Do fancy drop/throw logic
+                    ItemSlot slot = (ItemSlot) payload.getObject();
+                    Item item = slot.getItem();
+                    slot.setItem(null);
+                    Game.instance.player.throwItem(item, Game.instance.level, 0, 0);
                 }
             }
 
