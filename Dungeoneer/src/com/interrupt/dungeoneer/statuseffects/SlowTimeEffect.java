@@ -2,15 +2,21 @@ package com.interrupt.dungeoneer.statuseffects;
 
 import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.helpers.InterpolationHelper;
 import com.interrupt.managers.StringManager;
 
 public class SlowTimeEffect extends StatusEffect {
 
     /* How much time should move based on the normal during this duration. */
-    float timeMod = 0.4f;
+    float worldTimeMod = 0.4f;
 
     /* How much the player should move based on normal. */
-    float playerTimeSpeed = 1.0f;
+    float playerTimeMod = 1.0f;
+
+    /* How much the effect should be eased into */
+    public float effectLerpScale = 5.0f;
+
+    private float initialTimer = 0.0f;
 
 	public SlowTimeEffect() {
 		this(1800);
@@ -26,21 +32,44 @@ public class SlowTimeEffect extends StatusEffect {
 	public void doTick(Actor owner, float delta) {
 	    // If something reset the time mod back from underneath us, then force it again.
         Game game = Game.instance;
-        if(game != null)
-            game.SetGameTimeSpeed(timeMod, playerTimeSpeed);
+        if(game == null)
+            return;
+
+        float lerpAlpha = ((initialTimer - timer) / initialTimer);
+        float inOutLength = 1.0f - (1.0f / effectLerpScale);
+
+        // Lerp the effect in and out. Only need to worry about easing out if we clamp output at 1.0
+        if(inOutLength > 0) {
+            if (lerpAlpha >= inOutLength) {
+                lerpAlpha = 1.0f - lerpAlpha;
+            }
+            lerpAlpha *= effectLerpScale;
+        }
+
+        // Clamp at the top end and bottom ends to avoid things going screwy.
+        lerpAlpha = Math.min(lerpAlpha, 1.0f);
+        lerpAlpha = Math.max(lerpAlpha, 0.0f);
+
+        float timeModLerp = InterpolationHelper.getInterpolator(InterpolationHelper.InterpolationMode.circle).apply(1.0f, worldTimeMod, lerpAlpha);
+        float playerTimeModLerp = InterpolationHelper.getInterpolator(InterpolationHelper.InterpolationMode.circle).apply(1.0f, playerTimeMod, lerpAlpha);
+
+        // Can now set the eased time
+        game.SetGameTimeSpeed(timeModLerp, playerTimeModLerp);
 	}
 
 	@Override
 	public void onStatusBegin(Actor owner) {
-        Game game = Game.instance;
-        if(game != null)
-            game.SetGameTimeSpeed(timeMod, playerTimeSpeed);
+	    // Keep track of how long this status effect will last
+        initialTimer = timer;
 	}
 
 	@Override
 	public void onStatusEnd(Actor owner) {
         Game game = Game.instance;
-        if(game != null)
-            game.SetGameTimeSpeed(1.0f, 1.0f);
+        if(game == null)
+            return;
+
+        // Reset time back to normal
+        game.SetGameTimeSpeed(1.0f, 1.0f);
 	}
 }
