@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.statuseffects;
 
 import com.interrupt.dungeoneer.entities.Actor;
+import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.helpers.InterpolationHelper;
 import com.interrupt.managers.StringManager;
@@ -53,8 +54,14 @@ public class SlowTimeEffect extends StatusEffect {
         float timeModLerp = InterpolationHelper.getInterpolator(InterpolationHelper.InterpolationMode.circle).apply(1.0f, worldTimeMod, lerpAlpha);
         float playerTimeModLerp = InterpolationHelper.getInterpolator(InterpolationHelper.InterpolationMode.circle).apply(1.0f, playerTimeMod, lerpAlpha);
 
-        // Can now set the eased time
-        game.SetGameTimeSpeed(timeModLerp, playerTimeModLerp);
+        // Time is subjective. Need to handle if we have mucked with time, or another actor.
+        if(owner instanceof Player) {
+            // For us, we can slow down the game time
+            game.SetGameTimeSpeed(timeModLerp, playerTimeModLerp);
+        } else {
+            // Not the player, make this Actor move really fast instead
+            speedMod = 1.0f / worldTimeMod;
+        }
 	}
 
 	@Override
