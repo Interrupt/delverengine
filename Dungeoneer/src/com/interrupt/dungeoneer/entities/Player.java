@@ -355,7 +355,6 @@ public class Player extends Actor {
 
 	@Override
 	public void tick(Level level, float delta) {
-
         setMusicVolume();
 		stepUpTick(delta);
 		calculatedStats.Recalculate(this);

@@ -20,20 +20,20 @@ public class SlowTimeEffect extends StatusEffect {
     private float initialTimer = 0.0f;
     private transient float calcedFieldOfView = 1f;
 
-	public SlowTimeEffect() {
-		this(1800);
-		fieldOfViewMod = 1.1f;
+    public SlowTimeEffect() {
+        this(1800);
+        fieldOfViewMod = 1.1f;
 	}
 
 	public SlowTimeEffect(int time) {
-		this.name = StringManager.get("statuseffects.SlowTimeEffect.defaultNameText");
-		this.timer = time;
-		this.statusEffectType = StatusEffectType.SLOW_TIME;
-		this.fieldOfViewMod = 1.1f;
+        this.name = StringManager.get("statuseffects.SlowTimeEffect.defaultNameText");
+        this.timer = time;
+        this.statusEffectType = StatusEffectType.SLOW_TIME;
+        this.fieldOfViewMod = 1.1f;
 	}
 
 	@Override
-	public void doTick(Actor owner, float delta) {
+    public void doTick(Actor owner, float delta) {
 	    // If something reset the time mod back from underneath us, then force it again.
         Game game = Game.instance;
         if(game == null)
@@ -62,28 +62,33 @@ public class SlowTimeEffect extends StatusEffect {
         // Time is subjective. Need to handle if we have mucked with time, or another actor.
         if(owner instanceof Player) {
             // For us, we can slow down the game time
-            game.SetGameTimeScale(timeModLerp, playerTimeModLerp);
+            game.SetGameTimeScale(timeModLerp);
+            owner.actorTimeScale = playerTimeModLerp;
         } else {
-            // Not the player, make this Actor move really fast instead
-            speedMod = 1.0f / worldTimeMod;
+            // Not the player, make this Actor move relative to our perceived time instead
+            owner.actorTimeScale = 1.0f / timeModLerp;
         }
-	}
+    }
 
-	@Override
-	public void onStatusBegin(Actor owner) {
+    @Override
+    public void onStatusBegin(Actor owner) {
 	    // Keep track of how long this status effect will last
         initialTimer = timer;
-	}
+    }
 
-	@Override
-	public void onStatusEnd(Actor owner) {
+    @Override
+    public void onStatusEnd(Actor owner) {
         Game game = Game.instance;
         if(game == null)
             return;
 
         // Reset time back to normal
-        game.SetGameTimeScale(1.0f, 1.0f);
-	}
+        if(owner instanceof Player) {
+            game.SetGameTimeScale(1.0f);
+        }
+
+        owner.actorTimeScale = 1f;
+    }
 
     @Override
     public float getFieldOfViewMod() {
