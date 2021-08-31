@@ -357,14 +357,17 @@ public class Player extends Actor {
 	public void tick(Level level, float delta) {
 
         setMusicVolume();
-
 		stepUpTick(delta);
-
 		calculatedStats.Recalculate(this);
 
 		// refresh the UI if it's being shown
 		if(calculatedStats.statsChanged()) {
 			Game.instance.refreshMenu();
+		}
+
+		// adjust the rendering field of view based on status effects
+		if(GameManager.renderer != null) {
+			GameManager.renderer.setFieldOfViewMod(getFieldOfViewModifier());
 		}
 
 		if(hp > getMaxHp()) hp = getMaxHp();
@@ -2282,6 +2285,19 @@ public class Player extends Actor {
 		}
 
 		return baseSpeed * GetEquippedSpeedMod();
+	}
+
+	public float getFieldOfViewModifier() {
+		float adjustedFieldOfViewMod = 1.0f;
+		if(statusEffects == null || statusEffects.size <= 0)
+			return adjustedFieldOfViewMod;
+
+		for(StatusEffect s : statusEffects) {
+			if(s.active)
+				adjustedFieldOfViewMod *= s.getFieldOfViewMod();
+		}
+
+		return adjustedFieldOfViewMod;
 	}
 
 	public void setupController() {

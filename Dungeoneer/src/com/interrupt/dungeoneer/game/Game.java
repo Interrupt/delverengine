@@ -114,8 +114,8 @@ public class Game {
 
     protected int saveLoc = 0;
 
-    protected float gameTimeSpeed = 1.0f;
-    protected float playerTimeSpeed = 1.0f;
+    protected float gameTimeScale = 1.0f;
+    protected float playerTimeScale = 1.0f;
 
     public Progression progression = null;
 
@@ -522,7 +522,7 @@ public class Game {
 
 	public void tick(float delta) {
 	    // The speed of time can be changed, but we still want to know the original delta
-	    float timeModifiedDelta = delta * gameTimeSpeed;
+	    float timeModifiedDelta = delta * gameTimeScale;
 		time += timeModifiedDelta;
 
 		if(messageTimer > 0) messageTimer -= delta;
@@ -543,7 +543,7 @@ public class Game {
 
         // Entities should update using the time modified delta
 		level.tick(timeModifiedDelta);
-		player.tick(level, delta * playerTimeSpeed, input);
+		player.tick(level, delta * playerTimeScale, input);
 
 		input.tick();
         Audio.tick(delta, player, level);
@@ -1499,13 +1499,13 @@ public class Game {
 		return 0;
 	}
 
-	public void SetGameTimeSpeed(float worldSpeedModifier, float playerSpeedModifier) {
-        gameTimeSpeed = worldSpeedModifier;
-        playerTimeSpeed = playerSpeedModifier;
+	public void SetGameTimeScale(float worldSpeedModifier, float playerSpeedModifier) {
+        gameTimeScale = worldSpeedModifier;
+        playerTimeScale = playerSpeedModifier;
     }
 
-    public float GetGameTimeSpeed() {
-	    return gameTimeSpeed;
+    public float GetGameTimeScale() {
+	    return gameTimeScale;
     }
 
 	public void recalculateUiScale() {

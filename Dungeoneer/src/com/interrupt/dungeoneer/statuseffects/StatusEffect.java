@@ -9,7 +9,7 @@ import com.interrupt.managers.StringManager;
 
 
 public class StatusEffect {
-	public enum StatusEffectType { BURNING, DRUNK, INVISIBLE, PARALYZE, POISON, RESTORE, SHIELD, SLOW, LEVITATE, SPEED, SLOWTIME }
+	public enum StatusEffectType { BURNING, DRUNK, INVISIBLE, PARALYZE, POISON, RESTORE, SHIELD, SLOW, LEVITATE, SPEED, SLOW_TIME }
 
 	/** Name of status effect. Shown on player HUD. */
 	public String name = StringManager.get("statuseffects.StatusEffect.defaultNameText");
@@ -31,6 +31,9 @@ public class StatusEffect {
 
 	/** Show a particle effect while active? */
 	public boolean showParticleEffect = true;
+
+	/** Amount to adjust the field of view while active */
+	public float fieldOfViewMod = 1;
 
 	/** Shader name to draw effected actor with. */
 	public String shader = null;
@@ -95,7 +98,7 @@ public class StatusEffect {
 			case SPEED:
 				return new SpeedEffect();
 
-            case SLOWTIME:
+            case SLOW_TIME:
                 return new SlowTimeEffect();
 		}
 
@@ -116,6 +119,11 @@ public class StatusEffect {
 			this.doTick(owner, delta);
 		}
 	}
+
+	// Override this to animate the field of view modifier
+	public float getFieldOfViewMod() {
+	    return fieldOfViewMod;
+    }
 
 	public void forPlayer(Player player) { }
 	

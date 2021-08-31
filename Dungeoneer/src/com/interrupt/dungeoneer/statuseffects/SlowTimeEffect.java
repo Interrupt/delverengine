@@ -8,25 +8,28 @@ import com.interrupt.managers.StringManager;
 
 public class SlowTimeEffect extends StatusEffect {
 
-    /* How much time should move based on the normal during this duration. */
+    /** How much time should move based on the normal during this duration. */
     float worldTimeMod = 0.4f;
 
-    /* How much the player should move based on normal. */
+    /** How much the player should move based on normal time. */
     float playerTimeMod = 1.0f;
 
-    /* How much the effect should be eased into */
+    /** How much the effect should be eased into. Higher values means a faster lerp. */
     public float effectLerpScale = 5.0f;
 
     private float initialTimer = 0.0f;
+    private transient float calcedFieldOfView = 1f;
 
 	public SlowTimeEffect() {
 		this(1800);
+		fieldOfViewMod = 1.1f;
 	}
 
 	public SlowTimeEffect(int time) {
 		this.name = StringManager.get("statuseffects.SlowTimeEffect.defaultNameText");
 		this.timer = time;
-		this.statusEffectType = StatusEffectType.SLOWTIME;
+		this.statusEffectType = StatusEffectType.SLOW_TIME;
+		this.fieldOfViewMod = 1.1f;
 	}
 
 	@Override
@@ -51,13 +54,15 @@ public class SlowTimeEffect extends StatusEffect {
         lerpAlpha = Math.min(lerpAlpha, 1.0f);
         lerpAlpha = Math.max(lerpAlpha, 0.0f);
 
+        // Lerp some values for animation
         float timeModLerp = InterpolationHelper.getInterpolator(InterpolationHelper.InterpolationMode.circle).apply(1.0f, worldTimeMod, lerpAlpha);
         float playerTimeModLerp = InterpolationHelper.getInterpolator(InterpolationHelper.InterpolationMode.circle).apply(1.0f, playerTimeMod, lerpAlpha);
+        calcedFieldOfView = InterpolationHelper.getInterpolator(InterpolationHelper.InterpolationMode.circle).apply(1.0f, fieldOfViewMod, lerpAlpha);
 
         // Time is subjective. Need to handle if we have mucked with time, or another actor.
         if(owner instanceof Player) {
             // For us, we can slow down the game time
-            game.SetGameTimeSpeed(timeModLerp, playerTimeModLerp);
+            game.SetGameTimeScale(timeModLerp, playerTimeModLerp);
         } else {
             // Not the player, make this Actor move really fast instead
             speedMod = 1.0f / worldTimeMod;
@@ -77,6 +82,11 @@ public class SlowTimeEffect extends StatusEffect {
             return;
 
         // Reset time back to normal
-        game.SetGameTimeSpeed(1.0f, 1.0f);
+        game.SetGameTimeScale(1.0f, 1.0f);
 	}
+
+    @Override
+    public float getFieldOfViewMod() {
+        return calcedFieldOfView;
+    }
 }

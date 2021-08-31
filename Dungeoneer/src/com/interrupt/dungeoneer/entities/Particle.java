@@ -239,8 +239,9 @@ public class Particle extends Sprite {
 			z += za * delta;
 
 			if(floating && turbulenceAmount > 0 && turbulenceMoveModifier > 0) {
-				x += (perlinNoise.getHeight(randX.x, randX.y + lifetime * turbulenceAmount)) * turbulenceMoveModifier;
-				y += (perlinNoise.getHeight(randX.x + lifetime * turbulenceAmount, randY.y)) * turbulenceMoveModifier;
+				float turbulenceDelta = delta * 1.5f;
+				x += (perlinNoise.getHeight(randX.x, randX.y + lifetime * turbulenceAmount)) * turbulenceMoveModifier * turbulenceDelta;
+				y += (perlinNoise.getHeight(randX.x + lifetime * turbulenceAmount, randY.y)) * turbulenceMoveModifier * turbulenceDelta;
 			}
 		}
 
