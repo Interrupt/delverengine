@@ -13,10 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.interrupt.dungeoneer.Audio;
-import com.interrupt.dungeoneer.GameApplication;
-import com.interrupt.dungeoneer.GameInput;
-import com.interrupt.dungeoneer.GameManager;
+import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
@@ -1581,5 +1578,10 @@ public class Game {
             hudManager = new HUDManager();
             ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
         }
+    }
+
+    public void reloadAssets() {
+        Art.refresh();
+        instance.initHud();
     }
 }

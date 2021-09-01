@@ -118,7 +118,7 @@ public class EditorApplication implements ApplicationListener {
 
 	private static transient PerlinNoise perlinNoise = new PerlinNoise(1, 1f, 2f, 1f, 1);
 
-	GameApplication gameApp = null;
+	public GameApplication gameApp = null;
 
 	public boolean canDelete = true;
 
@@ -436,6 +436,21 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
+	/** Load hud assets. */
+    public void loadHud() {
+        try {
+            Game.getModManager().loadHUDManager();
+
+            if (Game.instance != null) {
+                Game.instance.initHud();
+            }
+        }
+        catch (Exception ex) {
+            // whoops
+            Gdx.app.log("Editor", "Error loading monsters.dat: " + ex.getMessage());
+        }
+    }
+
 	/** Creates an empty level with given `width` and `height`. */
 	public void createEmptyLevel(int width, int height) {
 		level = new Level(width, height);
@@ -581,6 +596,8 @@ public class EditorApplication implements ApplicationListener {
 
 				Audio.stopLoopingSounds();
 			}
+
+			liveReload.tick();
 
 			return;
 		}
@@ -3887,4 +3904,15 @@ public class EditorApplication implements ApplicationListener {
 	public void setTitle(String title) {
 		Gdx.graphics.setTitle(title + " - DelvEdit - " + Game.VERSION);
 	}
+
+    public void reloadAssets() {
+	    if (gameApp != null) return;
+
+	    EditorArt.refresh();
+        Editor.app.generatorInfo.refresh();
+        Editor.app.initTextures();
+        Editor.app.loadEntities();
+        Editor.app.loadMonsters();
+        Editor.app.loadHud();
+    }
 }

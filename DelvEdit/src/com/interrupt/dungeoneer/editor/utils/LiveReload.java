@@ -2,7 +2,7 @@ package com.interrupt.dungeoneer.editor.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.interrupt.dungeoneer.editor.Editor;
-import com.interrupt.dungeoneer.editor.EditorArt;
+import com.interrupt.dungeoneer.game.Game;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -22,7 +22,8 @@ public class LiveReload {
     private long lastTimeCalled = 0;
     private final long MIN_TIME_BETWEEN_CALLS = 100;
 
-    public AtomicBoolean needToReloadAssets = new AtomicBoolean(false);
+    public AtomicBoolean needToReloadEditorAssets = new AtomicBoolean(false);
+    public AtomicBoolean needToReloadGameAssets = new AtomicBoolean(false);
 
     private final List<String> watchedExtensions = Arrays.asList("dat", "obj", "png", "frag", "vert");
 
@@ -60,7 +61,12 @@ public class LiveReload {
                             lastTimeCalled = now;
 
                             // Reload must happen on main render thread.
-                            needToReloadAssets.set(true);
+                            needToReloadEditorAssets.set(true);
+
+                            if (Editor.app.gameApp != null) {
+                                needToReloadGameAssets.set(true);
+                            }
+
                             break;
                         }
                     }
@@ -87,13 +93,15 @@ public class LiveReload {
     }
 
     public void tick() {
-        if (needToReloadAssets.compareAndSet(true, false)) {
+        if (Editor.app.gameApp == null && needToReloadEditorAssets.compareAndSet(true, false)) {
             Gdx.app.log("LiveReload", "Reloading assets");
-            EditorArt.refresh();
-            Editor.app.generatorInfo.refresh();
-            Editor.app.initTextures();
-            Editor.app.loadEntities();
-            Editor.app.loadMonsters();
+            Editor.app.reloadAssets();
+            needToReloadGameAssets.set(false);
+        }
+
+        if (Editor.app.gameApp != null && needToReloadGameAssets.compareAndSet(true, false)) {
+            Gdx.app.log("LiveReload", "Reloading assets");
+            Game.instance.reloadAssets();
         }
     }
 
