@@ -2,9 +2,11 @@ package com.interrupt.dungeoneer.ui;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Tooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
@@ -12,6 +14,8 @@ import com.badlogic.gdx.utils.Predicate;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.serializers.KryoSerializer;
+import com.interrupt.dungeoneer.ui.elements.Element;
 
 import java.util.Objects;
 
@@ -20,15 +24,19 @@ public class ItemSlot extends Stack {
     private Item value;
     private Item item;
 
+    public static Item hovered;
+
     public ItemSlot(String image) {
         super();
 
+        // Background image
         FileHandle file = Game.getInternal(image);
         if (file.exists()) {
             Texture texture = new Texture(file);
             addActor(new Image(texture));
         }
 
+        // Item image
         itemImage = new Image();
         Item item = getItem();
         updateItemTexture(item);
@@ -37,6 +45,33 @@ public class ItemSlot extends Stack {
         pack();
 
         final ItemSlot self = this;
+
+        // Tooltips
+        Element template = Game.hudManager.getPrefab("itemTooltip");
+        Element copy = (Element) KryoSerializer.copyObject(template);
+        copy.init();
+        Actor contents = copy.getActor();
+
+        Tooltip<Actor> tooltip = new Tooltip<Actor>(contents) {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                super.enter(event, x, y, pointer, fromActor);
+                hovered = getItem();
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                super.exit(event, x, y, pointer, toActor);
+
+                if (Objects.equals(hovered, getItem())) {
+                    hovered = null;
+                }
+            }
+        };
+        tooltip.setInstant(true);
+        addListener(tooltip);
+
+        // Drag and drop
         DragAndDrop dragAndDrop = new DragAndDrop();
         dragAndDrop.addSource(new DragAndDrop.Source(self) {
             final DragAndDrop.Payload payload = new DragAndDrop.Payload();

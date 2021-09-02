@@ -5,5 +5,17 @@
     },
     "backpack": {
         "class": "com.interrupt.dungeoneer.ui.Hotbar"
+    },
+    "prefabs": {
+        "itemTooltip": {
+            "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+            "width": 100,
+            "height": 16,
+            "children": [
+                {
+                    "class": "com.interrupt.dungeoneer.ui.elements.HoveredItemNameElement"
+                }
+            ]
+        }
     }
 }

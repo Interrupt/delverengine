@@ -2,6 +2,10 @@
     "class": "com.interrupt.dungeoneer.ui.elements.Canvas",
     "children": [
         {
+            "class": "com.interrupt.dungeoneer.ui.elements.HoveredItemNameElement",
+            "anchor": "BOTTOM_LEFT"
+        },
+        {
             "class": "com.interrupt.dungeoneer.ui.elements.PlayerHotbarElement",
             "anchor": "TOP_CENTER",
             "image": "ui/hud_slot.png"
