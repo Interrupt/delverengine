@@ -46,8 +46,10 @@ public class Canvas implements InputProcessor, Disposable {
         child.init();
         child.setCanvas(this);
         Actor actor = child.getActor();
-        stage.addActor(actor);
-        positionActor(actor, child);
+        if (actor != null) {
+            stage.addActor(actor);
+            positionActor(actor, child);
+        }
     }
 
     private void reinit() {
