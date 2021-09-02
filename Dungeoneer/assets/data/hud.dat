@@ -65,6 +65,32 @@
                 }
             ]
         },
+        "healthBar" : {
+            "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+            "anchor": "BOTTOM_LEFT",
+            "width": 256,
+            "height": 16,
+            "children": [
+                {
+                    "class": "com.interrupt.dungeoneer.ui.elements.ImageElement",
+                    "image": "ui/hud_healthbackground.png"
+                },
+                {
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerHealthBarElement",
+                    "image": "ui/hud_healthbar.png",
+                    "anchor": "CENTER_LEFT",
+                    "x": 43
+                },
+                {
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerHealthElement",
+                    "anchor": "BOTTOM_RIGHT",
+                    "pivot": "BOTTOM_RIGHT",
+                    "x": -216,
+                    "y": 3,
+                    "text": "{0,choice,10<00{0}|100<0{0}}"
+                }
+            ]
+        },
         "itemTooltip": {
             "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
             "width": 100,

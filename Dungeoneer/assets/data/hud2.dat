@@ -2,6 +2,13 @@
     "class": "com.interrupt.dungeoneer.ui.elements.Canvas",
     "children": [
         {
+            "class": "com.interrupt.dungeoneer.ui.elements.ElementPrefab",
+            "anchor": "BOTTOM_LEFT",
+            "x": 8,
+            "y": 8,
+            "name": "healthBar"
+        },
+        {
             "class": "com.interrupt.dungeoneer.ui.elements.PlayerHotbarElement",
             "anchor": "TOP_CENTER",
             "image": "ui/hud_slot.png"
