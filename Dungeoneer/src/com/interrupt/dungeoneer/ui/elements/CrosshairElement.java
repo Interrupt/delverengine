@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -12,7 +11,6 @@ import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 
 public class CrosshairElement extends Element {
-    public Color color = new Color(1f, 1f, 1f, 0.35f);
     public String texturePath = "ui/crosshair.png";
 
     @Override
@@ -28,8 +26,6 @@ public class CrosshairElement extends Element {
                 this.setVisible(shouldDrawCrosshair());
             }
         };
-
-        image.setColor(color);
 
         return image;
     }

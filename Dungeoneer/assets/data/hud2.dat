@@ -26,7 +26,8 @@
             "children": [
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.CrosshairElement",
-                    "anchor": "CENTER"
+                    "anchor": "CENTER",
+                    "color": { "r":  1, "g": 1, "b": 1, "a":  0.35 }
                 }
             ]
         }
