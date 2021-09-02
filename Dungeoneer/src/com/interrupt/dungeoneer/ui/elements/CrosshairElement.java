@@ -11,11 +11,11 @@ import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 
 public class CrosshairElement extends Element {
-    public String texturePath = "ui/crosshair.png";
+    public String image = "ui/crosshair.png";
 
     @Override
     public Actor createActor() {
-        FileHandle file = Game.getInternal(texturePath);
+        FileHandle file = Game.getInternal(image);
         if (!file.exists()) {
             return null;
         }
