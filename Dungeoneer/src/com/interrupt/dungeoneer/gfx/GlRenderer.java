@@ -608,6 +608,15 @@ public class GlRenderer {
 	}
 
 	private void drawUI() {
+	    drawLegacyUI();
+
+	    if (Game.canvas != null) {
+            Game.canvas.draw();
+        }
+	    Game.viewport.apply();
+    }
+
+	private void drawLegacyUI() {
 		// setup UI
 		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
 		uiBatch.setProjectionMatrix(camera2D.combined);
@@ -716,11 +725,6 @@ public class GlRenderer {
 		//drawUi();
 
 		uiBatch.end();
-
-		if (Game.canvas != null) {
-            Game.canvas.draw();
-        }
-        Game.viewport.apply();
 
 		if(game.gameOver) return;
 
