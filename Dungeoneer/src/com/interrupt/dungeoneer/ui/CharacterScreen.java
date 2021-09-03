@@ -84,11 +84,11 @@ public class CharacterScreen {
         MessageFormat.format(attackText, player.GetAttackText());
 
         String armorClassText = StringManager.get("gfx.GlRenderer.ArmorClassText");
-        MessageFormat.format(armorClassText, player.GetArmorClass());
+        MessageFormat.format(armorClassText, player.getArmorClass());
 
         Table attributesTable = new Table();
         makeRow(attributesTable, "Attack Power", player.GetAttackText());
-        makeRow(attributesTable, "Armor Class", Integer.toString(player.GetArmorClass()));
+        makeRow(attributesTable, "Armor Class", Integer.toString(player.getArmorClass()));
         contentTable.add(attributesTable).colspan(4);
         contentTable.row();
         makeRow(contentTable);

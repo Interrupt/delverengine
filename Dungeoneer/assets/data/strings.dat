@@ -2785,10 +2785,20 @@
         "localizedName": "Can be spent at vendors for items and upgrades. Persists between deaths.",
         "comment": ""
     },
+    "stats.level": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Level",
+        "comment": "Used in the UI when player level is displayed"
+    },
     "stats.xp": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "XP",
         "comment": "Used in the UI when XP is displayed"
+    },
+    "stats.gold": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Gold",
+        "comment": "Used in the UI when player gold is displayed"
     },
     "stats.speed": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",

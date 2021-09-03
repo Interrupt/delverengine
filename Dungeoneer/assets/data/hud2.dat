@@ -20,6 +20,12 @@
             "name": "inventory"
         },
         {
+            "class": "com.interrupt.dungeoneer.ui.elements.ElementPrefab",
+            "anchor": "TOP_CENTER",
+            "y": -48,
+            "name": "characterSheet"
+        },
+        {
             "class": "com.interrupt.dungeoneer.ui.elements.ModalGroupElement",
             "anchor": "CENTER",
             "mode": "Hidden",

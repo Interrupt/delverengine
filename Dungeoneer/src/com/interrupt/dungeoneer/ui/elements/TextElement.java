@@ -1,18 +1,22 @@
 package com.interrupt.dungeoneer.ui.elements;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.managers.StringManager;
 
 public class TextElement extends Element{
     public String text = "";
 
     @Override
     public Actor createActor() {
-        Label label = new Label(text, UiSkin.getSkin());
-        label.setPosition(x, y);
+        Label label = new Label(StringManager.get(text), UiSkin.getSkin());
+
+        com.interrupt.dungeoneer.ui.elements.Align a = pivot;
+        if (pivot.equals(com.interrupt.dungeoneer.ui.elements.Align.UNSET)) {
+            pivot = anchor;
+        }
 
         switch (pivot) {
             case BOTTOM_LEFT:

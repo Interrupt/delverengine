@@ -33,14 +33,16 @@ import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.ReadableKeys;
-import com.interrupt.dungeoneer.overlays.*;
+import com.interrupt.dungeoneer.overlays.DebugOverlay;
+import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
+import com.interrupt.dungeoneer.overlays.MapOverlay;
+import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.rpg.Stats;
 import com.interrupt.dungeoneer.screens.GameScreen;
-import com.interrupt.dungeoneer.statuseffects.*;
+import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
-import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -2167,6 +2169,41 @@ public class Player extends Actor {
 		UseInventoryItem(location);
 	}
 
+	public int getBaseDamage() {
+        Item held = GetHeldItem();
+        if (held == null) return 0;
+
+        if (held instanceof Weapon) {
+            Weapon w = (Weapon) held;
+            return w.getRandDamage();
+        }
+
+        return 0;
+    }
+
+    public int getRandDamage() {
+        Item held = GetHeldItem();
+        if (held == null) return 0;
+
+        if (held instanceof Weapon) {
+            Weapon w = (Weapon) held;
+            return w.getBaseDamage() + w.getElementalDamage() + getDamageStatBoost();
+        }
+        else if (held instanceof Potion) {
+            Potion p = (Potion)held;
+            return (int)p.getExplosionDamageAmount();
+        }
+        else if(held instanceof Decoration) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public int getMaxDamage() {
+	    return getBaseDamage() + getRandDamage();
+    }
+
 	public String GetAttackText() {
 		Item held = GetHeldItem();
 		if(held != null) {
@@ -2355,7 +2392,7 @@ public class Player extends Actor {
 		return maxHp + calculatedStats.HP;
 	}
 
-	public int GetArmorClass() {
+	public int getArmorClass() {
 		return calculatedStats.DEF + getDefenseStatBoost();
 	}
 
