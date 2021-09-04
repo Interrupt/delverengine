@@ -97,9 +97,17 @@
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatTextElement",
                             "anchor": "BOTTOM_RIGHT",
-                            "text": "10 - 11"
+                            "pattern": "{0}-{1}",
+                            "arg0": {
+                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "attribute": "MIN_DAMAGE"
+                            },
+                            "arg1": {
+                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "attribute": "MAX_DAMAGE"
+                            }
                         }
                     ]
                 },
@@ -315,9 +323,17 @@
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatTextElement",
                             "anchor": "BOTTOM_RIGHT",
-                            "text": "3/8"
+                            "pattern": "{0}/{1}",
+                            "arg0": {
+                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "attribute": "XP"
+                            },
+                            "arg1": {
+                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "attribute": "NEXT_XP"
+                            }
                         }
                     ]
                 },

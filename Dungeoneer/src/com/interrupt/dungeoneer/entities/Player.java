@@ -2169,7 +2169,7 @@ public class Player extends Actor {
 		UseInventoryItem(location);
 	}
 
-	public int getBaseDamage() {
+	public int getRandDamage() {
         Item held = GetHeldItem();
         if (held == null) return 0;
 
@@ -2181,7 +2181,7 @@ public class Player extends Actor {
         return 0;
     }
 
-    public int getRandDamage() {
+    public int getBaseDamage() {
         Item held = GetHeldItem();
         if (held == null) return 0;
 
