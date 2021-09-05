@@ -106,8 +106,8 @@
                                     "attribute": "MIN_DAMAGE"
                                 },
                                 {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
-                                "attribute": "MAX_DAMAGE"
+                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "attribute": "MAX_DAMAGE"
                                 }
                             ]
                         }
