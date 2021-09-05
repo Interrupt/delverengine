@@ -1,9 +1,8 @@
 package com.interrupt.dungeoneer.ui.values;
 
-import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 
-public class PlayerAttributeValue extends DynamicValue {
+public class Player extends DynamicValue {
     public enum PlayerAttribute {
         MIN_DAMAGE,
         MAX_DAMAGE,
@@ -25,11 +24,11 @@ public class PlayerAttributeValue extends DynamicValue {
 
     public PlayerAttribute attribute;
 
-    public PlayerAttributeValue() {
+    public Player() {
         super();
     }
 
-    public PlayerAttributeValue(String value) {
+    public Player(String value) {
         super(value);
     }
 
@@ -54,7 +53,7 @@ public class PlayerAttributeValue extends DynamicValue {
     }
 
     private int getAttribute() {
-        Player player = Game.instance.player;
+        com.interrupt.dungeoneer.entities.Player player = Game.instance.player;
 
         switch (attribute) {
             case MIN_DAMAGE:
