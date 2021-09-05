@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.ui.elements;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.dungeoneer.ui.values.DynamicValue;
 import com.interrupt.managers.StringManager;
 
 import java.util.Objects;

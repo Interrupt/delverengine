@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.values;
 
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;

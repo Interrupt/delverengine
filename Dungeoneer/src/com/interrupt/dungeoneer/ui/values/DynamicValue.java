@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.values;
 
 public class DynamicValue {
     private String value;

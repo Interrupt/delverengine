@@ -102,11 +102,11 @@
                             "pattern": "{0}-{1}",
                             "args": [
                                 {
-                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                     "attribute": "MIN_DAMAGE"
                                 },
                                 {
-                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                     "attribute": "MAX_DAMAGE"
                                 }
                             ]
@@ -130,7 +130,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "ARMOR_CLASS"
                             }
                         }
@@ -160,7 +160,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "HEALTH_STAT"
                             }
                         }
@@ -183,7 +183,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "ATTACK_STAT"
                             }
                         }
@@ -206,7 +206,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "MAGIC_STAT"
                             }
                         }
@@ -229,7 +229,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "DEFENSE_STAT"
                             }
                         }
@@ -252,7 +252,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "SPEED_STAT"
                             }
                         }
@@ -275,7 +275,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "AGILITY_STAT"
                             }
                         }
@@ -305,7 +305,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "LEVEL"
                             }
                         }
@@ -330,11 +330,11 @@
                             "pattern": "{0}/{1}",
                             "args": [
                                 {
-                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                     "attribute": "XP"
                                 },
                                 {
-                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                     "attribute": "NEXT_XP"
                                 }
                             ]
@@ -358,7 +358,7 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                "class": "com.interrupt.dungeoneer.ui.values.PlayerAttributeValue",
                                 "attribute": "GOLD"
                             }
                         }

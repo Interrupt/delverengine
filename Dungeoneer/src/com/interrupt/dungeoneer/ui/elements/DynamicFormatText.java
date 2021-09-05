@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.dungeoneer.ui.values.DynamicValue;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
