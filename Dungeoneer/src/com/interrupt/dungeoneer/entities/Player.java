@@ -2169,6 +2169,29 @@ public class Player extends Actor {
 		UseInventoryItem(location);
 	}
 
+    public int getAmmoCount() {
+        if (heldItem == null) return -1;
+
+        Item item = inventory.get(heldItem);
+
+        if (item instanceof Bow) {
+            Bow bow = (Bow)item;
+            return bow.getAmmoCount();
+        }
+
+        if (item instanceof Gun) {
+            Gun gun = (Gun)item;
+            return gun.getAmmoCount();
+        }
+
+        if (item instanceof Wand) {
+            Wand wand = (Wand)item;
+            return wand.charges;
+        }
+
+        return -1;
+    }
+
 	public int getRandDamage() {
         Item held = GetHeldItem();
         if (held == null) return 0;

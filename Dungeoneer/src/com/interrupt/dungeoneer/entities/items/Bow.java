@@ -131,6 +131,23 @@ public class Bow extends Weapon {
 		return null;
 	}
 
+    public int getAmmoCount() {
+        int count = 0;
+        for (Item item : Game.instance.player.inventory) {
+            if (item instanceof Missile) {
+                count++;
+                continue;
+            }
+
+            if (!(item instanceof ItemStack)) continue;
+            ItemStack stack = (ItemStack)item;
+            if (!(stack.item instanceof Missile)) continue;
+            count += stack.count;
+        }
+
+        return count;
+    }
+
 	@Override
 	public Integer getHeldTex() {
 		Item found = findAmmo();

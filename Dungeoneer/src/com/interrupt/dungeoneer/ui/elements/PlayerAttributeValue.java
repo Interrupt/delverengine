@@ -19,7 +19,8 @@ public class PlayerAttributeValue extends DynamicValue {
         LEVEL,
         XP,
         NEXT_XP,
-        GOLD
+        GOLD,
+        AMMO_COUNT
     }
 
     public PlayerAttribute attribute;
@@ -100,6 +101,9 @@ public class PlayerAttributeValue extends DynamicValue {
 
             case GOLD:
                 return player.gold;
+
+            case AMMO_COUNT:
+                return player.getAmmoCount();
         }
 
         return 0;
