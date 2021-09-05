@@ -80,7 +80,7 @@
                     "class": "com.interrupt.dungeoneer.ui.elements.Text",
                     "anchor": "TOP_CENTER",
                     "y": -16,
-                    "text": "overlays.CharacterOverlay.attributesTitle",
+                    "text": {"value": "overlays.CharacterOverlay.attributesTitle" },
                     "color": { "r": 0.92549019, "g": 0.78431372, "b": 0.18823529, "a":  1 }
                 },
                 {
@@ -93,7 +93,7 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.attack power",
+                            "text": { "value": "stats.attack power" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
@@ -123,11 +123,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.armor class",
+                            "text": { "value": "stats.armor class" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -140,7 +140,7 @@
                     "class": "com.interrupt.dungeoneer.ui.elements.Text",
                     "anchor": "TOP_CENTER",
                     "y": -68,
-                    "text": "overlays.CharacterOverlay.statisticsTitle",
+                    "text": { "value": "overlays.CharacterOverlay.statisticsTitle" },
                     "color": { "r": 0.92549019, "g": 0.78431372, "b": 0.18823529, "a":  1 }
                 },
                 {
@@ -153,11 +153,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.health",
+                            "text": { "value": "stats.health" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -176,11 +176,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.attack",
+                            "text": { "value": "stats.attack" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -199,11 +199,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.magic",
+                            "text": { "value": "stats.magic" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -222,11 +222,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.defense",
+                            "text": { "value": "stats.defense" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -245,11 +245,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.speed",
+                            "text": { "value": "stats.speed" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -268,11 +268,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.agility",
+                            "text": { "value": "stats.agility" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -285,7 +285,7 @@
                     "class": "com.interrupt.dungeoneer.ui.elements.Text",
                     "anchor": "TOP_CENTER",
                     "y": -132,
-                    "text": "overlays.CharacterOverlay.playerTitle",
+                    "text": { "value": "overlays.CharacterOverlay.playerTitle" },
                     "color": { "r": 0.92549019, "g": 0.78431372, "b": 0.18823529, "a":  1 }
                 },
                 {
@@ -298,11 +298,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.level",
+                            "text": { "value": "stats.level" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
@@ -321,7 +321,7 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.xp",
+                            "text": { "value": "stats.xp" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
@@ -351,11 +351,11 @@
                         {
                             "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
-                            "text": "stats.gold",
+                            "text": { "value": "stats.gold" },
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
