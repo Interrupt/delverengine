@@ -3,6 +3,12 @@ package com.interrupt.dungeoneer.ui.values;
 public class DynamicValue {
     private String value;
 
+    private boolean isDirty = true;
+
+    private int intValue;
+    private float floatValue;
+    private boolean booleanValue;
+
     public DynamicValue() {}
 
     public DynamicValue(String value) {
@@ -14,14 +20,26 @@ public class DynamicValue {
     }
 
     public int intValue() {
-        return Integer.parseInt(value);
+        validate();
+        return intValue;
     }
 
     public float floatValue() {
-        return Float.parseFloat(value);
+        validate();
+        return floatValue;
     }
 
     public boolean booleanValue() {
-        return Boolean.parseBoolean(value);
+        validate();
+        return booleanValue;
+    }
+
+    private void validate() {
+        if (!isDirty) return;
+        isDirty = false;
+
+        intValue = Integer.parseInt(value);
+        floatValue = Float.parseFloat(value);
+        booleanValue = Boolean.parseBoolean(value);
     }
 }
