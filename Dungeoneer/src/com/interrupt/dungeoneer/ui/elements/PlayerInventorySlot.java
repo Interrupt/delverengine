@@ -3,7 +3,7 @@ package com.interrupt.dungeoneer.ui.elements;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.interrupt.dungeoneer.ui.InventorySlot;
 
-public class PlayerInventorySlotElement extends Element {
+public class PlayerInventorySlot extends Element {
     public String image;
     public int index;
 

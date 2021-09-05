@@ -10,7 +10,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 
-public class CrosshairElement extends Element {
+public class Crosshair extends Element {
     public String image = "ui/crosshair.png";
 
     @Override

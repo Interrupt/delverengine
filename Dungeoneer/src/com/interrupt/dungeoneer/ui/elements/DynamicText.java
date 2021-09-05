@@ -7,7 +7,7 @@ import com.interrupt.managers.StringManager;
 
 import java.util.Objects;
 
-public class DynamicTextElement extends Element {
+public class DynamicText extends Element {
     DynamicValue text;
 
     @Override

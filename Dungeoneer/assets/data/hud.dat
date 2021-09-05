@@ -8,41 +8,41 @@
     },
     "prefabs": {
         "inventory": {
-            "class": "com.interrupt.dungeoneer.ui.elements.ModalGroupElement",
+            "class": "com.interrupt.dungeoneer.ui.elements.ModalGroup",
             "anchor": "TOP_CENTER",
             "width": 264,
             "height": 96,
             "mode": "Inventory",
             "children": [
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlot",
                     "anchor": "TOP_LEFT",
                     "image": "ui/hud_slot.png",
                     "equipLoc": "HAT"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlot",
                     "anchor": "TOP_LEFT",
                     "y": -32,
                     "image": "ui/hud_slot.png",
                     "equipLoc": "ARMOR"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlot",
                     "anchor": "TOP_LEFT",
                     "y": -64,
                     "image": "ui/hud_slot.png",
                     "equipLoc": "PANTS"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlot",
                     "anchor": "TOP_LEFT",
                     "x": 32,
                     "image": "ui/hud_slot.png",
                     "equipLoc": "OFFHAND"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlot",
                     "anchor": "TOP_LEFT",
                     "x": 32,
                     "y": -32,
@@ -50,7 +50,7 @@
                     "equipLoc": "RING"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlotElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlot",
                     "anchor": "TOP_LEFT",
                     "x": 32,
                     "y": -64,
@@ -58,7 +58,7 @@
                     "equipLoc": "AMULET"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerBagElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerBag",
                     "anchor": "TOP_LEFT",
                     "x": 72,
                     "image": "ui/hud_slot.png"
@@ -66,38 +66,38 @@
             ]
         },
         "characterSheet": {
-            "class": "com.interrupt.dungeoneer.ui.elements.ModalGroupElement",
+            "class": "com.interrupt.dungeoneer.ui.elements.ModalGroup",
             "anchor": "TOP_CENTER",
             "width": 264,
             "height": 196,
             "mode": "Character",
             "children": [
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ImageElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Image",
                     "image": "ui/hud_charactersheetbackground.png"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Text",
                     "anchor": "TOP_CENTER",
                     "y": -16,
                     "text": "overlays.CharacterOverlay.attributesTitle",
                     "color": { "r": 0.92549019, "g": 0.78431372, "b": 0.18823529, "a":  1 }
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 40,
                     "y": 156,
                     "width": 184,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.attack power",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatText",
                             "anchor": "BOTTOM_RIGHT",
                             "pattern": "{0}-{1}",
                             "args": [
@@ -114,20 +114,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 40,
                     "y": 144,
                     "width": 184,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.armor class",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -137,27 +137,27 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Text",
                     "anchor": "TOP_CENTER",
                     "y": -68,
                     "text": "overlays.CharacterOverlay.statisticsTitle",
                     "color": { "r": 0.92549019, "g": 0.78431372, "b": 0.18823529, "a":  1 }
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 40,
                     "y": 104,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.health",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -167,20 +167,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 140,
                     "y": 104,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.attack",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -190,20 +190,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 40,
                     "y": 92,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.magic",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -213,20 +213,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 140,
                     "y": 92,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.defense",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -236,20 +236,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 40,
                     "y": 80,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.speed",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -259,20 +259,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 140,
                     "y": 80,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.agility",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -282,27 +282,27 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Text",
                     "anchor": "TOP_CENTER",
                     "y": -132,
                     "text": "overlays.CharacterOverlay.playerTitle",
                     "color": { "r": 0.92549019, "g": 0.78431372, "b": 0.18823529, "a":  1 }
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 90,
                     "y": 40,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.level",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -312,20 +312,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 90,
                     "y": 28,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.xp",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatText",
                             "anchor": "BOTTOM_RIGHT",
                             "pattern": "{0}/{1}",
                             "args": [
@@ -342,20 +342,20 @@
                     ]
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Group",
                     "x": 90,
                     "y": 16,
                     "width": 84,
                     "height": 8,
                     "children": [
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.TextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.Text",
                             "anchor": "BOTTOM_LEFT",
                             "text": "stats.gold",
                             "color": { "r": 0.52941176, "g": 0.52941176, "b": 0.52941176, "a":  1 }
                         },
                         {
-                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicTextElement",
+                            "class": "com.interrupt.dungeoneer.ui.elements.DynamicText",
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
@@ -367,23 +367,23 @@
             ]
         },
         "healthBar" : {
-            "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+            "class": "com.interrupt.dungeoneer.ui.elements.Group",
             "anchor": "BOTTOM_LEFT",
             "width": 256,
             "height": 16,
             "children": [
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.ImageElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.Image",
                     "image": "ui/hud_healthbackground.png"
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerHealthBarElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerHealthBar",
                     "image": "ui/hud_healthbar.png",
                     "anchor": "CENTER_LEFT",
                     "x": 43
                 },
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerHealthElement",
+                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerHealth",
                     "anchor": "BOTTOM_RIGHT",
                     "pivot": "BOTTOM_RIGHT",
                     "x": -216,
@@ -394,12 +394,12 @@
             ]
         },
         "itemTooltip": {
-            "class": "com.interrupt.dungeoneer.ui.elements.ElementGroup",
+            "class": "com.interrupt.dungeoneer.ui.elements.Group",
             "width": 100,
             "height": 16,
             "children": [
                 {
-                    "class": "com.interrupt.dungeoneer.ui.elements.HoveredItemNameElement"
+                    "class": "com.interrupt.dungeoneer.ui.elements.HoveredItemName"
                 }
             ]
         }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.InventorySlot;
 
-public class PlayerBagElement extends Element {
+public class PlayerBag extends Element {
     public String image;
     public int columns = 6;
 

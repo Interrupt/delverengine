@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.ui.ItemSlot;
 import com.interrupt.dungeoneer.ui.UiSkin;
 
-public class HoveredItemNameElement extends Element{
+public class HoveredItemName extends Element{
     public Color color = Color.WHITE;
 
     @Override

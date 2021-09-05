@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.Array;
 
-public class ElementGroup extends Element {
+public class Group extends Element {
     public enum Overflow {
         VISIBLE,
         HIDDEN

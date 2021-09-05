@@ -10,7 +10,7 @@ import com.interrupt.dungeoneer.ui.UiSkin;
 
 import java.text.MessageFormat;
 
-public class PlayerHealthElement extends Element {
+public class PlayerHealth extends Element {
     String text = "{0}/{1}";
 
     @Override

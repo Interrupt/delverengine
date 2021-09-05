@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.interrupt.dungeoneer.game.Game;
 
-public class ModalGroupElement extends ElementGroup {
+public class ModalGroup extends Group {
     Game.MenuMode mode = Game.MenuMode.Hidden;
     @Override
     protected Actor createActor() {

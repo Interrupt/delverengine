@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.InventorySlot;
 
-public class PlayerHotbarElement extends Element {
+public class PlayerHotbar extends Element {
     public String image;
 
     @Override

@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 
-public class SpriteElement extends Element {
+public class Sprite extends Element {
     public String spriteAtlas;
     public int tex;
 

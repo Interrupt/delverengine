@@ -3,10 +3,9 @@ package com.interrupt.dungeoneer.ui.elements;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.interrupt.dungeoneer.game.Game;
 
-public class ImageElement extends Element {
+public class Image extends Element {
     public String image;
 
     @Override
@@ -16,6 +15,6 @@ public class ImageElement extends Element {
             return null;
         }
 
-        return new Image(new Texture(file));
+        return new com.badlogic.gdx.scenes.scene2d.ui.Image(new Texture(file));
     }
 }

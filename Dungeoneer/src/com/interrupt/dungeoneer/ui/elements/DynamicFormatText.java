@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class DynamicFormatTextElement extends Element {
+public class DynamicFormatText extends Element {
     public String pattern = "{0}";
 
     public Array<DynamicValue> args = new Array<>();
@@ -31,7 +31,7 @@ public class DynamicFormatTextElement extends Element {
 
     @Override
     protected Actor createActor() {
-        DynamicFormatTextElement self = this;
+        DynamicFormatText self = this;
         Label label = new Label(getText(), UiSkin.getSkin()) {
             private String value;
             private float lastCheck = 0f;

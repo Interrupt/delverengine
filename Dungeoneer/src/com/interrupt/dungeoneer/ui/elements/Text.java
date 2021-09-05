@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
 
-public class TextElement extends Element{
+public class Text extends Element{
     public String text = "";
 
     @Override

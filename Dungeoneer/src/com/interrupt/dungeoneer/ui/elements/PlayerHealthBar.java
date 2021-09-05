@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 
-public class PlayerHealthBarElement extends Element {
+public class PlayerHealthBar extends Element {
     public String image;
 
     @Override
