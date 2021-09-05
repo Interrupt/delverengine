@@ -100,14 +100,16 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatTextElement",
                             "anchor": "BOTTOM_RIGHT",
                             "pattern": "{0}-{1}",
-                            "arg0": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
-                                "attribute": "MIN_DAMAGE"
-                            },
-                            "arg1": {
+                            "args": [
+                                {
+                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "attribute": "MIN_DAMAGE"
+                                },
+                                {
                                 "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
                                 "attribute": "MAX_DAMAGE"
-                            }
+                                }
+                            ]
                         }
                     ]
                 },
@@ -326,14 +328,16 @@
                             "class": "com.interrupt.dungeoneer.ui.elements.DynamicFormatTextElement",
                             "anchor": "BOTTOM_RIGHT",
                             "pattern": "{0}/{1}",
-                            "arg0": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
-                                "attribute": "XP"
-                            },
-                            "arg1": {
-                                "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
-                                "attribute": "NEXT_XP"
-                            }
+                            "args": [
+                                {
+                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "attribute": "XP"
+                                },
+                                {
+                                    "class": "com.interrupt.dungeoneer.ui.elements.PlayerAttributeValue",
+                                    "attribute": "NEXT_XP"
+                                }
+                            ]
                         }
                     ]
                 },

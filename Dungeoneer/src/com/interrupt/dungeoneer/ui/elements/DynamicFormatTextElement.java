@@ -2,23 +2,30 @@ package com.interrupt.dungeoneer.ui.elements;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Array;
+import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class DynamicFormatTextElement extends Element {
     public String pattern = "{0}";
 
-    public DynamicValue arg0 = new DynamicValue("");
-    public DynamicValue arg1 = new DynamicValue("");
+    public Array<DynamicValue> args = new Array<>();
 
     public String getText() {
         return MessageFormat.format(
             StringManager.get(pattern),
-            arg0.stringValue(),
-            arg1.stringValue()
+            Arrays.stream(args.toArray()).map(new Function<DynamicValue, String>() {
+                @Override
+                public String apply(DynamicValue dynamicValue) {
+                    return dynamicValue.stringValue();
+                }
+            }).toArray()
         );
     }
 
@@ -26,10 +33,18 @@ public class DynamicFormatTextElement extends Element {
     protected Actor createActor() {
         DynamicFormatTextElement self = this;
         Label label = new Label(getText(), UiSkin.getSkin()) {
-            String value;
+            private String value;
+            private float lastCheck = 0f;
+
             @Override
             public void act(float delta) {
                 super.act(delta);
+
+                // Only check if we need to update the text at 10hz
+                float frequency = 1000f / 10f;
+                if (Game.instance.time < lastCheck + frequency) return;
+
+                lastCheck = Game.instance.time;
 
                 if (!Objects.equals(value, self.getText())) {
                     value = self.getText();
