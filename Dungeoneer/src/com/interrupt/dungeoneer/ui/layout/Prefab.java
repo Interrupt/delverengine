@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.interrupt.dungeoneer.game.Game;

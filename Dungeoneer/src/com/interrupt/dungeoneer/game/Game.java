@@ -32,7 +32,7 @@ import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
-import com.interrupt.dungeoneer.ui.elements.Canvas;
+import com.interrupt.dungeoneer.ui.layout.Canvas;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.ItemManager;

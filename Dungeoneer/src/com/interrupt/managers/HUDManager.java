@@ -1,7 +1,7 @@
 package com.interrupt.managers;
 
 import com.interrupt.dungeoneer.ui.Hotbar;
-import com.interrupt.dungeoneer.ui.elements.Element;
+import com.interrupt.dungeoneer.ui.layout.Element;
 
 import java.util.HashMap;
 

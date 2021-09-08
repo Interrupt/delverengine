@@ -1,60 +1,38 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.dungeoneer.ui.values.DynamicValue;
 import com.interrupt.managers.StringManager;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Function;
 
-public class DynamicFormatText extends Element {
-    public String pattern = "{0}";
+public class Text extends Element {
+    DynamicValue text;
 
-    public Array<DynamicValue> args = new Array<>();
-
-    public String getText() {
-        return MessageFormat.format(
-            StringManager.get(pattern),
-            Arrays.stream(args.toArray()).map(new Function<DynamicValue, String>() {
-                @Override
-                public String apply(DynamicValue dynamicValue) {
-                    return dynamicValue.stringValue();
-                }
-            }).toArray()
-        );
+    private String getText() {
+        return StringManager.get(text.stringValue());
     }
 
     @Override
     protected Actor createActor() {
-        DynamicFormatText self = this;
-        Label label = new Label(getText(), UiSkin.getSkin()) {
-            private String value;
-            private float lastCheck = 0f;
-
+        Text self = this;
+        Label label = new Label(self.getText(), UiSkin.getSkin()) {
+            String value;
             @Override
             public void act(float delta) {
                 super.act(delta);
 
-                // Only check if we need to update the text at 10hz
-                float frequency = 1000f / 10f;
-                if (Game.instance.time < lastCheck + frequency) return;
-
-                lastCheck = Game.instance.time;
-
-                if (!Objects.equals(value, self.getText())) {
-                    value = self.getText();
+                String current = self.getText();
+                if (!Objects.equals(value, current)) {
+                    value = current;
                     setText(value);
                 }
             }
         };
 
-        if (pivot.equals(com.interrupt.dungeoneer.ui.elements.Align.UNSET)) {
+        if (pivot.equals(com.interrupt.dungeoneer.ui.layout.Align.UNSET)) {
             pivot = anchor;
         }
 

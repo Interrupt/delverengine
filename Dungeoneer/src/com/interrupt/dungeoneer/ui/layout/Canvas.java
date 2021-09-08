@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;

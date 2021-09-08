@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;

@@ -15,7 +15,7 @@ import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
-import com.interrupt.dungeoneer.ui.elements.Element;
+import com.interrupt.dungeoneer.ui.layout.Element;
 
 import java.util.Objects;
 
