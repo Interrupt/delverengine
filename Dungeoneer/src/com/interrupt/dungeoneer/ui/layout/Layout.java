@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.dungeoneer.ui.ActorWalker;
 import com.interrupt.dungeoneer.ui.ActorVisitor;
 
-public class Canvas implements InputProcessor, Disposable {
+public class Layout implements InputProcessor, Disposable {
     private Viewport viewport;
     private Stage stage;
 
@@ -25,7 +25,7 @@ public class Canvas implements InputProcessor, Disposable {
 
     public Array<Element> children = new Array<>();
 
-    public Canvas() {}
+    public Layout() {}
 
     public void init() {
         if (viewport == null) {
@@ -44,7 +44,7 @@ public class Canvas implements InputProcessor, Disposable {
 
     public void add(Element child) {
         child.init();
-        child.setCanvas(this);
+        child.setLayout(this);
         Actor actor = child.getActor();
         if (actor != null) {
             stage.addActor(actor);

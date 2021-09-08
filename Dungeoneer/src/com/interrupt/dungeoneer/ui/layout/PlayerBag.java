@@ -23,7 +23,7 @@ public class PlayerBag extends Element {
                         addActor(new InventorySlot(image, i));
                     }
                     value = Game.instance.player.inventorySize;
-                    Game.canvas.resize();
+                    Game.layout.resize();
                 }
             }
         };

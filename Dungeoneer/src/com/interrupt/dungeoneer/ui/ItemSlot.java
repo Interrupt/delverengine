@@ -100,7 +100,7 @@ public class ItemSlot extends Stack {
                 dragAndDrop.clear();
                 dragAndDrop.addSource(this);
 
-                Array<ItemSlot> targets = Game.canvas.find(
+                Array<ItemSlot> targets = Game.layout.find(
                     ItemSlot.class,
                     new Predicate<ItemSlot>() {
                         @Override

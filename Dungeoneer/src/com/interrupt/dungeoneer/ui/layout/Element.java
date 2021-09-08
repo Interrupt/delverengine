@@ -16,7 +16,7 @@ public abstract class Element {
 
     public DynamicValue visible = null;
 
-    protected Canvas canvas;
+    protected Layout layout;
 
     private Actor actor;
 
@@ -41,7 +41,7 @@ public abstract class Element {
         return actor;
     }
 
-    public void setCanvas(Canvas c) {
-        canvas = c;
+    public void setLayout(Layout l) {
+        layout = l;
     }
 }

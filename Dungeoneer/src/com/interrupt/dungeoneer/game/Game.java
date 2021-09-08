@@ -32,7 +32,7 @@ import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
-import com.interrupt.dungeoneer.ui.layout.Canvas;
+import com.interrupt.dungeoneer.ui.layout.Layout;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.ItemManager;
@@ -97,7 +97,7 @@ public class Game {
 	public static Tooltip tooltip = new Tooltip();
     public static Stage ui;
     public static Viewport viewport;
-    public static Canvas canvas;
+    public static Layout layout;
 
     public static Hud hud = null;
 
@@ -555,8 +555,8 @@ public class Game {
 			gamepadManager.menuMode = false;
 		}
 
-		if (canvas != null)
-		    canvas.act(delta);
+		if (layout != null)
+		    layout.act(delta);
 
 		if(ui != null)
 			ui.act(delta);
@@ -573,14 +573,14 @@ public class Game {
         // TODO: This needs to live in the HudManager
         FileHandle file = Game.getInternal("./data/hud2.dat");
         if (file.exists()) {
-            canvas = JsonUtil.fromJson(Canvas.class, file, new Supplier<Canvas>() {
+            layout = JsonUtil.fromJson(Layout.class, file, new Supplier<Layout>() {
                 @Override
-                public Canvas get() {
-                    return new Canvas();
+                public Layout get() {
+                    return new Layout();
                 }
             });
-            canvas.init();
-            inputMultiplexer.addProcessor(canvas);
+            layout.init();
+            inputMultiplexer.addProcessor(layout);
         }
     }
 

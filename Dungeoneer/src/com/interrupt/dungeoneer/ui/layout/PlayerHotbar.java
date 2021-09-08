@@ -22,7 +22,7 @@ public class PlayerHotbar extends Element {
                         addActor(new InventorySlot(image, i));
                     }
                     value = Game.instance.player.hotbarSize;
-                    Game.canvas.resize();
+                    Game.layout.resize();
                 }
             }
         };

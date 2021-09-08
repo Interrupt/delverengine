@@ -1,5 +1,5 @@
 {
-    "class": "com.interrupt.dungeoneer.ui.layout.Canvas",
+    "class": "com.interrupt.dungeoneer.ui.layout.Layout",
     "children": [
         {
             "class": "com.interrupt.dungeoneer.ui.layout.Prefab",

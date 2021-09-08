@@ -610,8 +610,8 @@ public class GlRenderer {
 	private void drawUI() {
 	    drawLegacyUI();
 
-	    if (Game.canvas != null) {
-            Game.canvas.draw();
+	    if (Game.layout != null) {
+            Game.layout.draw();
         }
 	    Game.viewport.apply();
     }

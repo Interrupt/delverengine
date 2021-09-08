@@ -56,7 +56,7 @@ public class Group extends Element {
 
         for (Element child : children) {
             child.init();
-            child.setCanvas(canvas);
+            child.setLayout(layout);
             Actor actor = child.getActor();
             positionActor(actor, child);
             group.addActor(actor);
