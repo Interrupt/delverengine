@@ -17,18 +17,29 @@
             "class": "com.interrupt.dungeoneer.ui.elements.Prefab",
             "anchor": "TOP_CENTER",
             "y": -48,
-            "name": "inventory"
+            "name": "inventory",
+            "visible": {
+                "class": "com.interrupt.dungeoneer.ui.values.MenuMode",
+                "mode": "Inventory"
+            }
         },
         {
             "class": "com.interrupt.dungeoneer.ui.elements.Prefab",
             "anchor": "TOP_CENTER",
             "y": -48,
-            "name": "characterSheet"
+            "name": "characterSheet",
+            "visible": {
+                "class": "com.interrupt.dungeoneer.ui.values.MenuMode",
+                "mode": "Character"
+            }
         },
         {
-            "class": "com.interrupt.dungeoneer.ui.elements.ModalGroup",
+            "class": "com.interrupt.dungeoneer.ui.elements.Group",
             "anchor": "CENTER",
-            "mode": "Hidden",
+            "visible": {
+                "class": "com.interrupt.dungeoneer.ui.values.MenuMode",
+                "mode": "Hidden"
+            },
             "children": [
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.Crosshair",

@@ -8,11 +8,10 @@
     },
     "prefabs": {
         "inventory": {
-            "class": "com.interrupt.dungeoneer.ui.elements.ModalGroup",
+            "class": "com.interrupt.dungeoneer.ui.elements.Group",
             "anchor": "TOP_CENTER",
             "width": 264,
             "height": 96,
-            "mode": "Inventory",
             "children": [
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.PlayerEquipSlot",
@@ -66,11 +65,10 @@
             ]
         },
         "characterSheet": {
-            "class": "com.interrupt.dungeoneer.ui.elements.ModalGroup",
+            "class": "com.interrupt.dungeoneer.ui.elements.Group",
             "anchor": "TOP_CENTER",
             "width": 264,
             "height": 196,
-            "mode": "Character",
             "children": [
                 {
                     "class": "com.interrupt.dungeoneer.ui.elements.Image",

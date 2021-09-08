@@ -15,6 +15,18 @@ public class DynamicValue {
         this.value = value;
     }
 
+    public DynamicValue(int value) {
+        this.value = String.valueOf(value);
+    }
+
+    public DynamicValue(float value) {
+        this.value = String.valueOf(value);
+    }
+
+    public DynamicValue(boolean value) {
+        this.value = String.valueOf(value);
+    }
+
     public String stringValue() {
         return value;
     }
@@ -38,8 +50,25 @@ public class DynamicValue {
         if (!isDirty) return;
         isDirty = false;
 
-        intValue = Integer.parseInt(value);
-        floatValue = Float.parseFloat(value);
-        booleanValue = Boolean.parseBoolean(value);
+        try {
+            intValue = Integer.parseInt(value);
+        }
+        catch (Exception ignored) {
+            intValue = 0;
+        }
+
+        try {
+            floatValue = Float.parseFloat(value);
+        }
+        catch (Exception ignored) {
+            floatValue = 0f;
+        }
+
+        try {
+            booleanValue = Boolean.parseBoolean(value);
+        }
+        catch (Exception ignored) {
+            booleanValue = false;
+        }
     }
 }
