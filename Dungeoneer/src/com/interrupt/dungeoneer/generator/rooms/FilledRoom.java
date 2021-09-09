@@ -3,10 +3,8 @@ package com.interrupt.dungeoneer.generator.rooms;
 import com.badlogic.gdx.math.Vector2;
 import com.interrupt.dungeoneer.editor.EditorMarker;
 import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Prefab;
 import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.generator.RoomGenerator;
-import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.EntityManager;
 
@@ -79,7 +77,7 @@ public class FilledRoom extends Room {
         Entity door = null;
 
         if(generator.theme.secretDoors != null && generator.theme.secretDoors.size > 0) {
-            door = EntityManager.instance.Copy(generator.theme.secretDoors.random());
+            door = Entity.copy(generator.theme.secretDoors.random());
         }
         else {
             door = EntityManager.instance.getEntity("Doors", "Hidden_1");

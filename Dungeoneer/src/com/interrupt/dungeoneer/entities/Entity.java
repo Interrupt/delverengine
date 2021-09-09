@@ -17,6 +17,7 @@ import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 import java.util.Random;
@@ -1064,4 +1065,8 @@ public class Entity {
 	// for stencil shadows and halos
 	public HaloMode getHaloMode() { return HaloMode.NONE; }
 	public boolean hasShadow() { return shadowType != ShadowType.NONE; }
+
+    public static Entity copy(Entity other) {
+       return (Entity)KryoSerializer.copyObject(other);
+    }
 }

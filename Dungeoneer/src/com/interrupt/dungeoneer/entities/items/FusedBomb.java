@@ -195,7 +195,7 @@ public class FusedBomb extends Item {
             for (int i = 0; i < spawnsCount; i++) {
                 // Grab a random spawn element to create
                 int idx = Game.rand.nextInt(spawns.size);
-                Entity e = EntityManager.instance.Copy(spawns.get(idx));
+                Entity e = Entity.copy(spawns.get(idx));
 
                 // Preserve momentum of thrown bomb and add in random velocity
                 e.xa = xa * spawnMomentumTransfer + spawnVelocity.x + Game.rand.nextFloat() * spawnRandomVelocity.x - spawnRandomVelocity.x * 0.5f;
