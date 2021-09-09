@@ -849,6 +849,8 @@ public class Monster extends Actor implements Directional {
 		else if(rangedAttackAnimation != null && rangedAttackAnimation.playing) rangedAttackAnimation.animate(delta, this);
 		else if(dodgeAnimation != null && dodgeAnimation.playing) dodgeAnimation.animate(delta, this);
 		else if(walkAnimation != null) walkAnimation.animate(delta, this);
+
+		tickAttached(level, delta);
 	}
 
 	private float getSpeed() {
