@@ -119,8 +119,6 @@ public class Monster extends Actor implements Directional {
 	private int lastWander = 0;
 	private boolean waiting = false;
 
-	private float bleedTimer = 0;
-
 	/** Monster name. */
 	public String name = "";
 
@@ -451,11 +449,6 @@ public class Monster extends Actor implements Directional {
 
 			super.tick(level, delta);
 			return;
-		}
-
-		if(hp <= maxHp / 2.0)
-		{
-			bleed(level);
 		}
 
 		// run away when health is low
@@ -1129,23 +1122,6 @@ public class Monster extends Actor implements Directional {
 
 		if(triggersOnDeath != null && !triggersOnDeath.isEmpty()) {
 			level.trigger(this, triggersOnDeath, name);
-		}
-	}
-
-	public void bleed(Level level)
-	{
-		if(tickcount > bleedTimer)
-		{
-			Random r = new Random();
-			bleedTimer = tickcount + 10 + r.nextInt(80);
-
-			float xPos = x + r.nextFloat() * 0.4f - 0.2f;
-			float yPos = y + r.nextFloat() * 0.4f - 0.2f;
-			float zPos = z + r.nextFloat() * 0.4f - 0.2f;
-
-			if(bloodType != BloodType.Bone) {
-				Game.GetLevel().SpawnNonCollidingEntity( CachePools.getParticle(xPos, yPos, zPos + 0.2f, (xPos - x) * 0.01f, (yPos - y) * 0.01f, 0, 420 + r.nextInt(600), 1f, 0f, Actor.getBloodTexture(bloodType), Actor.getBloodColor(bloodType), false));
-			}
 		}
 	}
 

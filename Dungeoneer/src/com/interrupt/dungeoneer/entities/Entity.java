@@ -210,7 +210,7 @@ public class Entity {
 	protected boolean wasOnFloorLast = false;
 	private float lastSplashTime = 0;
 
-	private float tickcount = 0;
+	protected float tickcount = 0;
 
 	/** Entity tint color. */
 	public Color color = Color.WHITE;
