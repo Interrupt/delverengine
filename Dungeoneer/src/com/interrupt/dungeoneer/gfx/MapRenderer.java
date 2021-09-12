@@ -26,9 +26,9 @@ public class MapRenderer {
     public boolean showMap = false;
     public SpriteBatch uiBatch;
     public OrthographicCamera camera2D;
-    protected Pixmap map;
-    protected Pixmap drawnMap;
-    protected Texture mapTexture;
+    public Pixmap map;
+    public Pixmap drawnMap;
+    public Texture mapTexture;
 
     protected Color tempColor = new Color();
     protected Color tempColor2 = new Color();
