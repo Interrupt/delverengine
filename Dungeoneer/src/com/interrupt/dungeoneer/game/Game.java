@@ -13,10 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.interrupt.dungeoneer.Audio;
-import com.interrupt.dungeoneer.GameApplication;
-import com.interrupt.dungeoneer.GameInput;
-import com.interrupt.dungeoneer.GameManager;
+import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
@@ -35,8 +32,9 @@ import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
-import com.interrupt.dungeoneer.ui.elements.Canvas;
+import com.interrupt.dungeoneer.ui.layout.Layout;
 import com.interrupt.managers.EntityManager;
+import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
@@ -87,6 +85,7 @@ public class Game {
 	public ItemManager itemManager;
 	public MonsterManager monsterManager;
 	public EntityManager entityManager;
+    public static HUDManager hudManager;
 
 	public static boolean isMobile = false;
 	public static boolean isDebugMode = false;
@@ -98,10 +97,8 @@ public class Game {
 	public static Tooltip tooltip = new Tooltip();
     public static Stage ui;
     public static Viewport viewport;
-    public static Canvas canvas;
+    public static Layout layout;
 
-    public static Hotbar hotbar = new Hotbar(6,1,0);
-    public static Hotbar bag = new Hotbar(6,3,6);
     public static Hud hud = null;
 
     public static CharacterScreen characterScreen = null;
@@ -174,6 +171,8 @@ public class Game {
 			entityManager = new EntityManager();
 		}
 		EntityManager.setSingleton(entityManager);
+
+        loadHUDManager(modManager);
 	}
 
 	/** Create game for editor usage. */
@@ -193,7 +192,6 @@ public class Game {
 
 		DecalManager.setQuality(Options.instance.gfxQuality);
 
-		bag.visible = false;
 		// Load the base game data
 		if(gameData == null) {
 			gameData = modManager.loadGameData();
@@ -207,6 +205,8 @@ public class Game {
 		hud = new Hud();
 
 		loadManagers();
+
+        hudManager.backpack.visible = false;
 
 		Gdx.app.log("DelverLifeCycle", "READY EDITOR ONE");
 
@@ -402,7 +402,7 @@ public class Game {
 
 		DecalManager.setQuality(Options.instance.gfxQuality);
 
-		bag.visible = false;
+		hudManager.backpack.visible = false;
 
 		// Load the levels data file, keep the levels array null for now (try loading from save first)
 		Array<Level> dataLevels = buildLevelLayout();
@@ -555,14 +555,14 @@ public class Game {
 			gamepadManager.menuMode = false;
 		}
 
-		if (canvas != null)
-		    canvas.act(delta);
+		if (layout != null)
+		    layout.act(delta);
 
 		if(ui != null)
 			ui.act(delta);
 
-		hotbar.tickUI(input);
-		bag.tickUI(input);
+        hudManager.quickSlots.tickUI(input);
+		hudManager.backpack.tickUI(input);
 		hud.tick(input);
 
 		// keep the cache clean
@@ -571,16 +571,16 @@ public class Game {
 
 	public void initHud() {
         // TODO: This needs to live in the HudManager
-        FileHandle file = Game.getInternal("./data/hud.dat");
+        FileHandle file = Game.getInternal("./data/hud2.dat");
         if (file.exists()) {
-            canvas = JsonUtil.fromJson(Canvas.class, file, new Supplier<Canvas>() {
+            layout = JsonUtil.fromJson(Layout.class, file, new Supplier<Layout>() {
                 @Override
-                public Canvas get() {
-                    return new Canvas();
+                public Layout get() {
+                    return new Layout();
                 }
             });
-            canvas.init();
-            inputMultiplexer.addProcessor(canvas);
+            layout.init();
+            inputMultiplexer.addProcessor(layout);
         }
     }
 
@@ -1193,8 +1193,8 @@ public class Game {
 	}
 
 	public static void RefreshUI() {
-		hotbar.refresh();
-		bag.refresh();
+		hudManager.quickSlots.refresh();
+		hudManager.backpack.refresh();
 		hud.refreshEquipLocations();
 	}
 
@@ -1204,10 +1204,10 @@ public class Game {
 		Integer mouseOverSlot = null;
 		Game.dragging = null;
 
-		if(hotbar.getMouseOverSlot() != null) {
-			mouseOverSlot = hotbar.getMouseOverSlot() + hotbar.invOffset;
-		} else if(bag.visible && bag.getMouseOverSlot() != null) {
-			mouseOverSlot = bag.getMouseOverSlot() + bag.invOffset;
+		if(hudManager.quickSlots.getMouseOverSlot() != null) {
+			mouseOverSlot = hudManager.quickSlots.getMouseOverSlot() + hudManager.quickSlots.invOffset;
+		} else if(hudManager.backpack.visible && hudManager.backpack.getMouseOverSlot() != null) {
+			mouseOverSlot = hudManager.backpack.getMouseOverSlot() + hudManager.backpack.invOffset;
 		}
 
 		String equipOverSlot = null;
@@ -1399,7 +1399,7 @@ public class Game {
 		}
 
 		// Show the proper bag slots
-		Game.bag.visible = menuMode == MenuMode.Inventory;
+		Game.hudManager.backpack.visible = menuMode == MenuMode.Inventory;
 		for(EquipLoc loc : hud.equipLocations.values())
 		{
 			loc.visible = menuMode != MenuMode.Hidden;
@@ -1570,4 +1570,18 @@ public class Game {
 
 		return min;
 	}
+
+    private static void loadHUDManager(ModManager modManager) {
+        hudManager = modManager.loadHUDManager();
+
+        if (null == hudManager) {
+            hudManager = new HUDManager();
+            ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
+        }
+    }
+
+    public void reloadAssets() {
+        Art.refresh();
+        instance.initHud();
+    }
 }

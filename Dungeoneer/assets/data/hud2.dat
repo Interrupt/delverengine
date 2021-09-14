@@ -1,0 +1,52 @@
+{
+    "class": "com.interrupt.dungeoneer.ui.layout.Layout",
+    "children": [
+        {
+            "class": "com.interrupt.dungeoneer.ui.layout.Prefab",
+            "anchor": "BOTTOM_LEFT",
+            "x": 8,
+            "y": 8,
+            "name": "healthBar"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.ui.layout.PlayerHotbar",
+            "anchor": "TOP_CENTER",
+            "image": "ui/hud_slot.png"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.ui.layout.Prefab",
+            "anchor": "TOP_CENTER",
+            "y": -48,
+            "name": "inventory",
+            "visible": {
+                "class": "com.interrupt.dungeoneer.ui.values.MenuMode",
+                "mode": "Inventory"
+            }
+        },
+        {
+            "class": "com.interrupt.dungeoneer.ui.layout.Prefab",
+            "anchor": "TOP_CENTER",
+            "y": -48,
+            "name": "characterSheet",
+            "visible": {
+                "class": "com.interrupt.dungeoneer.ui.values.MenuMode",
+                "mode": "Character"
+            }
+        },
+        {
+            "class": "com.interrupt.dungeoneer.ui.layout.Group",
+            "anchor": "CENTER",
+            "visible": {
+                "class": "com.interrupt.dungeoneer.ui.values.MenuMode",
+                "mode": "Hidden"
+            },
+            "children": [
+                {
+                    "class": "com.interrupt.dungeoneer.ui.layout.Crosshair",
+                    "anchor": "CENTER",
+                    "color": { "r":  1, "g": 1, "b": 1, "a":  0.35 }
+                }
+            ]
+        }
+    ]
+}

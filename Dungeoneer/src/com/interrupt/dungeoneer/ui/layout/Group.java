@@ -1,24 +1,62 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.Array;
 
-public class ElementGroup extends Element {
+public class Group extends Element {
+    public enum Overflow {
+        VISIBLE,
+        HIDDEN
+    }
+
     public int width;
     public int height;
-    public Array<Element> children;
+    public Array<Element> children = new Array<>();
+    public Overflow overflow = Overflow.VISIBLE;
 
     @Override
     protected Actor createActor() {
-        WidgetGroup group = new WidgetGroup();
+        WidgetGroup group = new WidgetGroup() {
+            @Override
+            public void draw(Batch batch, float parentAlpha) {
+                if (overflow == Overflow.VISIBLE) {
+                    drawOverflowVisible(batch, parentAlpha);
+                }
+                else {
+                    drawOverflowHidden(batch, parentAlpha);
+                }
+            }
+
+            private void drawOverflowVisible(Batch batch, float parentAlpha) {
+                super.draw(batch, parentAlpha);
+            }
+
+            private final Rectangle scissors = new Rectangle();
+            private final Rectangle area = new Rectangle(getX(), getY(), getWidth(), getHeight());
+
+            private void drawOverflowHidden(Batch batch, float parentAlpha) {
+                area.set(getX(), getY(), getWidth(), getHeight());
+
+                ScissorStack.calculateScissors(getStage().getCamera(), batch.getTransformMatrix(), area, scissors);
+                if (ScissorStack.pushScissors(scissors)) {
+                    super.draw(batch, parentAlpha);
+                    ScissorStack.popScissors();
+                }
+
+                batch.flush();
+            }
+        };
         group.setWidth(width);
         group.setHeight(height);
 
         for (Element child : children) {
             child.init();
-            child.setCanvas(canvas);
+            child.setLayout(layout);
             Actor actor = child.getActor();
             positionActor(actor, child);
             group.addActor(actor);
@@ -88,7 +126,6 @@ public class ElementGroup extends Element {
 
             case BOTTOM_RIGHT:
                 origin.x = width;
-                position.x *= -1;
                 break;
 
             case CENTER_LEFT:
@@ -103,25 +140,20 @@ public class ElementGroup extends Element {
             case CENTER_RIGHT:
                 origin.x = width;
                 origin.y = height / 2;
-                position.x *= -1;
                 break;
 
             case TOP_LEFT:
                 origin.y = height;
-                position.y *= -1;
                 break;
 
             case TOP_CENTER:
                 origin.x = width / 2;
                 origin.y = height;
-                position.y *= -1;
                 break;
 
             case TOP_RIGHT:
                 origin.x += width;
                 origin.y += height;
-                position.x *= -1;
-                position.y *= -1;
                 break;
         }
 

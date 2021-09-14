@@ -22,6 +22,7 @@ import com.interrupt.utils.Logger;
 import java.util.HashMap;
 
 public class ModManager {
+    private static final String DATA_HUD_DAT = "/data/hud.dat";
 
     private transient Array<String> allMods = new Array<String>();
 
@@ -332,6 +333,25 @@ public class ModManager {
         }
 
         return gameData;
+    }
+
+    public HUDManager loadHUDManager() {
+        HUDManager hudManager = new HUDManager();
+
+        for (String path : modsFound) {
+            try {
+                FileHandle modFile = Game.getInternal(path + DATA_HUD_DAT);
+                if (modFile.exists() && !pathIsExcluded(path + DATA_HUD_DAT)) {
+                    HUDManager modData = JsonUtil.fromJson(HUDManager.class, modFile);
+                    hudManager.merge(modData);
+                }
+            } catch (Exception ex) {
+                Gdx.app.error("Delver", "Error loading mod file " + path + DATA_HUD_DAT);
+                Logger.logExceptionToFile(ex);
+            }
+        }
+
+        return hudManager;
     }
 
     public GenTheme loadTheme(String filename) {

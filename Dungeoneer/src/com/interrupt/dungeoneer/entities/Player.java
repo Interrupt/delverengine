@@ -33,10 +33,13 @@ import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.ReadableKeys;
-import com.interrupt.dungeoneer.overlays.*;
+import com.interrupt.dungeoneer.overlays.DebugOverlay;
+import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
+import com.interrupt.dungeoneer.overlays.MapOverlay;
+import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.rpg.Stats;
 import com.interrupt.dungeoneer.screens.GameScreen;
-import com.interrupt.dungeoneer.statuseffects.*;
+import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
@@ -274,8 +277,8 @@ public class Player extends Actor {
 		if(canAddInventorySlot()) {
 			inventorySize++;
 			inventory.add(null);
-			Game.bag.refresh();
-			Game.hotbar.refresh();
+			Game.hudManager.backpack.refresh();
+			Game.hudManager.quickSlots.refresh();
 
 			if(inventorySize - hotbarSize >= 35) {
 				SteamApi.api.achieve("SQUID3");
@@ -292,8 +295,8 @@ public class Player extends Actor {
 			hotbarSize++;
 			inventorySize++;
 			inventory.add(null);
-			Game.bag.refresh();
-			Game.hotbar.refresh();
+			Game.hudManager.backpack.refresh();
+			Game.hudManager.quickSlots.refresh();
 
 			if(hotbarSize >= 9) {
 				SteamApi.api.achieve("SQUID4");
@@ -2071,8 +2074,8 @@ public class Player extends Actor {
 		int itempos = inventory.indexOf(item, true);
 		if(itempos >= 0) inventory.set(inventory.indexOf(item, true), null);
 
-		Game.hotbar.refresh();
-		Game.bag.refresh();
+		Game.hudManager.quickSlots.refresh();
+		Game.hudManager.backpack.refresh();
 		Game.hud.refreshEquipLocations();
 	}
 
@@ -2162,9 +2165,67 @@ public class Player extends Actor {
 
 	public void DoHotbarAction(final int hotbarSlot) {
 		int location = hotbarSlot - 1;
-		if(location < 0 || location >= inventory.size || location + 1 > Game.hotbar.columns) return;
+		if(location < 0 || location >= inventory.size || location + 1 > Game.hudManager.quickSlots.columns) return;
 		UseInventoryItem(location);
 	}
+
+    public int getAmmoCount() {
+        if (heldItem == null) return -1;
+
+        Item item = inventory.get(heldItem);
+
+        if (item instanceof Bow) {
+            Bow bow = (Bow)item;
+            return bow.getAmmoCount();
+        }
+
+        if (item instanceof Gun) {
+            Gun gun = (Gun)item;
+            return gun.getAmmoCount();
+        }
+
+        if (item instanceof Wand) {
+            Wand wand = (Wand)item;
+            return wand.charges;
+        }
+
+        return -1;
+    }
+
+	public int getRandDamage() {
+        Item held = GetHeldItem();
+        if (held == null) return 0;
+
+        if (held instanceof Weapon) {
+            Weapon w = (Weapon) held;
+            return w.getRandDamage();
+        }
+
+        return 0;
+    }
+
+    public int getBaseDamage() {
+        Item held = GetHeldItem();
+        if (held == null) return 0;
+
+        if (held instanceof Weapon) {
+            Weapon w = (Weapon) held;
+            return w.getBaseDamage() + w.getElementalDamage() + getDamageStatBoost();
+        }
+        else if (held instanceof Potion) {
+            Potion p = (Potion)held;
+            return (int)p.getExplosionDamageAmount();
+        }
+        else if(held instanceof Decoration) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public int getMaxDamage() {
+	    return getBaseDamage() + getRandDamage();
+    }
 
 	public String GetAttackText() {
 		Item held = GetHeldItem();
@@ -2354,7 +2415,7 @@ public class Player extends Actor {
 		return maxHp + calculatedStats.HP;
 	}
 
-	public int GetArmorClass() {
+	public int getArmorClass() {
 		return calculatedStats.DEF + getDefenseStatBoost();
 	}
 

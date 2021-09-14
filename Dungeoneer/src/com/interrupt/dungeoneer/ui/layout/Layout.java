@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.dungeoneer.ui.ActorWalker;
 import com.interrupt.dungeoneer.ui.ActorVisitor;
 
-public class Canvas implements InputProcessor, Disposable {
+public class Layout implements InputProcessor, Disposable {
     private Viewport viewport;
     private Stage stage;
 
@@ -25,7 +25,7 @@ public class Canvas implements InputProcessor, Disposable {
 
     public Array<Element> children = new Array<>();
 
-    public Canvas() {}
+    public Layout() {}
 
     public void init() {
         if (viewport == null) {
@@ -44,10 +44,12 @@ public class Canvas implements InputProcessor, Disposable {
 
     public void add(Element child) {
         child.init();
-        child.setCanvas(this);
+        child.setLayout(this);
         Actor actor = child.getActor();
-        stage.addActor(actor);
-        positionActor(actor, child);
+        if (actor != null) {
+            stage.addActor(actor);
+            positionActor(actor, child);
+        }
     }
 
     private void reinit() {
@@ -158,7 +160,6 @@ public class Canvas implements InputProcessor, Disposable {
 
             case BOTTOM_RIGHT:
                 origin.x = width;
-                position.x *= -1;
                 break;
 
             case CENTER_LEFT:
@@ -173,25 +174,20 @@ public class Canvas implements InputProcessor, Disposable {
             case CENTER_RIGHT:
                 origin.x = width;
                 origin.y = height / 2;
-                position.x *= -1;
                 break;
 
             case TOP_LEFT:
                 origin.y = height;
-                position.y *= -1;
                 break;
 
             case TOP_CENTER:
                 origin.x = width / 2;
                 origin.y = height;
-                position.y *= -1;
                 break;
 
             case TOP_RIGHT:
                 origin.x += width;
                 origin.y += height;
-                position.x *= -1;
-                position.y *= -1;
                 break;
         }
 

@@ -1,36 +1,62 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.Align;
-import com.interrupt.dungeoneer.entities.Item;
-import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.items.Gun;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.dungeoneer.ui.values.DynamicValue;
+import com.interrupt.managers.StringManager;
 
-public class PlayerAmmoElement extends Element {
-    public Color color = Color.WHITE;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Function;
+
+public class DynamicFormatText extends Element {
+    public String pattern = "{0}";
+
+    public Array<DynamicValue> args = new Array<>();
+
+    public String getText() {
+        return MessageFormat.format(
+            StringManager.get(pattern),
+            Arrays.stream(args.toArray()).map(new Function<DynamicValue, String>() {
+                @Override
+                public String apply(DynamicValue dynamicValue) {
+                    return dynamicValue.stringValue();
+                }
+            }).toArray()
+        );
+    }
 
     @Override
-    public Actor createActor() {
-        Label label = new Label(String.valueOf(getAmmoCount()), UiSkin.getSkin()) {
+    protected Actor createActor() {
+        DynamicFormatText self = this;
+        Label label = new Label(getText(), UiSkin.getSkin()) {
+            private String value;
+            private float lastCheck = 0f;
+
             @Override
             public void act(float delta) {
                 super.act(delta);
 
-                int ammoCount = getAmmoCount();
+                // Only check if we need to update the text at 10hz
+                float frequency = 1000f / 10f;
+                if (Game.instance.time < lastCheck + frequency) return;
 
-                if (ammoCount >= 0) {
-                    setText(ammoCount);
-                }
-                else {
-                    setText("");
+                lastCheck = Game.instance.time;
+
+                if (!Objects.equals(value, self.getText())) {
+                    value = self.getText();
+                    setText(value);
                 }
             }
         };
-        label.setColor(color.r, color.g, color.b, 1f);
+
+        if (pivot.equals(com.interrupt.dungeoneer.ui.layout.Align.UNSET)) {
+            pivot = anchor;
+        }
 
         switch (pivot) {
             case BOTTOM_LEFT:
@@ -66,27 +92,10 @@ public class PlayerAmmoElement extends Element {
                 break;
 
             case TOP_RIGHT:
-                label.setAlignment(Align.topRight);
+                label.setAlignment(com.badlogic.gdx.utils.Align.topRight);
                 break;
         }
 
         return label;
-    }
-
-    public static int getAmmoCount() {
-        if (Game.instance == null) return -1;
-        Player player = Game.instance.player;
-        if (player == null) return -1;
-        Integer heldItem = player.heldItem;
-        if (heldItem == null) return -1;
-
-        Item item = player.inventory.get(heldItem);
-
-        if (item instanceof Gun) {
-            Gun gun = (Gun)item;
-            return gun.getAmmoCount();
-        }
-
-        return -1;
     }
 }

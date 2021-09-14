@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "HUDManager",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "const": "http://delverengine.com/jsonschema/current/managers/HUDManager.schema.json"
+        },
+        "class": {
+            "const": "com.interrupt.managers.HUDManager",
+            "description": "Fully-qualified Java class name."
+        },
+        "quickSlots": {
+            "$ref": "../dungeoneer/ui/Hotbar.schema.json"
+        },
+        "backpack": {
+            "$ref": "../dungeoneer/ui/Hotbar.schema.json"
+        }
+    }
+}

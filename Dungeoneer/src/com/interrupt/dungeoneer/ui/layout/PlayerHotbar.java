@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.ui.elements;
+package com.interrupt.dungeoneer.ui.layout;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.ui.InventorySlot;
 
-public class PlayerHotbarElement extends Element {
+public class PlayerHotbar extends Element {
     public String image;
 
     @Override
@@ -22,7 +22,7 @@ public class PlayerHotbarElement extends Element {
                         addActor(new InventorySlot(image, i));
                     }
                     value = Game.instance.player.hotbarSize;
-                    Game.canvas.resize();
+                    Game.layout.resize();
                 }
             }
         };
