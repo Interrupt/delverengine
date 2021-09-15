@@ -100,7 +100,7 @@ public class MainMenuScreen extends BaseScreen {
                 @Override
                 public void act(float delta) {
                     super.act(delta);
-                    setY(20);
+                    setY(22);
                     setX(ui.getWidth() - this.getWidth() - 8);
                 }
             };
