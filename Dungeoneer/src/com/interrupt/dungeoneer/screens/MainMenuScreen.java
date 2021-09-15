@@ -100,7 +100,7 @@ public class MainMenuScreen extends BaseScreen {
                 @Override
                 public void act(float delta) {
                     super.act(delta);
-                    setY(22);
+                    setY(8);
                     setX(ui.getWidth() - this.getWidth() - 8);
                 }
             };
@@ -115,14 +115,8 @@ public class MainMenuScreen extends BaseScreen {
             ui.addActor(discordButton);
         }
 
-        Label versionLabel = new Label(Game.VERSION, skin) {
-            @Override
-            public void act(float delta) {
-                super.act(delta);
-                setY(8);
-                setX(ui.getWidth() - this.getWidth() - 8);
-            }
-        };
+        Label versionLabel = new Label(Game.VERSION, skin);
+        versionLabel.setPosition(8, 8);
         versionLabel.setColor(Color.GRAY);
         ui.addActor(versionLabel);
 
