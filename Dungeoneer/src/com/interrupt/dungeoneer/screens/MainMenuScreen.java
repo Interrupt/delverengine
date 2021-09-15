@@ -9,11 +9,9 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -88,6 +86,46 @@ public class MainMenuScreen extends BaseScreen {
 
         buttonTable = new Table();
 
+        FileHandle upFile = Game.getInternal("ui/discord_up.png");
+        if (upFile.exists()) {
+            Drawable drawable = new TextureRegionDrawable(new Texture(upFile));
+            Drawable downDrawable = null;
+
+            FileHandle downFile = Game.getInternal("ui/discord_down.png");
+            if (downFile.exists()) {
+                downDrawable = new TextureRegionDrawable(new Texture(Game.getInternal("ui/discord_down.png")));
+            }
+
+            ImageButton discordButton = new ImageButton(drawable, downDrawable) {
+                @Override
+                public void act(float delta) {
+                    super.act(delta);
+                    setY(20);
+                    setX(ui.getWidth() - this.getWidth() - 8);
+                }
+            };
+            discordButton.setColor(Colors.DISCORD_BUTTON);
+            discordButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Gdx.net.openURI("https://discord.gg/gMEg3PPgD4");
+                }
+            });
+
+            ui.addActor(discordButton);
+        }
+
+        Label versionLabel = new Label(Game.VERSION, skin) {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                setY(8);
+                setX(ui.getWidth() - this.getWidth() - 8);
+            }
+        };
+        versionLabel.setColor(Color.GRAY);
+        ui.addActor(versionLabel);
+
         ui.addActor(fullTable);
 
 		Gdx.input.setInputProcessor(ui);
@@ -127,14 +165,7 @@ public class MainMenuScreen extends BaseScreen {
             }
         });
 
-        TextButton discordButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.discordButton")), skin);
-        discordButton.setColor(Colors.DISCORD_BUTTON);
-        discordButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                handleDiscordButtonEvent();
-            }
-        });
+
 
         TextButton modsButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.modsButton")), skin);
         modsButton.addListener(new ClickListener() {
@@ -291,8 +322,6 @@ public class MainMenuScreen extends BaseScreen {
         playButtonTable.add(playButton).align(Align.left).height(20f).expand();
 
         buttonTable.add(playButtonTable).align(Align.left).fillX().expand();
-
-        buttonTable.add(discordButton).align(Align.right).height(20f);
 
         if(hasMods())
             buttonTable.add(modsButton).align(Align.right).height(20);
@@ -451,18 +480,6 @@ public class MainMenuScreen extends BaseScreen {
         if(fadeFactor < 1f) {
             renderer.drawFlashOverlay(fadeColor.set(0f, 0f, 0f, 1f - fadeFactor));
         }
-
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-        float fontSize = Game.getDynamicUiScale() * 140;
-        float smallFontSize = fontSize * 0.15f;
-
-        renderer.uiBatch.setProjectionMatrix(renderer.camera2D.combined);
-        renderer.uiBatch.begin();
-
-        renderer.drawTextRightJustified(Game.VERSION, (w / 2) - smallFontSize, (-h / 2) + smallFontSize, smallFontSize, Color.GRAY, Color.BLACK);
-
-        renderer.uiBatch.end();
 	}
 
 	private String getSaveName(Progression p, Integer levelNum, String levelName) {
@@ -603,10 +620,6 @@ public class MainMenuScreen extends BaseScreen {
     /** Handles the event when the mods button is clicked. */
     private void handleModsButtonEvent() {
         GameApplication.SetScreen(new OverlayWrapperScreen(new ModsOverlay()));
-    }
-
-    private void handleDiscordButtonEvent() {
-        Gdx.net.openURI("https://discord.gg/gMEg3PPgD4");
     }
 
 	private void loadSavegames() {
