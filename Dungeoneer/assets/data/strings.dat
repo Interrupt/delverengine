@@ -30,6 +30,11 @@
         "localizedName": "Mods",
         "comment": "Text for the mods button, which will open the mods menu."
     },
+    "screens.MainMenuScreen.discordButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Discord",
+        "comment": "Text for the Discord button, which will open a web browser."
+    },
     "screens.MainMenuScreen.selectSaveSlot": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Select Save Slot",
