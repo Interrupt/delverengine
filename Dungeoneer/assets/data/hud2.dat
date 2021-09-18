@@ -47,6 +47,13 @@
                     "color": { "r":  1, "g": 1, "b": 1, "a":  0.35 }
                 }
             ]
-        }
+        },
+        {
+            "class": "com.interrupt.dungeoneer.ui.layout.PlayerStatusEffects",
+            "anchor": "TOP_LEFT",
+            "pivot": "TOP_LEFT",
+            "x": 10,
+            "y": -20
+          }
     ]
 }
