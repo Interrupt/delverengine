@@ -5,6 +5,8 @@ sourceCompatibility = 1.8
 
 sourceSets.main.java.srcDirs = [ "src/" ]
 
+sourceSets.test.java.srcDirs = ["test/"]
+
 task packageFiles {
     def text = "# Auto-generated file created by 'gradle Dungeoneer:build'\n" +
             "# used to let the game list directories for packaged files\n" +
@@ -20,4 +22,13 @@ task packageFiles {
 
 eclipse.project {
     name = appName + "-core"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }

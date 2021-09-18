@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.math.OrientedBoundingBox;
 
 public class Handles {
     public static ShapeRenderer renderer = new ShapeRenderer();
@@ -33,6 +34,12 @@ public class Handles {
     public static void drawWireCube(Vector3 position, Vector3 size) {
         begin();
         drawWireCubeInternal(position, size);
+        end();
+    }
+
+    public static void drawWireOBB(OrientedBoundingBox box) {
+        begin();
+        drawWireOBBInternal(box);
         end();
     }
 
@@ -135,6 +142,43 @@ public class Handles {
         Vector3 p5 = new Vector3(px + sx, py - sy, pz + sz);
         Vector3 p6 = new Vector3(px + sx, py + sy, pz + sz);
         Vector3 p7 = new Vector3(px - sx, py + sy, pz + sz);
+
+        // Bottom
+        renderer.line(p0, p1);
+        renderer.line(p1, p2);
+        renderer.line(p2, p3);
+        renderer.line(p3, p0);
+
+        // Top
+        renderer.line(p4, p5);
+        renderer.line(p5, p6);
+        renderer.line(p6, p7);
+        renderer.line(p7, p4);
+
+        // Sides
+        renderer.line(p0, p4);
+        renderer.line(p1, p5);
+        renderer.line(p2, p6);
+        renderer.line(p3, p7);
+    }
+
+    private static void drawWireOBBInternal(OrientedBoundingBox box) {
+        Vector3 p0 = new Vector3();
+        box.getCorner000(p0);
+        Vector3 p1 = new Vector3();
+        box.getCorner100(p1);
+        Vector3 p2 = new Vector3();
+        box.getCorner110(p2);
+        Vector3 p3 = new Vector3();
+        box.getCorner010(p3);
+        Vector3 p4 = new Vector3();
+        box.getCorner001(p4);
+        Vector3 p5 = new Vector3();
+        box.getCorner101(p5);
+        Vector3 p6 = new Vector3();
+        box.getCorner111(p6);
+        Vector3 p7 = new Vector3();
+        box.getCorner011(p7);
 
         // Bottom
         renderer.line(p0, p1);
