@@ -53,7 +53,7 @@
             "anchor": "TOP_LEFT",
             "pivot": "TOP_LEFT",
             "x": 10,
-            "y": -20
+            "y": -10
           }
     ]
 }

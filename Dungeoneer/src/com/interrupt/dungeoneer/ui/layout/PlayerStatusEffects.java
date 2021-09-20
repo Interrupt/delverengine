@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
@@ -18,6 +19,8 @@ public class PlayerStatusEffects extends Element {
 
     @Override
     protected Actor createActor() {
+        PlayerStatusEffects self = this;
+
         VerticalGroup group = new VerticalGroup() {
             @Override
             public void act(float delta) {
@@ -55,10 +58,12 @@ public class PlayerStatusEffects extends Element {
                 }
 
                 pack();
+                layout.positionActor(getActor(), self);
             }
         };
 
-        // group.setDebug(true, true);
+        group.columnAlign(Align.left);
+        group.space(4f);
 
         return group;
     }
@@ -92,7 +97,7 @@ public class PlayerStatusEffects extends Element {
             int secondsRemaining = (int) (statusEffect.timer / 100f + 1);
 
             // Make sure we do not "jump" from "X EFFECT" to "EFFECT" in a frame
-            //  when timer reaches 0.
+            // when timer reaches 0.
             secondsRemaining = Math.max(1, secondsRemaining);
 
             if (secondsRemaining > 0) {
