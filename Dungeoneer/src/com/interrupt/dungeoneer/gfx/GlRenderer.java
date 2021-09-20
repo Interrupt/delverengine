@@ -722,7 +722,7 @@ public class GlRenderer {
 		}
 
 		// TODO: Migrate the Player UI then remove the below.
-		drawUi();
+		//drawUi();
 
 		uiBatch.end();
 
@@ -1551,21 +1551,6 @@ public class GlRenderer {
 		float healthSize = Game.GetUiSize() * 0.5f;
 
 		//drawText("Entities rendered: " + drawnEntities, -camera2D.viewportWidth / 2 + healthSize / 2, -camera2D.viewportHeight / 2 + healthSize / 2, healthSize, Color.WHITE);
-
-        // TODO: Extract this!
-		// if(game.player.statusEffects != null && game.player.statusEffects.size > 0) {
-		// 	for(int i = 0; i < game.player.statusEffects.size; i++) {
-		// 		StatusEffect effect = game.player.statusEffects.get(i);
-		// 		if (effect.timer < 10000){
-		// 			int rounded = (int) (effect.timer / 100f + 1);
-		// 			if(rounded > 0)
-		// 				drawText(rounded + " " + effect.name, -camera2D.viewportWidth / 2 + healthSize / 2, camera2D.viewportHeight / 2f - Game.GetUiSize() * 2.5f - (Game.GetUiSize() * 0.4f) * i, Game.GetUiSize() * 0.175f, Color.WHITE);
-		// 		}
-		// 		else {
-		// 			drawText(effect.name, -camera2D.viewportWidth / 2 + healthSize / 2, camera2D.viewportHeight / 2f - Game.GetUiSize() * 2.5f - (Game.GetUiSize() * 0.4f) * i, Game.GetUiSize() * 0.175f, Color.WHITE);
-		// 		}
-		// 	}
-		// }
 
 		float healthUiSize = Game.GetUiSize() * 0.05f;
 		float healthBarWidth = 64 * healthUiSize;
