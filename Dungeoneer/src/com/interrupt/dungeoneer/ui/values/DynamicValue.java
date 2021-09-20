@@ -46,6 +46,26 @@ public class DynamicValue {
         return booleanValue;
     }
 
+    public void setValue(int value) {
+        this.value = String.valueOf(value);
+        isDirty = true;
+    }
+
+    public void setValue(float value) {
+        this.value = String.valueOf(value);
+        isDirty = true;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+        isDirty = true;
+    }
+
+    public void setValue(boolean value) {
+        this.value = String.valueOf(value);
+        isDirty = true;
+    }
+
     private void validate() {
         if (!isDirty) return;
         isDirty = false;

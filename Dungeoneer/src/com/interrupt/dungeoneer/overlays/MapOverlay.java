@@ -3,7 +3,6 @@ package com.interrupt.dungeoneer.overlays;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -13,10 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-//import com.esotericsoftware.tablelayout.Cell;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -24,7 +22,6 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.Actions.Action;
-import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.ui.UiSkin;
 
 public class MapOverlay extends Overlay {
@@ -108,7 +105,7 @@ public class MapOverlay extends Overlay {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        		if ((button==0)&&(Options.instance.mouseButton1Action == Action.MAP) || 
+        		if ((button==0)&&(Options.instance.mouseButton1Action == Action.MAP) ||
         			(button==1)&&(Options.instance.mouseButton2Action == Action.MAP) ||
         			(button==2)&&(Options.instance.mouseButton3Action == Action.MAP)
         		) {
@@ -168,7 +165,7 @@ public class MapOverlay extends Overlay {
         NinePatchDrawable background = new NinePatchDrawable(new NinePatch(UiSkin.getSkin().getRegion("map-window"), 8, 8, 8, 8));
 
         float mapSize = (270) * 0.472f;
-        float mapAspectRatio = (float)renderer.mapTextureRegion.getRegionWidth() / renderer.mapTextureRegion.getRegionHeight();
+        float mapAspectRatio = (float)renderer.mapRenderer.mapTextureRegion.getRegionWidth() / renderer.mapRenderer.mapTextureRegion.getRegionHeight();
 
         if(background != null) mainTable.setBackground(background);
 
@@ -179,7 +176,7 @@ public class MapOverlay extends Overlay {
 
         Table mapTable = new Table();
 
-        mapImage = new Image(new TextureRegionDrawable(renderer.mapTextureRegion));
+        mapImage = new Image(new TextureRegionDrawable(renderer.mapRenderer.mapTextureRegion));
         mapImage.setColor(1f, 0.6f, 0.6f, 0.6f);
         markerImage = new Image(new TextureRegionDrawable(mapArrowRegion));
         markerImage.setVisible(false);

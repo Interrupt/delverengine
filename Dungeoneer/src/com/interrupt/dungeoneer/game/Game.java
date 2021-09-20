@@ -1411,7 +1411,7 @@ public class Game {
 
 		// Hide the map!
 		if(Game.instance.getShowingMenu()) {
-			GameManager.renderer.showMap = false;
+			GameManager.renderer.mapRenderer.showMap = false;
 		}
 	}
 

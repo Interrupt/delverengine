@@ -101,11 +101,11 @@
                             "args": [
                                 {
                                     "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                    "attribute": "MIN_DAMAGE"
+                                    "field": "getBaseDamage()"
                                 },
                                 {
                                     "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                    "attribute": "MAX_DAMAGE"
+                                    "field": "getMaxDamage()"
                                 }
                             ]
                         }
@@ -129,7 +129,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "ARMOR_CLASS"
+                                "field": "getArmorClass()"
                             }
                         }
                     ]
@@ -159,7 +159,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "HEALTH_STAT"
+                                "field": "stats.END"
                             }
                         }
                     ]
@@ -182,7 +182,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "ATTACK_STAT"
+                                "field": "stats.ATK"
                             }
                         }
                     ]
@@ -205,7 +205,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "MAGIC_STAT"
+                                "field": "stats.MAG"
                             }
                         }
                     ]
@@ -228,7 +228,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "DEFENSE_STAT"
+                                "field": "stats.DEF"
                             }
                         }
                     ]
@@ -251,7 +251,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "SPEED_STAT"
+                                "field": "stats.SPD"
                             }
                         }
                     ]
@@ -274,7 +274,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "AGILITY_STAT"
+                                "field": "stats.DEX"
                             }
                         }
                     ]
@@ -304,7 +304,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "LEVEL"
+                                "field": "level"
                             }
                         }
                     ]
@@ -329,11 +329,11 @@
                             "args": [
                                 {
                                     "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                    "attribute": "XP"
+                                    "field": "exp"
                                 },
                                 {
                                     "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                    "attribute": "NEXT_XP"
+                                    "field": "getNextLevel()"
                                 }
                             ]
                         }
@@ -357,7 +357,7 @@
                             "anchor": "BOTTOM_RIGHT",
                             "text": {
                                 "class": "com.interrupt.dungeoneer.ui.values.Player",
-                                "attribute": "GOLD"
+                                "field": "gold"
                             }
                         }
                     ]

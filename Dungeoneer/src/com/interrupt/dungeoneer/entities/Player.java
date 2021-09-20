@@ -1358,11 +1358,11 @@ public class Player extends Actor {
 				else
 					OverlayManager.instance.clear();
 
-                if (GameManager.renderer.showMap && Game.instance.getShowingMenu()) {
+                if (GameManager.renderer.mapRenderer.showMap && Game.instance.getShowingMenu()) {
                     Game.instance.toggleInventory();
                 }
 
-                if (GameManager.renderer.showMap) Audio.playSound("/ui/ui_map_open.mp3", 0.3f);
+                if (GameManager.renderer.mapRenderer.showMap) Audio.playSound("/ui/ui_map_open.mp3", 0.3f);
                 else Audio.playSound("/ui/ui_map_close.mp3", 0.3f);
             }
 

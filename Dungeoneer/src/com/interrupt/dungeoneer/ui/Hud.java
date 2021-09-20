@@ -1,26 +1,17 @@
 package com.interrupt.dungeoneer.ui;
 
-import java.util.HashMap;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
-import com.interrupt.dungeoneer.Audio;
-import com.interrupt.dungeoneer.GameApplication;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.GameInput;
+import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.entities.Item;
-import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
@@ -101,7 +92,7 @@ public class Hud {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if(Game.isMobile || !Game.instance.input.caughtCursor)
-					GameManager.renderer.showMap = !GameManager.renderer.showMap;
+					GameManager.renderer.mapRenderer.showMap = !GameManager.renderer.mapRenderer.showMap;
 			}
 
 		});
