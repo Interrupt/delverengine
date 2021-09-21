@@ -20,9 +20,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class TriggeredWarp extends Trigger {
-	public TriggeredWarp() { hidden = true; spriteAtlas = "editor"; tex = 1; useVerb = "ENTER"; travelPath = UUID.randomUUID().toString(); }
-
-	public String travelPath = null;
+	public TriggeredWarp() { hidden = true; spriteAtlas = "editor"; tex = 1; useVerb = "ENTER"; }
 
 	@EditorProperty
 	public boolean isExit = false;
@@ -56,6 +54,9 @@ public class TriggeredWarp extends Trigger {
 
 	@EditorProperty(group = "Level Info")
 	public boolean spawnMonsters = false;
+
+	@EditorProperty(group = "Level Info - Branch Path, usually will be blank")
+	public String travelPath = null;
 
 	@EditorProperty(group = "Level Appearance")
 	public float fogStart = 5;
@@ -129,10 +130,12 @@ public class TriggeredWarp extends Trigger {
 
 	@Override
 	public void init(Level level, Level.Source source) {
-		if(source == Level.Source.LEVEL_START) {
-			if(travelPath == null)
+		if(source != Level.Source.EDITOR) {
+			// Ensure that a travel path is always set. If not, make one now.
+			if (travelPath == null || travelPath.isEmpty())
 				travelPath = UUID.randomUUID().toString();
 		}
+
 		super.init(level, source);
 	}
 }
