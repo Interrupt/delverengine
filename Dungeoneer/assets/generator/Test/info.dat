@@ -24,7 +24,7 @@
 	"surprises":[ ],
 	"decorations": [ ],
 	"texturePainters": {
-		"t1": {
+		"greybox": {
 			"floor": { "2": [2, 2, 3]}
 		}
 	},
