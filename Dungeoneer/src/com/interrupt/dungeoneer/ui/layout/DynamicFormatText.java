@@ -9,9 +9,7 @@ import com.interrupt.dungeoneer.ui.values.DynamicValue;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class DynamicFormatText extends Element {
     public String pattern = "{0}";
@@ -19,14 +17,15 @@ public class DynamicFormatText extends Element {
     public Array<DynamicValue> args = new Array<>();
 
     public String getText() {
+        Array<String> actualArgs = new Array<>();
+
+        for (DynamicValue arg : args) {
+            actualArgs.add(arg.stringValue());
+        }
+
         return MessageFormat.format(
             StringManager.get(pattern),
-            Arrays.stream(args.toArray()).map(new Function<DynamicValue, String>() {
-                @Override
-                public String apply(DynamicValue dynamicValue) {
-                    return dynamicValue.stringValue();
-                }
-            }).toArray()
+            (Object[])actualArgs.toArray()
         );
     }
 

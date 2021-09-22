@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.ui.layout;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.serializers.KryoSerializer;
 
 public class Prefab extends Element {
     public String name;
@@ -14,6 +15,7 @@ public class Prefab extends Element {
             return null;
         }
 
-        return element.createActor();
+        Element copy = (Element)KryoSerializer.copyObject(element);
+        return copy.createActor();
     }
 }
