@@ -37,4 +37,5 @@ build/
 
 ## VS Code
 .vscode/*
-!/.vscode/launch.json
+!.vscode/launch.dist.json
+!.vscode/settings.dist.json
