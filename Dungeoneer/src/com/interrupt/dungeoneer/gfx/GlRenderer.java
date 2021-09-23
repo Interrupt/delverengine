@@ -92,6 +92,9 @@ public class GlRenderer {
 	protected int y;
 	protected int i;
 
+	// The game can scale the camera's field of view up or down depending on gameplay logic
+	private float fieldOfViewMod = 1.0f;
+
 	public static float time = 0;
 
 	public Array<WorldChunk> chunks;
@@ -136,7 +139,6 @@ public class GlRenderer {
 	public static final Color INVBOX_CAN_EQUIP = new Color(0.5f,1f,0.5f,0.6f);
 	public static final Color INVBOX_CAN_EQUIP_HOVER = new Color(0.5f,1f,0.5f,0.8f);
 	public static final Color INVBOX_NOT_AVAILABLE = new Color(1f,0.4f,0.4f,0.8f);
-	public static final Color SHADOW_COLOR = new Color(0.5f, 0.4f, 0.85f, 1f);
 
 	public static final Color DEATH_COLOR = new Color(0.6f, 0f, 0f, 1f);
 
@@ -152,15 +154,10 @@ public class GlRenderer {
 	protected Color tempColor2 = new Color();
 
 	protected String keystr = "";
-	protected String lvlText = "";
-	protected String xpText = "";
-	protected String goldText = "";
 	protected String healthText = "";
-	protected final String heart = "<";
 
 	protected Array<DrawableMesh> meshesToRender = new Array<DrawableMesh>();
 	protected Array<Entity> decalsToRender = new Array<Entity>();
-	protected Array<FogSprite> fogSpritesToRender = new Array<FogSprite>();
 
 	protected boolean hasShaders = true;
 
@@ -169,7 +166,6 @@ public class GlRenderer {
 
 	protected int lastDrawnHp = 0;
 	protected int lastDrawnMaxHp = 0;
-	protected int lastDrawnKeys = 0;
 
 	protected Vector2 cameraBob = new Vector2();
 	protected Vector3 forwardDirection = new Vector3();
@@ -179,7 +175,6 @@ public class GlRenderer {
 	protected Vector3 handMaxDirection = new Vector3();
 	protected Vector3 handMaxDirectionOffhand = new Vector3();
 	protected float handMaxLerpTime = 0f;
-	protected float offhandMaxLerpTime = 0f;
 
 	protected ShapeRenderer collisionLineRenderer = null;
 
@@ -197,7 +192,6 @@ public class GlRenderer {
 	public static float viewDistance = 20f;
 
 	protected Color heldItemColor = new Color(1f, 1f, 1f, 1f);
-	protected Color heldItemOffhandColor = new Color(1f, 1f, 1f, 1f);
 
 	public static DrawableMesh skybox = null;
 
@@ -419,7 +413,8 @@ public class GlRenderer {
 
 	public void render(Game game) {
         Game.viewport.apply();
-		time += Gdx.graphics.getDeltaTime();
+
+		time += Gdx.graphics.getDeltaTime() * game.GetGameTimeScale();
 
 		boolean inCutscene = cutsceneCamera != null && cutsceneCamera.isActive;
 
@@ -458,6 +453,7 @@ public class GlRenderer {
 
 		camera.far = viewDistance;
 		camera.up.set(0, 1, 0);
+		camera.fieldOfView = Options.instance.fieldOfView * fieldOfViewMod;
 
 		if(!inCutscene) {
 			camera.position.x = xPos;
@@ -554,7 +550,7 @@ public class GlRenderer {
 			camera.update();
 			drawHeldItem();
 			drawOffhandItem();
-			camera.fieldOfView = Options.instance.fieldOfView;
+			camera.fieldOfView = Options.instance.fieldOfView * fieldOfViewMod;
 			camera.near = 0.05f;
 			camera.update();
 
@@ -2628,14 +2624,14 @@ public class GlRenderer {
 		float aspectRatio = (float) width / (float) height;
 
 		if(camera == null) {
-			camera = new PerspectiveCamera(Options.instance.fieldOfView, 1f * aspectRatio, 1f);
+			camera = new PerspectiveCamera(Options.instance.fieldOfView * fieldOfViewMod, 1f * aspectRatio, 1f);
 			camera.near = 0.1f;
 			camera.far = 15f;
 		}
 		else {
 			camera.viewportWidth = 1f * aspectRatio;
 			camera.viewportHeight = 1f;
-			camera.fieldOfView = Options.instance.fieldOfView;
+			camera.fieldOfView = Options.instance.fieldOfView * fieldOfViewMod;
 		}
 
 		camera.update(true);
@@ -3747,4 +3743,8 @@ public class GlRenderer {
 		entityPickColor.set(r / 255f, g / 255f, b / 255f, 1f);
 		entitiesForPicking.put(index, e);
 	}
+
+	public void setFieldOfViewMod(float newFieldOfView) {
+	    fieldOfViewMod = newFieldOfView;
+    }
 }

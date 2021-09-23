@@ -1,7 +1,7 @@
 {
     "$schema": "http://delverengine.com/jsonschema/current/filetypes/tiles.dat",
 	"tileData": {
-		"t1": {
+		"greybox": {
 			"21": {
 				"class": "com.interrupt.dungeoneer.tiles.TileData",
 				"isWater": true,

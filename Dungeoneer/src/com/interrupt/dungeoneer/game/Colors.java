@@ -30,6 +30,7 @@ public class Colors {
     // UI
     public static Color PLAY_BUTTON = Color.GREEN;
     public static Color ERASE_BUTTON = Color.RED;
+    public static Color DISCORD_BUTTON = new Color(88f / 255f, 101f / 255f, 242f / 255f, 1f);
 
     public static Color EXPLOSION = Color.ORANGE;
     public static Color EXPLOSION_LIGHT_END =  Color.BLACK;

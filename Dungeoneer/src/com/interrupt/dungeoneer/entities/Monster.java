@@ -427,6 +427,9 @@ public class Monster extends Actor implements Directional {
 		if(!isActive)
 			return;
 
+		// Time speed could be different for just us
+		delta *= actorTimeScale;
+
 		if(origtex == null) origtex = tex;
 		tickStatusEffects(delta);
 		stepUpTick(delta);
