@@ -24,6 +24,8 @@ import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.gamemode.DelverGameMode;
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
@@ -33,11 +35,7 @@ import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
-import com.interrupt.managers.EntityManager;
-import com.interrupt.managers.HUDManager;
-import com.interrupt.managers.ItemManager;
-import com.interrupt.managers.MonsterManager;
-import com.interrupt.managers.StringManager;
+import com.interrupt.managers.*;
 import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.Logger;
 import com.interrupt.utils.OSUtils;
@@ -124,6 +122,8 @@ public class Game {
 
     public static Pathfinding pathfinding = new Pathfinding();
 
+    public static GameModeInterface GameMode;
+
 	public Game(int saveLoc) {
 		instance = this;
 		Start(saveLoc);
@@ -131,6 +131,9 @@ public class Game {
 
 	public void loadManagers() {
 		modManager = Game.getModManager();
+
+		// Setup a Delver Game Mode by default for now. This will be data driven
+        GameMode = new DelverGameMode();
 
 		// Load item data
 		ItemManager im = modManager.loadItemManager(gameData.itemDataFiles);
@@ -411,7 +414,6 @@ public class Game {
 		boolean didLoad = load();
 
 		isMobile = Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS;
-		//isMobile = true;
 
 		if(!isMobile) {
 			Gdx.input.setCursorCatched(true);
@@ -446,22 +448,10 @@ public class Game {
 			progression.won = false;
 			progression.newRunStarted();
 
-			// load the level
+			// Set the initial level to load. The Game Mode onGameStart can override this.
 			levelNum = 0;
-
-			if (progression.sawTutorial || gameData.tutorialLevel == null) {
-				level = dataLevels.get(levelNum);
-			} else {
-				levelNum = -1;
-				player = new Player(this);
-				player.level = 2;
-				player.gold = progression.gold;
-				player.maxHp = 12;
-				player.hp = player.maxHp;
-				player.randomSeed = rand.nextInt();
-				level = gameData.tutorialLevel;
-				progression.sawTutorial = true;
-			}
+            level = dataLevels.get(levelNum);
+            GameMode.onGameStart(this);
 
 			// Keep track of what engine version we're playing on
 			player.saveVersion = SAVE_VERSION;
@@ -540,6 +530,9 @@ public class Game {
 
         if (gameOver) return;
 
+        // Tick the game mode
+        GameMode.tickGame(level, delta, input);
+
         // Entities should update using the time modified delta
 		level.tick(timeModifiedDelta);
 		player.tick(level, delta * player.actorTimeScale, input);
@@ -591,6 +584,11 @@ public class Game {
 			GameApplication.ShowLevelChangeScreen(stair);
 		}
 	}
+
+	public void setLevel(Level newLevel, int newLevelNumber) {
+	    levelNum = newLevelNumber;
+	    level = newLevel;
+    }
 
 	public void warpToLevel(String newTravelPathId, TriggeredWarp warp) {
 		Gdx.app.log("DelverLifeCycle", "Warping to: " + warp.levelToLoad);
@@ -900,9 +898,7 @@ public class Game {
 		if(Audio.torch != null)
 			Audio.torch.stop();
 
-		// goodbye saves!
-		Gdx.app.log("DelverLifeCycle", "Game over!");
-		GameApplication.ShowGameOverScreen(false);
+		GameMode.onGameOver(this);
 	}
 
 	// Save all the levels!

@@ -1087,9 +1087,6 @@ public class Monster extends Actor implements Directional {
 		this.clearStatusEffects();
 
 		Game.instance.player.history.addMonsterKill(this);
-		if (this.givesExp) {
-			Game.instance.player.addExperience(3 + this.level);
-		}
 
 		dieEffect(level);
 
@@ -1131,6 +1128,8 @@ public class Monster extends Actor implements Directional {
 		if(triggersOnDeath != null && !triggersOnDeath.isEmpty()) {
 			level.trigger(this, triggersOnDeath, name);
 		}
+
+		Game.GameMode.onMonsterDeath(this);
 	}
 
 	public void bleed(Level level)
