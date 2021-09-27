@@ -6,6 +6,7 @@ import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
@@ -14,21 +15,23 @@ import com.interrupt.managers.StringManager;
 import com.interrupt.utils.Logger;
 
 /**
- * 
+ *
  * @author ccuddigan
  * Wrapper container for the Game class. Anything that needs to talk to the static Game can get it from here.
  */
 public class GameManager {
-	
+	public static GameManager instance;
 	protected static Game game;
 	public static GlRenderer renderer;
 	protected GameApplication myGameApp = null;
 	public static boolean gameHasStarted = false;
-	
+
 	public boolean running = true;
-	
-	public GameManager() { }
-	
+
+	public GameManager() {
+        instance = this;
+    }
+
 	public GameManager(GameApplication gameapp) {
 		myGameApp = gameapp;
 
@@ -37,28 +40,30 @@ public class GameManager {
 
 		StringManager.init();
 		running = true;
+
+        instance = this;
 	}
-	
+
 	public void startGame(int saveLoc) {
 		game = new Game(saveLoc);
 		game.setInputHandler(myGameApp.input);
-		
+
 		gameHasStarted = true;
 		renderer.initHud();
-		
+
 		running = true;
 	}
-	
+
 	public void startGame(Level level) {
 		game = new Game(level);
 		game.setInputHandler(myGameApp.input);
-		
+
 		gameHasStarted = true;
 		renderer.initHud();
-		
+
 		running = true;
 		GameApplication.editorRunning = true;
-		
+
 		Options.instance.uiSize = 0.8f;
 	}
 
@@ -120,7 +125,7 @@ public class GameManager {
 			Gdx.app.exit();
 		}
 	}
-	
+
 	public void render() {
 		try {
 			renderer.render(game);
@@ -131,14 +136,16 @@ public class GameManager {
 			Gdx.app.exit();
 		}
 	}
-	
+
 	public void init()
 	{
 		renderer.init();
 	}
-	
+
 	public static Game getGame()
 	{
 		return game;
 	}
+
+	public static GameModeInterface getGameMode() { return game.GameMode; }
 }

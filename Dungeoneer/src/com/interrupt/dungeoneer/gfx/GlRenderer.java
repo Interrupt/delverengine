@@ -424,9 +424,12 @@ public class GlRenderer {
 		boolean inCutscene = cutsceneCamera != null && cutsceneCamera.isActive;
 
 		this.game = game;
-		if(game != null) {
+		if(game != null && game.level != null) {
 			loadedLevel = game.level;
 		}
+
+		if(loadedLevel == null)
+		    return;
 
 		if(loadedLevel.rendererDirty) {
 			if(chunks != null) {
@@ -569,7 +572,7 @@ public class GlRenderer {
 		clearDecals();
 
 		// are we near a pit?
-		Tile t = game.level.getTileOrNull((int)game.player.x, (int)game.player.y);
+		Tile t = loadedLevel.getTileOrNull((int)game.player.x, (int)game.player.y);
 		if(t != null && t.data != null && t.data.darkenFloor) {
 			if(game.player.z < t.floorHeight) {
 				drawFlashOverlay(Color.BLACK);

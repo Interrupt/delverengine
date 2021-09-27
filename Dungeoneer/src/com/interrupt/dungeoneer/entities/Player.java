@@ -745,7 +745,7 @@ public class Player extends Actor {
         Gdx.app.log("DelverGame", "Oh noes :( Player is dying!");
         Array<LerpFrame> deathFrames = new Array<LerpFrame>();
 
-        Game.GameMode.onPlayerDeath(this);
+        GameManager.getGameMode().onPlayerDeath(this);
 
         floating = false;
 
@@ -2083,7 +2083,7 @@ public class Player extends Actor {
 			int tookDamage = super.takeDamage(damage, damageType, instigator);
 
 			// Move game logic for this to the game mode
-            Game.GameMode.onPlayerTookDamage(this, tookDamage, damageType, instigator);
+            GameManager.getGameMode().onPlayerTookDamage(this, tookDamage, damageType, instigator);
 			history.tookDamage(damage);
 
 			return tookDamage;

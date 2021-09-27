@@ -1129,7 +1129,7 @@ public class Monster extends Actor implements Directional {
 			level.trigger(this, triggersOnDeath, name);
 		}
 
-		Game.GameMode.onMonsterDeath(this);
+		GameManager.getGameMode().onMonsterDeath(this);
 	}
 
 	public void bleed(Level level)

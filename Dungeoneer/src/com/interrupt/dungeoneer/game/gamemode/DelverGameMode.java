@@ -18,15 +18,18 @@ import com.interrupt.dungeoneer.overlays.DebugOverlay;
 import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
 import com.interrupt.dungeoneer.overlays.MapOverlay;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
+import com.interrupt.dungeoneer.screens.GameOverScreen;
+import com.interrupt.dungeoneer.screens.WinScreen;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 import static com.interrupt.dungeoneer.game.Game.rand;
-import static sun.audio.AudioPlayer.player;
 
 /**
- * Game Mode that wraps all Delver-specific gameplay actions
+ * Game Mode that wraps all Delver-specific gameplay actions. Includes showing the win /
+ * game over screens, deleting save games, leveling up, showing the various menu screens, etc.
  */
 public class DelverGameMode implements GameModeInterface {
+
     @Override
     public void onGameStart(Game game) {
         Progression progression = game.progression;
@@ -53,31 +56,33 @@ public class DelverGameMode implements GameModeInterface {
     public void onWin(Game game) {
         // hooray!
         Gdx.app.log("DelverGameMode", "You win!");
-        GameApplication.ShowGameOverScreen(true);
+        deleteRunSave(game);
+
+        // Show the win screen
+        WinScreen winScreen = new WinScreen(GameManager.instance);
+        GameApplication.instance.setScreen(winScreen);
     }
 
     @Override
     public void onGameOver(Game game) {
-        // goodbye saves!
+        // player died! Delete save
         Gdx.app.log("DelverGameMode", "Game over!");
-        GameApplication.ShowGameOverScreen(false);
+        deleteRunSave(game);
+
+        // Show the game over screen
+        GameOverScreen gameOverScreen = new GameOverScreen(GameManager.instance);
+        GameApplication.instance.setScreen(gameOverScreen);
     }
 
-    public void deleteSaves() {
-        String saveDir = Game.getSaveDir();
+    // Delete the saved levels for the current run.
+    private void deleteRunSave(Game game) {
+        // Get the current save slot directory location
+        String saveDir = game.getSaveDir();
 
-        if(gameOver)
-        {
-            FileHandle dir = Game.getFile(saveDir);
-            if(dir.exists()) {
-                Gdx.app.log("DelverGameMode", "Sorry! Deleting saves");
-                dir.deleteDirectory();
-            }
-
-            // Unload the current level
-            if(level != null) level.preSaveCleanup();
-
-            return;
+        FileHandle dir = Game.getFile(saveDir);
+        if(dir.exists()) {
+            Gdx.app.log("DelverGameMode", "Sorry! Deleting current saves");
+            dir.deleteDirectory();
         }
     }
 

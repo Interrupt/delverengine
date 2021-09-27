@@ -26,6 +26,7 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.gamemode.DelverGameMode;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.game.gamemode.NullGameMode;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
@@ -122,7 +123,7 @@ public class Game {
 
     public static Pathfinding pathfinding = new Pathfinding();
 
-    public static GameModeInterface GameMode;
+    public GameModeInterface GameMode = new NullGameMode();
 
 	public Game(int saveLoc) {
 		instance = this;
@@ -132,7 +133,7 @@ public class Game {
 	public void loadManagers() {
 		modManager = Game.getModManager();
 
-		// Setup a Delver Game Mode by default for now. This will be data driven
+		// Setup a Delver Game Mode by default for now. This will be data driven soon.
         GameMode = new DelverGameMode();
 
 		// Load item data
@@ -907,20 +908,6 @@ public class Game {
 		String saveDir = getSaveDir();
 		String levelDir = saveDir + "/levels/";
 
-		if(gameOver)
-		{
-			FileHandle dir = getFile(saveDir);
-			if(dir.exists()) {
-				Gdx.app.log("DelverLifeCycle", "Sorry man, deleting saves");
-				dir.deleteDirectory();
-			}
-
-            // Unload the current level
-            if(level != null) level.preSaveCleanup();
-
-			return;
-		}
-
 		String travelPathKey = player.getCurrentTravelKey();
 		if(travelPathKey != null) {
 			levelDir += travelPathKey + "/";
@@ -1292,7 +1279,7 @@ public class Game {
 		return DragAndDropResult.drop;
 	}
 
-	private String getSaveDir() {
+	public String getSaveDir() {
 		return "save/" + saveLoc + "/";
 	}
 
