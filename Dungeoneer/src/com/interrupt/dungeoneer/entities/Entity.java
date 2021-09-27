@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.collision.Collision;
 import com.interrupt.dungeoneer.collision.Collision.CollisionType;
+import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.projectiles.Missile;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
@@ -17,12 +18,13 @@ import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.interfaces.LookAt;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 import java.util.Random;
 
 /** Base class for all entities in Delver Engine Levels. */
-public class Entity {
+public class Entity implements LookAt {
 	/** Id of Entity. */
 	@EditorProperty( group = "General" )
 	public String id;
@@ -1064,4 +1066,9 @@ public class Entity {
 	// for stencil shadows and halos
 	public HaloMode getHaloMode() { return HaloMode.NONE; }
 	public boolean hasShadow() { return shadowType != ShadowType.NONE; }
+
+    @Override
+    public LookAtDTO getLookAtInfo() {
+        return null;
+    }
 }

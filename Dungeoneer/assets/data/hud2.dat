@@ -54,6 +54,11 @@
             "pivot": "TOP_LEFT",
             "x": 10,
             "y": -10
-          }
+        },
+        {
+            "class": "com.interrupt.dungeoneer.ui.layout.GameMessage",
+            "anchor": "CENTER",
+            "pivot": "CENTER"
+        }
     ]
 }

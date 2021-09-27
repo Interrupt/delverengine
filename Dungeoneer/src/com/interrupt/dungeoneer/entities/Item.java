@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
+import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.items.Bow;
 import com.interrupt.dungeoneer.entities.items.ItemModification;
 import com.interrupt.dungeoneer.entities.items.Weapon;
@@ -21,6 +22,9 @@ import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.input.Actions;
+import com.interrupt.dungeoneer.input.ReadableKeys;
+import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -780,4 +784,20 @@ public class Item extends Entity {
 
 		return null;
 	}
+
+    @Override
+    public LookAtDTO getLookAtInfo() {
+        boolean isNotMoving = Math.abs(xa) < 0.01f && Math.abs(ya) < 0.01f && Math.abs(za) < 0.01f;
+
+        if (isNotMoving && !isPickup) {
+            String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
+			if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
+
+            String title = MessageFormat.format(StringManager.get("entities.Player.getItemText"), useText, GetName());
+
+            return new LookAtDTO(title, GetInfoText(), GetTextColor());
+        }
+
+        return null;
+    }
 }

@@ -1,9 +1,11 @@
 package com.interrupt.dungeoneer.entities.triggers;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
+import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Player;
@@ -12,7 +14,6 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
-import com.interrupt.helpers.PlayerHistory;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -85,21 +86,21 @@ public class Trigger extends Entity {
 	/** Does this appear during end game? */
 	@EditorProperty( group = "End Game" )
 	public boolean appearsDuringEndgame = true;
-	
+
 	protected boolean selfDestructs = true;
-	
+
 	protected TriggerStatus triggerStatus=TriggerStatus.WAITING;
 	private float triggerTime = 0;
-	
+
 	public Trigger() {
 		hidden = true; spriteAtlas = "editor"; tex = 11;
 	}
-	
+
 	public Trigger(String triggers) {
 		this.artType = ArtType.hidden;
 		this.triggersId = triggers;
 	}
-	
+
 	public Trigger(String triggers, float delay) {
 		this.artType = ArtType.hidden;
 		this.triggersId = triggers;
@@ -117,10 +118,10 @@ public class Trigger extends Entity {
 			}
 		}
 	}
-	
+
 	@Override
 	public void tick(Level level, float delta) {
-		
+
 		// check for touch events
 		if(triggerType != TriggerType.USE) {
             Array<Entity> encroaching = level.getEntitiesColliding(x, y, z, this);
@@ -137,7 +138,7 @@ public class Trigger extends Entity {
                 else if (triggerType == TriggerType.ANY_TOUCHED) fire(null);
             }
 		}
-		
+
 		if (triggerStatus==TriggerStatus.DESTROYED && selfDestructs){
 			this.isActive=false;
 		}
@@ -160,14 +161,14 @@ public class Trigger extends Entity {
 				}
 			}
 		}
-		
+
 		if(Game.isMobile && triggerType == TriggerType.USE && Math.abs(Game.instance.player.x - x) < 0.8f && Math.abs(Game.instance.player.y - y) < 0.8f) {
 			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
 			if(Game.isMobile) useText = StringManager.get("entities.Trigger.mobileUseText");
 			Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Trigger.mobileUseText"), useText, this.getUseVerb()));
 		}
 	}
-	
+
 	@Override
 	public void use(Player p, float projx, float projy) {
 		fire(null);
@@ -207,13 +208,13 @@ public class Trigger extends Entity {
 		if (triggerStatus==TriggerStatus.WAITING){
 			triggerStatus=TriggerStatus.TRIGGERED;
 			triggerTime=triggerDelay;
-			
+
 			// update the value if one was given
 			if(value != null && !value.equals(""))
 				triggerValue=value;
 		}
 	}
-	
+
 	@Override
 	public void onTrigger(Entity instigator, String value) {
 		if(triggerPropogates) {
@@ -223,7 +224,7 @@ public class Trigger extends Entity {
 			fire(triggerValue);
 		}
 	}
-	
+
 	// triggers can be delayed, fire the actual trigger here
 	public void doTriggerEvent(String value) {
 		Audio.playPositionedSound(triggerSound, new Vector3((float)x,(float)y,(float)z), 0.8f, 11f);
@@ -240,4 +241,18 @@ public class Trigger extends Entity {
 	public TriggerStatus getTriggerStatus() {
 		return triggerStatus;
 	}
+
+    @Override
+    public LookAtDTO getLookAtInfo() {
+        String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
+        if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
+
+        if(getTriggerStatus() == TriggerStatus.WAITING || getTriggerStatus() == TriggerStatus.TRIGGERED) {
+            String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseVerb());
+
+            return new LookAtDTO(title, null, Color.WHITE);
+        }
+
+        return null;
+    }
 }
