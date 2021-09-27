@@ -43,7 +43,6 @@ import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.gfx.shaders.WaterShaderInfo;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
-import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.ui.EquipLoc;
 import com.interrupt.dungeoneer.ui.FontBounds;
@@ -804,8 +803,9 @@ public class GlRenderer {
 	TextureRegion tempGlyphTextureRegion = new TextureRegion();
 	public void renderTextBatches() {
 		DecalBatch batch = getDecalBatch("sprite", Entity.BlendMode.OPAQUE);
-		if (renderingForPicking)
-			batch = getDecalBatch("picking", Entity.BlendMode.OPAQUE);
+		if (renderingForPicking) {
+            batch = getDecalBatch("picking", Entity.BlendMode.OPAQUE);
+        }
 
 		// Global text scale modifier. Make a constant?
 		float baseTextScale = 0.025f;
@@ -813,60 +813,58 @@ public class GlRenderer {
 		Color tempColor = new Color();
 
 		for (int i = 0; i < textToRender.size; i++) {
-			DrawableText dT = textToRender.get(i);
+			DrawableText drawableText = textToRender.get(i);
 
 			float curXPos = 0f, curZPos = 0f;
+			float scale = drawableText.scale * baseTextScale;
 
-			GlyphLayout bounds = FontBounds.GetBounds(font, dT.text);
-			float textWidth = bounds.width * dT.scale * baseTextScale;
-			float textHeight = bounds.height * dT.scale * baseTextScale;
+			GlyphLayout layout = FontBounds.GetBounds(font, drawableText.text);
+
+			float textWidth = layout.width * scale;
+			float textHeight = layout.height * scale;
 
 			int line = 0;
-			float lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
+			float lineWidth = layout.runs.size == line ? 0 : layout.runs.get(line++).width * scale;
 
-			BitmapFont.Glyph glyph = font.getData().getGlyph('X');
-
-			float glyphWidth, glyphHeight = glyph.height * dT.scale * baseTextScale;
+			BitmapFont.Glyph glyph;
 
 			// Draw a decal per-glyph for this text
-			for (int ii = 0; ii < dT.text.length(); ii++) {
-				char character = dT.text.charAt(ii);
+			for (int ii = 0; ii < drawableText.text.length(); ii++) {
+				char character = drawableText.text.charAt(ii);
 
 				glyph = font.getData().getGlyph(character);
 
 				if (glyph == null && character == '\n') { // Newline support is in DrawableText, replaces "\\n" with "\n" there to avoid issues with font boundary calculations.
 					curXPos = 0;
-					curZPos += glyphHeight;
+					curZPos += font.getLineHeight() * scale;
 
-					lineWidth = bounds.runs.size == line ? 0 : bounds.runs.get(line++).width * dT.scale * baseTextScale;
+					lineWidth = layout.runs.size == line ? 0 : layout.runs.get(line++).width * scale;
 					continue;
 				}
 
-				glyphWidth = glyph.width * dT.scale * baseTextScale;
-
-				float tx = dT.parentPosition.x + curXPos;
-				float ty = dT.parentPosition.y + 0.001f; // Pull out a bit, to place directly on walls
-				float tz = dT.parentPosition.z - curZPos + (glyphHeight * 0.5f); // Place font baseline directly on entity origin
+				float tx = drawableText.parentPosition.x + curXPos;
+				float ty = drawableText.parentPosition.y + 0.001f; // Pull out a bit, to place directly on walls
+				float tz = drawableText.parentPosition.z - curZPos + (glyph.height * scale * 0.25f); // Place font baseline directly on entity origin
 
 				// Center text on origin
-				tx -= textWidth * 0.5f - (textWidth - lineWidth) * dT.alignmentOffset;
+				tx -= textWidth * 0.5f - (textWidth - lineWidth) * drawableText.alignmentOffset;
 				tz += textHeight * 0.5f;
 
-				// Offset a tiny bit, because something was doing that in the glyph rendering code
-				tx += 0.1f * dT.scale;
+				// Position glyph at local 0, 0
+				tx += glyph.width * scale / 2f;
 
 				// Increase the cursor position for next time
-				curXPos += glyphWidth;
+				curXPos += glyph.xadvance * scale;
 
 				// Update the position based on our rotation
-				Vector3 rotTemp = new Vector3(tx - dT.parentPosition.x, ty - dT.parentPosition.y, tz - dT.parentPosition.z);
-				rotTemp.rotate(Vector3.X, -dT.parentRotation.x);
-				rotTemp.rotate(Vector3.Y, -dT.parentRotation.y);
-				rotTemp.rotate(Vector3.Z, -dT.parentRotation.z);
+				Vector3 rotTemp = new Vector3(tx - drawableText.parentPosition.x, ty - drawableText.parentPosition.y, tz - drawableText.parentPosition.z);
+				rotTemp.rotate(Vector3.X, -drawableText.parentRotation.x);
+				rotTemp.rotate(Vector3.Y, -drawableText.parentRotation.y);
+				rotTemp.rotate(Vector3.Z, -drawableText.parentRotation.z);
 
-				tx = rotTemp.x + dT.parentPosition.x;
-				ty = rotTemp.y + dT.parentPosition.y;
-				tz = rotTemp.z + dT.parentPosition.z - 0.5f;
+				tx = rotTemp.x + drawableText.parentPosition.x;
+				ty = rotTemp.y + drawableText.parentPosition.y;
+				tz = rotTemp.z + drawableText.parentPosition.z - 0.5f;
 
 				// Have everything, can now set up a sprite decal to draw
 				DDecal sd = decalPool.obtain();
@@ -874,34 +872,36 @@ public class GlRenderer {
 
 				sd.setBlending(-1, -1);
 				if (!renderingForPicking) {
-					if (dT.blendMode == Entity.BlendMode.ALPHA) {
+					if (drawableText.blendMode == Entity.BlendMode.ALPHA) {
 						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-					} else if (dT.blendMode == Entity.BlendMode.ADD) {
+					} else if (drawableText.blendMode == Entity.BlendMode.ADD) {
 						sd.setBlending(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 					}
 				}
 
-				sd.setPosition(tx, tz, ty);
 				sd.transformationOffset = Vector2.Zero;
 
-				sd.setRotation(0, 0, 0);
-				sd.rotateY(dT.parentRotation.z);
-				sd.rotateX(dT.parentRotation.x);
-				sd.rotateZ(dT.parentRotation.y);
+                sd.setScale(1f);
+				sd.setWidth(glyph.width * scale);
+				sd.setHeight(glyph.height * scale);
 
-				if (dT.fullbrite) {
-					sd.setColor(dT.color.r, dT.color.g, dT.color.b, 1.0f);
+				sd.setRotation(0, 0, 0);
+				sd.rotateY(drawableText.parentRotation.z);
+				sd.rotateX(drawableText.parentRotation.x);
+				sd.rotateZ(drawableText.parentRotation.y);
+
+				sd.setPosition(tx, tz, ty);
+
+				if (drawableText.fullbrite) {
+					sd.setColor(drawableText.color.r, drawableText.color.g, drawableText.color.b, 1.0f);
 				} else {
-					tempColor.set(GetLightmapAt(tx, tz, ty)).mul(dT.color);
+					tempColor.set(GetLightmapAt(tx, tz, ty)).mul(drawableText.color);
 					sd.setColor(tempColor.r, tempColor.g, tempColor.b, 1.0f);
 				}
 
-				if (renderingForPicking)
-					sd.setColor(dT.pickingColor);
-
-				sd.setScale(1f);
-				sd.setWidth(glyphWidth);
-				sd.setHeight(glyphHeight);
+				if (renderingForPicking) {
+                    sd.setColor(drawableText.pickingColor);
+                }
 
 				tempGlyphTextureRegion.setTexture(font.getRegion().getTexture());
 				tempGlyphTextureRegion.setRegion(glyph.u, glyph.v2, glyph.u2, glyph.v);
