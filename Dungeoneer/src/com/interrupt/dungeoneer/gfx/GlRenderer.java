@@ -43,6 +43,7 @@ import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.gfx.shaders.WaterShaderInfo;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
+import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.ui.EquipLoc;
 import com.interrupt.dungeoneer.ui.FontBounds;
@@ -807,8 +808,7 @@ public class GlRenderer {
             batch = getDecalBatch("picking", Entity.BlendMode.OPAQUE);
         }
 
-		// Global text scale modifier. Make a constant?
-		float baseTextScale = 0.025f;
+		float unitsPerPixel = 1 / 32f;
 
 		Color tempColor = new Color();
 
@@ -816,7 +816,7 @@ public class GlRenderer {
 			DrawableText drawableText = textToRender.get(i);
 
 			float curXPos = 0f, curZPos = 0f;
-			float scale = drawableText.scale * baseTextScale;
+			float scale = drawableText.scale * unitsPerPixel;
 
 			GlyphLayout layout = FontBounds.GetBounds(font, drawableText.text);
 
