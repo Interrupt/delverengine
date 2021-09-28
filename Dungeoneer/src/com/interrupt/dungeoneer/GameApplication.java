@@ -52,6 +52,7 @@ public class GameApplication extends Game {
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create From Editor");
 
 		gameManager = new GameManager(this);
+		inputMultiplexer.clear();
 		inputMultiplexer.addProcessor(input);
         Gdx.input.setInputProcessor(inputMultiplexer);
         gameManager.init();
