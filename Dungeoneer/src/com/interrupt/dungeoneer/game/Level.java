@@ -60,10 +60,10 @@ public class Level {
 		DEMONS,
 		UNDEAD
 	}
-	
+
 	public enum Source { LEVEL_START, LEVEL_LOAD, EDITOR, SPAWNED }
 	private enum Direction { NORTH, SOUTH, EAST, WEST }
-	
+
 	public int width, height;
 	public Tile[] tiles;
 	public TileMaterials[] tileMaterials;
@@ -76,13 +76,13 @@ public class Level {
 	public String levelName;
 
     public String levelId = null;
-	
+
 	protected transient Array<Entity> toDelete = new Array<Entity>();
 
 	private transient short[] smellMap = null;
-	
+
 	public Integer playerStartX, playerStartY, playerStartRot = null;
-	
+
 	public Stairs up;
 	public Stairs down;
 
@@ -109,7 +109,7 @@ public class Level {
 
 	/** Color of shadows. */
 	public Color shadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
-	
+
 	public boolean isLoaded = false;
 	public boolean needsSaving = true;
 
@@ -162,9 +162,9 @@ public class Level {
 
 	/** Array of trap prefab names. */
 	public String[] traps = {"ProximitySpikes"};
-	
+
 	private float monsterSpawnTimer = 0;
-	
+
 	public transient boolean mapIsDirty = true;
 
 	/** Default wall texture index. */
@@ -177,7 +177,7 @@ public class Level {
 
 	/** Default floor texture index. */
 	protected int defaultFloorTex = 2;
-	
+
 	protected int[] wallTextures = null;
 	protected int[] wallAccentTextures = null;
 	protected int[] ceilTextures = null;
@@ -191,27 +191,27 @@ public class Level {
 
 	/** Ceiling TexturePainter */
 	protected HashMap<String, Array<Float>> ceilPainter = null;
-	
+
 	public Array<EditorMarker> editorMarkers = new Array<EditorMarker>();
-	
+
 	public transient boolean rendererDirty = true;
-	
+
 	public static transient Color ambientColor 			= new Color(0f, 0f, 0f, 0.0f);
-	
+
 	public transient boolean isDirty = false;
 	public transient Array<Vector2> dirtyMapTiles = new Array<Vector2>();
-	
+
 	public transient SpatialHash spatialhash = new SpatialHash(2);
 	public transient SpatialHash staticSpatialhash = new SpatialHash(2);
 	public transient LightSpatialHash lightSpatialHash = new LightSpatialHash(1);
-	
+
 	public transient GenTheme genTheme = null;
-	
+
 	public transient int lastPlayerTileX = 0;
 	public transient int lastPlayerTileY = 0;
-	
+
 	private int entity_index = 0;
-	
+
 	private transient Array<Entity> triggerCache = new Array<Entity>();
 	private transient Array<Entity> collisionCache = new Array<Entity>();
 	private transient Ray calcRay = new Ray(new Vector3(), new Vector3());
@@ -225,27 +225,27 @@ public class Level {
 
 	public HashMap<String, String> textureAtlasOverrides = null;
 	public HashMap<String, String> spriteAtlasOverrides = null;
-	
+
 	public Level()
 	{
 	}
-	
+
 	public Level(int width, int height) {
 		// make a blank level for the editor
 		this.width = width;
 		this.height = height;
-		
+
 		tiles = new Tile[width * height];
 		tileMaterials = new TileMaterials[width * height];
 
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
-		
+
 		isLoaded=true;
 		init(Source.LEVEL_START);
 	}
-	
+
 	public Level(int dungeonLevel, DungeonTheme theme, String levelFileName, String levelHeightFile, float darkness, Game game, float fogStart, float fogEnd) {
 		this.levelName = levelFileName;
 		this.darkness = darkness;
@@ -258,7 +258,7 @@ public class Level {
 		isLoaded = false;
 		needsSaving = true;
 	}
-	
+
 	public Level(int dungeonLevel, DungeonTheme theme, float darkness, Game game, float fogStart, float fogEnd) {
 		this.levelName = "GEN";
 		this.darkness = darkness;
@@ -270,7 +270,7 @@ public class Level {
 		isLoaded = false;
 		needsSaving = true;
 	}
-	
+
 	public void loadForEditor(String levelFileName, String levelHeightFile) {
 		this.levelName = "EDITED";
 		this.levelFileName = levelFileName;
@@ -278,13 +278,13 @@ public class Level {
 		this.dungeonLevel = 1;
 		this.theme = DungeonTheme.TEST.toString();
 		isLoaded = false;
-		
+
 		load(Source.EDITOR);
 		entities.clear();
 		non_collidable_entities.clear();
 		static_entities.clear();
 	}
-	
+
 	public void loadForSplash(String levelFileName) {
 		this.levelName = "EDITED";
 		this.levelFileName = levelFileName;
@@ -294,15 +294,15 @@ public class Level {
 		isLoaded = false;
 		load(Source.EDITOR);
 	}
-	
+
 	public void loadFromEditor() {
 		needsSaving = false;
 		spawnMonsters = false;
-		
+
 		fogStart = 10f;
 		fogEnd = 20f;
 		viewDistance = 20f;
-		
+
 		Array<Entity> copyEntities = new Array<>(100);
 		Array<Entity> copyNonCollidableEntities = new Array<>(100);
 		Array<Entity> copyStaticEntities = new Array<>(100);
@@ -319,7 +319,7 @@ public class Level {
 			else
 				copyEntities.add(copy);
 		}
-		
+
 		entities = copyEntities;
 		non_collidable_entities = copyNonCollidableEntities;
 		static_entities = copyStaticEntities;
@@ -336,7 +336,7 @@ public class Level {
 		init(Source.LEVEL_START);
 
 		editorMarkers.clear();
-		
+
 		updateLights(Source.LEVEL_START);
 		updateStaticSpatialHash();
 	}
@@ -529,9 +529,9 @@ public class Level {
 	public void load(Source source) {
 		needsSaving = true;
 		isLoaded = true;
-		
+
 		Random levelRand = new Random();
-		
+
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
@@ -539,14 +539,14 @@ public class Level {
 		if(!generated) {
 			Level openLevel = null;
 			FileHandle levelFileHandle = Game.findInternalFileInMods(levelFileName);
-					
+
 			if(levelFileName.endsWith(".dat") || levelFileName.endsWith(".json")) {
 				openLevel = JsonUtil.fromJson(Level.class, levelFileHandle);
 			}
 			else {
 				openLevel = KryoSerializer.loadLevel(levelFileHandle);
 			}
-			
+
 			width = openLevel.width;
 			height = openLevel.height;
 			tiles = openLevel.tiles;
@@ -559,11 +559,11 @@ public class Level {
 				fogColor = openLevel.fogColor;
 				skyLightColor = openLevel.skyLightColor;
 			}
-			
+
 			for(int i = 0; i < openLevel.entities.size; i++) {
 				Entity copy = openLevel.entities.get(i);
 				if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-				
+
 				if(!copy.isDynamic)
 					static_entities.add(copy);
 				else if(!copy.isSolid && !(copy instanceof ButtonDecal))
@@ -608,7 +608,7 @@ public class Level {
                 }
 
                 progression.markDungeonAreaAsSeen(theme);
-				
+
 				// use data from the generated level
 				width = generated.width;
 				height = generated.height;
@@ -617,11 +617,11 @@ public class Level {
 
 				editorMarkers = generated.editorMarkers;
 				genTheme = generated.genTheme;
-				
+
 				for(int i = 0; i < generated.entities.size; i++) {
 					Entity copy = generated.entities.get(i);
 					if(!copy.checkDetailLevel() || (copy.spawnChance < 1f && Game.rand.nextFloat() > copy.spawnChance)) continue;
-						
+
 					if(!copy.isDynamic)
 						static_entities.add(copy);
 					else if(!copy.isSolid)
@@ -629,13 +629,13 @@ public class Level {
 					else
 						entities.add(copy);
 				}
-				
+
 				generated = null;
 			}
 		}
 
 		loadSurprises(genTheme);
-		
+
 		// when generating, keep track of where the possible stair locations are
 		Array<Vector2> stairLocations = new Array<Vector2>();
 
@@ -643,27 +643,27 @@ public class Level {
 		Tile.solidWall.wallBottomTex = (byte) defaultWallTex;
 		Tile.solidWall.ceilTex = (byte) defaultCeilTex;
 		Tile.solidWall.floorTex = (byte) defaultFloorTex;
-		
+
 		// mark some locations as trap-free
 		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
 
 		initPrefabs(Source.LEVEL_START);
-		
+
 		decorateLevel();
-		
+
 		// keep a list of places to avoid when making traps
 		Boolean canMakeTrap[] = new Boolean[width * height];
 		for(int i = 0; i < width * height; i++) canMakeTrap[i] = true;
 
 		addEntitiesFromMarkers(editorMarkers, trapAvoidLocs, canMakeTrap, stairLocations, genTheme, 0, 0);
-		
+
 		// second pass - make stairs and traps
 		if(generated) {
-			
+
 			if(stairLocations != null && stairLocations.size > 0) {
 				trapAvoidLocs.addAll(stairLocations);
 			}
-			
+
 			// place stairs if needed, need to know their locations before generating entities
 			if(stairLocations.size > 0 && generated && source != Source.EDITOR) {
 
@@ -676,7 +676,7 @@ public class Level {
 					Tile downTile = getTile((int) downLoc.x, (int) downLoc.y);
 					down = spawnStairs(StairDirection.down, (int) downLoc.x, (int) downLoc.y, downTile.floorHeight);
 				}
-				
+
 				for(int i = 0; i< stairLocations.size; i++) {
 					if(objectivePrefab != null && !objectivePrefab.isEmpty()) {
 						// We have an objective to try to spawn on this level!
@@ -720,27 +720,27 @@ public class Level {
 					}
 				}
 			}
-			
+
 			init(source);
 
 			for(int x = 0; x < width; x++) {
 				for(int y = 0; y < width; y++) {
 					Tile c = getTileOrNull(x,y);
-					
+
 					// make traps on empty and flat areas
 					if(c != null && canMakeTrap[x + y * width] && c.CanSpawnHere() && c.isFlat()) {
-						
+
 						boolean makeTrap = levelRand.nextFloat() <= 0.012f;
-						
+
 						if(makeTrap) {
-							
+
 							boolean canMake = true;
 							for(Vector2 avoidLoc : trapAvoidLocs) {
 								if( Math.abs(x - avoidLoc.x) < 6 && Math.abs(y - avoidLoc.y) < 6 ) {
 									canMake = false;
 								}
 							}
-							
+
 							if(canMake && traps != null && traps.length > 0) {
 								Prefab p = new Prefab("Traps", traps[levelRand.nextInt(traps.length)]);
 								p.x = x + 0.5f;
@@ -762,29 +762,29 @@ public class Level {
 		else {
 			init(source);
 		}
-		
+
 		// done with the theme stuff
 		genTheme = null;
-		
+
 		if(source != Source.EDITOR) {
 			editorMarkers.clear();
 			GameManager.renderer.makeMapTextureForLevel(this);
 		}
 	}
-	
+
 	private boolean adjacentToOpenSpace(int x, int y) {
 		Tile e = getTileOrNull(x - 1, y);
 		if(e != null && e.IsFree()) return true;
-		
+
 		Tile n = getTileOrNull(x, y - 1);
 		if(n != null && n.IsFree()) return true;
-		
+
 		Tile w = getTileOrNull(x + 1, y);
 		if(w != null && w.IsFree()) return true;
-		
+
 		Tile s = getTileOrNull(x, y + 1);
 		if(s != null && s.IsFree()) return true;
-		
+
 		return false;
 	}
 
@@ -836,7 +836,7 @@ public class Level {
 
 		return !isCurrentTileSolid && (northEastCorner || northWestCorner || southEastCorner || southWestCorner);
 	}
-	
+
 	public void decorateLevel() {
 		/* FIRST PASS
 		 *   Paint the tile textures. This is completed before picking GenInfos because the GenInfos depend on the
@@ -920,17 +920,17 @@ public class Level {
 		 */
 		for(int x = 0; x < width; x++) {
 			for(int y = 0; y < height; y++) {
-				
+
 				Tile cur = getTileOrNull(x,y);
 				if(cur == null) continue;
 
 				// modify how much we generate based on the graphics detail level
 				float graphicsQualitySpawnMod = (1 + Options.instance.graphicsDetailLevel) / 2f;
 				graphicsQualitySpawnMod *= (graphicsQualitySpawnMod * 0.5f);
-				
+
 				// the gen info list spawns entities on tiles with matching textures
 				if(genTheme != null && genTheme.genInfos != null && cur.CanDecorateHere()) {
-					
+
 					for(GenInfo info : genTheme.genInfos) {
 						if (info.placeInCorner != GenInfo.CornerPlacement.sometimes) {
 							boolean inCorner = this.isCorner(x, y);
@@ -1075,12 +1075,12 @@ public class Level {
 						}
 
 						if( wallMatch && ceilmatch && floormatch && (info.chance >= 1 || (Game.rand.nextFloat() <= info.chance * graphicsQualitySpawnMod)) ) {
-							
+
 							// add any marker
 							if(info.marker != null && info.marker != Markers.none) {
 								editorMarkers.add( new EditorMarker(info.marker, x,y) );
 							}
-							
+
 							// copy and place the entity, if one was given
 							if(info.spawns != null) {
 								try {
@@ -1198,10 +1198,10 @@ public class Level {
 		// add entities from markers
 		if(markers != null && markers.size > 0) {
 			for(EditorMarker marker : markers) {
-				
+
 				int x = marker.x + xOffset;
 				int y = marker.y + yOffset;
-				
+
 				Vector2 offset = new Vector2(0, 0);
 				Tile atTile = this.getTileOrNull(x, y);
 				float floorPos = atTile != null ? atTile.getFloorHeight(marker.x + xOffset, marker.y + yOffset) : 0;
@@ -1221,7 +1221,7 @@ public class Level {
 						offset.set(-0.3f, 0.3f);
 					}
 				}
-				
+
 				if(marker.type == Markers.playerStart) {
 					playerStartX = x;
 					playerStartY = y;
@@ -1230,7 +1230,7 @@ public class Level {
 				}
 				else if(marker.type == Markers.torch) {
 					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.lights) continue;
-					
+
 					Entity t = null;
 					if(genTheme != null && genTheme.spawnLights != null && genTheme.spawnLights.size > 0) {
 						Entity light = genTheme.spawnLights.get(Game.rand.nextInt(genTheme.spawnLights.size));
@@ -1246,12 +1246,12 @@ public class Level {
 							t = new Torch(x + 0.5f + offset.x, y + 0.5f + offset.y, 4, new Color(1f, 0.8f, 0.4f, 1f));
 						}
 					}
-					
+
 					if(t != null) {
 						t.x = x + 0.5f + offset.x;
 						t.y = y + 0.5f + offset.y;
 						t.z = floorPos + 0.5f;
-						
+
 						Entity light = decorateWallWith(t, false, true);
 						if(light != null && light.isActive) {
 							SpawnNonCollidingEntity(light);
@@ -1271,7 +1271,7 @@ public class Level {
 					Item orb = new QuestItem(x + 0.5f + offset.x, y + 0.5f + offset.y);
 					orb.z = floorPos + 0.5f;
 					entities.add(orb);
-					
+
 					// grab a monster from the BOSS category
 					Monster m = Game.GetMonsterManager().GetRandomMonster("BOSS");
 					if(m != null) {
@@ -1301,7 +1301,7 @@ public class Level {
 					door.x = x + 0.5f;
 					door.y = y + 0.5f;
 					door.z = floorPos + 0.5f;
-					
+
 					SpawnEntity(door);
 					door.placeFromPrefab(this);
 
@@ -1312,7 +1312,7 @@ public class Level {
 				}
 				else if(marker.type == Markers.decor || (marker.type == Markers.decorPile && genTheme != null && genTheme.decorations != null)) {
 					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.decor) continue;
-					
+
 					// try to pull a decoration from the genTheme, or just make one from the item list
 					Entity d = null;
 
@@ -1323,7 +1323,7 @@ public class Level {
 					else {
 						d = Game.GetItemManager().GetRandomDecoration();
 					}
-					
+
 					if( d != null ) {
 						float rx = (Game.rand.nextFloat() * (1 - d.collision.x * 2f)) - (1 - d.collision.x * 2f) / 2f;
 						float ry = (Game.rand.nextFloat() * (1 - d.collision.y * 2f)) - (1 - d.collision.y * 2f) / 2f;
@@ -1341,7 +1341,7 @@ public class Level {
 				}
 				else if(marker.type == Markers.decorPile) {
 					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.decor) continue;
-					
+
 					int num = Game.rand.nextInt(3) + 1;
 					for(int i = 0; i < num; i++)
 					{
@@ -1352,7 +1352,7 @@ public class Level {
 							d.x = x + rx + 0.5f + offset.x;
 							d.y = y + ry + 0.5f + offset.y;
 							d.z = atTile.getFloorHeight(d.x, d.y) + 0.5f;
-							
+
 							SpawnEntity(d);
 						}
 					}
@@ -1363,7 +1363,7 @@ public class Level {
 					}
 				}
 				else if(marker.type == Markers.monster) {
-					
+
 					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.monsters) continue;
 					String levelTheme = theme;
 
@@ -1375,7 +1375,7 @@ public class Level {
 					}
 
 					Monster m = Game.GetMonsterManager().GetRandomMonster(levelTheme);
-					
+
 					if(m != null)
 					{
 						m.x = x + 0.5f + offset.x;
@@ -1407,15 +1407,15 @@ public class Level {
 				else if(marker.type == Markers.loot)
 				{
 					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.loot) continue;
-					
+
 					// loot!
 					Item itm = Game.GetItemManager().GetLevelLoot(Game.instance.player.level);
-					
+
 					if(itm != null) {
 						itm.x = x + 0.5f + offset.x;
 						itm.y = y + 0.5f + offset.y;
 						itm.z = floorPos + 0.5f;
-						
+
 						SpawnEntity(itm);
 					}
 
@@ -1507,7 +1507,7 @@ public class Level {
 			for(EditorMarker m : tocheck.editorMarkers) {
 				if(m.type == Markers.exitLocation || m.type == Markers.stairDown) return true;
 			}
-			
+
 			// look for exit entities
 			for(Entity e : tocheck.entities) {
 				if(e instanceof Stairs && ((Stairs)e).direction == StairDirection.down) return true;
@@ -1516,7 +1516,7 @@ public class Level {
 		else {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -1550,32 +1550,32 @@ public class Level {
 	public void init(Source source) {
 		// can't init until loaded
 		if(!isLoaded) return;
-		
+
 		Tile.solidWall.wallTex = 0;
-		
+
 		// set default wall texture
 		if(wallPainter != null) {
 			if(wallPainter.containsKey("0") && wallPainter.get("0").size > 0)
 				Tile.solidWall.wallTex = (byte) Math.round((wallPainter.get("0").get(0)));
 		}
-		
+
 		// initialize tiles
 		for(int i = 0; i < tiles.length; i++) {
 			if(tiles[i] != null) {
 				tiles[i].init(source);
 			}
 		}
-		
+
 		// init the drawables
 		initEntities(entities, source);
 		initEntities(non_collidable_entities, source);
 		initEntities(static_entities, source);
-		
+
 		// light the map!
 		updateLights(source);
-		
+
 		updateStaticSpatialHash();
-		
+
 		if(GameManager.renderer != null) GameManager.renderer.setLevelToRender(this);
 		this.isDirty = true;
 
@@ -1617,7 +1617,7 @@ public class Level {
 		if(x >= 0 && x < width && y >= 0 && y < height) {
 			tiles[x + y * width] = t;
 		}
-		
+
 		if(t != null) {
 			t.init(Source.EDITOR);
 		}
@@ -1640,14 +1640,14 @@ public class Level {
         if(x < 0 || x >= width || y < 0 || y >= height) return false;
         return true;
     }
-	
+
 	public Tile getTileOrNull(int x, int y)
 	{
 		if(x < 0 || x >= width || y < 0 || y >= height) return null;
 		if(tiles[x + y * width] == null) return null;
 		return tiles[x + y * width];
 	}
-	
+
 	public Tile findWaterTile(float x, float y, float z, Vector3 collision) {
 		Tile foundTile = null;
 		for(float xx = -collision.x; xx <= collision.x; xx += collision.x * 2f) {
@@ -1679,23 +1679,23 @@ public class Level {
 
         return max;
     }
-	
+
 	public Entity decorateWallWith(Entity sprite, boolean putOnFloor, boolean deleteIfNotPlaceable)
-	{		
+	{
 		int x = (int)(sprite.x);
 		int y = (int)(sprite.y);
-		
+
 		// offset the sprite to stick to a wall, or null if there are none adjacent
 		Tile c = getTile(x, y);
 		Tile w = getTile(x - 1, y);
 		Tile e = getTile(x + 1, y);
 		Tile n = getTile(x, y - 1);
 		Tile s = getTile(x, y + 1);
-		
+
 		float sPosR = 0.4999f - (sprite.collision.y);
 		float sPosR_diagonal = (float) Math.sqrt(sprite.collision.x*sprite.collision.x);
 		float rot = 0;
-		
+
 		//first try to put the object on a near-by solid wall
 		if(w.isEastSolid() && !c.isWestSolid()) {
 			w.lockTile();
@@ -1719,7 +1719,7 @@ public class Level {
 			sprite.y = y + 0.5f;
 			sprite.y += sPosR;
 			rot = 180;
-		} //if that fails, look for a square with a higher floor to act as a wall 
+		} //if that fails, look for a square with a higher floor to act as a wall
 		else if (w.floorHeight-c.floorHeight>=0.9f && !c.isWestSolid() && !w.data.isWater){
 			w.lockTile();
 			sprite.x = x + 0.5f;
@@ -1768,7 +1768,7 @@ public class Level {
             if(deleteIfNotPlaceable) sprite.isActive = false;
             if(putOnFloor) sprite.z -= 0.25; // fine, put it on the floor
         }
-		
+
 		if(sprite instanceof DirectionalEntity) {
 			// rotate
             DirectionalEntity m = (DirectionalEntity)sprite;
@@ -1782,7 +1782,7 @@ public class Level {
             // apply any extra rotation
             m.rotation.z += extraRot;
 		}
-		
+
 		return sprite;
 	}
 
@@ -1963,13 +1963,13 @@ public class Level {
 				((Light)e).clearCanSee();
 			}
 		}
-		
+
 		for(Entity e : non_collidable_entities) {
 			if(e instanceof Light) {
 				((Light)e).clearCanSee();
 			}
 		}
-		
+
 		for(Entity e : static_entities) {
 			if(e instanceof Light) {
 				((Light)e).clearCanSee();
@@ -1997,17 +1997,17 @@ public class Level {
 			updateLight(e);
 		}
 	}
-	
+
 	public void updateLights(Source source)
 	{
 		lightSpatialHash.Flush();
-		
+
 		// light markers
 		if(source == Source.EDITOR) {
 			for(int i = 0; i < editorMarkers.size; i++) {
 				if(editorMarkers.get(i).type == Markers.torch) {
 					EditorMarker t = editorMarkers.get(i);
-					
+
 					Light l = new Light();
 					l.x = t.x + 0.5f;
 					l.y = t.y + 0.5f;
@@ -2019,14 +2019,14 @@ public class Level {
 				}
 			}
 		}
-			
+
 		// light emitting entities
 		for(int i = 0; i < entities.size; i++)
 		{
 			Entity e = entities.get(i);
 			updateLight(e);
 		}
-		
+
 		for(int i = 0; i < non_collidable_entities.size; i++)
 		{
 			Entity e = non_collidable_entities.get(i);
@@ -2035,13 +2035,13 @@ public class Level {
 				Light t = (Light)e;
 				lightSpatialHash.AddLight(t);
 			}
-			
+
 			// make some dynamic lights static for the fallback renderer
 			if(Gdx.gl20 == null) {
 				if(e instanceof DynamicLight && e.isActive) {
 					DynamicLight t = (DynamicLight)e;
 					//lightRadius(t.x, t.y, t.z, t.range * 0.8f, t.color, false);
-					
+
 					Light light = new Light();
 					light.x = t.x;
 					light.y = t.y;
@@ -2053,13 +2053,13 @@ public class Level {
 				}
 			}
 		}
-		
+
 		for(int i = 0; i < static_entities.size; i++)
 		{
 			Entity e = static_entities.get(i);
 			updateLight(e);
 		}
-		
+
 		// light some entities
 		for(Entity e : entities) {
 			e.updateLight(this);
@@ -2071,7 +2071,7 @@ public class Level {
 			e.updateLight(this);
 		}
 	}
-	
+
 	public float calculateLightColorAt(float posx, float posy, float posz, Vector3 normal, Color c)
 	{
 		Color t = calculateLightColorAt(posx, posz, posy, c);
@@ -2084,7 +2084,7 @@ public class Level {
 	{
 		Vector3 pos = t_light_Calc_pos.set(x,y,z);
 		c.set(Level.ambientColor);
-		
+
 		// light markers
 		for(int i = 0; i < editorMarkers.size; i++) {
 			if(editorMarkers.get(i).type == Markers.torch) {
@@ -2094,7 +2094,7 @@ public class Level {
 				}
 			}
 		}
-		
+
 		// light emitting entities
 		for(int i = 0; i < entities.size; i++)
 		{
@@ -2112,16 +2112,16 @@ public class Level {
 				}
 			}
 		}
-		
+
 		for(int i = 0; i < non_collidable_entities.size; i++)
 		{
 			Entity e = non_collidable_entities.get(i);
 			if(e instanceof Light && e.isActive)
 			{
 				Light t = (Light)e;
-				
+
 				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
-					
+
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
 						if(t.invertLight)
 							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
@@ -2131,16 +2131,16 @@ public class Level {
 				}
 			}
 		}
-		
+
 		for(int i = 0; i < static_entities.size; i++)
 		{
 			Entity e = static_entities.get(i);
 			if(e instanceof Light && e.isActive)
 			{
 				Light t = (Light)e;
-				
+
 				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
-					
+
 					if(canSee(t.x, t.y, pos.x, pos.y) ) {
 						if(t.invertLight)
 							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
@@ -2150,7 +2150,7 @@ public class Level {
 				}
 			}
 		}
-		
+
 		// some tiles should emit light. do that!
 		for(int lx = 0; lx < width; lx++) {
 			for(int ly = 0; ly < height; ly++) {
@@ -2168,7 +2168,7 @@ public class Level {
 				}
 			}
 		}
-		
+
 		return c;
 	}
 
@@ -2284,82 +2284,82 @@ public class Level {
 		}
 
 		c.a = 1f;
-				
+
 		return c;
 	}
-	
+
 	public Color attenuateAreaLightColor(float x, float y, float z, float x2, float y2, float z2, float range, Color lcolor, Color toReturn) {
 		Color c = toReturn;
 		c.a = 0;
-		
+
 		float xd = (float)Math.pow(x - x2, 2);
 		float yd = (float)Math.pow(y - y2, 2);
 		float zd = (float)Math.pow(z - z2, 2);
 		float dist = GlRenderer.FastSqrt(xd + yd + zd * 0.02f);
-		
+
 		if(dist < range)
 		{
 			short lum = (short)(255 - (dist / range) * 255);
 			float lmod = lum / 255.0f;
 			if(lmod > 1) lmod = 1;
-			
+
 			// light falloff (n^2)
 			lum *= lmod;
-			
+
 			if(lum > 255) lum = 255;
-			
+
 			float b = lum / 255.0f;
 			c.set(b * lcolor.r, b * lcolor.g, b * lcolor.b, b * lcolor.a);
 		}
-		
+
 		return c;
 	}
 
 	public static Color t_attenuateLightCalcColor = new Color();
 	public Color attenuateLightColor(float x, float y, float z, float x2, float y2, float z2, float range, Color lcolor) {
 		Color c = t_attenuateLightCalcColor.set(0, 0, 0, 0);
-		
+
 		float xd = (float)Math.pow(x - x2, 2);
 		float yd = (float)Math.pow(y - y2, 2);
 		float zd = (float)Math.pow(z - z2, 2);
 		float dist = GlRenderer.FastSqrt(xd + yd + zd);
-		
+
 		//dist /= 1.3f;
-		
+
 		if(dist < range)
 		{
 			short lum = (short)(255 - (dist / range) * 255);
 			float lmod = lum / 255.0f;
 			if(lmod > 1) lmod = 1;
-			
+
 			// light falloff (n^2)
 			lum *= lmod;
 			lum *= 2;	// brighten things up
-			
+
 			if(lum > 255) lum = 255;
-			
+
 			float b = lum / 255.0f;
 			c.set(b * lcolor.r, b * lcolor.g, b * lcolor.b, b * lcolor.a);
 		}
-		
+
 		return c;
 	}
 
 	public boolean isFree(float x, float y, float z, Vector3 collision, float stepheight, boolean floating, Collision hitLoc)
 	{
 		//MetricsCore.count("levelCollisionCheck");
-		
+
 		stepheight -= 0.5;
-		
+
 		// Check each of the four corners (-1 -1, -1 1, 1 -1, 1 1)
 		for(int x_corner = -1; x_corner <= 1; x_corner += 2) {
 			for(int y_corner = -1; y_corner <= 1; y_corner += 2) {
 				float xx = (x_corner * collision.x) + x;
 				float yy = (y_corner * collision.y) + y;
-				
+
 				int xFloored = (int)Math.floor(xx);
 				int yFloored = (int)Math.floor(yy);
-				
+
 				Tile t = getTile(xFloored, yFloored);
 				if(t.blockMotion) // tile is completely solid
 				{
@@ -2388,7 +2388,7 @@ public class Level {
 				}
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -2415,75 +2415,75 @@ public class Level {
 
 		return null;
 	}
-	
+
 	public boolean collidesWithAngles(float x, float y, Vector3 collision, Entity e)
 	{
 		float xx0 = (float) (x - collision.x);
 		float xx1 = (float) (x + collision.x);
 		float yy0 = (float) (y - collision.y);
 		float yy1 = (float) (y + collision.y);
-		
+
 		int x0 = (int)Math.floor(xx0);
 		int x1 = (int)Math.floor(xx1);
 		int y0 = (int)Math.floor(yy0);
 		int y1 = (int)Math.floor(yy1);
-		
+
 		Tile t0 = getTile(x0, y0);
 		Tile t1 = getTile(x1, y0);
 		Tile t2 = getTile(x0, y1);
 		Tile t3 = getTile(x1, y1);
-		
+
 		boolean didHit = false;
 		didHit = didHit || t0.checkAngledWallCollision(x, y, xx0, yy0, x0, y0, e);
 		didHit = didHit || t1.checkAngledWallCollision(x, y, xx1, yy0, x1, y0, e);
 		didHit = didHit || t2.checkAngledWallCollision(x, y, xx0, yy1, x0, y1, e);
 		didHit = didHit || t3.checkAngledWallCollision(x, y, xx1, yy1, x1, y1, e);
-		
+
 		return didHit;
 	}
-	
+
 	public float maxFloorHeight(float x, float y, float z, float width)
 	{
-		
+
 		float xx0 = (x - width);
 		float xx1 = (x + width);
 		float yy0 = (y - width);
 		float yy1 = (y + width);
-		
+
 		int x0 = (int)(Math.floor(xx0));
 		int x1 = (int)(Math.floor(xx1));
 		int y0 = (int)(Math.floor(yy0));
 		int y1 = (int)(Math.floor(yy1));
-		
+
 		float height = getTile(x0, y0).getFloorHeight(xx0,yy0);
 		height = Math.max(getTile(x1, y0).getFloorHeight(xx1,yy0), height);
 		height = Math.max(getTile(x0, y1).getFloorHeight(xx0,yy1), height);
 		height = Math.max(getTile(x1, y1).getFloorHeight(xx1,yy1), height);
-		
+
 		return height;
 	}
-	
+
 	public Vector3 getSlope(float x, float y, float z, float width) {
 		float xx0 = (x - width);
 		float xx1 = (x + width);
 		float yy0 = (y - width);
 		float yy1 = (y + width);
-		
+
 		int x0 = (int)(Math.floor(xx0));
 		int x1 = (int)(Math.floor(xx1));
 		int y0 = (int)(Math.floor(yy0));
 		int y1 = (int)(Math.floor(yy1));
-		
+
 		float height1 = getTile(x0, y0).getFloorHeight(xx0,yy0);
 		float height2 = getTile(x1, y0).getFloorHeight(xx1,yy0);
 		float height3 = getTile(x0, y1).getFloorHeight(xx0,yy1);
 		float height4 = getTile(x1, y1).getFloorHeight(xx1,yy1);
-		
+
 		float maxHeight = height1;
 		maxHeight = Math.max(height2, maxHeight);
 		maxHeight = Math.max(height3, maxHeight);
 		maxHeight = Math.max(height4, maxHeight);
-		
+
 		Vector3 ret = CachePools.getVector3();
 		if(maxHeight == height1) {
 			getTile(x0,y0).getFloorNormal(xx0, yy0, ret);
@@ -2497,48 +2497,48 @@ public class Level {
 		else {
 			getTile(x1,y1).getFloorNormal(xx1, yy1, ret);
 		}
-		
+
 		return ret;
 	}
-	
+
 	public float minCeilHeight(float x, float y, float z, float width)
 	{
 		int x0 = (int)(Math.floor(x - width));
 		int x1 = (int)(Math.floor(x + width));
 		int y0 = (int)(Math.floor(y - width));
 		int y1 = (int)(Math.floor(y + width));
-		
+
 		Tile t0 = getTile(x0, y0);
 		Tile t1 = getTile(x1, y0);
 		Tile t2 = getTile(x0, y1);
 		Tile t3 = getTile(x1, y1);
-		
+
 		float height = t0.getCeilingHeight();
 		height = Math.min(t1.getCeilingHeight(), height);
 		height = Math.min(t2.getCeilingHeight(), height);
 		height = Math.min(t3.getCeilingHeight(), height);
-		
+
 		return height;
 	}
-	
+
 	public Entity checkEntityCollision(float x, float y, float z, float width)
 	{
 		return checkEntityCollision(x,y,z,width,width,100,null);
 	}
-	
+
 	public Entity checkEntityCollision(float x, float y, float z, float width, float height)
 	{
 		return checkEntityCollision(x,y,z,width,width,height,null);
 	}
-	
+
 	public Entity checkEntityCollision(float x, float y, float z, Vector3 collision, Entity checking) {
 		return checkEntityCollision(x, y, z, collision.x, collision.y, collision.z, checking);
 	}
-	
+
 	public Entity checkEntityCollision(float x, float y, float z, Vector3 collision, Entity checking, Entity ignore) {
 		return checkEntityCollision(x, y, z, collision.x, collision.y, collision.z, checking, ignore);
 	}
-	
+
 	public Entity getHighestEntityCollision(float x, float y, float z, Vector3 collision, Entity checking) {
 		Array<Entity> colliding = getEntitiesColliding(x,y,z,checking);
 
@@ -2550,7 +2550,7 @@ public class Level {
 				if(highest.z < cur.z) highest = cur;
 			}
 		}
-		
+
 		return highest;
 	}
 
@@ -2570,17 +2570,9 @@ public class Level {
 				//MetricsCore.count("entityCollisionCheck");
 
 				// simple AABB test
-				if(checking.x > e.x - e.collision.x - checking.collision.x) {
-					if(checking.x < e.x + e.collision.x + checking.collision.x) {
-						if(checking.y > e.y - e.collision.y - checking.collision.y) {
-							if(checking.y < e.y + e.collision.y + checking.collision.y) {
-								if(checking.z > e.z - checking.collision.z && checking.z < e.z + e.collision.z) {
-									collisionCache.add(e);
-								}
-							}
-						}
-					}
-				}
+                if (EntityIntersector.intersects(e, checking)) {
+                    collisionCache.add(e);
+                }
 			}
 		}
 
@@ -2599,15 +2591,9 @@ public class Level {
 			if(e != checking)
 			{
 				// simple AABB test
-				if(x > e.x - e.collision.x - collisionX) {
-					if(x < e.x + e.collision.x + collisionX) {
-						if(y > e.y - e.collision.y - collisionY) {
-							if(y < e.y + e.collision.y + collisionY) {
-								collisionCache.add(e);
-							}
-						}
-					}
-				}
+                if (EntityIntersector.intersects2d(x, y, collisionX, collisionY, e)) {
+                    collisionCache.add(e);
+                }
 			}
 		}
 
@@ -2620,60 +2606,42 @@ public class Level {
 			//MetricsCore.count("entityCollisionCheck");
 
 			// simple AABB test
-			if (checking.x > e.x - e.collision.x - checking.collision.x) {
-				if (checking.x < e.x + e.collision.x + checking.collision.x) {
-					if (checking.y > e.y - e.collision.y - checking.collision.y) {
-						if (checking.y < e.y + e.collision.y + checking.collision.y) {
-							if (checking.z > e.z - checking.collision.z && checking.z < e.z + e.collision.z) {
-								return true;
-							}
-						}
-					}
-				}
-			}
+            return EntityIntersector.intersects(e, checking);
 		}
 
 		return false;
 	}
-	
+
 	// return a list of all the entities colliding with the given one
 	public Array<Entity> getEntitiesColliding(Entity checking) {
 		collisionCache.clear();
 		if(checking == null) return collisionCache;
-		
+
 		//GameManager.renderer.visualizeCollisionCheck(checking.x,checking.y,checking.z, new Vector3(checking.collision.x, checking.collision.y, checking.collision.z));
-		
+
 		Array<Entity> toCheck = spatialhash.getEntitiesAt(checking.x, checking.y, Math.max(checking.collision.x, checking.collision.y));
 		toCheck.addAll(staticSpatialhash.getEntitiesAt(checking.x, checking.y, Math.max(checking.collision.x, checking.collision.y)));
 
 		for(int i = 0; i < toCheck.size; i++) {
 			Entity e = toCheck.get(i);
 			if(e.isSolid && e != checking && e.isActive)
-			{	
+			{
 				if(checking.ignorePlayerCollision && Game.instance.player != null && e == Game.instance.player) continue;
 				if(e.ignorePlayerCollision && Game.instance.player != null && checking == Game.instance.player) continue;
 				if(e.isDynamic && checking.collidesWith == CollidesWith.staticOnly) continue;
-				
+
 				//MetricsCore.count("entityCollisionCheck");
 
 				// simple AABB test
-				if(checking.x > e.x - e.collision.x - checking.collision.x) {
-					if(checking.x < e.x + e.collision.x + checking.collision.x) {
-						if(checking.y > e.y - e.collision.y - checking.collision.y) {
-							if(checking.y < e.y + e.collision.y + checking.collision.y) {
-								if(checking.z > e.z - checking.collision.z && checking.z < e.z + e.collision.z) {
-									collisionCache.add(e);
-								}
-							}
-						}
-					}
-				}
+                if (EntityIntersector.intersects(e, checking)) {
+                    collisionCache.add(e);
+                }
 			}
 		}
-		
+
 		return collisionCache;
 	}
-	
+
 	// is this space free of the world and entities?
 	public boolean collidesWorldOrEntities(float x, float y, float z, Vector3 collision, Entity checking) {
 		boolean isFreeSoFar = isFree(x, y, z, collision, checking.stepHeight, checking.floating, null);
@@ -2682,21 +2650,21 @@ public class Level {
 		}
 		return isFreeSoFar;
 	}
-	
+
 	// return a list of all the entities colliding with the given one
 	public Array<Entity> getEntitiesColliding(float x, float y, float z, Entity checking) {
 		collisionCache.clear();
 		if(checking == null) return collisionCache;
-		
+
 		//GameManager.renderer.visualizeCollisionCheck(checking.x,checking.y,checking.z, new Vector3(checking.collision.x, checking.collision.y, checking.collision.z));
-		
+
 		Array<Entity> toCheck = spatialhash.getEntitiesAt(x, y, Math.max(checking.collision.x, checking.collision.y));
 		toCheck.addAll(staticSpatialhash.getEntitiesAt(x, y, Math.max(checking.collision.x, checking.collision.y)));
 
 		for(int i = 0; i < toCheck.size; i++) {
 			Entity e = toCheck.get(i);
 			if(e.isSolid && e != checking && e.isActive)
-			{	
+			{
 				if(checking.ignorePlayerCollision && Game.instance.player != null && e == Game.instance.player) continue;
 				else if(e.ignorePlayerCollision && Game.instance.player != null && checking == Game.instance.player) continue;
 				else if(e.isDynamic && checking.collidesWith == CollidesWith.staticOnly) continue;
@@ -2707,20 +2675,12 @@ public class Level {
 				else if(checking.collidesWith == CollidesWith.actorsOnly && !(e instanceof Actor)) continue;
 
 				// simple AABB test
-				if(x > e.x - e.collision.x - checking.collision.x) {
-					if(x < e.x + e.collision.x + checking.collision.x) {
-						if(y > e.y - e.collision.y - checking.collision.y) {
-							if(y < e.y + e.collision.y + checking.collision.y) {
-								if(z > e.z - checking.collision.z && z < e.z + e.collision.z) {
-									collisionCache.add(e);
-								}
-							}
-						}
-					}
-				}
+                if (EntityIntersector.intersects(x, y, z, checking.collision.x, checking.collision.y, checking.collision.z, e)) {
+                    collisionCache.add(e);
+                }
 			}
 		}
-		
+
 		return collisionCache;
 	}
 
@@ -2750,36 +2710,28 @@ public class Level {
                 //MetricsCore.count("entityCollisionCheck");
 
                 // simple AABB test
-                if(x > e.x - e.collision.x - collision.x) {
-                    if(x < e.x + e.collision.x + collision.x) {
-                        if(y > e.y - e.collision.y - collision.y) {
-                            if(y < e.y + e.collision.y + collision.y) {
-                                if(z > e.z - collision.z && z < e.z + e.collision.z) {
-                                    collisionCache.add(e);
-                                }
-                            }
-                        }
-                    }
+                if (EntityIntersector.intersects(x, y, z, collision.x, collision.y, collision.z, e)) {
+                    collisionCache.add(e);
                 }
             }
         }
 
         return collisionCache;
     }
-	
+
 	// returns the first entity found colliding
 	public Entity checkEntityCollision(float x, float y, float z, float widthX, float widthY, float height, Entity checking)
 	{
 		Array<Entity> toCheck = spatialhash.getEntitiesAt(x, y, Math.max(widthX, widthY));
 		toCheck.addAll(staticSpatialhash.getEntitiesAt(x, y, Math.max(widthX, widthY)));
-		
+
 		//GameManager.renderer.visualizeCollisionCheck(x,y,z, new Vector3(widthX, widthY, height));
 
 		for(int i = 0; i < toCheck.size; i++)
 		{
 			Entity e = toCheck.get(i);
 			if(e.isSolid && e != checking && e.isActive)
-			{	
+			{
 				if(checking != null && checking.ignorePlayerCollision && Game.instance.player != null && e == Game.instance.player) continue;
 				else if(checking != null && e.ignorePlayerCollision && Game.instance.player != null && checking == Game.instance.player) continue;
 				else if(checking != null && e.isDynamic && checking.collidesWith == CollidesWith.staticOnly) continue;
@@ -2788,39 +2740,31 @@ public class Level {
 				else if(checking != null && e.collidesWith == CollidesWith.actorsOnly && !(checking instanceof Actor)) continue;
 				else if(checking != null && checking.collidesWith == CollidesWith.nonActors && e instanceof Actor) continue;
 				else if(checking != null && checking.collidesWith == CollidesWith.actorsOnly && !(e instanceof Actor)) continue;
-				
+
 				//MetricsCore.count("entityCollisionCheck");
 
 				// simple AABB test
-				if(x > e.x - e.collision.x - widthX) {
-					if(x < e.x + e.collision.x + widthX) {
-						if(y > e.y - e.collision.y - widthY) {
-							if(y < e.y + e.collision.y + widthY) {
-								if(z > e.z - height && z < e.z + e.collision.z) {
-									return e;
-								}
-							}
-						}
-					}
-				}
+                if (EntityIntersector.intersects(x, y, z, widthX, widthY, height, e)) {
+                    return e;
+                }
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public Entity checkEntityCollision(float x, float y, float z, float widthX, float widthY, float height, Entity checking, Entity ignore)
 	{
 		Array<Entity> toCheck = spatialhash.getEntitiesAt(x, y, Math.max(widthX, widthY));
 		toCheck.addAll(staticSpatialhash.getEntitiesAt(x, y, Math.max(widthX, widthY)));
-		
+
 		//GameManager.renderer.visualizeCollisionCheck(x,y,z, new Vector3(widthX, widthY, height));
 
 		for(int i = 0; i < toCheck.size; i++)
 		{
 			Entity e = toCheck.get(i);
 			if(e.isSolid && e != checking && e.isActive && e != ignore)
-			{	
+			{
 				if(checking != null && checking.ignorePlayerCollision && Game.instance.player != null && e == Game.instance.player) continue;
 				else if(checking != null && e.ignorePlayerCollision && Game.instance.player != null && checking == Game.instance.player) continue;
 				else if(checking != null && e.isDynamic && checking.collidesWith == CollidesWith.staticOnly) continue;
@@ -2829,47 +2773,39 @@ public class Level {
 				else if(checking != null && e.collidesWith == CollidesWith.actorsOnly && !(checking instanceof Actor)) continue;
 				else if(checking != null && checking.collidesWith == CollidesWith.nonActors && e instanceof Actor) continue;
 				else if(checking != null && checking.collidesWith == CollidesWith.actorsOnly && !(e instanceof Actor)) continue;
-				
+
 				//MetricsCore.count("entityCollisionCheck");
 
 				// simple AABB test
-				if(x > e.x - e.collision.x - widthX) {
-					if(x < e.x + e.collision.x + widthX) {
-						if(y > e.y - e.collision.y - widthY) {
-							if(y < e.y + e.collision.y + widthY) {
-								if(z > e.z - height && z < e.z + e.collision.z) {
-									return e;
-								}
-							}
-						}
-					}
-				}
+				if (EntityIntersector.intersects(x, y, z, widthX, widthY, height, e)) {
+                    return e;
+                }
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public Entity checkItemCollision(float x, float y, float width)
 	{
 		for(int i = 0; i < entities.size; i++)
 		{
 			Entity e = entities.get(i);
 			if(e.type == EntityType.item || e instanceof Stairs)
-			{	
+			{
 				float xx1 = e.x - e.collision.x - 0.5f - width;
 				float xx2 = e.x + e.collision.x  - 0.5f + width;
 				float yy1 = e.y - e.collision.y  - 0.5f - width;
 				float yy2 = e.y + e.collision.y  - 0.5f + width;
-				
+
 				// simple AABB test
 				if(x > xx1 && x < xx2 && y > yy1 && y < yy2) return e;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean checkPlayerCollision(float x, float y, float z, float width, float height)
 	{
 		Player player = GameManager.getGame().player;
@@ -2877,7 +2813,7 @@ public class Level {
 		float xx2 = player.x + player.collision.x + width;
 		float yy1 = player.y - player.collision.y - width;
 		float yy2 = player.y + player.collision.y + width;
-		
+
 		// simple AABB test
 		if(x > xx1 && x < xx2 && y > yy1 && y < yy2)
 		{
@@ -2886,25 +2822,25 @@ public class Level {
 		}
 		return false;
 	}
-	
+
 	public void setPlayer(Player player)
 	{
 		player.levelName = levelName;
 	}
-	
+
 	public boolean canSee(float x, float y, float x2, float y2) {
 	    float dx = Math.abs(x - x2);
 	    float dy = Math.abs(y - y2);
 	    float s = 0.99f/(dx>dy?dx:dy);
 
 	    float t = 0.01f;
-	    
+
 	    while(t < 1f) {
 	        dx = (((1.0f - t)*x + t*x2));
 	        dy = (((1.0f - t)*y + t*y2));
 	        Tile c = getTile((int)dx, (int)dy);
 	        if (c == null || c.renderSolid || c.hide || c.tileSpaceType == TileSpaceType.SOLID || c.ceilHeight <= c.floorHeight) return false;
-	        
+
 	        if(c.tileSpaceType != TileSpaceType.EMPTY) {
 	        	if(c.pointBehindAngle(dx, dy)) return false;
 	        	t += s * 0.25f;
@@ -2912,7 +2848,7 @@ public class Level {
 	        else
 	        	t += s * 0.5f;
 	    }
-	  
+
 	    return true;
 	}
 
@@ -2939,7 +2875,7 @@ public class Level {
 
 		return 1f;
 	}
-	
+
 	public boolean canSafelySee(float x, float y, float x2, float y2) {
 	    float dx = Math.abs(x - x2);
 	    float dy = Math.abs(y - y2);
@@ -2964,7 +2900,7 @@ public class Level {
 				}
             }
             lastTileHeight = c.floorHeight;
-	        
+
 	        if(c.tileSpaceType != TileSpaceType.EMPTY) {
 	        	if(c.pointBehindAngle(dx, dy)) return false;
 	        	t += s * 0.25f;
@@ -2972,34 +2908,34 @@ public class Level {
 	        else
 	        	t += s * 0.5f;
 	    }
-	  
+
 	    return true;
 	}
-	
+
 	public Array<Entity> getEntitiesAlongLine(float x, float y, float x2, float y2) {
 		float dx = Math.abs(x - x2);
 	    float dy = Math.abs(y - y2);
 	    float s = 0.99f/(dx>dy?dx:dy);
 
 	    float t = 0.0f;
-	    
+
 	    Array<Entity> foundEntities = collisionCache;
 	    foundEntities.clear();
-	    
+
 	    while(t < 1f) {
 	        dx = (((1.0f - t)*x + t*x2));
 	        dy = (((1.0f - t)*y + t*y2));
-	     
+
 	        // check the spatial hash for entities
 	        Array<Entity> foundHere = spatialhash.getEntitiesAt(dx, dy, 1.5f);
-	        
+
 	        for(Entity e : foundHere) {
 	        	if(!foundEntities.contains(e, true)) foundEntities.add(e);
 	        }
-	        
+
 	        t += s;
 	    }
-	    
+
 	    return foundEntities;
 	}
 
@@ -3007,9 +2943,9 @@ public class Level {
 	private transient Vector3 t_canSeeEnd = new Vector3();
 	private transient Vector3 t_canSeeIntersection = new Vector3();
 	public boolean canSeeIncludingDoors(float x, float y, float x2, float y2, float maxDistance) {
-		
+
 		if(Math.abs(x - x2) > maxDistance || Math.abs(y - y2) > maxDistance) return false;
-		
+
 	    boolean canSeeThroughLevel = canSee(x, y, x2, y2);
 	    if(!canSeeThroughLevel) return false;
 
@@ -3017,10 +2953,10 @@ public class Level {
 		t_canSeeEnd.set(x2,0.5f,y2);
 		t_canSeeEnd.sub(t_canSeeStart);
 		t_canSeeEnd.nor();
-	    
+
 	    Ray r = calcRay.set(t_canSeeStart, t_canSeeEnd);
 	    Array<Entity> possibles = getEntitiesAlongLine(x, y, x2, y2);
-	    
+
 	    // find all the doors or movers, should block vision
 	    for(Entity e : possibles) {
 	    	if(e instanceof Door) {
@@ -3044,10 +2980,10 @@ public class Level {
 				}
 			}
 	    }
-	    
+
 	    return true;
 	}
-	
+
 	public boolean canSee3D(float x, float y, float z, float x2, float y2, float z2) {
 	    float dx = Math.abs(x - x2);
 	    float dy = Math.abs(y - y2);
@@ -3055,7 +2991,7 @@ public class Level {
 	    float s = 0.99f/(dx>dy?dx:dy);
 
 	    float t = 0.01f;
-	    
+
 	    while(t < 1f) {
 	        dx = (int)(((1.0f - t)*x + t*x2));
 	        dy = (int)(((1.0f - t)*y + t*y2));
@@ -3064,9 +3000,9 @@ public class Level {
 	        if (c == null || c.renderSolid || c.hide) return false;
 	        else if(dz < c.floorHeight || dz > c.ceilHeight) return false;
 	        //return true;
-	        t += s * 0.2f; 
+	        t += s * 0.2f;
 	    }
-	  
+
 	    return true;
 	}
 
@@ -3077,24 +3013,24 @@ public class Level {
 		if(t == null) return Color.BLACK;
 		else return t;
 	}
-	
+
 	public void spawnMonster()
 	{
 		Player player = Game.instance.player;
-		
+
 		Random r = new Random();
 		int xPos = r.nextInt(width);
 		int yPos = r.nextInt(height);
-		
+
 		Tile t = getTile(xPos,yPos);
 		if(t != null && t.CanSpawnHere() && t.hasRoomFor(0.65f)) {
-			
+
 			// don't generate if the player is too close, or another entity is already nearby
 			if(!spawnMonsters) return;
 			if(!player.isHoldingOrb && canSee(xPos + 0.5f, yPos + 0.5f, player.x, player.y)) return;
 			if(!player.isHoldingOrb && Math.abs(xPos - player.x) <= 4 && Math.abs(yPos - player.y) <= 4) return;
 			else if(player.isHoldingOrb && Math.abs(xPos - player.x) <= 1 && Math.abs(yPos - player.y) <= 1) return;
-			
+
 			if(checkEntityCollision(xPos + 0.5f, yPos + 0.5f, 0, 0.5f) == null)
 			{
 				Monster m;
@@ -3106,7 +3042,7 @@ public class Level {
 					m = Game.GetMonsterManager().GetRandomMonster(DungeonTheme.UNDEAD.toString());
 					level = 20;
 				}
-				
+
 				if(m != null)
 				{
 					m.x = xPos + 0.5f;
@@ -3115,13 +3051,13 @@ public class Level {
 					m.Init(this, level);
 					entities.add(m);
 					monsterSpawnTimer = 0;
-					
+
 					if(player.isHoldingOrb) m.alerted = true;
 				}
 			}
 		}
 	}
-	
+
 	public int getMonsterCount() {
 		int ct = 0;
 		for(int i = 0; i < entities.size; i++)
@@ -3130,7 +3066,7 @@ public class Level {
 		}
 		return ct;
 	}
-	
+
 	public void editorTick(Player p, float delta) {
 		spatialhash.Flush();
 
@@ -3139,12 +3075,12 @@ public class Level {
 			Entity e = entities.get(i);
 			if(e.isActive) spatialhash.AddEntity(e);
 		}
-		
+
 		tickEntityList(delta, entities, true);
 		tickEntityList(delta, non_collidable_entities, true);
 		tickEntityList(delta, static_entities, true);
 	}
-	
+
 	public void updateSpatialHash(Player player) {
 		spatialhash.Flush();
 
@@ -3177,36 +3113,36 @@ public class Level {
 		if(e.isActive && e.isSolid) staticSpatialhash.AddEntity(e);
 	}
 
-	public void tick(float delta) {		
+	public void tick(float delta) {
 		Player player = Game.instance.player;
-		
+
 		if(mapIsDirty || lastPlayerTileX != (int)player.x || lastPlayerTileY != (int)player.y) {
 			updateSeenTiles(player);
 		}
-		
+
 		/* --- Update the spatial hash --- */
 		updateSpatialHash(player);
-		
+
 		tickEntityList(delta, entities, false);
 		tickEntityList(delta, non_collidable_entities, false);
-		
+
 		spawnMonstersIfNeeded(player, delta);
-		
+
 		if(!needsSaving) needsSaving = true;
-		
+
 		// some things only need to update when the player's tile changes
 		lastPlayerTileX = (int)player.x;
 		lastPlayerTileY = (int)player.y;
 	}
 
 	public void tickEntityList(float delta, Array<Entity> list, boolean inEditor) {
-		
+
 		// update everyone in the list
 		Entity e = null;
 		for(entity_index = 0; entity_index < list.size; entity_index++)
 		{
 			e = list.get(entity_index);
-			
+
 			if(!inEditor) {
 				if(e.skipTick) {
 					e.skipTick = false;
@@ -3218,37 +3154,37 @@ public class Level {
 			else {
 				e.editorTick(this, delta);
 			}
-				
+
 			if(!e.isActive) toDelete.add(e);
 		}
-		
+
 		// remove the newly inactive items from the list
-		for(entity_index = 0 ; entity_index < toDelete.size; entity_index++) { 
+		for(entity_index = 0 ; entity_index < toDelete.size; entity_index++) {
 			e = toDelete.get(entity_index);
-			
+
 			// clear this guy from some caches if needed
 			if(e instanceof Particle) CachePools.freeParticle((Particle)e);
 			e.onDispose();
 			list.removeValue(e,true);
 		}
-		
+
 		// clear the list for next time
 		toDelete.clear();
 	}
-	
+
 	private void spawnMonstersIfNeeded(Player player, float delta) {
 		if(player.isHoldingOrb || spawnMonsters) {
-			
+
 			// monster spawn rate increases after the orb is picked up
 			monsterSpawnTimer += 1 * delta;
 			int monsterSpawnTime = 600;
 			int monsterCount = 3;
-			
+
 			if(player.isHoldingOrb)	{
 				monsterSpawnTime = 60;
 				monsterCount = 15;
 			}
-			
+
 			if(monsterSpawnTimer > monsterSpawnTime && getMonsterCount() < monsterCount)
 				spawnMonster();
 		}
@@ -3259,15 +3195,15 @@ public class Level {
 		int startY = (int)player.y - 5;
 		int endX = startX + 10;
 		int endY = startY + 10;
-		
+
 		for(int x = startX; x < endX; x++) {
 			for(int y = startY; y < endY; y++) {
 				Tile t = getTile(x,y);
-				
+
 				if(t != null && t.IsFree() && !t.seen && t != Tile.solidWall) {
 					t.seen = canSee(player.x, player.y, x + 0.5f, y + 0.5f);
 					if(t.seen) {
-						
+
 						for(int xxx = -1; xxx <= 1; xxx++) {
 							for(int yyy = -1; yyy <= 1; yyy++) {
 								Tile near = getTile(xxx + x, yyy + y);
@@ -3275,14 +3211,14 @@ public class Level {
                                     near.seen = true;
 							}
 						}
-						
+
 						dirtyMapTiles.add(new Vector2(x, y));
 					}
 				}
 			}
 		}
 	}
-	
+
 	public void SpawnEntity(Entity e) {
 		if(e.spawnChance < 1.0) {
 			if(Game.rand.nextFloat() > e.spawnChance)
@@ -3294,11 +3230,11 @@ public class Level {
         e.updateDrawable();
         e.init(this, Source.SPAWNED);
 	}
-	
+
 	public void SpawnNonCollidingEntity(Entity e) {
 		non_collidable_entities.add(e);
 	}
-	
+
 	public void SpawnStaticEntity(Entity e) {
 		static_entities.add(e);
 		addEntityToStaticSpatialHash(e);
@@ -3323,64 +3259,64 @@ public class Level {
 			addEntityToSpatialHash(e);
 		}
 	}
-	
+
 	public void rotate90() {
 		Tile[] tempArray = new Tile[width * height];
 		for (int i = 0; i < width; ++i) {
 			for (int j = 0; j < height; ++j) {
 				Tile t = getTileOrNull(i,j);
-				tempArray[(height - 1 - j) + i * width] = t; 
+				tempArray[(height - 1 - j) + i * width] = t;
 				if(t != null) t.rotate90();
 			}
 		}
-		
+
 		tiles = tempArray;
-		
+
 		// 1.57079633 is 90 degrees in radians
 		float s = (float)Math.sin(1.57079633f);
 		float c = (float)Math.cos(1.57079633f);
-		
+
 		float midX = width / 2f;
 		float midY = height / 2f;
-		
+
 		for(Entity e : entities) {
 			if(e != null) {
 				e.x -= midX;
 				e.y -= midY;
-				
+
 				float xnew = e.x * c - e.y * s;
 				float ynew = e.x * s + e.y * c;
-				
+
 				e.x = xnew + midX;
 				e.y = ynew + midY;
-				
+
 				e.rotate90();
 			}
 		}
-		
+
 		for(EditorMarker m : editorMarkers) {
 			if(m != null) {
-				
+
 				float origX = m.x + 0.5f - midX;
 				float origY = m.y + 0.5f - midY;
-				
+
 				float xnew = origX * c - origY * s;
 				float ynew = origX * s + origY * c;
-				
+
 				m.x = (int) (xnew + midX);
 				m.y = (int) (ynew + midY);
 				m.rot += 90;
 			}
 		}
 	}
-	
+
 	public void paste(Level clip, int offsetx, int offsety) {
 		for(int x = 0; x < clip.width; x++) {
 			for(int y = 0; y < clip.height; y++) {
 				setTile(x + offsetx,y + offsety, clip.getTileOrNull(x, y));
 			}
 		}
-		
+
 		for(Entity e : clip.entities) {
 			if(e != null) {
 				e.x += offsetx;
@@ -3388,7 +3324,7 @@ public class Level {
 			}
 		}
 		entities.addAll(clip.entities);
-		
+
 		for(EditorMarker m : clip.editorMarkers) {
 			if(m != null) {
 				m.x += offsetx;
@@ -3397,7 +3333,7 @@ public class Level {
 		}
 		editorMarkers.addAll(clip.editorMarkers);
 	}
-	
+
 	// add a prefix to all entity IDs and trigger IDs
 	public void makeEntityIdsUnique(String idPrefix) {
 		for(int i = 0; i < entities.size; i++) {
@@ -3408,18 +3344,18 @@ public class Level {
 	public static void makeUniqueEntityId(String idPrefix, Entity e) {
 		e.makeEntityIdUnique(idPrefix);
 	}
-	
+
 	public byte[] getTileBytes() {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutput out = null;
-		
+
 		byte[] bytes = null;
 		try {
 			try {
 				out = new ObjectOutputStream(bos);
 				out.writeObject(tiles);
 			} catch (IOException e) { }
-			
+
 			bytes = bos.toByteArray();
 		} finally {
 			try {
@@ -3427,7 +3363,7 @@ public class Level {
 				bos.close();
 			} catch (IOException e) {}
 		}
-		
+
 		return bytes;
 	}
 
@@ -3438,7 +3374,7 @@ public class Level {
 				tempArray[x + y * selWidth] = getTile(x + selX,y + selY);
 			}
 		}
-		
+
 		Array<Entity> tempEntities = new Array<Entity>();
 		for(Entity e : entities) {
 			if(e != null) {
@@ -3449,7 +3385,7 @@ public class Level {
 				}
 			}
 		}
-		
+
 		Array<EditorMarker> tempMarkers = new Array<EditorMarker>();
 		for(EditorMarker e : editorMarkers) {
 			if(e != null) {
@@ -3460,27 +3396,27 @@ public class Level {
 				}
 			}
 		}
-		
+
 		tiles = tempArray;
 		width = selWidth;
 		height = selHeight;
-		
+
 		entities = tempEntities;
 		editorMarkers = tempMarkers;
 	}
-	
+
 	public Vector3 getCornerLocation(int x, int y, int corner) {
 		Tile t = getTileOrNull(x,y);
-		
+
 		Vector3 ret = null;
 		if(t != null) {
 			ret = CachePools.getVector3();
 			if(corner == 0 || corner == 3 || corner == 4 || corner == 7) ret.x = x + 1;
 			else ret.x = x;
-			
+
 			if(corner == 0 || corner == 1 || corner == 4 || corner == 5) ret.y = y;
 			else ret.y = y + 1;
-			
+
 			if(corner == 0)
 				ret.z = t.slopeNW;
 			else if (corner == 1)
@@ -3498,7 +3434,7 @@ public class Level {
 			else if (corner == 7)
 				ret.z = t.ceilSlopeSW;
 		}
-		
+
 		return ret;
 	}
 
@@ -3554,7 +3490,7 @@ public class Level {
 			Gdx.app.log("DelverGame", "Error triggering: " + triggersId);
 		}
 	}
-	
+
 	// find entities by their ID
 	public Array<Entity> getEntitiesById(String id) {
 		Array<Entity> entitiesToFind = triggerCache;
@@ -3576,7 +3512,7 @@ public class Level {
                 if (e.id != null && e.isActive && e.id.equals(lookForId)) entitiesToFind.add(e);
             }
         }
-		
+
 		return entitiesToFind;
 	}
 
@@ -3607,28 +3543,28 @@ public class Level {
 
 	public Array<Entity> findEntities(Class typeOf, Vector2 position, float range, boolean dynamicEntities, boolean staticEntities, boolean nonCollidingEntities) {
 		Array<Entity> toReturn = new Array<Entity>();
-		
+
 		if(dynamicEntities) {
 			for(int i = 0; i < entities.size; i++) {
 				Entity e = entities.get(i);
 				if(e.getClass().equals(typeOf) && Math.abs(e.x - position.x) < range && Math.abs(e.y - position.y) < range) toReturn.add(e);
 			}
 		}
-		
+
 		if(staticEntities) {
 			for(int i = 0; i < static_entities.size; i++) {
 				Entity e = static_entities.get(i);
 				if(e.getClass().equals(typeOf) && Math.abs(e.x - position.x) < range && Math.abs(e.y - position.y) < range) toReturn.add(e);
 			}
 		}
-		
+
 		if(nonCollidingEntities) {
 			for(int i = 0; i < non_collidable_entities.size; i++) {
 				Entity e = non_collidable_entities.get(i);
 				if(e.getClass().equals(typeOf) && Math.abs(e.x - position.x) < range && Math.abs(e.y - position.y) < range) toReturn.add(e);
 			}
 		}
-		
+
 		return toReturn;
 	}
 
@@ -3658,7 +3594,7 @@ public class Level {
 
 		return toReturn;
 	}
-	
+
 	private void preSaveCleanup(Array<Entity> entities) {
 		// Remove any entities that we should not save
 		Array<Entity> toDelete = new Array<Entity>();
@@ -3680,7 +3616,7 @@ public class Level {
 				tileMaterials[i] = tiles[i].materials;
 		}
 	}
-	
+
 	public void preSaveCleanup() {
 		if(entities != null) preSaveCleanup(entities);
 		if(non_collidable_entities != null) preSaveCleanup(non_collidable_entities);
