@@ -2675,7 +2675,7 @@ public class Level {
 				else if(checking.collidesWith == CollidesWith.actorsOnly && !(e instanceof Actor)) continue;
 
 				// simple AABB test
-                if (EntityIntersector.intersects(x, y, z, checking.collision.x, checking.collision.y, checking.collision.z, e)) {
+                if (EntityIntersector.intersects(x, y, z, e, checking)) {
                     collisionCache.add(e);
                 }
 			}

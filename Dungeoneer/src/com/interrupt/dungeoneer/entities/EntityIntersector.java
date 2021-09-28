@@ -17,6 +17,10 @@ public class EntityIntersector {
         return false;
     }
 
+    public static boolean intersects(float nextX, float nextY, float nextZ, Entity e1, Entity e2) {
+        return intersects(nextX, nextY, nextZ, e2.collision.x, e2.collision.y, e2.collision.z, e1);
+    }
+
     public static boolean intersects(float nextX, float nextY, float nextZ, float collisionX, float collisionY, float collisionZ, Entity e) {
         if(nextX > e.x - e.collision.x - collisionX) {
             if(nextX < e.x + e.collision.x + collisionX) {
