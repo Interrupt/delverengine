@@ -812,9 +812,7 @@ public class GlRenderer {
 
 		Color tempColor = new Color();
 
-		for (int i = 0; i < textToRender.size; i++) {
-			DrawableText drawableText = textToRender.get(i);
-
+		for (DrawableText drawableText : textToRender) {
 			float curXPos = 0f, curZPos = 0f;
 			float scale = drawableText.scale * unitsPerPixel;
 
