@@ -4,9 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Explosion;
-import com.interrupt.dungeoneer.entities.Particle;
+import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Colors;
@@ -71,7 +69,7 @@ public class MagicMissileProjectile extends Projectile {
 
 	/** Projectile halo type. */
 	public HaloMode haloMode = HaloMode.BOTH;
-	
+
 	public MagicMissileProjectile() {
 		artType = ArtType.sprite;
 		collision.set(0.05f, 0.05f, 0.1f);
@@ -79,23 +77,23 @@ public class MagicMissileProjectile extends Projectile {
 		canStepUpOn = false;
 		dropSound = "";
 	}
-	
+
 	public MagicMissileProjectile(float x, float y, float z, float xa, float za, int damage, DamageType damageType, Color color, Entity owner) {
 		super(x, y, z, 8, xa, za, damage, damageType, owner);
 		this.z = z + 0.1f;
-		
+
 		isSolid = true;
 		floating = true;
 		fullbrite = true;
 		this.color = color;
-		
+
 		this.damageType = damageType;
-		
+
 		collision.set(0.05f, 0.05f, 0.1f);
 
 		canStepUpOn = false;
 	}
-	
+
 	@Override
 	public void onTick(float delta) {
 		color.a = 1f;
@@ -110,7 +108,7 @@ public class MagicMissileProjectile extends Projectile {
         }
 
 		int detailLevel = Options.instance.graphicsDetailLevel;
-		
+
 		if(leaveTrail) {
 			if(trailTimer > 0) trailTimer -= delta;
 			else {
@@ -142,8 +140,28 @@ public class MagicMissileProjectile extends Projectile {
 			animation.animate(delta, this);
 		}
 	}
-	
-	@Override
+
+    @Override
+    public void encroached(Entity hit) {
+	    boolean doReflect = false;
+        if (hit instanceof Monster) {
+            Monster monster = (Monster)hit;
+            doReflect = monster.isAttacking();
+        }
+        else if (hit instanceof Player) {
+            Player player = (Player)hit;
+            doReflect = player.isAttacking();
+        }
+
+        if (doReflect) {
+            reflect(xa, ya, damage, knockback, damageType, hit);
+        }
+        else {
+            super.encroached(hit);
+        }
+    }
+
+    @Override
 	public void hitEffect()	{
 		if(!isActive) return;
 
@@ -163,10 +181,10 @@ public class MagicMissileProjectile extends Projectile {
         explosion.explode(Game.GetLevel(), makeHitParticles ? particleAmoundMod : 0);
 
 		isActive = false;
-		
+
 		makeHitDecal();
 	}
-	
+
 	@Override
 	public void hit(float xa, float ya, int damage, float force, DamageType damageType, Entity instigator) {
 		Game.instance.player.shake(4f, 4f, new Vector3(x,y,z));
@@ -204,19 +222,24 @@ public class MagicMissileProjectile extends Projectile {
 			}
 		}
 		else {
-			// Knock this back, Zelda style!
-			Vector2 calcVec = new Vector2(this.xa, this.ya);
-			float speed = calcVec.len();
-			calcVec.set(xa, ya).nor();
-			this.xa = calcVec.x * speed;
-			this.ya = calcVec.y * speed;
-
-			if(xa == 0 && ya == 0) {
-				// destroy!
-				super.hit(xa, ya, damage, force, damageType, instigator);
-			}
+			reflect(xa, ya, damage, force, damageType, instigator);
 		}
 	}
+
+	private void reflect(float xa, float ya, int damage, float force, DamageType damageType, Entity instigator) {
+	    // Knock this back, Zelda style!
+        Vector2 calcVec = new Vector2(this.xa, this.ya);
+        float speed = calcVec.len();
+        calcVec.set(xa, ya).nor();
+        this.xa = calcVec.x * -speed;
+        this.ya = calcVec.y * -speed;
+        this.owner = instigator;
+
+        if(xa == 0 && ya == 0) {
+            // destroy!
+            super.hit(xa, ya, damage, force, damageType, instigator);
+        }
+    }
 
 	// Start an animation on this projectile
 	public void playAnimation() {
@@ -224,7 +247,7 @@ public class MagicMissileProjectile extends Projectile {
 		animation.loop();
 		animation.randomizeTime();
 	}
-	
+
 	@Override
 	public void onDestroy() { }
 

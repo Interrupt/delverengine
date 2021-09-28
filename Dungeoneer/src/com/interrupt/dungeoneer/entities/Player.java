@@ -33,14 +33,16 @@ import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.ReadableKeys;
-import com.interrupt.dungeoneer.overlays.*;
+import com.interrupt.dungeoneer.overlays.DebugOverlay;
+import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
+import com.interrupt.dungeoneer.overlays.MapOverlay;
+import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.rpg.Stats;
 import com.interrupt.dungeoneer.screens.GameScreen;
-import com.interrupt.dungeoneer.statuseffects.*;
+import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
-import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -1762,7 +1764,25 @@ public class Player extends Actor {
 		visiblityMod = 1f;
 	}
 
-	public void tossHeldItem(Level level, float attackPower) {
+    @Override
+    public boolean isAttacking() {
+	    Item held = GetHeldItem();
+
+	    if (held == null) return false;
+
+	    Weapon w = (Weapon)held;
+
+        LerpedAnimation a = Game.animationManager.getAnimation(w.attackAnimation);
+        LerpedAnimation b = Game.animationManager.getAnimation(w.attackStrongAnimation);
+
+        if (handAnimation.equals(a) || handAnimation.equals(b)) {
+            return handAnimation.playing;
+        }
+
+        return false;
+    }
+
+    public void tossHeldItem(Level level, float attackPower) {
 		Item held = GetHeldItem();
 		if(held == null) return;
 

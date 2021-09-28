@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.entities;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -16,6 +14,8 @@ import com.interrupt.dungeoneer.statuseffects.PoisonEffect;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.helpers.InterpolationHelper;
 import com.interrupt.helpers.InterpolationHelper.InterpolationMode;
+
+import java.util.Random;
 
 /** Class for representing Entities that can attack, bleed, die, and suffer from status effects. */
 public class Actor extends Entity {
@@ -60,22 +60,22 @@ public class Actor extends Entity {
 
 	/** Armor class. */
 	public int ac = 0;
-	
+
 	@EditorProperty
 	public int atk = 1;
-	
+
 	@EditorProperty
 	public int STR = 10;
-	
+
 	@EditorProperty
 	public int DEF = 0;
-	
+
 	@EditorProperty
 	public int DEX = 10;
-	
+
 	@EditorProperty
 	public int SPD = 10;
-	
+
 	@EditorProperty
 	public int INT = 10;
 
@@ -105,26 +105,26 @@ public class Actor extends Entity {
 
 	/** Modifier for how fast we are moving through time, could have time sped up or down for just us. */
 	public float actorTimeScale = 1f;
-	
+
 	public Actor() { shadowType = ShadowType.BLOB; canStepUpOn = false; }
-	
+
 	public Actor(float x, float y, int tex)
 	{
 		super(x, y, tex, true);
 		canStepUpOn = false;
 	}
-	
+
 	public void addExperience(int e)
 	{
 		exp += e;
 	}
-	
+
 	public void initLevel(int newLevel)
 	{
 		level = newLevel - 1; // 1 = 0
 		maxHp += (level * 2);
 		hp = maxHp;
-		
+
 		atk += level;
 		STR += level;
 		DEF += level;
@@ -137,33 +137,33 @@ public class Actor extends Entity {
 		stats.MAG = 4 + newLevel;
 		stats.SPD = 4 + newLevel;
 	}
-	
+
 	public int getNextLevel()
 	{
 		return (level * 4) * (level * 2);
 	}
-	
+
 	public int damageRoll(int inAttack, DamageType damageType, Entity instigator)
 	{
 		Random r = Game.rand;
 		int damage = 0;
-		
+
 		float dodgeChance = 0.15f;
-		
+
 		if(r.nextFloat() > dodgeChance) {
 			damage = r.nextInt(inAttack) + 1;
-			
+
 			int armorClass = GetArmorClass();
 			if(armorClass > 0) {
 				damage -= armorClass;
 				UseArmor();
 			}
-			
+
 			if(damage < 1) damage = 1;
 		}
-		
+
 		takeDamage(damage, damageType, instigator);
-		
+
 		return damage;
 	}
 
@@ -180,7 +180,7 @@ public class Actor extends Entity {
 	public float getMagicResistModBoost() {
 		return stats.magicResistMod;
 	}
-	
+
 	public int takeDamage(int damage, DamageType damageType, Entity instigator) {
 		// Some status effects change how much damage is being dealt
 		if(statusEffects != null && statusEffects.size > 0) {
@@ -249,7 +249,7 @@ public class Actor extends Entity {
 				}
 			}
 		}
-		
+
 		hp -= damage;
 
 		// clamp out on max hp
@@ -257,22 +257,22 @@ public class Actor extends Entity {
 
 		return damage;
 	}
-	
+
 	public boolean isAlive()
 	{
 		return hp > 0;
 	}
-	
+
 	public void bleedEffect(Level level) {
 		//TODO: Move bleeding here
 	}
-	
+
 	public void hitEffect(Level level, DamageType damageType) {
-		
+
 		Random r = Game.rand;
 		int particleCount = 8;
 		particleCount *= Options.instance.gfxQuality;
-		
+
 		if(Options.instance.gfxQuality > 0.7f) {
 			Particle part = CachePools.getParticle(x, y, z, "dust_puffs", 5);
 			part.floating = true;
@@ -287,66 +287,66 @@ public class Actor extends Entity {
 			part.fullbrite = true;
 			level.SpawnNonCollidingEntity(part);
 		}
-		
+
 		for(int i = 0; i < particleCount; i++)
 		{
 			level.SpawnNonCollidingEntity( CachePools.getParticle(x, y, z + 0.5f, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * 0.02f - 0.01f, 460 + r.nextInt(800), 1f, 0f, Actor.getBloodTexture(bloodType), Actor.getBloodColor(bloodType), false)) ;
 		}
-		
+
 		if(damageType != DamageType.PHYSICAL) {
 			Color dColor = Weapon.getEnchantmentColor(damageType);
 
 			particleCount = 4;
 			particleCount *= Options.instance.gfxQuality;
-			
+
 			for(int i = 0; i < particleCount; i++)
 			{
 				level.SpawnNonCollidingEntity( CachePools.getParticle(x, y, z + 0.5f, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * 0.02f - 0.01f, 0, dColor, true)) ;
 			}
 		}
 	}
-	
+
 	public void dieEffect(Level level) {
 		Random r = Game.rand;
 		int particleCount = 22;
 		particleCount *= Options.instance.gfxQuality;
-		
+
 		for(int i = 0; i < particleCount; i++)
 		{
 			float xPos = x + r.nextFloat() * 0.2f - 0.1f;
 			float yPos = y + r.nextFloat() * 0.2f - 0.1f;
 			float zPos = z + r.nextFloat() * 0.2f - 0.1f;
-			
+
 			level.SpawnNonCollidingEntity( CachePools.getParticle(xPos, yPos, zPos + 0.5f, r.nextFloat() * 0.04f - 0.02f, r.nextFloat() * 0.04f - 0.02f, r.nextFloat() * 0.05f - 0.02f, 420 + r.nextInt(600), 1f, 0f, Actor.getBloodTexture(bloodType), Actor.getBloodColor(bloodType), false)) ;
 		}
 	}
-	
+
 	public static Color getBloodColor(BloodType bloodType) {
 		Color bloodColor = Colors.DEFAULT_BLOOD;
 		if(bloodType == BloodType.Slime) { bloodColor = Colors.SLIME_BLOOD; }
 		else if(bloodType == BloodType.Insect) { bloodColor = Colors.INSECT_BLOOD; }
 		else if(bloodType == BloodType.Bone) { bloodColor = Colors.BONE_BLOOD; }
-		
+
 		return bloodColor;
 	}
-	
+
 	public static int getBloodTexture(BloodType bloodType) {
 		int ret = 24;
 		if(bloodType == BloodType.Slime) { ret = 25; }
 		else if(bloodType == BloodType.Insect) { ret = 26; }
 		else if(bloodType == BloodType.Bone) { ret = 27; }
-		
+
 		return ret;
 	}
-	
+
 	public int GetArmorClass() { return ac; }
-	
+
 	public void tickStatusEffects(float delta) {
 		if(!isAlive()) return;
-		
+
 		if(statusEffects != null && statusEffects.size == 0) statusEffects = null;
 		if(statusEffects == null) return;
-		
+
 		// tick active
 		for(int i = 0; i < statusEffects.size; i++)
 		{
@@ -354,7 +354,7 @@ public class Actor extends Entity {
 			e.tick(this, delta);
 			if(!e.active) statusEffectsToRemove.add(e);
 		}
-		
+
 		// remove inactive
 		for(StatusEffect toRemove : statusEffectsToRemove) {
 			toRemove.onStatusEnd(this);
@@ -362,14 +362,14 @@ public class Actor extends Entity {
 		}
 		statusEffectsToRemove.clear();
 	}
-	
+
 	public void addStatusEffect(StatusEffect newEffect) {
 		if(statusEffects == null) {
 			statusEffects = new Array<StatusEffect>();
 		}
 
 		boolean addNewEffect = true;
-		
+
 		// don't stack status effects
 		for(StatusEffect e : statusEffects) {
 			if(e.getClass().equals(newEffect.getClass())) {
@@ -380,7 +380,7 @@ public class Actor extends Entity {
 				addNewEffect = false;
 			}
 		}
-		
+
 		// remove newly inactive
 		for(StatusEffect toRemove : statusEffectsToRemove) {
 			toRemove.onStatusEnd(this);
@@ -399,7 +399,7 @@ public class Actor extends Entity {
 		if (se == null || se.statusEffectType == null) {
 			return false;
 		}
-		
+
 		if (this.statusEffects == null) {
 			return false;
 		}
@@ -428,11 +428,11 @@ public class Actor extends Entity {
 
 	public boolean isPoisoned() {
 		if(statusEffects == null) return false;
-		
+
 		for(StatusEffect e : statusEffects) {
 			if(e instanceof PoisonEffect) return true;
 		}
-		
+
 		return false;
 	}
 
@@ -449,7 +449,7 @@ public class Actor extends Entity {
 
 		return false;
 	}
-	
+
 	public int getMaxHp() {
 		return maxHp;
 	}
@@ -465,7 +465,7 @@ public class Actor extends Entity {
 	public void stepUpTick(float delta) {
 		if(stepUpTimer != null && stepUpLerp != null) {
 			stepUpTimer += (delta * 0.0375f);
-			
+
 			if(stepUpTimer > 1f) {
 				stepUpTimer = null;
 				stepUpLerp = null;
@@ -484,7 +484,7 @@ public class Actor extends Entity {
 	public Trigger getUseTrigger() {
 		return useTrigger;
 	}
-	
+
 	public float getStepUpValue() {
 		if(stepUpTimer != null && stepUpLerp != null) {
 			return InterpolationHelper.getInterpolator(InterpolationMode.exp5In).apply(1f - stepUpTimer) * stepUpLerp;
@@ -504,5 +504,9 @@ public class Actor extends Entity {
 		}
 
 		return shader;
+	}
+
+	public boolean isAttacking() { return
+        false;
 	}
 }

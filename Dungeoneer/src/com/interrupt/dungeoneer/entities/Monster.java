@@ -1542,4 +1542,9 @@ public class Monster extends Actor implements Directional {
 
 		walkAnimation.animate(delta, this);
 	}
+
+    @Override
+    public boolean isAttacking() {
+        return attackAnimation.playing;
+    }
 }
