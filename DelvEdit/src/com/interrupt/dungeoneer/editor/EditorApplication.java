@@ -1312,7 +1312,7 @@ public class EditorApplication implements ApplicationListener {
 					if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
 						// Make a copy
 						Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
-						level.entities.add(copy);
+						level.addEntity(copy);
 
                         pickEntity(copy);
 
@@ -2442,20 +2442,64 @@ public class EditorApplication implements ApplicationListener {
         Mesh mesh = new Mesh(true, 24, 36, new VertexAttribute(Usage.Position, 3, "a_position"), new VertexAttribute(Usage.Normal,
                 3, "a_normal"), new VertexAttribute(Usage.TextureCoordinates, 2, "a_texcoords"));
 
-        float[] cubeVerts = {-0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
-                -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
-                0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
-                -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
-                0.5f, 0.5f, -0.5f,};
+        float[] cubeVerts = {
+            -0.5f, -0.5f, -0.5f,0.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f,0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f,1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f,1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f,1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f,0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f,0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f,0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f,1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f,0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f,0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f,1.0f, 1.0f,
+            0.5f, -0.5f, 0.5f,1.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,0.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f,0.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f,1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f,1.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f,0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f,1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f
+        };
 
         float[] cubeNormals = {0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
                 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
                 -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
                 -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,};
 
-        float[] cubeTex = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,};
+        float[] cubeTex = {
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f
+        };
 
         float[] vertices = new float[24 * 8];
         int pIdx = 0;
