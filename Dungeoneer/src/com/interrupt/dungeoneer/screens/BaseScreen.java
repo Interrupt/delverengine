@@ -378,7 +378,7 @@ public class BaseScreen implements Screen {
         if(GameManager.renderer.needToInit)
 			GameManager.renderer.initTextures();
 
-		level = new Level(17,17);
+		level = new Level();
 		level.loadForSplash(filename);
 
 		// Temple fog settings

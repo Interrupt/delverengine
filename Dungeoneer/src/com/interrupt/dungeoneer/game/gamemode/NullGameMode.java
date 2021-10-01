@@ -1,7 +1,9 @@
 package com.interrupt.dungeoneer.game.gamemode;
 
+import com.badlogic.gdx.math.Vector2;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
+import com.interrupt.dungeoneer.editor.EditorMarker;
 import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Player;
@@ -50,5 +52,15 @@ public class NullGameMode implements GameModeInterface {
             Game.flash(Colors.HEAL_FLASH, 20);
         else
             Game.flash(Colors.HURT_FLASH, 20);
+    }
+
+    @Override
+    public void preLevelInit(Level.Source source, Level level) {
+
+    }
+
+    @Override
+    public void handleEditorMarker(Level level, EditorMarker marker, Vector2 levelOffset, Vector2 tileOffset) {
+
     }
 }

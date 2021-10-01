@@ -6,7 +6,9 @@ import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.game.gamemode.DelverGameMode;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.game.gamemode.NullGameMode;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
@@ -142,10 +144,14 @@ public class GameManager {
 		renderer.init();
 	}
 
-	public static Game getGame()
-	{
+	public static Game getGame() {
 		return game;
 	}
 
-	public static GameModeInterface getGameMode() { return game.GameMode; }
+	public static GameModeInterface getGameMode() {
+	    if(game == null)
+	        return new DelverGameMode();
+
+	    return game.GameMode;
+	}
 }
