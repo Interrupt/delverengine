@@ -95,40 +95,40 @@ public class Block extends DirectionalEntity {
 
         float[] vertices = new float[]{
             // Bottom face
-            -x, 0, -y, getUVMinU(width), getUVMinV(depth), // 0
-            -x, 0, +y, getUVMinU(width), getUVMaxV(depth), // 1
-            +x, 0, +y, getUVMaxU(width), getUVMaxV(depth), // 2
-            +x, 0, -y, getUVMaxU(width), getUVMinV(depth), // 3
+            -x, 0, -y, getUVMinU(width) / 2f, getUVMinV(depth) / 2f + 0.5f, // 0
+            -x, 0, +y, getUVMinU(width) / 2f, getUVMaxV(depth) / 2f + 0.5f, // 1
+            +x, 0, +y, getUVMaxU(width) / 2f, getUVMaxV(depth) / 2f + 0.5f, // 2
+            +x, 0, -y, getUVMaxU(width) / 2f, getUVMinV(depth) / 2f + 0.5f, // 3
 
             // Top face
-            -x, z, -y, getUVMaxU(width), getUVMaxV(depth), // 4
-            -x, z, +y, getUVMaxU(width), getUVMinV(depth), // 5
-            +x, z, +y, getUVMinU(width), getUVMinV(depth), // 6
-            +x, z, -y, getUVMinU(width), getUVMaxV(depth), // 7
+            -x, z, -y, getUVMaxU(width) / 2f, getUVMaxV(depth) / 2f, // 4
+            -x, z, +y, getUVMaxU(width) / 2f, getUVMinV(depth) / 2f, // 5
+            +x, z, +y, getUVMinU(width) / 2f, getUVMinV(depth) / 2f, // 6
+            +x, z, -y, getUVMinU(width) / 2f, getUVMaxV(depth) / 2f, // 7
 
             // South face
-            -x, 0, -y, getUVMaxU(width), getUVMinV(height), // 8
-            -x, z, -y, getUVMaxU(width), getUVMaxV(height), // 9
-            +x, z, -y, getUVMinU(width), getUVMaxV(height), // 10
-            +x, 0, -y, getUVMinU(width), getUVMinV(height), // 11
+            -x, 0, -y, getUVMaxU(width) / 2f + 0.5f, getUVMinV(height) / 2f, // 8
+            -x, z, -y, getUVMaxU(width) / 2f + 0.5f, getUVMaxV(height) / 2f, // 9
+            +x, z, -y, getUVMinU(width) / 2f + 0.5f, getUVMaxV(height) / 2f, // 10
+            +x, 0, -y, getUVMinU(width) / 2f + 0.5f, getUVMinV(height) / 2f, // 11
 
             // North face
-            -x, 0, +y, getUVMinU(width), getUVMinV(height), // 12
-            -x, z, +y, getUVMinU(width), getUVMaxV(height), // 13
-            +x, z, +y, getUVMaxU(width), getUVMaxV(height), // 14
-            +x, 0, +y, getUVMaxU(width), getUVMinV(height), // 15
+            -x, 0, +y, getUVMinU(width) / 2f + 0.5f, getUVMinV(height) / 2f, // 12
+            -x, z, +y, getUVMinU(width) / 2f + 0.5f, getUVMaxV(height) / 2f, // 13
+            +x, z, +y, getUVMaxU(width) / 2f + 0.5f, getUVMaxV(height) / 2f, // 14
+            +x, 0, +y, getUVMaxU(width) / 2f + 0.5f, getUVMinV(height) / 2f, // 15
 
             // East face
-            -x, 0, -y, getUVMinU(depth), getUVMinV(height), // 16
-            -x, 0, +y, getUVMaxU(depth), getUVMinV(height), // 17
-            -x, z, +y, getUVMaxU(depth), getUVMaxV(height), // 18
-            -x, z, -y, getUVMinU(depth), getUVMaxV(height), // 19
+            -x, 0, -y, getUVMinU(depth) / 2f + 0.5f, getUVMinV(height) / 2f, // 16
+            -x, 0, +y, getUVMaxU(depth) / 2f + 0.5f, getUVMinV(height) / 2f, // 17
+            -x, z, +y, getUVMaxU(depth) / 2f + 0.5f, getUVMaxV(height) / 2f, // 18
+            -x, z, -y, getUVMinU(depth) / 2f + 0.5f, getUVMaxV(height) / 2f, // 19
 
             // West face
-            +x, 0, -y, getUVMaxU(depth), getUVMinV(height), // 20
-            +x, 0, +y, getUVMinU(depth), getUVMinV(height), // 21
-            +x, z, +y, getUVMinU(depth), getUVMaxV(height), // 22
-            +x, z, -y, getUVMaxU(depth), getUVMaxV(height), // 23
+            +x, 0, -y, getUVMaxU(depth) / 2f + 0.5f, getUVMinV(height) / 2f, // 20
+            +x, 0, +y, getUVMinU(depth) / 2f + 0.5f, getUVMinV(height) / 2f, // 21
+            +x, z, +y, getUVMinU(depth) / 2f + 0.5f, getUVMaxV(height) / 2f, // 22
+            +x, z, -y, getUVMaxU(depth) / 2f + 0.5f, getUVMaxV(height) / 2f, // 23
         };
 
         short[] indices = new short[]{
@@ -191,15 +191,12 @@ public class Block extends DirectionalEntity {
 
     private float getUVMaxU(float width) {
         if (width <= 0.25 + 0.125) {
-            return 31f / 32f;
-        }
-        if (width <= 0.5 + 0.25) {
             return 15f / 16f;
         }
-        else if (width <= 1 + 0.5) {
+        if (width <= 0.5 + 0.25) {
             return 7f / 8f;
         }
-        else if (width <= 2 + 1) {
+        else if (width <= 1 + 0.5) {
             return 3f / 4f;
         }
 
@@ -208,15 +205,12 @@ public class Block extends DirectionalEntity {
 
     private float getUVMinU(float width) {
         if (width <= 0.25 + 0.125) {
-            return 15f / 16f;
-        }
-        if (width <= 0.5 + 0.25) {
             return 7f / 8f;
         }
-        else if (width <= 1 + 0.5) {
+        if (width <= 0.5 + 0.25) {
             return 3f / 4f;
         }
-        else if (width <= 2 + 1) {
+        else if (width <= 1 + 0.5) {
             return 1f / 2f;
         }
 
@@ -225,15 +219,12 @@ public class Block extends DirectionalEntity {
 
     private float getUVMaxV(float height) {
         if (height <= 0.25 + 0.125) {
-            return 1 - (31f / 32f);
-        }
-        if (height <= 0.5 + 0.25) {
             return 1 - (15f / 16f);
         }
-        else if (height <= 1 + 0.5) {
+        if (height <= 0.5 + 0.25) {
             return 1 - (7f / 8f);
         }
-        else if (height <= 2 + 1) {
+        else if (height <= 1 + 0.5) {
             return 1 - (3f / 4f);
         }
 
@@ -242,15 +233,12 @@ public class Block extends DirectionalEntity {
 
     private float getUVMinV(float height) {
         if (height <= 0.25 + 0.125) {
-            return 1 - (15f / 16f);
-        }
-        if (height <= 0.5 + 0.25) {
             return 1 - (7f / 8f);
         }
-        else if (height <= 1 + 0.5) {
+        if (height <= 0.5 + 0.25) {
             return 1 - (3f / 4f);
         }
-        else if (height <= 2 + 1) {
+        else if (height <= 1 + 0.5) {
             return 1 - (1f / 2f);
         }
 
