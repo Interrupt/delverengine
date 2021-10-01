@@ -1312,7 +1312,8 @@ public class EditorApplication implements ApplicationListener {
 					if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
 						// Make a copy
 						Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
-						level.addEntity(copy);
+						level.entities.add(copy);
+						copy.init(level, Source.EDITOR);
 
                         pickEntity(copy);
 
