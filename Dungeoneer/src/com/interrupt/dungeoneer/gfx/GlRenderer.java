@@ -646,38 +646,6 @@ public class GlRenderer {
 		// draw text
 		uiBatch.setColor(Color.WHITE);
 
-		if(OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput) {
-			int textYPos = 0;
-
-            // TODO: Extract this!
-            if (Game.messageTimer > 0 && !OverlayManager.instance.shouldPauseGame()) {
-				float fontSize = Math.min(camera2D.viewportWidth, camera2D.viewportHeight) / 15;
-				float messagefontSize = fontSize * Game.messageScale * 0.35f;
-
-				int yPos = (int) ((Game.message.size * -messagefontSize * 1.2) / 2 + messagefontSize * 1.2);
-				for (int i = 0; i < Game.message.size; i++) {
-					String messageIterator = Game.message.get(i);
-					if (messageIterator != null) {
-						if (messageIterator.length() > 0) {
-							tempColor1.set(Color.WHITE);
-							tempColor2.set(Color.BLACK);
-
-							if (tempColor1.a < 0) tempColor1.a = 0;
-							if (tempColor2.a < 0) tempColor2.a = 0;
-
-							float xOffset = messageIterator.length() / 2.0f;
-							drawText(messageIterator, -xOffset * messagefontSize + messagefontSize * 0.1f, -yPos, messagefontSize, tempColor2);
-							drawText(messageIterator, -xOffset * messagefontSize, -yPos, messagefontSize, tempColor1);
-						}
-						if (i != Game.message.size - 1)
-							yPos += (int) (messagefontSize * 1.4);
-					}
-				}
-
-				textYPos = yPos + (int)(Game.message.size * messagefontSize * 0.5f);
-			}
-		}
-
 		// TODO: Migrate the Player UI then remove the below.
 		//drawUi();
 

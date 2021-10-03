@@ -72,6 +72,7 @@ public class Game {
 	public static float messageTimer = 0;
 	public static float messageScale = 1;
 	public static Array<String> message = new Array<String>();
+    public static Message message2 = new Message();
 
 	public static Color flashColor = new Color(1f,0f,0f,1f);
 	public static float flashTimer = 0;
@@ -135,7 +136,7 @@ public class Game {
 		// Load item data
 		ItemManager im = modManager.loadItemManager(gameData.itemDataFiles);
 		if(im != null) itemManager = im;
-		else ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "ITEMS.DAT"), 2, 1f);
+		else message2.add(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "ITEMS.DAT"), 2f);
 
 		if(itemManager == null) {
 			itemManager = new ItemManager();
@@ -144,7 +145,7 @@ public class Game {
 		// Load enemy data
 		MonsterManager mm = modManager.loadMonsterManager(gameData.monsterDataFiles);
 		if(mm != null) monsterManager = mm;
-		else ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "MONSTERS.DAT"), 2, 1f);
+		else message2.add(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "MONSTERS.DAT"), 2f);
 
 		if(monsterManager == null) {
 			monsterManager = new MonsterManager();
@@ -154,7 +155,7 @@ public class Game {
 		// Load animation data
 		LerpedAnimationManager lam = modManager.loadAnimationManager();
 		if(lam != null) animationManager = lam;
-		else ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "ANIMATIONS.DAT"), 2, 1f);
+		else message2.add(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "ANIMATIONS.DAT"), 2f);
 
 		if(animationManager == null) {
 			animationManager = new LerpedAnimationManager();
@@ -163,7 +164,7 @@ public class Game {
 		// load the entity templates
 		EntityManager em = modManager.loadEntityManager(gameData.entityDataFiles);
 		if(em != null) entityManager = em;
-		else ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "ENTITIES.DAT"), 2, 1f);
+		else message2.add(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "ENTITIES.DAT"), 2f);
 
 		if(entityManager == null) {
 			entityManager = new EntityManager();
@@ -520,6 +521,7 @@ public class Game {
 	public void tick(float delta) {
 		time += delta;
 
+        Game.message2.tick(delta);
 		if(messageTimer > 0) messageTimer -= delta;
 		if(flashTimer > 0) flashTimer -= delta;
 
@@ -593,7 +595,7 @@ public class Game {
 			}
 
 			if(!hasOrb) {
-				Game.ShowMessage(StringManager.get("game.Game.cannotLeaveText"), 4, 1f);
+				message2.add(StringManager.get("game.Game.cannotLeaveText"), 4f);
 			}
 			else
 				GameApplication.ShowGameOverScreen(true);
@@ -862,23 +864,6 @@ public class Game {
 		GameScreen.resetDelta = true;
 
 		Gdx.app.log("DelverLifeCycle", "Level Changed");
-	}
-
-	public static void ShowMessage(String newMessage, float seconds)
-	{
-		message.clear();
-		if(newMessage.equals("")) return;
-
-		message.addAll(newMessage.split("\n"));
-
-		messageTimer = 60 * seconds;
-		messageScale = 1;
-	}
-
-	public static void ShowMessage(String newMessage, float seconds, float scale)
-	{
-		ShowMessage(newMessage,seconds);
-		messageScale = scale;
 	}
 
 	public static void flash(Color color, int milliseconds)
@@ -1556,7 +1541,7 @@ public class Game {
 
         if (null == hudManager) {
             hudManager = new HUDManager();
-            ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
+            message2.add(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2f);
         }
     }
 

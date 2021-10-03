@@ -70,10 +70,10 @@ public class Potion extends Item {
 		if(Game.rand.nextFloat() > 0.5f && !player.discoveredPotions.contains(potionType, true)) {
 			player.discoveredPotions.add(potionType);
 			player.history.identified(this);
-			Game.ShowMessage(displayText + "\n" + MessageFormat.format(StringManager.get("items.Potion.discoverDisplayText"), GetIdentifiedName()), 1.5f, 1f);
+			Game.message2.add(displayText + "\n" + MessageFormat.format(StringManager.get("items.Potion.discoverDisplayText"), GetIdentifiedName()), 1.5f);
 		}
 		else {
-			Game.ShowMessage(displayText, 1.5f, 1f);
+			Game.message2.add(displayText, 1.5f);
 		}
 	}
 

@@ -332,7 +332,7 @@ public class Item extends Entity {
 			}
 		}
 		else {
-			Game.ShowMessage(StringManager.get("entities.Item.noRoomText"), 1.0f, 1f);
+            Game.message2.add(StringManager.get("entities.Item.noRoomText"), 1);
 		}
 	}
 

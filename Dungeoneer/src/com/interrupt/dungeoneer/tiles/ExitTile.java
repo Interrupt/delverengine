@@ -36,7 +36,7 @@ public class ExitTile extends Tile implements LookAt {
 			Game.instance.doLevelExit(null);
 		}
 		else if(!hasOrb) {
-			Game.ShowMessage(StringManager.get("tiles.ExitTile.cannotLeaveText"), 4, 1f);
+			Game.message2.add(StringManager.get("tiles.ExitTile.cannotLeaveText"), 4f);
 		}
 		else {
 			GameApplication.ShowGameOverScreen(true);

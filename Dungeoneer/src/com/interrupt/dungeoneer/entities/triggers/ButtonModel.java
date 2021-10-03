@@ -57,7 +57,8 @@ public class ButtonModel extends Model {
 	@EditorProperty( group = "Trigger" )
 	public float messageTime = 5f;
 
-	/** Size of displayed message. */
+	/** @deprecated Size of displayed message. */
+    @Deprecated
 	@EditorProperty( group = "Trigger" )
 	public float messageSize = 1f;
 
@@ -180,7 +181,10 @@ public class ButtonModel extends Model {
 	public void doTriggerEvent(String value) {
 		Audio.playPositionedSound(triggerSound, new Vector3((float)x,(float)y,(float)z), 0.8f, 11f);
 		Game.instance.level.trigger(this, triggersId, triggerValue);
-		if(message != null && !message.equals("")) Game.ShowMessage(message, messageTime, messageSize);
+
+        if (message != null && !message.equals("")) {
+            Game.message2.add(message, messageTime);
+        }
 	}
 
 	@Override

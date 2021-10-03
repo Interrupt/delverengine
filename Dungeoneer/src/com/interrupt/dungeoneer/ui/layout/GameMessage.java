@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.ui.layout;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
@@ -13,6 +14,7 @@ public class GameMessage extends Element {
     protected Actor createActor() {
         VerticalGroup group = new VerticalGroup();
 
+        group.addActor(createMessageLabel());
         group.addActor(createTitleLabel());
         group.addActor(createAttributesLabel());
 
@@ -21,6 +23,29 @@ public class GameMessage extends Element {
         group.space(4f);
 
         return group;
+    }
+
+    private Label createMessageLabel() {
+        Label label = new Label("MESSAGE", UiSkin.getSkin()) {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+
+                if (Game.message2.hasActiveMessage()) {
+                    setText(Game.message2.getMessage());
+                    setColor(Color.WHITE);
+                    setVisible(true);
+                }
+                else {
+                    setText("");
+                    setVisible(false);
+                }
+            }
+        };
+
+        label.debug();
+
+        return label;
     }
 
     private Label createTitleLabel() {

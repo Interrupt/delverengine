@@ -65,7 +65,7 @@ public class Stairs extends Entity {
 		if(player.ignoreStairs || Game.messageTimer > 1) return;
 
 		if(Game.isMobile)
-			Game.ShowMessage(MessageFormat.format(StringManager.get("entities.Stairs.mobileUseText"), direction.toString().toUpperCase()), 0.5f, 1f);
+            Game.message2.add(MessageFormat.format(StringManager.get("entities.Stairs.mobileUseText"), direction.toString().toUpperCase()), 0.5f);
 	}
 
 	public void use(Player player, float projx, float projy)
@@ -78,7 +78,7 @@ public class Stairs extends Entity {
 
 		changeLevel(Game.GetLevel());
 
-		Game.ShowMessage("", 1);
+		Game.message2.clear();
 	}
 
 	public String getUseText() {

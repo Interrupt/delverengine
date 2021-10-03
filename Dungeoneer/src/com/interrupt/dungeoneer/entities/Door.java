@@ -211,7 +211,7 @@ public class Door extends Entity {
             if (!getsStuckOpen){
                 doClose(true);
             } else {
-                Game.ShowMessage(StringManager.get("entities.Door.stuckText"), 3, 1f);
+                Game.message2.add(StringManager.get("entities.Door.stuckText"), 3);
             }
         }
 		else if (doorState == DoorState.STUCK && breakable) {
@@ -220,7 +220,7 @@ public class Door extends Entity {
 			}
 			else {
 				shakeTimer = 20f;
-				Game.ShowMessage(StringManager.get("entities.Door.stuckText"), 3, 1f);
+                Game.message2.add(StringManager.get("entities.Door.stuckText"), 3);
 			}
 		}
 		else {
@@ -231,13 +231,13 @@ public class Door extends Entity {
                     if(p.keys > 0) {
                         p.keys--;
                         isLocked=false;
-                        Game.ShowMessage(StringManager.get("entities.Door.unlockedText"), 3, 1f);
+                        Game.message2.add(StringManager.get("entities.Door.unlockedText"), 3);
                         doOpen(true);
                     } else {
-                        Game.ShowMessage(StringManager.get("entities.Door.lockedText"), 3, 1f);
+                        Game.message2.add(StringManager.get("entities.Door.lockedText"), 3);
                     }
                 } else {
-                    Game.ShowMessage(StringManager.get("entities.Door.opensElsewhereText"), 3, 1f);
+                    Game.message2.add(StringManager.get("entities.Door.opensElsewhereText"), 3);
                 }
             }
         }

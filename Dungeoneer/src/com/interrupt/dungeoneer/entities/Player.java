@@ -1562,14 +1562,14 @@ public class Player extends Actor {
 				if(e instanceof Item || e instanceof Stairs) {
 					if(Math.abs(x - e.x) < 0.5f && Math.abs(y - e.y) < 0.5f && Math.abs(z - e.z) < 1f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
 				else if(e instanceof Door) {
 					if(Math.abs(x - e.x) < 1f && Math.abs(y - e.y) < 1f && Math.abs(z - e.z) < 1f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
@@ -1577,7 +1577,7 @@ public class Player extends Actor {
 					Trigger trigger = (Trigger)e;
 					if(trigger.triggerType == TriggerType.USE && Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
@@ -1585,14 +1585,14 @@ public class Player extends Actor {
 					ButtonModel trigger = (ButtonModel)e;
 					if(Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
 				else if(e instanceof Actor) {
 					if(Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
