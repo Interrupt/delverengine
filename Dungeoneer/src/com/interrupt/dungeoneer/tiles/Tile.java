@@ -6,16 +6,14 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Plane.PlaneSide;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.collision.Collision;
-import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.Tesselator;
-import com.interrupt.dungeoneer.interfaces.LookAt;
 import com.interrupt.helpers.FloatTuple;
 import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.TileManager;
 
-public class Tile implements Serializable, LookAt {
+public class Tile implements Serializable {
 	private static final long serialVersionUID = 7907569533774959788L;
 
 	public enum TileSpaceType { EMPTY, SOLID, OPEN_NW, OPEN_NE, OPEN_SW, OPEN_SE };
@@ -1245,9 +1243,4 @@ public class Tile implements Serializable, LookAt {
 	public boolean isTileLocked() {
 		return isLocked;
 	}
-
-    @Override
-    public LookAtDTO getLookAtInfo() {
-        return null;
-    }
 }

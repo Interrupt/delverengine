@@ -676,24 +676,6 @@ public class GlRenderer {
 
 				textYPos = yPos + (int)(Game.message.size * messagefontSize * 0.5f);
 			}
-
-            // TODO: Extract this!
-			// if (Game.useMessage.size > 0) {
-			// 	if (textYPos != 0) textYPos += (int) (0.25f * Game.GetUiSize());
-			// 	float useFontSize = 0.25f * Game.GetUiSize();
-			// 	int yPos = textYPos + (int) (useFontSize);
-			// 	for (int i = 0; i < Game.useMessage.size; i++) {
-			// 		String messageIterator = Game.useMessage.get(i);
-			// 		if (messageIterator != null) {
-			// 			if (messageIterator.length() > 0) {
-			// 				float xOffset = messageIterator.length() / 2.0f;
-			// 				drawText(messageIterator, -xOffset * useFontSize + useFontSize * 0.1f, -yPos, useFontSize, Color.BLACK);
-			// 				drawText(messageIterator, -xOffset * useFontSize, -yPos, useFontSize, (i == 0 ? Game.useMessageColor : Color.WHITE));
-			// 			}
-			// 			yPos += (int) (useFontSize * 1.4);
-			// 		}
-			// 	}
-			// }
 		}
 
 		// TODO: Migrate the Player UI then remove the below.

@@ -135,12 +135,14 @@ public class ButtonModel extends Model {
 			}
 		}
 
-		if(Game.isMobile && Math.abs(Game.instance.player.x - x) < 0.8f && Math.abs(Game.instance.player.y - y) < 0.8f) {
-			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
-			if(Game.isMobile) useText = StringManager.get("triggers.ButtonModel.useMobileText");
-			Game.ShowUseMessage(MessageFormat.format(StringManager.get("triggers.ButtonModel.useText"), useText, this.useVerb));
-		}
+        setAsLookedAtItem();
 	}
+
+    private void setAsLookedAtItem() {
+        if (Game.isMobile && Math.abs(Game.instance.player.x - x) < 0.8f && Math.abs(Game.instance.player.y - y) < 0.8f) {
+            Game.instance.player.setLookedAtItem(this);
+        }
+    }
 
 	@Override
 	public void use(Player p, float projx, float projy) {
@@ -221,9 +223,9 @@ public class ButtonModel extends Model {
     @Override
     public LookAtDTO getLookAtInfo() {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
-        if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
+        if(Game.isMobile) useText = StringManager.get("triggers.ButtonModel.useMobileText");
 
-        String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, useVerb);
+        String title = MessageFormat.format(StringManager.get("triggers.ButtonModel.useText"), useText, useVerb);
 
         return new LookAtDTO(title, null, Color.WHITE);
     }

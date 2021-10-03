@@ -239,8 +239,9 @@ public class Item extends Entity {
 			}
 		}
 
-		if(Game.isMobile)
-			Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Item.mobileUseMessageText"),GetInfoText()));
+        if (Game.isMobile) {
+            Game.instance.player.setLookedAtItem(this);
+        }
 
 		if(!ignorePlayerCollision) {
 			ignorePlayerCollision = true;
@@ -263,6 +264,7 @@ public class Item extends Entity {
 		}
 	}
 
+    @Override
 	public void use(Player player, float projx, float projy)
 	{
 		float pxdir = player.x - x;
@@ -574,6 +576,7 @@ public class Item extends Entity {
 		return newLineOrNone + modName + ": " + (modAmountPercent > 0 ? "+" : "") + amount;
 	}
 
+    @Override
 	public void updateDrawable() {
 		updateDrawableInternal(false);
 	}

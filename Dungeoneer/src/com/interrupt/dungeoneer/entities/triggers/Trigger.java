@@ -163,9 +163,7 @@ public class Trigger extends Entity {
 		}
 
 		if(Game.isMobile && triggerType == TriggerType.USE && Math.abs(Game.instance.player.x - x) < 0.8f && Math.abs(Game.instance.player.y - y) < 0.8f) {
-			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
-			if(Game.isMobile) useText = StringManager.get("entities.Trigger.mobileUseText");
-			Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Trigger.mobileUseText"), useText, this.getUseVerb()));
+            Game.instance.player.setLookedAtItem(this);
 		}
 	}
 
@@ -245,7 +243,7 @@ public class Trigger extends Entity {
     @Override
     public LookAtDTO getLookAtInfo() {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
-        if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
+        if(Game.isMobile) useText = StringManager.get("entities.Trigger.mobileUseText");
 
         if(getTriggerStatus() == TriggerStatus.WAITING || getTriggerStatus() == TriggerStatus.TRIGGERED) {
             String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseVerb());

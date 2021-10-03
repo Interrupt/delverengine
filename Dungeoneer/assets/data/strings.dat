@@ -670,11 +670,6 @@
         "localizedName": "Excellent",
         "comment": ""
     },
-    "entities.Item.mobileUseMessageText": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "USE: GET {0}",
-        "comment": "Use message shown on mobile in place of key binding. {0} is the item name."
-    },
     "entities.Item.noRoomText": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "NO ROOM",

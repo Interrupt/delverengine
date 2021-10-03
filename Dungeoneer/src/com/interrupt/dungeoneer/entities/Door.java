@@ -413,13 +413,7 @@ public class Door extends Entity {
 			makeDust(animUnit);
 		}
 
-		// show mobile use message
-		if(Game.isMobile)
-		{
-			if(Math.abs(Game.instance.player.x - x) < 1f && Math.abs(Game.instance.player.y - y) < 1f && Math.abs(Game.instance.player.z - z) < 1f) {
-				Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Door.mobileUseText"), getUseText()));
-			}
-		}
+        setAsLookedAtItem();
 
 		this.color = level.GetLightmapAt(x, y, z);
 
@@ -427,6 +421,16 @@ public class Door extends Entity {
 
 		tickAttached(level, delta);
 	}
+
+    private void setAsLookedAtItem() {
+        if (Game.isMobile && isPlayerNear()) {
+            Game.instance.player.setLookedAtItem(this);
+        }
+    }
+
+    private boolean isPlayerNear() {
+        return Math.abs(Game.instance.player.x - x) < 1f && Math.abs(Game.instance.player.y - y) < 1f && Math.abs(Game.instance.player.z - z) < 1f;
+    }
 
 	private void makeDust(float animateTime) {
 		if((doorOpenType == DoorOpenType.SLIDE_UP || doorOpenType == DoorOpenType.SLIDE) && doorState == DoorState.OPENING) {

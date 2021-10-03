@@ -11,9 +11,10 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAt;
 import com.interrupt.managers.StringManager;
 
-public class ExitTile extends Tile {
+public class ExitTile extends Tile implements LookAt {
 	public ExitTile() {
 		blockMotion = true;
 		renderSolid = true;

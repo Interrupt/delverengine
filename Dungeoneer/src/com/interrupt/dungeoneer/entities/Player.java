@@ -238,6 +238,7 @@ public class Player extends Actor {
     // Used to act on breaking changes between save versions
     public int saveVersion = -1;
 
+    /** Currently focused object. */
     public LookAt lookedAtItem = null;
 
 	public Player() {
@@ -2629,9 +2630,15 @@ public class Player extends Actor {
 		}
     }
 
+    public void setLookedAtItem(LookAt lookedAtItem) {
+        this.lookedAtItem = lookedAtItem;
+    }
+
     private void setLookedAtItem(Level level) {
+        LookAt backgroundItem = lookedAtItem;
+
         Entity centered = pickEntity(level, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0.7f);
-        lookedAtItem = (centered instanceof LookAt && centered != this) ? centered : null;
+        lookedAtItem = (centered instanceof LookAt && centered != this) ? (LookAt) centered : null;
 
         if (lookedAtItem == null) {
             // Check for a wall hit.
@@ -2644,7 +2651,12 @@ public class Player extends Actor {
             int checky = (int) (Math.floor(ray.origin.z + projy));
 
             Tile hit = level.getTile(checkx, checky);
-            lookedAtItem = (hit instanceof LookAt) ? hit : null;
+            lookedAtItem = (hit instanceof LookAt) ? (LookAt) hit : null;
+        }
+
+        // In case an entity did override this, make sure we display that instead.
+        if (lookedAtItem == null && backgroundItem != null) {
+            lookedAtItem = backgroundItem;
         }
     }
 }
