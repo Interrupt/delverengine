@@ -16,7 +16,7 @@ allprojects {
         gdxVersion = '1.9.9'
         roboVMVersion = '2.3.9'
         kryoVersion = '2.24.0'
-        reflectionsVersion = '0.9.12'
+        reflectionsVersion = '0.10'
         inkVersion = '1.0.0'
     }
 
