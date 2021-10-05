@@ -66,7 +66,6 @@ import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
-import com.interrupt.dungeoneer.interfaces.Directional;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.dungeoneer.tiles.Tile.TileSpaceType;
@@ -95,7 +94,6 @@ public class EditorApplication implements ApplicationListener {
 	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
 	public enum DragMode { NONE, XY, X, Y, Z }
-	public enum MoveMode { NONE, DRAG, ROTATE }
 
 	public Color controlPointColor = new Color(1f, 0.4f, 0f, 1f);
 
@@ -277,7 +275,6 @@ public class EditorApplication implements ApplicationListener {
 
     private boolean movingEntity = false;
 	private DragMode dragMode = DragMode.NONE;
-    private MoveMode moveMode = MoveMode.DRAG;
     private Vector3 dragStart = null;
 
     private Vector3 rotateStart = null;
@@ -917,61 +914,6 @@ public class EditorApplication implements ApplicationListener {
 			}
 		}
 
-		// ROTATE
-		if(moveMode == MoveMode.ROTATE && Editor.selection.picked instanceof Directional) {
-			Directional pickedDirectional = (Directional) Editor.selection.picked;
-			dragPlane = new Plane(new Vector3(0,-1,0), Editor.selection.picked.z);
-
-			if(Intersector.intersectRayPlane(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, intpos)) {
-
-				if(rotateStart == null) {
-					rotateStart = new Vector3(pickedDirectional.getRotation());
-					rotateStartIntersection = new Vector3(intpos);
-				}
-
-				Vector3 rotateDirection = new Vector3(
-						Editor.selection.picked.x - intpos.x,
-						Editor.selection.picked.y - intpos.z,
-						Editor.selection.picked.z - intpos.y).nor();
-
-				Vector3 rotateStartDirection = new Vector3(
-						Editor.selection.picked.x - rotateStartIntersection.x,
-						Editor.selection.picked.y - rotateStartIntersection.z,
-						Editor.selection.picked.z - rotateStartIntersection.y).nor();
-
-				float yaw = (float)Math.atan2(rotateDirection.x, rotateDirection.y);
-				float startYaw = (float)Math.atan2(rotateStartDirection.x, rotateStartDirection.y);
-
-				if(dragMode == DragMode.X) {
-					pickedDirectional.setRotation(rotateStart.x + (yaw - startYaw) * 57.2957795f, rotateStart.y, rotateStart.z);
-				}
-				else if (dragMode == DragMode.Y) {
-					pickedDirectional.setRotation(rotateStart.x, rotateStart.y + (yaw - startYaw) * 57.2957795f, rotateStart.z);
-				}
-				else {
-					pickedDirectional.setRotation(rotateStart.x, rotateStart.y,rotateStart.z + (yaw - startYaw) * 57.2957795f);
-				}
-
-				if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
-					float rx = pickedDirectional.getRotation().x;
-					float ry = pickedDirectional.getRotation().y;
-					float rz = pickedDirectional.getRotation().z;
-
-					if(dragMode == DragMode.X)
-						//pickedDirectional.getRotation().x = (int)(Math.floor(pickedDirectional.getRotation().x) * 0.04444444444444) / 0.04444444444444f;
-						pickedDirectional.setRotation((int)(Math.floor(pickedDirectional.getRotation().x) * 0.04444444444444) / 0.04444444444444f, ry, rz);
-					else if (dragMode == DragMode.Y)
-						//pickedDirectional.getRotation().y = (int)(Math.floor(pickedDirectional.getRotation().y) * 0.04444444444444) / 0.04444444444444f;
-						pickedDirectional.setRotation(rx, (int)(Math.floor(pickedDirectional.getRotation().y) * 0.04444444444444) / 0.04444444444444f, rz);
-					else
-						//pickedDirectional.getRotation().z = (int)(Math.floor(pickedDirectional.getRotation().z) * 0.04444444444444) / 0.04444444444444f;
-						pickedDirectional.setRotation(rx, ry, (int)(Math.floor(pickedDirectional.getRotation().z) * 0.04444444444444) / 0.04444444444444f);
-				}
-
-				refreshEntity(Editor.selection.picked);
-			}
-		}
-
 		// drag tile
 		if(selected && (!readLeftClick || movingControlPoint)) {
 			int selX = Editor.selection.tiles.x;
@@ -1387,55 +1329,6 @@ public class EditorApplication implements ApplicationListener {
 
 				if(dragStart == null)
 					dragStart = new Vector3(Editor.selection.picked.x, Editor.selection.picked.y, Editor.selection.picked.z);
-
-				if(moveMode == MoveMode.DRAG && Intersector.intersectRayPlane(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, intpos)) {
-					if(dragOffset == null) {
-						dragOffset = t_dragOffset.set(Editor.selection.picked.x - intpos.x, Editor.selection.picked.y - intpos.z, Editor.selection.picked.z - intpos.y);
-					}
-
-					float startX = Editor.selection.picked.x;
-					float startY = Editor.selection.picked.y;
-					float startZ = Editor.selection.picked.z;
-
-					Editor.selection.picked.x = intpos.x + dragOffset.x;
-					Editor.selection.picked.y = intpos.z + dragOffset.y;
-					Editor.selection.picked.z = intpos.y + dragOffset.z;
-
-					if(dragMode == DragMode.XY) {
-						Editor.selection.picked.z = dragStart.z;
-					}
-					if(dragMode == DragMode.Y) {
-                        Editor.selection.picked.x = dragStart.x;
-					}
-					else if(dragMode == DragMode.Z) {
-						Editor.selection.picked.x = dragStart.x;
-						Editor.selection.picked.y = dragStart.y;
-					}
-					else if(dragMode == DragMode.X) {
-                        Editor.selection.picked.y = dragStart.y;
-					}
-
-					if(Gdx.input.isKeyPressed(Keys.CONTROL_LEFT)) {
-						Editor.selection.picked.x = (int)(Editor.selection.picked.x * 8) / 8f;
-						Editor.selection.picked.y = (int)(Editor.selection.picked.y * 8) / 8f;
-						Editor.selection.picked.z = (int)(Editor.selection.picked.z * 8) / 8f;
-					}
-
-					float movedX = startX - Editor.selection.picked.x;
-					float movedY = startY - Editor.selection.picked.y;
-					float movedZ = startZ - Editor.selection.picked.z;
-
-					for(Entity selected : Editor.selection.selected) {
-						selected.x -= movedX;
-						selected.y -= movedY;
-						selected.z -= movedZ;
-					}
-
-                    refreshEntity(Editor.selection.picked);
-                    for(Entity selected : Editor.selection.selected) {
-                        refreshEntity(selected);
-                    }
-				}
 			}
 			else {
 				dragOffset = null;
@@ -1446,64 +1339,6 @@ public class EditorApplication implements ApplicationListener {
 			if(Editor.selection.picked == null) {
 				dragPlane = null;
 				dragMode = DragMode.NONE;
-				moveMode = MoveMode.DRAG;
-			}
-
-			// Draw rotation circles
-			if(moveMode == MoveMode.ROTATE) {
-				if(dragMode == DragMode.X) {
-					drawXCircle(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y, 2f, EditorColors.X_AXIS);
-				}
-				else if(dragMode == DragMode.Y) {
-					drawYCircle(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y, 2f, EditorColors.Y_AXIS);
-				}
-				else {
-					drawZCircle(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y, 2f, EditorColors.Z_AXIS);
-				}
-
-				if(Editor.selection.picked instanceof Directional) {
-					Directional dirEntity = (Directional) Editor.selection.picked;
-
-					Vector3 dirEnd = dirEntity.getDirection();
-					dirEnd.x += Editor.selection.picked.x;
-					dirEnd.y += Editor.selection.picked.y;
-					dirEnd.z += Editor.selection.picked.z;
-
-					drawLine(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z - 0.49f, Editor.selection.picked.y), new Vector3(dirEnd.x, dirEnd.z - 0.49f,dirEnd.y), 2f, Color.WHITE);
-				}
-			}
-
-			if(Editor.selection.picked != null && ((Editor.selection.hovered == null || Editor.selection.isSelected(Editor.selection.hovered)) || Editor.selection.hovered == Editor.selection.picked || movingEntity)) {
-				Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-				Gdx.gl.glEnable(GL20.GL_ALPHA);
-				Gdx.gl.glEnable(GL20.GL_BLEND);
-
-				if(moveMode == MoveMode.DRAG) {
-					if(dragMode == DragMode.Z) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 10f, Editor.selection.picked.y);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z + 10f, Editor.selection.picked.y);
-						this.drawLine(startLine, endLine, 2, EditorColors.Z_AXIS);
-					}
-					else if(dragMode == DragMode.X) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
-					}
-					else if(dragMode == DragMode.Y) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y -10f);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
-						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
-					}
-					else if(dragMode == DragMode.XY || (!movingEntity && Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))) {
-						Vector3 startLine = tempVec3.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y - 10f);
-						Vector3 endLine = tempVec4.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y + 10f);
-						this.drawLine(startLine, endLine, 2, EditorColors.Y_AXIS);
-
-						startLine = tempVec3.set(Editor.selection.picked.x - 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						endLine = tempVec4.set(Editor.selection.picked.x + 10f, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y);
-						this.drawLine(startLine, endLine, 2, EditorColors.X_AXIS);
-					}
-				}
 			}
 		}
 
@@ -3892,10 +3727,6 @@ public class EditorApplication implements ApplicationListener {
 		return new Vector3(Editor.selection.tiles.x, floorPos, Editor.selection.tiles.y);
 	}
 
-    public MoveMode getMoveMode() {
-        return moveMode;
-    }
-
     public Array<CollisionTriangle> GetCollisionTriangles() {
         return GlRenderer.triangleSpatialHash.getAllTriangles();
     }
@@ -3914,7 +3745,6 @@ public class EditorApplication implements ApplicationListener {
 
     public void setDragMode(DragMode dragMode) {
         if(Editor.selection.picked == null) return;
-        this.dragMode = dragMode;
 
         if(dragMode == DragMode.Y) {
             Vector3 vertDir = new Vector3(Vector3.Y);
@@ -3936,11 +3766,6 @@ public class EditorApplication implements ApplicationListener {
             float len = vert.distance(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
             dragPlane = new Plane(vertDir, -len);
         }
-    }
-
-    public void setMoveMode(MoveMode moveMode) {
-        this.moveMode = moveMode;
-        if(moveMode == MoveMode.ROTATE) rotateStart = null;
     }
 
     public Decal getDecal() {

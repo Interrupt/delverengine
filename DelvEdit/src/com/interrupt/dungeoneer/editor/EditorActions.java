@@ -46,10 +46,6 @@ public class EditorActions {
     public ActionListener pickWallAction;
     public ActionListener pickNewWallTexAction;
     public ActionListener fillTextureAction;
-    public ActionListener xDragMode;
-    public ActionListener yDragMode;
-    public ActionListener zDragMode;
-    public ActionListener rotateMode;
     public ActionListener turnLeftAction;
     public ActionListener turnRightAction;
     public ActionListener flattenFloor;
@@ -342,32 +338,6 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Editor.app.viewSelected();
-            }
-        };
-
-        xDragMode = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.setDragMode(EditorApplication.DragMode.X);
-            }
-        };
-        yDragMode = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.setDragMode(EditorApplication.DragMode.Y);
-            }
-        };
-        zDragMode = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.setDragMode(EditorApplication.DragMode.Z);
-            }
-        };
-
-        rotateMode = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.app.setMoveMode(EditorApplication.MoveMode.ROTATE);
             }
         };
 
