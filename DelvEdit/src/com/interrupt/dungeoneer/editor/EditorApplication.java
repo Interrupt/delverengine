@@ -88,7 +88,7 @@ public class EditorApplication implements ApplicationListener {
 	public GlRenderer renderer = null;
 	public EditorFile file = null;
 
-	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
+	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex }
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
 
 	public Color controlPointColor = new Color(1f, 0.4f, 0f, 1f);
@@ -115,9 +115,7 @@ public class EditorApplication implements ApplicationListener {
 
 	public boolean canDelete = true;
 
-	protected Array<Vector3> spatialWorkerList = new Array<Vector3>();
-
-	public enum TileSurface {Ceiling, Floor, UpperWall, LowerWall};
+	public enum TileSurface {Ceiling, Floor, UpperWall, LowerWall}
 
     public class PickedSurface {
     	public TileEdges edge;
@@ -153,7 +151,7 @@ public class EditorApplication implements ApplicationListener {
 		public Vector3 point;
 		public ControlPointType controlPointType;
 
-		public Array<ControlPointVertex> vertices = new Array<ControlPointVertex>();
+		public Array<ControlPointVertex> vertices = new Array<>();
 
 		public ControlPoint(Vector3 point, ControlPointType type) {
 			this.point = point;
@@ -219,11 +217,11 @@ public class EditorApplication implements ApplicationListener {
     protected Pixmap wallPixmap;
     protected Texture selectionTex;
     protected Texture walltex;
-    protected TextureRegion wallTextures[];
-    protected TextureRegion editorSprites[];
+    protected TextureRegion[] wallTextures;
+    protected TextureRegion[] editorSprites;
     protected Texture meshtex;
 
-    protected HashMap<Entity.ArtType, TextureRegion[]> spriteAtlases = new HashMap<Entity.ArtType, TextureRegion[]>();
+    protected HashMap<Entity.ArtType, TextureRegion[]> spriteAtlases = new HashMap<>();
 
     protected EntityManager entityManager;
     protected MonsterManager monsterManager;
@@ -257,7 +255,7 @@ public class EditorApplication implements ApplicationListener {
             return Decal.newDecal(1, 1, editorSprites[0]);
         }
     };
-    protected Array<Decal> usedDecals = new Array<Decal>(256);
+    protected Array<Decal> usedDecals = new Array<>(256);
 
     private int messageTimer = 0;
     private String message = "";
@@ -288,7 +286,7 @@ public class EditorApplication implements ApplicationListener {
 
 	DrawableSprite unknownEntityMarker = new DrawableSprite();
 
-	Array<ControlPoint> controlPoints = new Array<ControlPoint>();
+	Array<ControlPoint> controlPoints = new Array<>();
 	ControlPoint pickedControlPoint = null;
 	public boolean movingControlPoint = false;
 
@@ -596,7 +594,7 @@ public class EditorApplication implements ApplicationListener {
 
 	Vector3 intersectNormal = new Vector3();
 	Vector3 intersectTemp = new Vector3();
-	Array<Entity> selectedEntities = new Array<Entity>();
+	Array<Entity> selectedEntities = new Array<>();
 
 	// Track the starting point of the selection area.
 	int selStartX = 0;
@@ -720,9 +718,9 @@ public class EditorApplication implements ApplicationListener {
 		renderer.renderStencilPasses();
 		renderer.renderTransparentEntities();
 
-		renderer.clearBoundTexture();
+		GlRenderer.clearBoundTexture();
 		renderer.renderSelectedEntities(selectedEntities, EditorState.hovered, hoveredColor, GL20.GL_DST_COLOR, GL20.GL_ZERO);
-		renderer.clearBoundTexture();
+		GlRenderer.clearBoundTexture();
 		renderer.renderSelectedEntities(selectedEntities, EditorState.picked, selectedColor, GL20.GL_DST_COLOR, GL20.GL_ZERO);
 		selectedEntities.clear();
 
@@ -958,7 +956,7 @@ public class EditorApplication implements ApplicationListener {
 					}
 
 					// filter out duplicate vertices
-					ArrayMap<String, ControlPoint> reduceMap = new ArrayMap<String, ControlPoint>();
+					ArrayMap<String, ControlPoint> reduceMap = new ArrayMap<>();
 					for(ControlPoint point : controlPoints) {
 						String key = point.point.x + "," + point.point.y + "," + point.point.z;
 						ControlPoint found = reduceMap.get(key);
@@ -1611,7 +1609,7 @@ public class EditorApplication implements ApplicationListener {
 					DrawableMesh drbl = (DrawableMesh)e.drawable;
 
 					if(!meshesByTexture.containsKey(drbl.textureFile))  {
-						meshesByTexture.put(drbl.textureFile, new Array<Entity>());
+						meshesByTexture.put(drbl.textureFile, new Array<>());
 					}
 
 					meshesByTexture.get(drbl.textureFile).add(e);
@@ -2147,10 +2145,10 @@ public class EditorApplication implements ApplicationListener {
         wallPickerLayoutTable.setFillParent(true);
         wallPickerLayoutTable.align(Align.left | Align.top).pad(6f).padTop(150f);
 
-        Label wallLabel = new Label("Upper Wall", ui.getSmallSkin());
-        Label wallBottomLabel = new Label("Lower Wall", ui.getSmallSkin());
-        Label ceilingLabel = new Label("Ceiling", ui.getSmallSkin());
-        Label floorLabel = new Label("Floor", ui.getSmallSkin());
+        Label wallLabel = new Label("Upper Wall", EditorUi.getSmallSkin());
+        Label wallBottomLabel = new Label("Lower Wall", EditorUi.getSmallSkin());
+        Label ceilingLabel = new Label("Ceiling", EditorUi.getSmallSkin());
+        Label floorLabel = new Label("Floor", EditorUi.getSmallSkin());
 
         wallPickerLayoutTable.add(wallPickerButton).width(50f).height(50f).align(Align.left).padBottom(6f);
         wallPickerLayoutTable.add(wallLabel).align(Align.left);
@@ -2165,7 +2163,7 @@ public class EditorApplication implements ApplicationListener {
         wallPickerLayoutTable.add(floorLabel).align(Align.left);
         wallPickerLayoutTable.row();
 
-        paintAdjacent = new CheckBox("Paint adjacent", ui.getSmallSkin());
+        paintAdjacent = new CheckBox("Paint adjacent", EditorUi.getSmallSkin());
         paintAdjacent.setChecked(true);
         wallPickerLayoutTable.add(paintAdjacent).colspan(2).padLeft(-10f);
 
@@ -2273,7 +2271,7 @@ public class EditorApplication implements ApplicationListener {
 
 	public Mesh genGrid (int height, int width) {
 
-        Array<Float> cubeVertArray = new Array<Float>();
+        Array<Float> cubeVertArray = new Array<>();
         for(int x = 0; x <= width; x++) {
         	cubeVertArray.addAll( new Float[] {0f, -0.495f, (float) x} );
         	cubeVertArray.addAll( new Float[] {height * 1f, -0.495f, (float) x} );
@@ -2383,20 +2381,6 @@ public class EditorApplication implements ApplicationListener {
 		spriteBatch.add(sd);
 	}
 
-	// Expects a hex value as integer and returns the appropriate Color object.
-    // @param hex
-    //            Must be of the form 0xAARRGGBB
-    // @return the generated Color object
-   private Color colorFromHex(long hex)
-   {
-           float a = (hex & 0xFF000000L) >> 24;
-           float r = (hex & 0xFF0000L) >> 16;
-           float g = (hex & 0xFF00L) >> 8;
-           float b = (hex & 0xFFL);
-
-           return new Color(r/255f, g/255f, b/255f, a/255f);
-   }
-
    public void addEntityMarker(Markers selectedItem) {
 	   clearSelectedMarkers();
 
@@ -2431,7 +2415,7 @@ public class EditorApplication implements ApplicationListener {
         }
 
         for (TileSelectionInfo info : Editor.selection.tiles) {
-            Array<EditorMarker> toDelete = new Array<EditorMarker>();
+            Array<EditorMarker> toDelete = new Array<>();
             for (EditorMarker m : level.editorMarkers) {
                 if (m.x == info.x && m.y == info.y) {
                     toDelete.add(m);
@@ -3471,7 +3455,7 @@ public class EditorApplication implements ApplicationListener {
 	public void moveTiles(int moveX, int moveY, float moveZ) {
 		// Move Tiles
 		if(selected) {
-		    Array<TileSelectionInfo> tilesToMove = new Array<TileSelectionInfo>();
+		    Array<TileSelectionInfo> tilesToMove = new Array<>();
 		    for (TileSelectionInfo info : Editor.selection.tiles) {
 		        tilesToMove.add(info);
                 level.setTile(info.x, info.y, null);
@@ -3509,7 +3493,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 
 		// Move Entities
-		Array<Entity> allSelected = new Array<Entity>();
+		Array<Entity> allSelected = new Array<>();
 		if(Editor.selection.picked != null) {
 			allSelected.add(Editor.selection.picked);
 		}
