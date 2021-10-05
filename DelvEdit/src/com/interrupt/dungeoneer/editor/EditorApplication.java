@@ -48,7 +48,6 @@ import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.entities.Entity.EditorState;
-import com.interrupt.dungeoneer.entities.areas.Area;
 import com.interrupt.dungeoneer.entities.triggers.BasicTrigger;
 import com.interrupt.dungeoneer.entities.triggers.ButtonModel;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
@@ -281,7 +280,6 @@ public class EditorApplication implements ApplicationListener {
     public HashMap<String, Array<Mesh>> staticMeshBatch = null;
 
     private ShapeRenderer lineRenderer;
-    private ShapeRenderer pointRenderer;
     private ShapeRenderer boxRenderer;
 
     private boolean showGizmos = false;
@@ -641,12 +639,6 @@ public class EditorApplication implements ApplicationListener {
 		if(lineRenderer == null) lineRenderer = new ShapeRenderer();
 		lineRenderer.setProjectionMatrix(camera.combined);
 		lineRenderer.begin(ShapeType.Line);
-
-		if(pointRenderer == null) pointRenderer = new ShapeRenderer();
-		pointRenderer.setProjectionMatrix(camera.combined);
-		pointRenderer.begin(ShapeType.Filled);
-		pointRenderer.identity();
-		pointRenderer.translate(-(Gdx.graphics.getWidth() / 2f), -(Gdx.graphics.getHeight() / 2f), -1f);
 
 		if(boxRenderer == null) boxRenderer = new ShapeRenderer();
 		boxRenderer.setProjectionMatrix(camera.combined);
@@ -1277,7 +1269,6 @@ public class EditorApplication implements ApplicationListener {
 		//Gdx.gl.glPointSize(6f);
 
 		lineRenderer.end();
-		pointRenderer.end();
 
 		Gdx.gl.glLineWidth(1);
 		//Gdx.gl.glPointSize(1f);
