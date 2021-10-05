@@ -74,7 +74,6 @@ import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
-import com.interrupt.utils.JsonUtil;
 import com.noise.PerlinNoise;
 
 import javax.swing.*;
@@ -93,7 +92,6 @@ public class EditorApplication implements ApplicationListener {
 
 	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
-	public enum DragMode { NONE, XY, X, Y, Z }
 
 	public Color controlPointColor = new Color(1f, 0.4f, 0f, 1f);
 
@@ -273,14 +271,9 @@ public class EditorApplication implements ApplicationListener {
 	private boolean lightsDirty = true;
 
     private boolean movingEntity = false;
-	private DragMode dragMode = DragMode.NONE;
     private Vector3 dragStart = null;
 
-    private Vector3 rotateStart = null;
-    private Vector3 rotateStartIntersection = null;
-
     private boolean readLeftClick = false;
-    private boolean readRightClick = false;
 
 	private Plane dragPlane = null;
     private Vector3 dragOffset = null;
@@ -1248,96 +1241,9 @@ public class EditorApplication implements ApplicationListener {
 		}
 		else {
 			// Drag entities around
-			if(movingEntity && Editor.selection.picked != null) {
-				if(dragPlane == null) {
-
-					if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
-						// Make a copy
-						Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
-						level.entities.add(copy);
-
-                        pickEntity(copy);
-
-						Array<Entity> copies = new Array<Entity>();
-						for(Entity selected : Editor.selection.selected) {
-							Entity newCopy = JsonUtil.fromJson(selected.getClass(), JsonUtil.toJson(selected));
-							level.entities.add(newCopy);
-							copies.add(newCopy);
-						}
-
-						Editor.selection.selected.clear();
-						Editor.selection.selected.addAll(copies);
-                        ui.showEntityPropertiesMenu(true);
-					}
-
-					if(dragMode == DragMode.Y) {
-						Vector3 vertDir = t_dragVector.set(Vector3.Y);
-
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0f);
-						Plane vert = t_dragPlane;
-
-						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
-						dragPlane = t_dragPlane;
-					}
-					else if(dragMode == DragMode.Z) {
-						Vector3 vertDir = t_dragVector.set(camera.direction);
-						vertDir.y = 0;
-
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
-						Plane vert = t_dragPlane;
-
-						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
-						dragPlane = t_dragPlane;
-					}
-					else if(dragMode == DragMode.X) {
-						Vector3 vertDir = t_dragVector.set(Vector3.Y);
-
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
-						Plane vert = t_dragPlane;
-
-						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
-						dragPlane = t_dragPlane;
-					}
-					else if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-						Vector3 vertDir = t_dragVector.set(Vector3.Y);
-
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
-						Plane vert = t_dragPlane;
-
-						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y));
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
-
-						dragPlane = t_dragPlane;
-						dragMode = DragMode.XY;
-					}
-					else {
-						Vector3 vertDir = t_dragVector.set(camera.direction);
-
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
-						Plane vert = t_dragPlane;
-
-						float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
-						t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
-						dragPlane = t_dragPlane;
-					}
-				}
-
-				if(dragStart == null)
-					dragStart = new Vector3(Editor.selection.picked.x, Editor.selection.picked.y, Editor.selection.picked.z);
-			}
-			else {
-				dragOffset = null;
-				dragStart = null;
-				dragPlane = null;
-			}
-
-			if(Editor.selection.picked == null) {
-				dragPlane = null;
-				dragMode = DragMode.NONE;
-			}
+            dragOffset = null;
+            dragStart = null;
+            dragPlane = null;
 		}
 
 		if(!selected) {
@@ -2086,13 +1992,6 @@ public class EditorApplication implements ApplicationListener {
 		}
 		else {
 			readLeftClick = false;
-		}
-
-		if(editorInput.isButtonPressed(Input.Buttons.RIGHT)) {
-			readRightClick = true;
-		}
-		else {
-			readRightClick = false;
 		}
 
 		// Tick subsystems.
@@ -3696,31 +3595,6 @@ public class EditorApplication implements ApplicationListener {
         }
 
         return spatialWorkerList;
-    }
-
-    public void setDragMode(DragMode dragMode) {
-        if(Editor.selection.picked == null) return;
-
-        if(dragMode == DragMode.Y) {
-            Vector3 vertDir = new Vector3(Vector3.Y);
-            Plane vert = new Plane(vertDir, 0);
-            float len = vert.distance(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
-            dragPlane = new Plane(vertDir, -len);
-        }
-        if(dragMode == DragMode.X) {
-            Vector3 vertDir = new Vector3(Vector3.Y);
-            Plane vert = new Plane(vertDir, 0);
-            float len = vert.distance(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
-            dragPlane = new Plane(vertDir, -len);
-        }
-        if(dragMode == DragMode.Z) {
-            Vector3 vertDir = new Vector3(camera.direction);
-            vertDir.y = 0;
-
-            Plane vert = new Plane(vertDir, 0);
-            float len = vert.distance(new Vector3(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
-            dragPlane = new Plane(vertDir, -len);
-        }
     }
 
     public Decal getDecal() {
