@@ -1987,12 +1987,7 @@ public class EditorApplication implements ApplicationListener {
 			level.editorTick(player, 0);
 		}
 
-		if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
-			readLeftClick = true;
-		}
-		else {
-			readLeftClick = false;
-		}
+        readLeftClick = editorInput.isButtonPressed(Buttons.LEFT);
 
 		// Tick subsystems.
 		input.tick();
