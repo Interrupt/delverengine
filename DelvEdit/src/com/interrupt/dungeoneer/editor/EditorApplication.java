@@ -384,8 +384,6 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.input.setInputProcessor( input );
 
 		editorInput = new EditorInput();
-		//editorInput.addListener(arrow);
-		//editorInput.addListener(arrow2);
 
         renderer.init();
 		renderer.enableLighting = showLights;
@@ -1566,12 +1564,7 @@ public class EditorApplication implements ApplicationListener {
 
 		// TODO Remove this
 		//vizualizePicking();
-        //arrow.draw();
-		//arrow2.draw();
 	}
-
-	//ArrowHandle arrow = new ArrowHandle(0, 0, 0, 0, 0, 0);
-	//ArrowHandle arrow2 = new ArrowHandle(0, 0, 2, 0, 0, 0);
 
 	/** Draw Gizmos for the picked Entity and selected Entities. */
 	private void drawPickedGizmos() {
