@@ -24,9 +24,9 @@ import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.game.gamemode.DelverGameMode;
+import com.interrupt.dungeoneer.game.gamemode.delver.DelverGameMode;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
-import com.interrupt.dungeoneer.game.gamemode.NullGameMode;
+import com.interrupt.dungeoneer.game.gamemode.GameStateInterface;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
@@ -123,7 +123,7 @@ public class Game {
 
     public static Pathfinding pathfinding = new Pathfinding();
 
-    public GameModeInterface GameMode = new NullGameMode();
+    protected GameModeInterface gameMode = new DelverGameMode();
 
 	public Game(int saveLoc) {
 		instance = this;
@@ -133,8 +133,9 @@ public class Game {
 	public void loadManagers() {
 		modManager = Game.getModManager();
 
-		// Setup a Delver Game Mode by default for now. This will be data driven soon.
-        GameMode = new DelverGameMode();
+		// Set the game mode, if one was given
+        if(gameData.gameMode != null)
+            gameMode = gameData.gameMode;
 
 		// Load item data
 		ItemManager im = modManager.loadItemManager(gameData.itemDataFiles);
@@ -201,7 +202,9 @@ public class Game {
 
 		// load the game progress
 		progression = loadProgression(saveLoc);
+        gameMode.loadGameState(saveLoc);
 
+        // init some of the UI
 		isMobile = false;
 		Gdx.input.setCursorCatched(true);
 		hud = new Hud();
@@ -423,6 +426,8 @@ public class Game {
 			hud = new MobileHud();
 		}
 
+        gameMode.loadGameState(saveLoc);
+
 		if(!didLoad) {
 			Game.flashTimer = 100;
 
@@ -452,7 +457,7 @@ public class Game {
 			// Set the initial level to load. The Game Mode onGameStart can override this.
 			levelNum = 0;
             level = dataLevels.get(levelNum);
-            GameMode.onGameStart(this);
+            gameMode.onGameStart(this);
 
 			// Keep track of what engine version we're playing on
 			player.saveVersion = SAVE_VERSION;
@@ -532,7 +537,7 @@ public class Game {
         if (gameOver) return;
 
         // Tick the game mode
-        GameMode.tickGame(level, delta, input);
+        gameMode.tickGame(level, delta, input);
 
         // Entities should update using the time modified delta
 		level.tick(timeModifiedDelta);
@@ -804,11 +809,8 @@ public class Game {
 		}
 		level.setPlayer(player);
 
-		// TODO: Generate levels!
 		if(!level.isLoaded)
 			level.load();
-		else
-			level.init(Source.LEVEL_LOAD);
 
 		player.spawnX = player.x;
 		player.spawnY = player.y;
@@ -899,7 +901,7 @@ public class Game {
 		if(Audio.torch != null)
 			Audio.torch.stop();
 
-		GameMode.onGameOver(this);
+		gameMode.onGameOver(this);
 	}
 
 	// Save all the levels!
@@ -952,6 +954,7 @@ public class Game {
 
 		// save progress!
 		saveProgression(progression, Game.instance.getSaveSlot());
+		gameMode.saveGameState(saveLoc);
 	}
 
 	// Save a level
@@ -1285,7 +1288,6 @@ public class Game {
 
 	public static Progression loadProgression(Integer saveSlot) {
 		try {
-			//FileHandle modFile = Game.getInternal(path + "/data/items.dat");
 			FileHandle progressionFile = getFile(Options.getOptionsDir() + "game_" + saveSlot + ".dat");
 			return JsonUtil.fromJson(Progression.class, progressionFile);
 		} catch (Exception e) {
@@ -1298,8 +1300,8 @@ public class Game {
 	public static void saveProgression(Progression progression, Integer saveSlot) {
 		try {
 			if(progression != null) {
-
-				// Ensure that the directory exists first
+                // Ensure that the base save directory exists first. Don't put this in the save slot folder as that is
+                // deleted from run to run.
 				String optionsDirString = Options.getOptionsDir();
 				FileHandle optionsDir = getFile(optionsDirString);
 
@@ -1531,5 +1533,9 @@ public class Game {
             hudManager = new HUDManager();
             ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
         }
+    }
+
+    public GameModeInterface getGameMode() {
+        return gameMode;
     }
 }

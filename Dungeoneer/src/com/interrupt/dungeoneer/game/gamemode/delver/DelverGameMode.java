@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.game.gamemode;
+package com.interrupt.dungeoneer.game.gamemode.delver;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -19,6 +19,8 @@ import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.projectiles.BeamProjectile;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.game.*;
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.game.gamemode.GameStateInterface;
 import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.input.ControllerState;
@@ -31,6 +33,7 @@ import com.interrupt.dungeoneer.screens.WinScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.EntityManager;
+import com.interrupt.utils.JsonUtil;
 
 import java.util.Random;
 
@@ -41,6 +44,8 @@ import static com.interrupt.dungeoneer.game.Game.rand;
  * game over screens, deleting save games, leveling up, showing the various menu screens, etc.
  */
 public class DelverGameMode implements GameModeInterface {
+
+    protected DelverGameState gameState = new DelverGameState();
 
     @Override
     public void onGameStart(Game game) {
@@ -755,6 +760,37 @@ public class DelverGameMode implements GameModeInterface {
                     level.SpawnEntity(m);
                 }
             }
+        }
+    }
+
+    @Override
+    public void loadGameState(int saveSlot) {
+        try {
+            FileHandle gameStateFile = Game.getFile(Options.getOptionsDir() + "gamestate_delver_" + saveSlot + ".dat");
+            gameState = JsonUtil.fromJson(DelverGameState.class, gameStateFile);
+            gameState.postLoad();
+        } catch (Exception e) {
+            Gdx.app.error("DelverGameState", e.getMessage());
+        }
+    }
+
+    @Override
+    public void saveGameState(int saveSlot) {
+        try {
+            if(gameState != null) {
+                // Ensure that the base save directory exists first. Don't put this in the save slot folder as that is
+                // deleted from run to run.
+                String optionsDirString = Options.getOptionsDir();
+                FileHandle optionsDir = Game.getFile(optionsDirString);
+
+                if(!optionsDir.exists())
+                    optionsDir.mkdirs();
+
+                FileHandle gameStateFile = Game.getFile(Options.getOptionsDir() + "gamestate_delver_" + saveSlot + ".dat");
+                JsonUtil.toJson(gameState, gameStateFile);
+            }
+        } catch (Exception e) {
+            Gdx.app.error("DelverGameState", e.getMessage());
         }
     }
 }

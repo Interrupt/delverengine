@@ -1,7 +1,13 @@
 package com.interrupt.dungeoneer.game;
 
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+
 public class GameData {
     public GameData() { }
+
+    /** The Game Mode to be used for the game */
+    public GameModeInterface gameMode;
+
     /** Tutorial level. Shown when starting a new save slot. */
     public Level tutorialLevel = null;
 
@@ -33,6 +39,9 @@ public class GameData {
         GameData defaultGameData = new GameData();
 
         // Merge some properties only if different!
+        if(modData.gameMode != null && modData.gameMode != defaultGameData.gameMode) {
+            gameMode = modData.gameMode;
+        }
         if(modData.playerJumpEnabled != defaultGameData.playerJumpEnabled) {
             playerJumpEnabled = modData.playerJumpEnabled;
         }

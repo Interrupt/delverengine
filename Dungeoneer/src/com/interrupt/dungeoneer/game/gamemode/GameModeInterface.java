@@ -10,6 +10,9 @@ import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 
+/**
+ * A GameModeInterface is a container for gameplay logic.
+ */
 public interface GameModeInterface {
     void tickGame(Level level, float delta, GameInput input);
     void onGameStart(Game game);
@@ -23,4 +26,7 @@ public interface GameModeInterface {
 
     void preLevelInit(Level.Source source, Level level);
     void handleEditorMarker(Level level, EditorMarker marker, Vector2 levelOffset, Vector2 tileOffset);
+
+    void loadGameState(int saveSlot);
+    void saveGameState(int saveSlot);
 }

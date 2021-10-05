@@ -385,8 +385,6 @@ public class BaseScreen implements Screen {
 		level.fogStart = 2f;
 		level.fogEnd = 12f;
 
-		level.init(Source.LEVEL_START);
-
 		level.isDirty = true;
 		level.rendererDirty = true;
 

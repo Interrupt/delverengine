@@ -6,9 +6,7 @@ import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.game.gamemode.DelverGameMode;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
-import com.interrupt.dungeoneer.game.gamemode.NullGameMode;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
@@ -149,9 +147,10 @@ public class GameManager {
 	}
 
 	public static GameModeInterface getGameMode() {
+	    // Easy access function to get the game mode
 	    if(game == null)
-	        return new DelverGameMode();
+	        return null;
 
-	    return game.GameMode;
+	    return game.getGameMode();
 	}
 }

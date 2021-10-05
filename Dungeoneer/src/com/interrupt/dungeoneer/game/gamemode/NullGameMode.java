@@ -16,6 +16,8 @@ import com.interrupt.dungeoneer.game.Level;
  * Game mode that does nothing but the very basics.
  */
 public class NullGameMode implements GameModeInterface {
+    protected GameStateInterface gameState = new NullGameState();
+
     @Override
     public void tickGame(Level level, float delta, GameInput input) {
 
@@ -61,6 +63,16 @@ public class NullGameMode implements GameModeInterface {
 
     @Override
     public void handleEditorMarker(Level level, EditorMarker marker, Vector2 levelOffset, Vector2 tileOffset) {
+
+    }
+
+    @Override
+    public void loadGameState(int saveSlot) {
+
+    }
+
+    @Override
+    public void saveGameState(int saveSlot) {
 
     }
 }
