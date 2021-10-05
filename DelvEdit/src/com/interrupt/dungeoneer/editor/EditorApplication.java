@@ -1635,30 +1635,6 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-	public void renderCollisionBox(Entity e) {
-		if(!e.isSolid && !(e instanceof Area)) return;
-
-		float zStart = e.z - 0.5f;
-		float zEnd = zStart + e.collision.z;
-
-		lineRenderer.setColor(Color.LIGHT_GRAY);
-
-		lineRenderer.line(e.x - e.collision.x, zStart, e.y + e.collision.y, e.x + e.collision.x, zStart, e.y + e.collision.y);
-		lineRenderer.line(e.x - e.collision.x, zStart, e.y - e.collision.y, e.x + e.collision.x, zStart, e.y - e.collision.y);
-		lineRenderer.line(e.x + e.collision.x, zStart, e.y - e.collision.y, e.x + e.collision.x, zStart, e.y + e.collision.y);
-		lineRenderer.line(e.x - e.collision.x, zStart, e.y - e.collision.y, e.x - e.collision.x, zStart, e.y + e.collision.y);
-
-		lineRenderer.line(e.x - e.collision.x, zEnd, e.y + e.collision.y, e.x + e.collision.x, zEnd, e.y + e.collision.y);
-		lineRenderer.line(e.x - e.collision.x, zEnd, e.y - e.collision.y, e.x + e.collision.x, zEnd, e.y - e.collision.y);
-		lineRenderer.line(e.x + e.collision.x, zEnd, e.y - e.collision.y, e.x + e.collision.x, zEnd, e.y + e.collision.y);
-		lineRenderer.line(e.x - e.collision.x, zEnd, e.y - e.collision.y, e.x - e.collision.x, zEnd, e.y + e.collision.y);
-
-		lineRenderer.line(e.x - e.collision.x, zStart, e.y + e.collision.y, e.x - e.collision.x, zEnd, e.y + e.collision.y);
-		lineRenderer.line(e.x - e.collision.x, zStart, e.y - e.collision.y, e.x - e.collision.x, zEnd, e.y - e.collision.y);
-		lineRenderer.line(e.x + e.collision.x, zStart, e.y + e.collision.y, e.x + e.collision.x, zEnd, e.y + e.collision.y);
-		lineRenderer.line(e.x + e.collision.x, zStart, e.y - e.collision.y, e.x + e.collision.x, zEnd, e.y - e.collision.y);
-	}
-
 	public void renderMoverVizualization(Mover e) {
 		float zStart = e.z - 0.5f;
 		float zEnd = zStart + e.collision.z;
