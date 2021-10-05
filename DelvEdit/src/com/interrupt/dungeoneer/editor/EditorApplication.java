@@ -34,11 +34,13 @@ import com.interrupt.dungeoneer.editor.file.EditorFile;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
+import com.interrupt.dungeoneer.editor.handles.Handle;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
+import com.interrupt.dungeoneer.editor.ui.Handles;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
 import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
@@ -55,9 +57,9 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
+import com.interrupt.dungeoneer.generator.GenInfo.Markers;
 import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.generator.RoomGenerator;
-import com.interrupt.dungeoneer.generator.GenInfo.Markers;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.SpriteGroupStrategy;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
@@ -382,6 +384,8 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.input.setInputProcessor( input );
 
 		editorInput = new EditorInput();
+		//editorInput.addListener(arrow);
+		//editorInput.addListener(arrow2);
 
         renderer.init();
 		renderer.enableLighting = showLights;
@@ -810,7 +814,7 @@ public class EditorApplication implements ApplicationListener {
 
 		shouldDrawBox = ui.isShowingModal() ? false : shouldDrawBox;
 
-		if(Editor.selection.picked == null && Editor.selection.hovered == null || tileDragging) {
+		if(Editor.selection.picked == null && Editor.selection.hovered == null && hovered == null || tileDragging) {
 			if(!selected || (!(pickedControlPoint != null || movingControlPoint) &&
                     editorInput.isButtonPressed(Input.Buttons.LEFT) && Gdx.input.justTouched())) {
 
@@ -1559,7 +1563,15 @@ public class EditorApplication implements ApplicationListener {
 		else {
 			drawPickedGizmos();
 		}
+
+		// TODO Remove this
+		//vizualizePicking();
+        //arrow.draw();
+		//arrow2.draw();
 	}
+
+	//ArrowHandle arrow = new ArrowHandle(0, 0, 0, 0, 0, 0);
+	//ArrowHandle arrow2 = new ArrowHandle(0, 0, 2, 0, 0, 0);
 
 	/** Draw Gizmos for the picked Entity and selected Entities. */
 	private void drawPickedGizmos() {
@@ -1583,8 +1595,8 @@ public class EditorApplication implements ApplicationListener {
 			return;
 		}
 
-		Gizmo gizmo = GizmoProvider.getGizmo(entity.getClass());
-		gizmo.draw(entity);
+		Gizmo gizmo = GizmoProvider.get(entity);
+		if (gizmo != null) gizmo.draw();
 	}
 
 	private void GlPickEntity() {
@@ -1610,6 +1622,7 @@ public class EditorApplication implements ApplicationListener {
 				int index = (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
 
 				Editor.selection.hovered = renderer.entitiesForPicking.get(index);
+				hovered = Editor.selection.hovered;
 				//Gdx.app.log("Picking", pickedPixelBufferColor.toString());
 			}
 			catch (Exception ex) {
@@ -1658,6 +1671,139 @@ public class EditorApplication implements ApplicationListener {
 		// Put things back to normal
 		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 	}
+
+    private final Color pickedColor = Color.BLACK.cpy();
+    private final Color gizmoPickColor = Color.WHITE.cpy();
+
+    private void PickGizmos() {
+        if (pickerFrameBuffer == null) {
+            return;
+        }
+
+        pickerFrameBuffer.begin();
+
+        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
+
+        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+        Gdx.gl.glCullFace(GL20.GL_BACK);
+
+        Handles.pickingBegin();
+
+        Iterable<Entity> entities = showGizmos ? level.entities : Editor.selection.all;
+        for (Entity entity : entities) {
+            Gizmo gizmo = GizmoProvider.get(entity);
+            if (gizmo == null) continue;
+
+            Color.rgb888ToColor(gizmoPickColor, gizmo.getId());
+            Handles.setPickColor(gizmoPickColor);
+            drawGizmo(entity);
+        }
+
+        Handles.pickingEnd();
+
+        // Get mouse coords
+        int pickX = Gdx.input.getX();
+        int pickY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+        // Get the pixels
+        Gdx.gl.glReadPixels(
+            0,
+            0,
+            Gdx.graphics.getWidth(),
+            Gdx.graphics.getHeight(),
+            GL20.GL_RGBA,
+            GL20.GL_UNSIGNED_BYTE,
+            pickerPixelBuffer.getPixels()
+        );
+
+        // Get the hovered pixel
+        int rgba8888 = pickerPixelBuffer.getPixel(pickX, pickY);
+        pickedColor.set(rgba8888);
+
+        // Get hovered Gizmo
+        int index = Color.rgb888(pickedColor);
+        Gizmo gizmo = GizmoProvider.get(index);
+        if (gizmo != null) {
+            Gdx.app.log("GizmoPick", gizmo.toString());
+        }
+
+        pickerFrameBuffer.end();
+    }
+
+    private Object hovered = null;
+    private Handle currentHoveredHandle = null;
+    private void PickHandles() {
+        if (pickerFrameBuffer == null) {
+            return;
+        }
+
+        pickerFrameBuffer.begin();
+
+        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
+
+        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
+        Gdx.gl.glCullFace(GL20.GL_BACK);
+
+        Handles.pickingBegin();
+
+        for (Handle handle : Handle.all) {
+            Color.rgb888ToColor(gizmoPickColor, handle.getId());
+            Handles.setPickColor(gizmoPickColor);
+            handle.draw();
+        }
+
+        Handles.pickingEnd();
+
+        // Get mouse coords
+        int pickX = Gdx.input.getX();
+        int pickY = Gdx.graphics.getHeight() - Gdx.input.getY();
+
+        // Get the pixels
+        Gdx.gl.glReadPixels(
+            0,
+            0,
+            Gdx.graphics.getWidth(),
+            Gdx.graphics.getHeight(),
+            GL20.GL_RGBA,
+            GL20.GL_UNSIGNED_BYTE,
+            pickerPixelBuffer.getPixels()
+        );
+
+        // Get the hovered pixel
+        int rgba8888 = pickerPixelBuffer.getPixel(pickX, pickY);
+        pickedColor.set(rgba8888);
+
+        // Get hovered Handle
+        int index = Color.rgb888(pickedColor);
+
+        Handle h = Handle.get(index);
+        if (h != null) {
+            hovered = h;
+        }
+
+        if (hovered instanceof Handle) {
+            Handle hoveredHandle = (Handle)hovered;
+
+            if (currentHoveredHandle != hoveredHandle) {
+                if (currentHoveredHandle != null) {
+                    currentHoveredHandle.exit();
+                }
+
+                hoveredHandle.enter();
+
+                currentHoveredHandle = hoveredHandle;
+                hovered = hoveredHandle;
+            }
+        }
+        else if (currentHoveredHandle != null) {
+            currentHoveredHandle.exit();
+            currentHoveredHandle = null;
+        }
+
+        pickerFrameBuffer.end();
+    }
 
 	private void refreshTriangleSpatialHash() {
 		GlRenderer.triangleSpatialHash.Flush();
@@ -2043,6 +2189,7 @@ public class EditorApplication implements ApplicationListener {
 			Editor.selection.clear();
 		}
 
+		hovered = null;
 		// Try to pick an entity
 		if(pickedControlPoint == null && !tileDragging && !Gdx.input.isKeyPressed(Keys.TAB)) {
 			if(Gdx.input.getX() != lastInputX || Gdx.input.getY() != lastInputY) {
@@ -2052,6 +2199,9 @@ public class EditorApplication implements ApplicationListener {
 				GlPickEntity();
 			}
 		}
+
+        PickGizmos();
+        PickHandles();
 
 		if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
 			if(movingControlPoint || pickedControlPoint != null) {
@@ -2069,8 +2219,10 @@ public class EditorApplication implements ApplicationListener {
 						movingEntity = true;
 					}
 					else {
-						clearEntitySelection();
-                        pickEntity(Editor.selection.hovered);
+					    if (hovered == null) {
+                            clearEntitySelection();
+                            pickEntity(Editor.selection.hovered);
+                        }
 					}
 				}
 			}

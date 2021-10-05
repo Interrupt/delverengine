@@ -14,13 +14,20 @@ public class Handles {
     private static Camera camera;
     private static Color color = Color.WHITE;
 
+    private static Color pickColor = Color.WHITE;
+    private static boolean picking = false;
+
     public static void setColor(Color color) {
         Handles.color = color;
     }
 
-    public static void drawWireDisc(Vector3 position, Vector3 axis, float radius) {
+    public static void setPickColor(Color color) {
+        Handles.pickColor = color;
+    }
+
+    public static void drawWireDisc(Vector3 position, Vector3 axis, float radius, int segments) {
         begin();
-        drawWireDiscInternal(position, axis, radius);
+        drawWireDiscInternal(position, axis, radius, segments);
         end();
     }
 
@@ -42,37 +49,58 @@ public class Handles {
         end();
     }
 
+    public static void drawTest(Vector3 position) {
+        begin();
+        drawTestInternal(position);
+        end();
+    }
+
     private static void begin() {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-        Gdx.gl.glLineWidth(1f);
+
+        if (picking) {
+            Gdx.gl.glLineWidth(4f);
+        }
+        else {
+            Gdx.gl.glLineWidth(1f);
+        }
 
         camera = Editor.app.camera;
 
         renderer.setProjectionMatrix(camera.combined);
         renderer.begin(ShapeRenderer.ShapeType.Line);
-        renderer.setColor(color);
+
+        if (picking) {
+            renderer.setColor(pickColor);
+        }
+        else {
+            renderer.setColor(color);
+        }
     }
 
     private static void end() {
         renderer.end();
 
+        if (picking) {
+            Gdx.gl.glLineWidth(1f);
+        }
+
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
     }
 
-    private static void drawWireDiscInternal(Vector3 position, Vector3 axis, float radius) {
+    private static void drawWireDiscInternal(Vector3 position, Vector3 axis, float radius, int segments) {
         Vector3 o = new Vector3(position);
         Vector3 d = new Vector3(axis).nor();
-        Vector3 r = new Vector3(0, 0, 1);
+        Vector3 r = new Vector3(1, 0, 0);
 
-        if (axis.epsilonEquals(Vector3.Z)) {
-            r.set(1, 0, 0);
+        if (axis.epsilonEquals(Vector3.X)) {
+            r.set(0, 0, 1);
         }
 
         r.crs(d).nor();
         Vector3 u = new Vector3(d).crs(r).nor();
 
         float tau = (float)Math.PI * 2;
-        int segments = 48;
         float step = tau / segments;
 
         Vector3 current = new Vector3();
@@ -116,7 +144,7 @@ public class Handles {
         Vector3 a = new Vector3(normal).scl(n0 / sqrMag);
         Vector3 b = new Vector3(position).sub(a);
 
-        drawWireDiscInternal(b, normal, n2);
+        drawWireDiscInternal(b, normal, n2, 48);
     }
 
     private static void drawWireCubeInternal(Vector3 position, Vector3 size) {
@@ -176,5 +204,17 @@ public class Handles {
 
 			renderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
 		}
+    }
+
+    private static void drawTestInternal(Vector3 position) {
+        renderer.circle(0, 0, 10, 4);
+    }
+
+    public static void pickingBegin() {
+        picking = true;
+    }
+
+    public static void pickingEnd() {
+        picking = false;
     }
 }
