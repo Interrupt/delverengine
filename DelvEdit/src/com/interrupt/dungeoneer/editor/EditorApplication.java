@@ -73,7 +73,6 @@ import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
-import com.noise.PerlinNoise;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -96,8 +95,7 @@ public class EditorApplication implements ApplicationListener {
 
 	public Vector3 tempVec1 = new Vector3();
 	public Vector3 tempVec2 = new Vector3();
-	public Vector3 tempVec3 = new Vector3();
-	public Vector3 tempVec4 = new Vector3();
+    public Vector3 tempVec4 = new Vector3();
 	public Vector3 tempVec5 = new Vector3();
 
 	public int pickedWallTexture = 0;
@@ -113,9 +111,7 @@ public class EditorApplication implements ApplicationListener {
 
     public String lastTextureRegionPickerSelection = "texture";
 
-	private static transient PerlinNoise perlinNoise = new PerlinNoise(1, 1f, 2f, 1f, 1);
-
-	GameApplication gameApp = null;
+    GameApplication gameApp = null;
 
 	public boolean canDelete = true;
 
@@ -596,9 +592,7 @@ public class EditorApplication implements ApplicationListener {
 	}
 
 	Vector3 t_dragVector = new Vector3();
-	Vector3 t_dragVector2 = new Vector3();
-	Vector3 t_dragOffset = new Vector3();
-	Plane t_dragPlane = new Plane();
+    Plane t_dragPlane = new Plane();
 
 	Vector3 intersectNormal = new Vector3();
 	Vector3 intersectTemp = new Vector3();
@@ -2337,60 +2331,6 @@ public class EditorApplication implements ApplicationListener {
 		lineRenderer.line(start.x, start.y, start.z, end.x, end.y, end.z);
 	}
 
-	public void drawZCircle(float startX, float startY, float startZ, float radius, Color color) {
-		lineRenderer.setColor(color);
-
-		float tau = (float)Math.PI * 2;
-		int segments = 48;
-		float step = tau / segments;
-
-		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin(i * step) * radius;
-			float cos = (float)Math.cos(i * step) * radius;
-
-			float nextsin = (float)Math.sin((i + 1) * step) * radius;
-			float nextcos = (float)Math.cos((i + 1) * step) * radius;
-
-			lineRenderer.line(startX + sin, startY, startZ + cos, startX + nextsin, startY, startZ + nextcos);
-		}
-	}
-
-	public void drawXCircle(float startX, float startY, float startZ, float radius, Color color) {
-		lineRenderer.setColor(color);
-
-		float tau = (float)Math.PI * 2;
-		int segments = 48;
-		float step = tau / segments;
-
-		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin(i * step) * radius;
-			float cos = (float)Math.cos(i * step) * radius;
-
-			float nextsin = (float)Math.sin((i + 1) * step) * radius;
-			float nextcos = (float)Math.cos((i + 1) * step) * radius;
-
-			lineRenderer.line(startX, startY + cos, startZ + sin, startX, startY + nextcos, startZ + nextsin);
-		}
-	}
-
-	public void drawYCircle(float startX, float startY, float startZ, float radius, Color color) {
-		lineRenderer.setColor(color);
-
-		float tau = (float)Math.PI * 2;
-		int segments = 48;
-		float step = tau / segments;
-
-		for(int i = 0; i < segments; i++) {
-			float sin = (float)Math.sin(i * step) * radius;
-			float cos = (float)Math.cos(i * step) * radius;
-
-			float nextsin = (float)Math.sin((i + 1) * step) * radius;
-			float nextcos = (float)Math.cos((i + 1) * step) * radius;
-
-			lineRenderer.line(startX + sin, startY + cos, startZ, startX + nextsin, startY + nextcos, startZ);
-		}
-	}
-
 	private void drawPoint(Vector3 start, float width, Color color) {
 		Vector3 pos1 = tempVec5.set(start);
 		Vector3 pos2 = tempVec4.set(camera.position);
@@ -2455,36 +2395,6 @@ public class EditorApplication implements ApplicationListener {
            float b = (hex & 0xFFL);
 
            return new Color(r/255f, g/255f, b/255f, a/255f);
-   }
-
-
-    // Expects a hex value as String and returns the appropriate Color object
-    // @param s The hex string to create the Color object from
-    // @return
-
-   private Color colorFromHexString(String s)
-   {
-           if(s.startsWith("0x"))
-                   s = s.substring(2);
-
-           if(s.length() != 8) // AARRGGBB
-                   throw new IllegalArgumentException("String must have the form AARRGGBB");
-
-           return colorFromHex(Long.parseLong(s, 16));
-   }
-
-   private Color getColor(int r, int g, int b, int a) {
-	   String rr = Integer.toHexString(r);
-	   String gg = Integer.toHexString(g);
-	   String bb = Integer.toHexString(b);
-	   String aa = Integer.toHexString(a);
-
-	   if(rr.length() == 1) rr = "0" + rr;
-	   if(gg.length() == 1) gg = "0" + gg;
-	   if(bb.length() == 1) bb = "0" + bb;
-	   if(aa.length() == 1) aa = "0" + aa;
-
-	   return colorFromHex(Long.parseLong(aa + rr + gg + bb, 16));
    }
 
    public void addEntityMarker(Markers selectedItem) {
@@ -3545,18 +3455,6 @@ public class EditorApplication implements ApplicationListener {
 
     public Array<CollisionTriangle> GetCollisionTriangles() {
         return GlRenderer.triangleSpatialHash.getAllTriangles();
-    }
-
-    public Array<Vector3> TriangleArrayToVectorList(Array<Triangle> triangles) {
-        spatialWorkerList.clear();
-
-        for(Triangle t : triangles) {
-            spatialWorkerList.add(t.v1);
-            spatialWorkerList.add(t.v2);
-            spatialWorkerList.add(t.v3);
-        }
-
-        return spatialWorkerList;
     }
 
     public Decal getDecal() {
