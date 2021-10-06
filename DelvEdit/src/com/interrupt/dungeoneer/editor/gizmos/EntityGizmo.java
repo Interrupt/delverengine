@@ -11,8 +11,8 @@ import com.interrupt.dungeoneer.entities.Entity;
 @GizmoFor(target = Entity.class)
 public class EntityGizmo extends Gizmo {
     private final ArrowHandle xAxisHandle;
-    private final ArrowHandle yAxisHandle;
     private final ArrowHandle zAxisHandle;
+    private final ArrowHandle yAxisHandle;
 
     public EntityGizmo(Entity entity) {
         super(entity);
@@ -25,24 +25,27 @@ public class EntityGizmo extends Gizmo {
             }
         };
         xAxisHandle.setColor(EditorColors.X_AXIS);
+        xAxisHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
 
-        yAxisHandle = new ArrowHandle(entity.x, entity.y, entity.z + 1 - 0.5f, 0, 0, 0) {
-            @Override
-            public void change() {
-                super.change();
-                entity.z = position.z - 1 + 0.5f;
-            }
-        };
-        yAxisHandle.setColor(EditorColors.Z_AXIS);
-
-        zAxisHandle = new ArrowHandle(entity.x, entity.y + 1, entity.z - 0.5f, 0, 0, 0) {
+        yAxisHandle = new ArrowHandle(entity.x, entity.y + 1, entity.z - 0.5f, 0, 0, 0) {
             @Override
             public void change() {
                 super.change();
                 entity.y = position.y - 1;
             }
         };
-        zAxisHandle.setColor(EditorColors.Y_AXIS);
+        yAxisHandle.setColor(EditorColors.Y_AXIS);
+        yAxisHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
+
+        zAxisHandle = new ArrowHandle(entity.x, entity.y, entity.z + 1 - 0.5f, 0, 0, 0) {
+            @Override
+            public void change() {
+                super.change();
+                entity.z = position.z - 1 + 0.5f;
+            }
+        };
+        zAxisHandle.setColor(EditorColors.Z_AXIS);
+        zAxisHandle.setHighlightColor(EditorColors.Z_AXIS_BRIGHT);
 
         Editor.app.editorInput.addListener(xAxisHandle);
         Editor.app.editorInput.addListener(yAxisHandle);
@@ -52,12 +55,12 @@ public class EntityGizmo extends Gizmo {
     @Override
     public void draw() {
         xAxisHandle.position.set(entity.x + 1, entity.y, entity.z - 0.5f);
-        yAxisHandle.position.set(entity.x, entity.y, entity.z + 1 - 0.5f);
-        zAxisHandle.position.set(entity.x, entity.y + 1, entity.z - 0.5f);
+        zAxisHandle.position.set(entity.x, entity.y, entity.z + 1 - 0.5f);
+        yAxisHandle.position.set(entity.x, entity.y + 1, entity.z - 0.5f);
 
         xAxisHandle.draw();
-        yAxisHandle.draw();
         zAxisHandle.draw();
+        yAxisHandle.draw();
 
         if (entity.isSolid) {
             Vector3 boundingBoxCenter = new Vector3(entity.x, entity.z - 0.5f + (entity.collision.z / 2), entity.y);

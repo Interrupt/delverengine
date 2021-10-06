@@ -15,6 +15,7 @@ public class ArrowHandle extends Handle {
     private final Quaternion rotation = new Quaternion();
 
     private final Color color = Color.WHITE.cpy();
+    private final Color highlightColor = Color.WHITE.cpy();
 
     public ArrowHandle(Vector3 position, Vector3 eulerAngles) {
         super();
@@ -75,8 +76,16 @@ public class ArrowHandle extends Handle {
         return this.color;
     }
 
+    public void setHighlightColor(Color color) {
+        this.highlightColor.set(color);
+    }
+
+    public Color getHighlightColor() {
+        return this.highlightColor;
+    }
+
     private Color getDrawColor() {
-        if (selected || hovered) return Color.WHITE;
+        if (selected || hovered) return highlightColor;
 
         return color;
     }
