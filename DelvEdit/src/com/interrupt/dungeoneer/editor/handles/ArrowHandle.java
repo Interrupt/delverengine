@@ -38,6 +38,7 @@ public class ArrowHandle extends Handle {
     private Vector3 axis = new Vector3();
     @Override
     public void draw() {
+        super.draw();
         Camera camera = Editor.app.camera;
 
         float distance = Vector3.dst(
@@ -85,7 +86,7 @@ public class ArrowHandle extends Handle {
     }
 
     private Color getDrawColor() {
-        if (selected || hovered) return highlightColor;
+        if (getSelected() || getHovered()) return highlightColor;
 
         return color;
     }
@@ -94,7 +95,7 @@ public class ArrowHandle extends Handle {
     private final Plane plane = new Plane();
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (!selected) return false;
+        if (!getSelected()) return false;
 
         Camera camera = Editor.app.camera;
         plane.set(

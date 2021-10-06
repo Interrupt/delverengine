@@ -1277,6 +1277,7 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		renderTriggerLines();
 
+		resetHandles();
 		if (showGizmos) {
 			drawAllGizmos();
 		}
@@ -1313,6 +1314,12 @@ public class EditorApplication implements ApplicationListener {
 		Gizmo gizmo = GizmoProvider.get(entity);
 		if (gizmo != null) gizmo.draw();
 	}
+
+	private void resetHandles() {
+	    for (Handle h : Handle.all) {
+	        h.setVisible(false);
+        }
+    }
 
 	private void GlPickEntity() {
 		if(pickerFrameBuffer != null && pickerPixelBuffer != null && renderer.entitiesForPicking != null) {
@@ -1464,6 +1471,7 @@ public class EditorApplication implements ApplicationListener {
         Handles.pickingBegin();
 
         for (Handle handle : Handle.all) {
+            if (!handle.getVisible()) continue;
             Color.rgb888ToColor(gizmoPickColor, handle.getId());
             Handles.setPickColor(gizmoPickColor);
             handle.draw();
