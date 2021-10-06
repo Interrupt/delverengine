@@ -925,6 +925,10 @@ public class EditorApplication implements ApplicationListener {
 		renderTriggerLines();
 
 		resetHandles();
+
+		// Draw gizmos on top of everything
+		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+		
 		if (showGizmos) {
 			drawAllGizmos();
 		}
