@@ -247,7 +247,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     			clearMarkers.addActionListener(new ActionListener() {
     				public void actionPerformed(ActionEvent event) {
 						Editor.app.clearSelectedMarkers();
-						Editor.app.history.saveState(level);
+						Editor.app.history.save();
     				}
     			});
     		}
@@ -359,7 +359,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 		Editor.app.addEntity(entity);
 
 		Editor.app.refreshLights();
-		Editor.app.history.saveState(Editor.app.level);
+		Editor.app.history.save();
 	}
 
     public Array<Entity> baseEntities() {

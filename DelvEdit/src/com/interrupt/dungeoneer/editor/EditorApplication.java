@@ -479,7 +479,7 @@ public class EditorApplication implements ApplicationListener {
 		history = new EditorHistory();
 		file = new EditorFile();
 
-		history.saveState(level);
+		history.save();
 		file.markClean();
 	}
 
@@ -1920,7 +1920,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 		else {
             if(movingControlPoint || movingEntity) {
-                history.saveState(level);
+                history.save();
             }
 
 			movingEntity = false;
@@ -2392,7 +2392,7 @@ public class EditorApplication implements ApplicationListener {
 		   }
 	   }
 
-       history.saveState(level);
+       history.save();
    }
 
    public boolean selectionHasEntityMarker() {
@@ -2981,7 +2981,7 @@ public class EditorApplication implements ApplicationListener {
 
 			t.init(Source.EDITOR);
 
-			history.saveState(level);
+			history.save();
 			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.z, 1);
 		}
 	}
@@ -3055,7 +3055,7 @@ public class EditorApplication implements ApplicationListener {
 		if(t == null)
 			return;
 
-		history.saveState(level);
+		history.save();
 
 		if(pickedSurface.tileSurface == TileSurface.Floor) {
 			floodFillFloorTexture(xPos, yPos, t.floorTex, t.floorTexAtlas, t.floorHeight);
@@ -3070,7 +3070,7 @@ public class EditorApplication implements ApplicationListener {
 			floodFillWallTexture(xPos, yPos, t.getWallBottomTex(pickedSurface.edge), t.getWallBottomTexAtlas(pickedSurface.edge), null);
 		}
 
-		history.saveState(level);
+		history.save();
 		refreshLights();
 	}
 
@@ -3212,7 +3212,7 @@ public class EditorApplication implements ApplicationListener {
 				t.offsetBottomWallSurfaces(pickedSurface.edge, amt);
 
 			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
-			history.saveState(level);
+			history.save();
 		}
 	}
 
@@ -3257,7 +3257,7 @@ public class EditorApplication implements ApplicationListener {
 		setTile(t);
 
         // save undo history
-        history.saveState(level);
+        history.save();
 	}
 
 	public void doPaint() {
@@ -3283,7 +3283,7 @@ public class EditorApplication implements ApplicationListener {
 		paintTile(t);
 
         // save undo history
-        history.saveState(level);
+        history.save();
 	}
 
 	public void doDelete() {
@@ -3308,7 +3308,7 @@ public class EditorApplication implements ApplicationListener {
 		refreshLights();
 
         // save undo history
-        history.saveState(level);
+        history.save();
 	}
 
 	public void doPick() {
@@ -3339,7 +3339,7 @@ public class EditorApplication implements ApplicationListener {
         Editor.selection.picked = pickedDuplicate;
         Editor.selection.selected.addAll(duplicates);
 
-        Editor.app.history.saveState(Editor.app.level);
+        Editor.app.history.save();
     }
 
     public void flattenFloor() {
@@ -3527,7 +3527,7 @@ public class EditorApplication implements ApplicationListener {
 			markWorldAsDirty((int)e.x, (int)e.y, 1);
 		}
 
-		history.saveState(level);
+		history.save();
 	}
 
 	private void vizualizePicking() {

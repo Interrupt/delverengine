@@ -118,6 +118,6 @@ public class EditorClipboard {
         }
 
         // Save undo history
-        Editor.app.history.saveState(Editor.app.level);
+        Editor.app.history.save();
     }
 }
