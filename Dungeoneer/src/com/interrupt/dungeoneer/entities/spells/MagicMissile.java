@@ -46,7 +46,7 @@ public class MagicMissile extends Spell {
 
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
-		
+
 		int dmg = doAttackRoll();
 
 		if (Math.abs(this.shotAccuracy) < 1.0f) {
@@ -89,7 +89,7 @@ public class MagicMissile extends Spell {
 		else {
 
 			// New, data driven way
-			projectile = (MagicMissileProjectile)EntityManager.instance.Copy(magicMissileProjectile);
+			projectile = (MagicMissileProjectile)Entity.copy(magicMissileProjectile);
 
 			projectile.x = position.x + xOffset;
 			projectile.y = position.y + yOffset;

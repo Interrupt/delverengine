@@ -79,7 +79,7 @@ public class FilledRoom extends Room {
         Entity door = null;
 
         if(generator.theme.secretDoors != null && generator.theme.secretDoors.size > 0) {
-            door = EntityManager.instance.Copy(generator.theme.secretDoors.random());
+            door = Entity.copy(generator.theme.secretDoors.random());
         }
         else {
             door = EntityManager.instance.getEntity("Doors", "Hidden_1");

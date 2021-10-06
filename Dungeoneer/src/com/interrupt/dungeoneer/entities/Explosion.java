@@ -35,7 +35,7 @@ public class Explosion extends Entity {
 
     /** Particle sprite animation speed. */
     public float explosionAnimSpeed = 22f;
-	
+
 	// Physics
     /** Impulse range. */
 	public float impulseDistance = 1f;
@@ -82,7 +82,7 @@ public class Explosion extends Entity {
     @Deprecated
     public boolean hasHalo = true;
     public HaloMode haloMode = HaloMode.NONE;
-	
+
 	// Damage!
     /** Damage amount. */
 	public float damage = 0f;
@@ -115,7 +115,7 @@ public class Explosion extends Entity {
 
     /** Status effect. */
     public StatusEffect applyStatusEffect = null;
-	
+
 	public transient Entity owner = null;
 
 	public Explosion() {
@@ -378,7 +378,7 @@ public class Explosion extends Entity {
             rot += rotAmount;
         }
     }
-	
+
 	@Override
 	public void tick(Level level, float delta) {
 	    if(explodeDelay == 0) {
@@ -393,7 +393,7 @@ public class Explosion extends Entity {
             fuseTimer += delta;
         }
 	}
-	
+
 	public void makeDecal() {
 		if(hitDecal != null) {
             if (makeDustRing) {
@@ -437,7 +437,7 @@ public class Explosion extends Entity {
             for (int i = 0; i < this.spawnsCount; i++) {
                 // Grab a random spawn element to create
                 int idx = Game.rand.nextInt(this.spawns.size);
-                Entity e = EntityManager.instance.Copy(this.spawns.get(idx));
+                Entity e = Entity.copy(this.spawns.get(idx));
 
                 // Preserve momentum of thrown bomb and add in random velocity
                 e.xa = this.xa * this.spawnMomentumTransfer + this.spawnVelocity.x + Game.rand.nextFloat() * this.spawnRandomVelocity.x - this.spawnRandomVelocity.x * 0.5f;

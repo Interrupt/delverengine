@@ -11,7 +11,7 @@ public class JsonViewer extends JPanel {
 	public JsonViewer(final Entity entity) {
 		JTextArea textArea = new JTextArea(5, 20);
 
-        Entity copy = Editor.app.entityManager.Copy(entity);
+        Entity copy = Entity.copy(entity);
 
         if(copy instanceof Group) {
             Group g = (Group)copy;
@@ -27,11 +27,11 @@ public class JsonViewer extends JPanel {
 		copy.y = 0;
 		copy.z = 0;
 		copy.drawable = null;
-		
+
 		if(copy instanceof Prefab) {
 			((Prefab) copy).entities.clear();
 		}
-		
+
 		String jsonText = JsonUtil.toJson(copy, Entity.class);
 		textArea.setText(jsonText);
 		add(textArea);
