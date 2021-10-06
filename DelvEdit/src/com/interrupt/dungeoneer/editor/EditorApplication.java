@@ -928,7 +928,7 @@ public class EditorApplication implements ApplicationListener {
 
 		// Draw gizmos on top of everything
 		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
-		
+
 		if (showGizmos) {
 			drawAllGizmos();
 		}
@@ -3342,10 +3342,6 @@ public class EditorApplication implements ApplicationListener {
             addEntity(duplicate);
             duplicates.add(duplicate);
         }
-
-        Editor.selection.clear();
-        Editor.selection.picked = pickedDuplicate;
-        Editor.selection.selected.addAll(duplicates);
 
         Editor.app.history.save();
     }
