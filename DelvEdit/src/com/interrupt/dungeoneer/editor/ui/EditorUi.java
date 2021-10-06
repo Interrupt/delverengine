@@ -328,7 +328,7 @@ public class EditorUi {
 
                 // must have touched the stage, should we show an entity properties menu?
                 if(button == Input.Buttons.LEFT && touched == mainTable) {
-                    if(entityPropertiesPane != null && Editor.selection.hovered == null) {
+                    if(entityPropertiesPane != null && Editor.selection.picked == null) {
                         sidebarTable.setVisible(false);
                     }
                 }
