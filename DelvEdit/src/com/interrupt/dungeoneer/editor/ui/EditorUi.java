@@ -256,6 +256,7 @@ public class EditorUi {
 
         menuBar.addItem(
             new MenuItem("Entity", smallSkin)
+                .addItem(new MenuItem("Duplicate", smallSkin, actions.duplicateEntitiesAction).setAccelerator(new MenuAccelerator(Keys.D, true, false)))
                 .addItem(new MenuItem("Delete", smallSkin, actions.deleteAction).setAccelerator(new MenuAccelerator(Keys.DEL, false, false)))
                 .addItem(new MenuItem("Deselect", smallSkin, actions.escapeAction).setAccelerator(new MenuAccelerator(Keys.ESCAPE, false, false)))
                 .addSeparator()

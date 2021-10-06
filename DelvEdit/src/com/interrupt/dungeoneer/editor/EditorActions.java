@@ -19,6 +19,7 @@ public class EditorActions {
     public ActionListener carveAction;
     public ActionListener paintAction;
     public ActionListener deleteAction;
+    public ActionListener duplicateEntitiesAction;
     public ActionListener planeHeightAction;
     public ActionListener vertexHeightAction;
     public ActionListener vertexToggleAction;
@@ -135,6 +136,13 @@ public class EditorActions {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Editor.app.doDelete();
+            }
+        };
+
+        duplicateEntitiesAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Editor.app.doDuplicateEntities();
             }
         };
 

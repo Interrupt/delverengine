@@ -3321,6 +3321,27 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
+    private final Array<Entity> duplicates = new Array<>();
+    public void doDuplicateEntities() {
+        if (Editor.selection.picked == null) return;
+
+        duplicates.clear();
+        Entity pickedDuplicate = Entity.copy(Editor.selection.picked);
+        addEntity(pickedDuplicate);
+
+        for (Entity e : Editor.selection.selected) {
+            Entity duplicate = Entity.copy(e);
+            addEntity(duplicate);
+            duplicates.add(duplicate);
+        }
+
+        Editor.selection.clear();
+        Editor.selection.picked = pickedDuplicate;
+        Editor.selection.selected.addAll(duplicates);
+
+        Editor.app.history.saveState(Editor.app.level);
+    }
+
     public void flattenFloor() {
         if(Editor.selection.picked != null) return;
 
