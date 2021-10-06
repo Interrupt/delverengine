@@ -20,6 +20,8 @@ public class Handles {
     private static boolean picking = false;
 
     private static final Mesh cube;
+    //private static final Mesh cone;
+    private static final Mesh quad;
     private static final Texture texture;
 
     static {
@@ -116,6 +118,58 @@ public class Handles {
         cube.setVertices(vertices);
         cube.setIndices(indices);
 
+        // Generate quad mesh
+        quad = new Mesh(
+            false,
+            8,
+            12,
+            new VertexAttribute(
+                VertexAttributes.Usage.Position,
+                3,
+                ShaderProgram.POSITION_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.ColorPacked,
+                4,
+                ShaderProgram.COLOR_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.TextureCoordinates,
+                2,
+                ShaderProgram.TEXCOORD_ATTRIBUTE + "0"
+            )
+        );
+
+        x = 1 / 2f;
+        y = 1 / 2f;
+
+        vertices = new float[]{
+            // Bottom face
+            -x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 0
+            -x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 1
+            +x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 2
+            +x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 3
+
+            // Top face
+            -x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 4
+            -x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 5
+            +x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 6
+            +x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 7
+        };
+
+        indices = new short[]{
+            // Bottom face
+            0, 2, 1,
+            0, 3, 2,
+
+            // Top face
+            4, 5, 6,
+            4, 6, 7,
+        };
+
+        quad.setVertices(vertices);
+        quad.setIndices(indices);
+
         // Generate texture
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(1, 1, 1, 1);
@@ -158,6 +212,12 @@ public class Handles {
     public static void drawCube(Vector3 position, float size) {
         beginMeshRendering();
         drawMeshInternal(cube, position, size);
+        endMeshRendering();
+    }
+
+    public static void drawQuad(Vector3 position, float size) {
+        beginMeshRendering();
+        drawMeshInternal(quad, position, size);
         endMeshRendering();
     }
 
