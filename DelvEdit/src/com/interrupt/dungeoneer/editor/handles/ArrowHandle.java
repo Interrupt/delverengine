@@ -1,12 +1,8 @@
 package com.interrupt.dungeoneer.editor.handles;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.math.*;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.ui.Handles;
 
@@ -57,15 +53,8 @@ public class ArrowHandle extends Handle {
             .nor();
 
         Handles.setColor(getDrawColor());
-        int radius = 20;
-        for (int i = radius * 2 + 1; i > 0; i--){
-            Handles.drawWireDisc(
-                new Vector3(position.x, position.z, position.y),
-                camera.direction,
-                i / 2f * pixelScale * distance,
-                32
-            );
-        }
+        Handles.drawCube(position, 0.25f);
+        //Handles.drawCube(position, 25f * pixelScale * distance);
         Handles.setColor(Color.WHITE);
     }
 

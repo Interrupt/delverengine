@@ -1,13 +1,15 @@
 package com.interrupt.dungeoneer.editor.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Frustum;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 
 public class Handles {
     public static ShapeRenderer renderer = new ShapeRenderer();
@@ -16,6 +18,110 @@ public class Handles {
 
     private static Color pickColor = Color.WHITE;
     private static boolean picking = false;
+
+    private static final Mesh cube;
+    private static final Texture texture;
+
+    static {
+        // Generate cube mesh
+        cube = new Mesh(
+            false,
+            24,
+            36,
+            new VertexAttribute(
+                VertexAttributes.Usage.Position,
+                3,
+                ShaderProgram.POSITION_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.ColorPacked,
+                4,
+                ShaderProgram.COLOR_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.TextureCoordinates,
+                2,
+                ShaderProgram.TEXCOORD_ATTRIBUTE + "0"
+            )
+        );
+
+        float x = 1 / 2f;
+        float y = 1 / 2f;
+        float z = 1;
+
+        float[] vertices = new float[]{
+            // Bottom face
+            -x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 0
+            -x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 1
+            +x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 2
+            +x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 3
+
+            // Top face
+            -x, z, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 4
+            -x, z, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 5
+            +x, z, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 6
+            +x, z, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 7
+
+            // South face
+            -x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 8
+            -x, z, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 9
+            +x, z, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 10
+            +x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 11
+
+            // North face
+            -x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 12
+            -x, z, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 13
+            +x, z, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 14
+            +x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 15
+
+            // East face
+            -x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 16
+            -x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 17
+            -x, z, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 18
+            -x, z, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 19
+
+            // West face
+            +x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 20
+            +x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 21
+            +x, z, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 22
+            +x, z, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 23
+        };
+
+        short[] indices = new short[]{
+            // Bottom face
+            0, 2, 1,
+            0, 3, 2,
+
+            // Top face
+            4, 5, 6,
+            4, 6, 7,
+
+            // South face
+            8, 9, 10,
+            8, 10, 11,
+
+            // North face
+            12, 15, 14,
+            12, 14, 13,
+
+            // East face
+            16, 17, 18,
+            16, 18, 19,
+
+            // West face
+            20, 23, 22,
+            20, 22, 21
+        };
+
+        cube.setVertices(vertices);
+        cube.setIndices(indices);
+
+        // Generate texture
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(1, 1, 1, 1);
+        pixmap.fill();
+        texture = new Texture(pixmap);
+    }
 
     public static void setColor(Color color) {
         Handles.color = color;
@@ -26,36 +132,36 @@ public class Handles {
     }
 
     public static void drawWireDisc(Vector3 position, Vector3 axis, float radius, int segments) {
-        begin();
+        beginLineRendering();
         drawWireDiscInternal(position, axis, radius, segments);
-        end();
+        endLineRendering();
     }
 
     public static void drawWireSphere(Vector3 position, float radius) {
-        begin();
+        beginLineRendering();
         drawWireSphereInternal(position, radius);
-        end();
+        endLineRendering();
     }
 
     public static void drawWireCube(Vector3 position, Vector3 size) {
-        begin();
+        beginLineRendering();
         drawWireCubeInternal(position, size);
-        end();
+        endLineRendering();
     }
 
     public static void drawWireFrustum(Frustum frustum) {
-        begin();
+        beginLineRendering();
         drawWireFrustumInternal(frustum);
-        end();
+        endLineRendering();
     }
 
-    public static void drawTest(Vector3 position) {
-        begin();
-        drawTestInternal(position);
-        end();
+    public static void drawCube(Vector3 position, float size) {
+        beginMeshRendering();
+        drawCubeInternal(position, size);
+        endMeshRendering();
     }
 
-    private static void begin() {
+    private static void beginLineRendering() {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 
         if (picking) {
@@ -78,7 +184,7 @@ public class Handles {
         }
     }
 
-    private static void end() {
+    private static void endLineRendering() {
         renderer.end();
 
         if (picking) {
@@ -86,6 +192,14 @@ public class Handles {
         }
 
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+    }
+
+    private static void beginMeshRendering() {
+        GlRenderer.clearBoundTexture();
+    }
+
+    private static void endMeshRendering() {
+
     }
 
     private static void drawWireDiscInternal(Vector3 position, Vector3 axis, float radius, int segments) {
@@ -206,8 +320,32 @@ public class Handles {
 		}
     }
 
-    private static void drawTestInternal(Vector3 position) {
-        renderer.circle(0, 0, 10, 4);
+    private static final Matrix4 combined = new Matrix4();
+    private static final Matrix4 model = new Matrix4();
+    private static void drawCubeInternal(Vector3 position, float size) {
+        model.idt()
+             .translate(position.x, position.z, position.y)
+             .scl(size);
+        combined.set(Editor.app.camera.combined).mul(model);
+
+        ShaderInfo info = GlRenderer.modelShaderInfo;
+
+        GlRenderer.bindTexture(texture);
+
+        info.setAttributes(
+            combined,
+            0,
+            0,
+            0,
+            0,
+            Color.WHITE,
+            picking ? pickColor : color,
+            false
+        );
+
+        info.begin();
+        cube.render(info.shader, GL20.GL_TRIANGLES);
+        info.end();
     }
 
     public static void pickingBegin() {
