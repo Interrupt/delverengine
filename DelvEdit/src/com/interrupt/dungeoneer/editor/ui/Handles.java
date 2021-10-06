@@ -157,7 +157,7 @@ public class Handles {
 
     public static void drawCube(Vector3 position, float size) {
         beginMeshRendering();
-        drawCubeInternal(position, size);
+        drawMeshInternal(cube, position, size);
         endMeshRendering();
     }
 
@@ -322,7 +322,7 @@ public class Handles {
 
     private static final Matrix4 combined = new Matrix4();
     private static final Matrix4 model = new Matrix4();
-    private static void drawCubeInternal(Vector3 position, float size) {
+    private static void drawMeshInternal(Mesh mesh, Vector3 position, float size) {
         model.idt()
              .translate(position.x, position.z, position.y)
              .scl(size);
@@ -344,7 +344,7 @@ public class Handles {
         );
 
         info.begin();
-        cube.render(info.shader, GL20.GL_TRIANGLES);
+        mesh.render(info.shader, GL20.GL_TRIANGLES);
         info.end();
     }
 
