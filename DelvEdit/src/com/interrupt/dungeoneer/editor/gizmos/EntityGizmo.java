@@ -28,7 +28,7 @@ public class EntityGizmo extends Gizmo {
 
                 Handles.setColor(getDrawColor());
                 rotation.setEulerAngles(0, 0, -90);
-                Handles.drawCube(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Handles.drawCone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
                 Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
                 rotation.idt();
                 Handles.setColor(Color.WHITE);
@@ -50,7 +50,7 @@ public class EntityGizmo extends Gizmo {
 
                 Handles.setColor(getDrawColor());
                 rotation.setEulerAngles(0, 90, 0);
-                Handles.drawCube(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Handles.drawCone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
                 Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
                 Handles.setColor(Color.WHITE);
                 rotation.idt();
@@ -71,7 +71,7 @@ public class EntityGizmo extends Gizmo {
                 super.draw();
 
                 Handles.setColor(getDrawColor());
-                Handles.drawCube(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Handles.drawCone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
                 Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
                 Handles.setColor(Color.WHITE);
             }

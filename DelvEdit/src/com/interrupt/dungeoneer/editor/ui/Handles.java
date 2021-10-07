@@ -20,13 +20,16 @@ public class Handles {
     private static Color pickColor = Color.WHITE;
     private static boolean picking = false;
 
+    private static final Mesh cone;
     private static final Mesh cube;
-    //private static final Mesh cone;
+    private static final Mesh disc;
     private static final Mesh quad;
     private static final Texture texture;
 
     static {
+        cone = Meshes.cone();
         cube = Meshes.cube();
+        disc = Meshes.disc();
         quad = Meshes.quad();
 
         // Generate texture
@@ -68,9 +71,21 @@ public class Handles {
         endLineRendering();
     }
 
+    public static void drawCone(Vector3 position, Quaternion rotation, Vector3 scale) {
+        beginMeshRendering();
+        drawMeshInternal(cone, position, rotation, scale);
+        endMeshRendering();
+    }
+
     public static void drawCube(Vector3 position, Quaternion rotation, Vector3 scale) {
         beginMeshRendering();
         drawMeshInternal(cube, position, rotation, scale);
+        endMeshRendering();
+    }
+
+    public static void drawDisc(Vector3 position, Quaternion rotation, Vector3 scale) {
+        beginMeshRendering();
+        drawMeshInternal(disc, position, rotation, scale);
         endMeshRendering();
     }
 
