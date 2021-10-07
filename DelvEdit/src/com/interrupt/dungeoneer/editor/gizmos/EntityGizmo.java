@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
-import com.interrupt.dungeoneer.editor.handles.DragHandle;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
+import com.interrupt.dungeoneer.editor.handles.DragHandle;
 import com.interrupt.dungeoneer.entities.Entity;
 
 @GizmoFor(target = Entity.class)
@@ -21,6 +21,8 @@ public class EntityGizmo extends Gizmo {
     public EntityGizmo(Entity entity) {
         super(entity);
 
+        final float handleThickness = 1 / 32f;
+
         xAxisHandle = new DragHandle(entity.x + 1, entity.y, entity.z - 0.5f) {
             @Override
             public void draw() {
@@ -29,7 +31,7 @@ public class EntityGizmo extends Gizmo {
                 Draw.color(getDrawColor());
                 rotation.setEulerAngles(0, 0, -90);
                 Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
+                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(handleThickness, handleThickness, 1));
                 rotation.idt();
                 Draw.color(Color.WHITE);
             }
@@ -51,7 +53,7 @@ public class EntityGizmo extends Gizmo {
                 Draw.color(getDrawColor());
                 rotation.setEulerAngles(0, 90, 0);
                 Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
+                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(handleThickness, handleThickness, 1));
                 Draw.color(Color.WHITE);
                 rotation.idt();
             }
@@ -72,7 +74,7 @@ public class EntityGizmo extends Gizmo {
 
                 Draw.color(getDrawColor());
                 Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
+                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(handleThickness, handleThickness, 1));
                 Draw.color(Color.WHITE);
             }
 
