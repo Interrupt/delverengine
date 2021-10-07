@@ -1,4 +1,4 @@
-package com.interrupt.dungeoneer.editor.ui;
+package com.interrupt.dungeoneer.editor.gfx;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
@@ -12,7 +12,7 @@ import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.Meshes;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 
-public class Handles {
+public class Draw {
     public static ShapeRenderer renderer = new ShapeRenderer();
     private static Camera camera;
     private static Color color = Color.WHITE;
@@ -39,57 +39,57 @@ public class Handles {
         texture = new Texture(pixmap);
     }
 
-    public static void setColor(Color color) {
-        Handles.color = color;
+    public static void color(Color color) {
+        Draw.color = color;
     }
 
-    public static void setPickColor(Color color) {
-        Handles.pickColor = color;
+    public static void pickColor(Color color) {
+        Draw.pickColor = color;
     }
 
-    public static void drawWireDisc(Vector3 position, Vector3 axis, float radius, int segments) {
+    public static void wireDisc(Vector3 position, Vector3 axis, float radius, int segments) {
         beginLineRendering();
         drawWireDiscInternal(position, axis, radius, segments);
         endLineRendering();
     }
 
-    public static void drawWireSphere(Vector3 position, float radius) {
+    public static void wireSphere(Vector3 position, float radius) {
         beginLineRendering();
         drawWireSphereInternal(position, radius);
         endLineRendering();
     }
 
-    public static void drawWireCube(Vector3 position, Vector3 size) {
+    public static void wireCube(Vector3 position, Vector3 size) {
         beginLineRendering();
         drawWireCubeInternal(position, size);
         endLineRendering();
     }
 
-    public static void drawWireFrustum(Frustum frustum) {
+    public static void wireFrustum(Frustum frustum) {
         beginLineRendering();
         drawWireFrustumInternal(frustum);
         endLineRendering();
     }
 
-    public static void drawCone(Vector3 position, Quaternion rotation, Vector3 scale) {
+    public static void cone(Vector3 position, Quaternion rotation, Vector3 scale) {
         beginMeshRendering();
         drawMeshInternal(cone, position, rotation, scale);
         endMeshRendering();
     }
 
-    public static void drawCube(Vector3 position, Quaternion rotation, Vector3 scale) {
+    public static void cube(Vector3 position, Quaternion rotation, Vector3 scale) {
         beginMeshRendering();
         drawMeshInternal(cube, position, rotation, scale);
         endMeshRendering();
     }
 
-    public static void drawDisc(Vector3 position, Quaternion rotation, Vector3 scale) {
+    public static void disc(Vector3 position, Quaternion rotation, Vector3 scale) {
         beginMeshRendering();
         drawMeshInternal(disc, position, rotation, scale);
         endMeshRendering();
     }
 
-    public static void drawQuad(Vector3 position, Quaternion rotation, Vector3 scale) {
+    public static void quad(Vector3 position, Quaternion rotation, Vector3 scale) {
         beginMeshRendering();
         drawMeshInternal(quad, position, rotation, scale);
         endMeshRendering();

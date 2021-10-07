@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.handles.DragHandle;
-import com.interrupt.dungeoneer.editor.ui.Handles;
+import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.entities.Entity;
 
 @GizmoFor(target = Entity.class)
@@ -26,12 +26,12 @@ public class EntityGizmo extends Gizmo {
             public void draw() {
                 super.draw();
 
-                Handles.setColor(getDrawColor());
+                Draw.color(getDrawColor());
                 rotation.setEulerAngles(0, 0, -90);
-                Handles.drawCone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
+                Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
                 rotation.idt();
-                Handles.setColor(Color.WHITE);
+                Draw.color(Color.WHITE);
             }
 
             @Override
@@ -48,11 +48,11 @@ public class EntityGizmo extends Gizmo {
             public void draw() {
                 super.draw();
 
-                Handles.setColor(getDrawColor());
+                Draw.color(getDrawColor());
                 rotation.setEulerAngles(0, 90, 0);
-                Handles.drawCone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
-                Handles.setColor(Color.WHITE);
+                Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
+                Draw.color(Color.WHITE);
                 rotation.idt();
             }
 
@@ -70,10 +70,10 @@ public class EntityGizmo extends Gizmo {
             public void draw() {
                 super.draw();
 
-                Handles.setColor(getDrawColor());
-                Handles.drawCone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
-                Handles.setColor(Color.WHITE);
+                Draw.color(getDrawColor());
+                Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
+                Draw.color(Color.WHITE);
             }
 
             @Override
@@ -90,9 +90,9 @@ public class EntityGizmo extends Gizmo {
             public void draw() {
                 super.draw();
 
-                Handles.setColor(getDrawColor());
-                Handles.drawQuad(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Handles.setColor(Color.WHITE);
+                Draw.color(getDrawColor());
+                Draw.quad(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Draw.color(Color.WHITE);
             }
 
             @Override
@@ -126,9 +126,9 @@ public class EntityGizmo extends Gizmo {
         if (entity.isSolid) {
             Vector3 boundingBoxCenter = new Vector3(entity.x, entity.z - 0.5f + (entity.collision.z / 2), entity.y);
             Vector3 boundingBoxSize = new Vector3(entity.collision.x, entity.collision.z / 2, entity.collision.y);
-            Handles.setColor(EditorColors.COLLISION_GIZMO);
-            Handles.drawWireCube(boundingBoxCenter, boundingBoxSize);
-            Handles.setColor(Color.WHITE);
+            Draw.color(EditorColors.COLLISION_GIZMO);
+            Draw.wireCube(boundingBoxCenter, boundingBoxSize);
+            Draw.color(Color.WHITE);
         }
     }
 }

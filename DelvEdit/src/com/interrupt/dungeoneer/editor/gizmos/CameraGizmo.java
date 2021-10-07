@@ -1,7 +1,7 @@
 package com.interrupt.dungeoneer.editor.gizmos;
 
 import com.badlogic.gdx.math.Frustum;
-import com.interrupt.dungeoneer.editor.ui.Handles;
+import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.entities.Camera;
 
 @GizmoFor(target = Camera.class)
@@ -15,6 +15,6 @@ public class CameraGizmo extends EntityGizmo {
         super.draw();
         Camera camera = (Camera) entity;
         Frustum frustum = camera.getCamera().frustum;
-        Handles.drawWireFrustum(frustum);
+        Draw.wireFrustum(frustum);
     }
 }

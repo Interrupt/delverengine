@@ -40,7 +40,7 @@ import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
-import com.interrupt.dungeoneer.editor.ui.Handles;
+import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
 import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
@@ -1061,7 +1061,7 @@ public class EditorApplication implements ApplicationListener {
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         Gdx.gl.glCullFace(GL20.GL_BACK);
 
-        Handles.pickingBegin();
+        Draw.pickingBegin();
 
         Iterable<Entity> entities = showGizmos ? level.entities : Editor.selection.all;
         for (Entity entity : entities) {
@@ -1069,11 +1069,11 @@ public class EditorApplication implements ApplicationListener {
             if (gizmo == null) continue;
 
             Color.rgb888ToColor(gizmoPickColor, gizmo.getId());
-            Handles.setPickColor(gizmoPickColor);
+            Draw.pickColor(gizmoPickColor);
             drawGizmo(entity);
         }
 
-        Handles.pickingEnd();
+        Draw.pickingEnd();
 
         // Get mouse coords
         int pickX = Gdx.input.getX();
@@ -1119,16 +1119,16 @@ public class EditorApplication implements ApplicationListener {
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         Gdx.gl.glCullFace(GL20.GL_BACK);
 
-        Handles.pickingBegin();
+        Draw.pickingBegin();
 
         for (Handle handle : Handle.all) {
             if (!handle.getVisible()) continue;
             Color.rgb888ToColor(gizmoPickColor, handle.getId());
-            Handles.setPickColor(gizmoPickColor);
+            Draw.pickColor(gizmoPickColor);
             handle.draw();
         }
 
-        Handles.pickingEnd();
+        Draw.pickingEnd();
 
         // Get mouse coords
         int pickX = Gdx.input.getX();
