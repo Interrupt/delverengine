@@ -2,7 +2,6 @@ package com.interrupt.dungeoneer.editor.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Matrix4;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.Meshes;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 
 public class Handles {
@@ -26,150 +26,8 @@ public class Handles {
     private static final Texture texture;
 
     static {
-        // Generate cube mesh
-        cube = new Mesh(
-            false,
-            24,
-            36,
-            new VertexAttribute(
-                VertexAttributes.Usage.Position,
-                3,
-                ShaderProgram.POSITION_ATTRIBUTE
-            ),
-            new VertexAttribute(
-                VertexAttributes.Usage.ColorPacked,
-                4,
-                ShaderProgram.COLOR_ATTRIBUTE
-            ),
-            new VertexAttribute(
-                VertexAttributes.Usage.TextureCoordinates,
-                2,
-                ShaderProgram.TEXCOORD_ATTRIBUTE + "0"
-            )
-        );
-
-        float x = 1 / 2f;
-        float y = 1 / 2f;
-        float z = 1;
-
-        float[] vertices = new float[]{
-            // Bottom face
-            -x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 0
-            -x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 1
-            +x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 2
-            +x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 3
-
-            // Top face
-            -x, z, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 4
-            -x, z, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 5
-            +x, z, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 6
-            +x, z, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 7
-
-            // South face
-            -x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 8
-            -x, z, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 9
-            +x, z, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 10
-            +x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 11
-
-            // North face
-            -x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 12
-            -x, z, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 13
-            +x, z, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 14
-            +x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 15
-
-            // East face
-            -x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 16
-            -x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 17
-            -x, z, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 18
-            -x, z, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 19
-
-            // West face
-            +x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 20
-            +x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 21
-            +x, z, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 22
-            +x, z, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 23
-        };
-
-        short[] indices = new short[]{
-            // Bottom face
-            0, 2, 1,
-            0, 3, 2,
-
-            // Top face
-            4, 5, 6,
-            4, 6, 7,
-
-            // South face
-            8, 9, 10,
-            8, 10, 11,
-
-            // North face
-            12, 15, 14,
-            12, 14, 13,
-
-            // East face
-            16, 17, 18,
-            16, 18, 19,
-
-            // West face
-            20, 23, 22,
-            20, 22, 21
-        };
-
-        cube.setVertices(vertices);
-        cube.setIndices(indices);
-
-        // Generate quad mesh
-        quad = new Mesh(
-            false,
-            8,
-            12,
-            new VertexAttribute(
-                VertexAttributes.Usage.Position,
-                3,
-                ShaderProgram.POSITION_ATTRIBUTE
-            ),
-            new VertexAttribute(
-                VertexAttributes.Usage.ColorPacked,
-                4,
-                ShaderProgram.COLOR_ATTRIBUTE
-            ),
-            new VertexAttribute(
-                VertexAttributes.Usage.TextureCoordinates,
-                2,
-                ShaderProgram.TEXCOORD_ATTRIBUTE + "0"
-            )
-        );
-
-        x = 1 / 2f;
-        y = 1 / 2f;
-
-        vertices = new float[]{
-            // Bottom face
-            -x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 0, // 0
-            -x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 1, // 1
-            +x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 1, // 2
-            +x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 0, // 3
-
-            // Top face
-            -x, 0, -y, Color.WHITE_FLOAT_BITS, 1, 1, // 4
-            -x, 0, +y, Color.WHITE_FLOAT_BITS, 1, 0, // 5
-            +x, 0, +y, Color.WHITE_FLOAT_BITS, 0, 0, // 6
-            +x, 0, -y, Color.WHITE_FLOAT_BITS, 0, 1, // 7
-        };
-
-        indices = new short[]{
-            // Bottom face
-            0, 2, 1,
-            0, 3, 2,
-
-            // Top face
-            4, 5, 6,
-            4, 6, 7,
-        };
-
-        quad.setVertices(vertices);
-        quad.setIndices(indices);
+        cube = Meshes.cube();
+        quad = Meshes.quad();
 
         // Generate texture
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
