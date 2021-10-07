@@ -169,4 +169,86 @@ public class Meshes {
 
         return mesh;
     }
+
+    /** Generates a unit disc mesh. */
+    public static Mesh disc() {
+        return disc(1, 32);
+    }
+
+    /** Generates a disc mesh. */
+    public static Mesh disc(float radius, int segments) {
+        Mesh mesh = new Mesh(
+            true,
+            segments + 1,
+            segments * 3,
+            new VertexAttribute(
+                VertexAttributes.Usage.Position,
+                3,
+                ShaderProgram.POSITION_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.ColorPacked,
+                4,
+                ShaderProgram.COLOR_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.TextureCoordinates,
+                2,
+                ShaderProgram.TEXCOORD_ATTRIBUTE + "0"
+            )
+        );
+
+        float[] vertices = new float[(segments + 1) * 6];
+        short[] indices = new short[segments * 3];
+
+        float tau = (float)Math.PI * 2;
+        float step = tau / segments;
+
+        // Center vertex
+        vertices[0] = 0;
+        vertices[1] = 0;
+        vertices[2] = 0;
+        vertices[3] = Color.WHITE_FLOAT_BITS;
+        vertices[4] = 0;
+        vertices[5] = 0;
+
+        // First vertex
+        vertices[ 6] = 1 * radius;
+        vertices[ 7] = 0;
+        vertices[ 8] = 0 * radius;
+        vertices[ 9] = Color.WHITE_FLOAT_BITS;
+        vertices[10] = 0;
+        vertices[11] = 0;
+
+        for (int i = 0; i < segments - 1; i++) {
+            // Vertex array offset
+            int vx = (i * 6) + 12;
+            // Index array offset
+            int ix = i * 3;
+
+            // Vertex
+            vertices[vx + 0] = (float)Math.cos((i + 1) * step) * radius;
+            vertices[vx + 1] = 0;
+            vertices[vx + 2] = (float)Math.sin((i + 1) * step) * radius;
+            vertices[vx + 3] = Color.WHITE_FLOAT_BITS;
+            vertices[vx + 4] = 0;
+            vertices[vx + 5] = 0;
+
+            // Indices
+            indices[ix + 0] = 0;
+            indices[ix + 1] = (short)(i + 2);
+            indices[ix + 2] = (short)(i + 1);
+        }
+
+        // Last index
+        int last = (segments - 1) * 3;
+        indices[last + 0] = 0;
+        indices[last + 1] = (short)segments;
+        indices[last + 2] = 1;
+
+        mesh.setVertices(vertices);
+        mesh.setIndices(indices);
+
+        return mesh;
+    }
 }
