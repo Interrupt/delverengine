@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
@@ -209,15 +210,15 @@ public class Handles {
         endLineRendering();
     }
 
-    public static void drawCube(Vector3 position, float size) {
+    public static void drawCube(Vector3 position, Quaternion rotation, Vector3 scale) {
         beginMeshRendering();
-        drawMeshInternal(cube, position, size);
+        drawMeshInternal(cube, position, rotation, scale);
         endMeshRendering();
     }
 
-    public static void drawQuad(Vector3 position, float size) {
+    public static void drawQuad(Vector3 position, Quaternion rotation, Vector3 scale) {
         beginMeshRendering();
-        drawMeshInternal(quad, position, size);
+        drawMeshInternal(quad, position, rotation, scale);
         endMeshRendering();
     }
 
@@ -382,10 +383,12 @@ public class Handles {
 
     private static final Matrix4 combined = new Matrix4();
     private static final Matrix4 model = new Matrix4();
-    private static void drawMeshInternal(Mesh mesh, Vector3 position, float size) {
+    private static void drawMeshInternal(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
         model.idt()
-             .translate(position.x, position.z, position.y)
-             .scl(size);
+            .translate(position.x, position.z, position.y)
+            .rotate(rotation)
+            .scale(scale.x, scale.z, scale.y);
+
         combined.set(Editor.app.camera.combined).mul(model);
 
         ShaderInfo info = GlRenderer.modelShaderInfo;

@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor.gizmos;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
@@ -15,6 +16,8 @@ public class EntityGizmo extends Gizmo {
     private final DragHandle zAxisHandle;
     private final DragHandle zPlaneHandle;
 
+    private Quaternion rotation = new Quaternion();
+    private Vector3 scale = new Vector3();
     public EntityGizmo(Entity entity) {
         super(entity);
 
@@ -24,7 +27,10 @@ public class EntityGizmo extends Gizmo {
                 super.draw();
 
                 Handles.setColor(getDrawColor());
-                Handles.drawCube(position, 0.25f);
+                rotation.setEulerAngles(0, 0, -90);
+                Handles.drawCube(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
+                rotation.idt();
                 Handles.setColor(Color.WHITE);
             }
 
@@ -43,8 +49,11 @@ public class EntityGizmo extends Gizmo {
                 super.draw();
 
                 Handles.setColor(getDrawColor());
-                Handles.drawCube(position, 0.25f);
+                rotation.setEulerAngles(0, 90, 0);
+                Handles.drawCube(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
                 Handles.setColor(Color.WHITE);
+                rotation.idt();
             }
 
             @Override
@@ -62,7 +71,8 @@ public class EntityGizmo extends Gizmo {
                 super.draw();
 
                 Handles.setColor(getDrawColor());
-                Handles.drawCube(position, 0.25f);
+                Handles.drawCube(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
+                Handles.drawCube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(0.0625f, 0.0625f, 1));
                 Handles.setColor(Color.WHITE);
             }
 
@@ -81,7 +91,7 @@ public class EntityGizmo extends Gizmo {
                 super.draw();
 
                 Handles.setColor(getDrawColor());
-                Handles.drawQuad(position, 0.25f);
+                Handles.drawQuad(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
                 Handles.setColor(Color.WHITE);
             }
 
