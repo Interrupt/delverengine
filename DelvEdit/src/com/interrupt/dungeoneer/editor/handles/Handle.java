@@ -41,7 +41,7 @@ public class Handle extends Handles.Handle {
         return color;
     }
 
-    private static final Vector3 offset = new Vector3();
+    private static final Vector3 cursorDragOffset = new Vector3();
     @Override
     public void select() {
         // Capture offset of initial selection
@@ -63,7 +63,7 @@ public class Handle extends Handles.Handle {
             intersection
         );
 
-        offset.set(position).sub(intersection.x, intersection.z, intersection.y);
+        cursorDragOffset.set(position).sub(intersection.x, intersection.z, intersection.y);
     }
 
     private final Vector3 intersection = new Vector3();
@@ -91,7 +91,7 @@ public class Handle extends Handles.Handle {
         );
 
         // Preserve selection offset
-        position.set(intersection.x, intersection.z, intersection.y).add(offset);
+        position.set(intersection.x, intersection.z, intersection.y).add(cursorDragOffset);
         change();
 
         return false;
