@@ -1,90 +1,72 @@
 package com.interrupt.dungeoneer.editor.handles;
 
-import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
+import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.editor.Editor;
 
-public abstract class Handle extends InputAdapter {
-    private final int id;
+public class Handle extends Handles.Handle {
+    public final Vector3 position = new Vector3();
 
-    private boolean hovered;
-    private boolean selected;
-    private boolean visible = false;
+    private final Color color = Color.WHITE.cpy();
+    private final Color highlightColor = Color.WHITE.cpy();
 
-
-    public Handle() {
-        id = Handles.getNewId();
-        Handles.add(this);
+    public Handle(float x, float y, float z) {
+        new Handles().super();
+        position.set(x, y, z);
     }
 
-    public int getId() {
-        return id;
+    public void setColor(Color color) {
+        this.color.set(color);
     }
 
-    public boolean getHovered() {
-        return hovered;
+    public Color getColor() {
+        return this.color;
     }
 
-    public void setHovered(boolean hovered) {
-        this.hovered = hovered;
+    public void setHighlightColor(Color color) {
+        this.highlightColor.set(color);
     }
 
-    public boolean getSelected() {
-        return this.selected;
+    public Color getHighlightColor() {
+        return this.highlightColor;
     }
 
-    public void setSelected(boolean selected) {
-        if (this.selected != selected) {
-            if (!selected) deselect();
-            else select();
-        }
+    protected Color getDrawColor() {
+        if (getSelected() || getHovered()) return highlightColor;
 
-        this.selected = selected;
+        return color;
     }
 
-    public boolean getVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    public void draw() {
-        setVisible(true);
-    };
-
-    /** Called when cursor is moved over handle. */
-    public void enter() {
-        setHovered(true);
-    }
-
-    /** Called when cursor is moved out of handle. */
-    public void exit() {
-        setHovered(false);
-    }
-
-    /** Called when handle becomes selected. */
-    public void select() {}
-
-    /** Called when handle become deselected. */
-    public void deselect() {}
-
-    /** Called when handle is manipulated. */
-    public void change() {}
-
+    private final Vector3 intersection = new Vector3();
+    private final Plane plane = new Plane();
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button != 0) {
-            setHovered(false);
-        }
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (!getSelected()) return false;
 
-        setSelected(getHovered());
+        Camera camera = Editor.app.camera;
+        plane.set(
+            position.x,
+            position.z,
+            position.y,
+            camera.direction.x,
+            camera.direction.y,
+            camera.direction.z
+        );
+        Intersector.intersectRayPlane(
+            camera.getPickRay(
+                screenX,
+                screenY
+            ),
+            plane,
+            intersection
+        );
 
-        return false;
-    }
+        position.set(intersection.x, intersection.z, intersection.y);
+        change();
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        setSelected(false);
         return false;
     }
 }
