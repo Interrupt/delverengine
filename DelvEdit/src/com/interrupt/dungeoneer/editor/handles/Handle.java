@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.editor.handles;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
@@ -40,6 +41,31 @@ public class Handle extends Handles.Handle {
         return color;
     }
 
+    private static final Vector3 offset = new Vector3();
+    @Override
+    public void select() {
+        // Capture offset of initial selection
+        Camera camera = Editor.app.camera;
+        plane.set(
+            position.x,
+            position.z,
+            position.y,
+            camera.direction.x,
+            camera.direction.y,
+            camera.direction.z
+        );
+        Intersector.intersectRayPlane(
+            camera.getPickRay(
+                Gdx.input.getX(),
+                Gdx.input.getY()
+            ),
+            plane,
+            intersection
+        );
+
+        offset.set(position).sub(intersection.x, intersection.z, intersection.y);
+    }
+
     private final Vector3 intersection = new Vector3();
     private final Plane plane = new Plane();
     @Override
@@ -64,7 +90,8 @@ public class Handle extends Handles.Handle {
             intersection
         );
 
-        position.set(intersection.x, intersection.z, intersection.y);
+        // Preserve selection offset
+        position.set(intersection.x, intersection.z, intersection.y).add(offset);
         change();
 
         return false;
