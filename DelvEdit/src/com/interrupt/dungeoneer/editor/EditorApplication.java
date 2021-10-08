@@ -35,12 +35,12 @@ import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.handles.Handle;
+import com.interrupt.dungeoneer.editor.handles.Handles;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
-import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
 import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
@@ -90,6 +90,9 @@ public class EditorApplication implements ApplicationListener {
 
 	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex }
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
+
+    // TODO Clean this up. Move this to the selection object?
+    public Object hovered = null;
 
 	public Color controlPointColor = new Color(1f, 0.4f, 0f, 1f);
 
@@ -1045,140 +1048,6 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.gl.glDisable(GL20.GL_POLYGON_OFFSET_FILL);
 	}
 
-    private final Color pickedColor = Color.BLACK.cpy();
-    private final Color gizmoPickColor = Color.WHITE.cpy();
-
-    private void PickGizmos() {
-        if (pickerFrameBuffer == null) {
-            return;
-        }
-
-        pickerFrameBuffer.begin();
-
-        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
-
-        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
-        Gdx.gl.glCullFace(GL20.GL_BACK);
-
-        Draw.pickingBegin();
-
-        Iterable<Entity> entities = showGizmos ? level.entities : Editor.selection.all;
-        for (Entity entity : entities) {
-            Gizmo gizmo = GizmoProvider.get(entity);
-            if (gizmo == null) continue;
-
-            Color.rgb888ToColor(gizmoPickColor, gizmo.getId());
-            Draw.pickColor(gizmoPickColor);
-            drawGizmo(entity);
-        }
-
-        Draw.pickingEnd();
-
-        // Get mouse coords
-        int pickX = Gdx.input.getX();
-        int pickY = Gdx.graphics.getHeight() - Gdx.input.getY();
-
-        // Get the pixels
-        Gdx.gl.glReadPixels(
-            0,
-            0,
-            Gdx.graphics.getWidth(),
-            Gdx.graphics.getHeight(),
-            GL20.GL_RGBA,
-            GL20.GL_UNSIGNED_BYTE,
-            pickerPixelBuffer.getPixels()
-        );
-
-        // Get the hovered pixel
-        int rgba8888 = pickerPixelBuffer.getPixel(pickX, pickY);
-        pickedColor.set(rgba8888);
-
-        // Get hovered Gizmo
-        int index = Color.rgb888(pickedColor);
-        Gizmo gizmo = GizmoProvider.get(index);
-        if (gizmo != null) {
-            Gdx.app.log("GizmoPick", gizmo.toString());
-        }
-
-        pickerFrameBuffer.end();
-    }
-
-    private Object hovered = null;
-    private Handle currentHoveredHandle = null;
-    private void PickHandles() {
-        if (pickerFrameBuffer == null) {
-            return;
-        }
-
-        pickerFrameBuffer.begin();
-
-        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
-
-        Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
-        Gdx.gl.glCullFace(GL20.GL_BACK);
-
-        Draw.pickingBegin();
-
-        for (Handle handle : Handle.all) {
-            if (!handle.getVisible()) continue;
-            Color.rgb888ToColor(gizmoPickColor, handle.getId());
-            Draw.pickColor(gizmoPickColor);
-            handle.draw();
-        }
-
-        Draw.pickingEnd();
-
-        // Get mouse coords
-        int pickX = Gdx.input.getX();
-        int pickY = Gdx.graphics.getHeight() - Gdx.input.getY();
-
-        // Get the pixels
-        Gdx.gl.glReadPixels(
-            0,
-            0,
-            Gdx.graphics.getWidth(),
-            Gdx.graphics.getHeight(),
-            GL20.GL_RGBA,
-            GL20.GL_UNSIGNED_BYTE,
-            pickerPixelBuffer.getPixels()
-        );
-
-        // Get the hovered pixel
-        int rgba8888 = pickerPixelBuffer.getPixel(pickX, pickY);
-        pickedColor.set(rgba8888);
-
-        // Get hovered Handle
-        int index = Color.rgb888(pickedColor);
-
-        Handle h = Handle.get(index);
-        if (h != null) {
-            hovered = h;
-        }
-
-        if (hovered instanceof Handle) {
-            Handle hoveredHandle = (Handle)hovered;
-
-            if (currentHoveredHandle != hoveredHandle) {
-                if (currentHoveredHandle != null) {
-                    currentHoveredHandle.exit();
-                }
-
-                hoveredHandle.enter();
-
-                currentHoveredHandle = hoveredHandle;
-                hovered = hoveredHandle;
-            }
-        }
-        else if (currentHoveredHandle != null) {
-            currentHoveredHandle.exit();
-            currentHoveredHandle = null;
-        }
-
-        pickerFrameBuffer.end();
-    }
-
     public void handleControlPoints() {
         // drag tile
         if (selected && (!readLeftClick || movingControlPoint)) {
@@ -1899,8 +1768,7 @@ public class EditorApplication implements ApplicationListener {
 			}
 		}
 
-        PickGizmos();
-        PickHandles();
+        Handles.pick();
 
 		if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
 			if(movingControlPoint || pickedControlPoint != null) {

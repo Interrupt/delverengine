@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.handles.Handles;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.Meshes;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
@@ -16,9 +17,6 @@ public class Draw {
     public static ShapeRenderer renderer = new ShapeRenderer();
     private static Camera camera;
     private static Color color = Color.WHITE;
-
-    private static Color pickColor = Color.WHITE;
-    private static boolean picking = false;
 
     private static final Mesh cone;
     private static final Mesh cube;
@@ -43,8 +41,17 @@ public class Draw {
         Draw.color = color;
     }
 
-    public static void pickColor(Color color) {
-        Draw.pickColor = color;
+    private static Color getDrawOrPickColor() {
+        if (Handles.isPicking()) {
+            return Handles.getPickColor();
+        }
+        else {
+             return color;
+        }
+    }
+
+    private static float getLineWidth() {
+        return Handles.isPicking() ? 4 : 1;
     }
 
     public static void wireDisc(Vector3 position, Vector3 axis, float radius, int segments) {
@@ -96,33 +103,19 @@ public class Draw {
     private static void beginLineRendering() {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 
-        if (picking) {
-            Gdx.gl.glLineWidth(4f);
-        }
-        else {
-            Gdx.gl.glLineWidth(1f);
-        }
+        Gdx.gl.glLineWidth(getLineWidth());
 
         camera = Editor.app.camera;
 
         renderer.setProjectionMatrix(camera.combined);
         renderer.begin(ShapeRenderer.ShapeType.Line);
 
-        if (picking) {
-            renderer.setColor(pickColor);
-        }
-        else {
-            renderer.setColor(color);
-        }
+        renderer.setColor(getDrawOrPickColor());
     }
 
     private static void endLineRendering() {
         renderer.end();
-
-        if (picking) {
-            Gdx.gl.glLineWidth(1f);
-        }
-
+        Gdx.gl.glLineWidth(1f);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
     }
 
@@ -273,20 +266,12 @@ public class Draw {
             0,
             0,
             Color.WHITE,
-            picking ? pickColor : color,
+            getDrawOrPickColor(),
             false
         );
 
         info.begin();
         mesh.render(info.shader, GL20.GL_TRIANGLES);
         info.end();
-    }
-
-    public static void pickingBegin() {
-        picking = true;
-    }
-
-    public static void pickingEnd() {
-        picking = false;
     }
 }
