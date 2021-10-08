@@ -95,6 +95,12 @@ public class Draw {
         endMeshRendering();
     }
 
+    public static void mesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
+        beginMeshRendering();
+        drawMeshInternal(mesh, position, rotation, scale);
+        endMeshRendering();
+    }
+
     private static void beginLineRendering() {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 
