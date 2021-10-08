@@ -940,6 +940,7 @@ public class EditorApplication implements ApplicationListener {
 
 		// TODO Remove this
 		//vizualizePicking();
+		//Handles.drawVisualization();
 	}
 
 	/** Draw Gizmos for the picked Entity and selected Entities. */

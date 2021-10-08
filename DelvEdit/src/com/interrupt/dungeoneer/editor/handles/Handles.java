@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
@@ -19,6 +20,7 @@ public class Handles {
     }
 
     private static final Array<WeakReference<Handle>> handles = new Array<>();
+
     /** Gets the handle object for the given id. */
     public static Handle get(int id) {
         for (WeakReference<Handle> ref : handles) {
@@ -190,11 +192,37 @@ public class Handles {
             height,
             Pixmap.Format.RGBA8888
         );
+
+        batch = null;
     }
 
     public static void reset() {
         for (Handle h : Handles.all) {
-	        h.setVisible(false);
+            h.setVisible(false);
         }
+    }
+
+    private static SpriteBatch batch;
+
+    /** Draws pickFrameBuffer to screen. Useful for debugging purposes. It is
+     * also helpful to set handleIds to 0xFF000 so they are easier to see. */
+    public static void drawVisualization() {
+        if (batch == null) {
+            batch = new SpriteBatch();
+        }
+
+        batch.begin();
+        batch.draw(
+            pickFrameBuffer.getColorBufferTexture(),
+            0,
+            0,
+            Gdx.graphics.getWidth(),
+            Gdx.graphics.getHeight(),
+            0,
+            0,
+            1,
+            1
+        );
+        batch.end();
     }
 }
