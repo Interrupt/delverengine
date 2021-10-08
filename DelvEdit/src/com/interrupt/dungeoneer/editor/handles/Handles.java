@@ -5,9 +5,58 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
 
+import java.lang.ref.WeakReference;
+import java.util.Iterator;
+
 public class Handles {
+    private static int handleIds = 1;
+
+    public static int getNewId() {
+        return handleIds++;
+    }
+
+    private static final Array<WeakReference<Handle>> handles = new Array<>();
+    /** Gets the handle object for the given id. */
+    public static Handle get(int id) {
+        for (WeakReference<Handle> ref : handles) {
+            Handle handle = ref.get();
+            if (handle == null) continue;
+            if (handle.getId() == id) return handle;
+        }
+
+        return null;
+    }
+
+    public static void add(Handle handle) {
+        handles.add(new WeakReference<>(handle));
+    }
+
+    public static Array<Handle> result = new Array<>();
+    public static Iterable<Handle> all = new Iterable<Handle>() {
+        @Override
+        public Iterator<Handle> iterator() {
+            result.clear();
+
+            for (Iterator<WeakReference<Handle>> it = handles.iterator(); it.hasNext(); ) {
+                WeakReference<Handle> ref = it.next();
+                Handle handle = ref.get();
+
+                // Clean up list if needed.
+                if (handle == null) {
+                    it.remove();
+                    continue;
+                }
+
+                result.add(handle);
+            }
+
+            return result.iterator();
+        }
+    };
+
     private static Color pickColor = Color.WHITE;
     private static boolean picking = false;
 
@@ -53,16 +102,16 @@ public class Handles {
         Gdx.gl20.glDepthFunc(GL20.GL_LEQUAL);
         Gdx.gl.glCullFace(GL20.GL_BACK);
 
-        Handles.pickingBegin();
+        pickingBegin();
 
-        for (Handle handle : Handle.all) {
+        for (Handle handle : all) {
             if (!handle.getVisible()) continue;
             Color.rgb888ToColor(color, handle.getId());
-            Handles.setPickColor(color);
+            setPickColor(color);
             handle.draw();
         }
 
-        Handles.pickingEnd();
+        pickingEnd();
 
         // Get mouse coords
         int pickX = Gdx.input.getX();
@@ -86,7 +135,7 @@ public class Handles {
         // Get hovered Handle
         int index = Color.rgb888(color);
 
-        Handle h = Handle.get(index);
+        Handle h = get(index);
         if (h != null) {
             Editor.app.hovered = h;
         }
@@ -137,5 +186,11 @@ public class Handles {
             height,
             Pixmap.Format.RGBA8888
         );
+    }
+
+    public static void reset() {
+        for (Handle h : Handles.all) {
+	        h.setVisible(false);
+        }
     }
 }

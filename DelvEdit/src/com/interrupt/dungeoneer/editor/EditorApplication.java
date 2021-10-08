@@ -34,7 +34,6 @@ import com.interrupt.dungeoneer.editor.file.EditorFile;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
-import com.interrupt.dungeoneer.editor.handles.Handle;
 import com.interrupt.dungeoneer.editor.handles.Handles;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
@@ -927,7 +926,7 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		renderTriggerLines();
 
-		resetHandles();
+		Handles.reset();
 
 		// Draw gizmos on top of everything
 		Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
@@ -968,12 +967,6 @@ public class EditorApplication implements ApplicationListener {
 		Gizmo gizmo = GizmoProvider.get(entity);
 		if (gizmo != null) gizmo.draw();
 	}
-
-	private void resetHandles() {
-	    for (Handle h : Handle.all) {
-	        h.setVisible(false);
-        }
-    }
 
 	private void GlPickEntity() {
 		if(pickerFrameBuffer != null && pickerPixelBuffer != null && renderer.entitiesForPicking != null) {
