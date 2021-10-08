@@ -72,27 +72,19 @@ public class Draw {
     }
 
     public static void cone(Vector3 position, Quaternion rotation, Vector3 scale) {
-        beginMeshRendering();
-        drawMeshInternal(cone, position, rotation, scale);
-        endMeshRendering();
+        mesh(cone, position, rotation, scale);
     }
 
     public static void cube(Vector3 position, Quaternion rotation, Vector3 scale) {
-        beginMeshRendering();
-        drawMeshInternal(cube, position, rotation, scale);
-        endMeshRendering();
+        mesh(cube, position, rotation, scale);
     }
 
     public static void disc(Vector3 position, Quaternion rotation, Vector3 scale) {
-        beginMeshRendering();
-        drawMeshInternal(disc, position, rotation, scale);
-        endMeshRendering();
+        mesh(disc, position, rotation, scale);
     }
 
     public static void quad(Vector3 position, Quaternion rotation, Vector3 scale) {
-        beginMeshRendering();
-        drawMeshInternal(quad, position, rotation, scale);
-        endMeshRendering();
+        mesh(quad, position, rotation, scale);
     }
 
     public static void mesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
