@@ -215,39 +215,28 @@ public class Meshes {
         vertices[4] = 0;
         vertices[5] = 0;
 
-        // First vertex
-        vertices[ 6] = 1 * radius;
-        vertices[ 7] = 0;
-        vertices[ 8] = 0 * radius;
-        vertices[ 9] = Color.WHITE_FLOAT_BITS;
-        vertices[10] = 0;
-        vertices[11] = 0;
+        // Generate vertices
+        for (int i = 0; i < segments; i++) {
+            int offset = (i + 1) * componentsPerVertex;
 
-        for (int i = 0; i < segments - 1; i++) {
-            // Vertex array offset
-            int vx = (i * componentsPerVertex) + 12;
-            // Index array offset
-            int ix = i * indicesPerSegment;
-
-            // Vertex
-            vertices[vx + 0] = (float)Math.cos((i + 1) * step) * radius;
-            vertices[vx + 1] = 0;
-            vertices[vx + 2] = (float)Math.sin((i + 1) * step) * radius;
-            vertices[vx + 3] = Color.WHITE_FLOAT_BITS;
-            vertices[vx + 4] = 0;
-            vertices[vx + 5] = 0;
-
-            // Indices
-            indices[ix + 0] = 0;
-            indices[ix + 1] = (short)(i + 2);
-            indices[ix + 2] = (short)(i + 1);
+            vertices[offset + 0] = (float)Math.cos((i + 1) * step) * radius;
+            vertices[offset + 1] = 0;
+            vertices[offset + 2] = (float)Math.sin((i + 1) * step) * radius;
+            vertices[offset + 3] = Color.WHITE_FLOAT_BITS;
+            vertices[offset + 4] = 0;
+            vertices[offset + 5] = 0;
         }
 
-        // Last index
-        int last = (segments - 1) * indicesPerSegment;
-        indices[last + 0] = 0;
-        indices[last + 1] = (short)segments;
-        indices[last + 2] = 1;
+        // Generate indices
+        for (short i = 0; i < segments; i++) {
+            int offset = i * indicesPerSegment;
+            short current = (short)(i + 1);
+            short next = (short)((i + 1) % segments + 1);
+
+            indices[offset + 0] = 0;
+            indices[offset + 1] = next;
+            indices[offset + 2] = current;
+        }
 
         mesh.setVertices(vertices);
         mesh.setIndices(indices);
@@ -255,12 +244,12 @@ public class Meshes {
         return mesh;
     }
 
-    /** Generates a unit disc mesh. */
+    /** Generates a unit cone mesh. */
     public static Mesh cone() {
         return cone(0.5f, 1, 32);
     }
 
-    /** Generates a disc mesh. */
+    /** Generates a cone mesh. */
     public static Mesh cone(float radius, float height, int segments) {
         int componentsPerVertex = 6;
         int indicesPerSegment = 6;
@@ -308,45 +297,31 @@ public class Meshes {
         vertices[10] = 0;
         vertices[11] = 0;
 
-        // First vertex
-        vertices[12] = 1 * radius;
-        vertices[13] = 0;
-        vertices[14] = 0 * radius;
-        vertices[15] = Color.WHITE_FLOAT_BITS;
-        vertices[16] = 0;
-        vertices[17] = 0;
+        // Generate vertices
+        for (int i = 0; i < segments; i++) {
+            int offset = (i + 2) * componentsPerVertex;
 
-        for (int i = 0; i < segments - 1; i++) {
-            // Vertex array offset
-            int vx = (i * componentsPerVertex) + 12;
-            // Index array offset
-            int ix = i * indicesPerSegment;
-
-            // Vertex
-            vertices[vx + 0] = (float)Math.cos((i + 1) * step) * radius;
-            vertices[vx + 1] = 0;
-            vertices[vx + 2] = (float)Math.sin((i + 1) * step) * radius;
-            vertices[vx + 3] = Color.WHITE_FLOAT_BITS;
-            vertices[vx + 4] = 0;
-            vertices[vx + 5] = 0;
-
-            // Indices
-            indices[ix + 0] = 0;
-            indices[ix + 1] = (short)(i + 2);
-            indices[ix + 2] = (short)(i + 1);
-            indices[ix + 3] = 1;
-            indices[ix + 4] = (short)(i + 2);
-            indices[ix + 5] = (short)(i + 1);
+            vertices[offset + 0] = (float)Math.cos((i + 1) * step) * radius;
+            vertices[offset + 1] = 0;
+            vertices[offset + 2] = (float)Math.sin((i + 1) * step) * radius;
+            vertices[offset + 3] = Color.WHITE_FLOAT_BITS;
+            vertices[offset + 4] = 0;
+            vertices[offset + 5] = 0;
         }
 
-        // Last index
-        int last = (segments - 1) * indicesPerSegment;
-        indices[last + 0] = 0;
-        indices[last + 1] = (short)segments;
-        indices[last + 2] = 2;
-        indices[last + 3] = 1;
-        indices[last + 4] = (short)segments;
-        indices[last + 5] = 2;
+        // Generate indices
+        for (short i = 0; i < segments; i++) {
+            int offset = i * indicesPerSegment;
+            short current = (short)(i + 2);
+            short next = (short)((i + 1) % segments + 2);
+
+            indices[offset + 0] = 0;
+            indices[offset + 1] = next;
+            indices[offset + 2] = current;
+            indices[offset + 3] = 1;
+            indices[offset + 4] = next;
+            indices[offset + 5] = current;
+        }
 
         mesh.setVertices(vertices);
         mesh.setIndices(indices);
