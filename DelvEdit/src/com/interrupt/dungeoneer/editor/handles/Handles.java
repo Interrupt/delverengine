@@ -165,6 +165,10 @@ public class Handles {
     private static FrameBuffer pickFrameBuffer = null;
     private static Pixmap pickPixelBuffer = null;
 
+    static {
+        createPickBuffer();
+    }
+
     private static void createPickBuffer() {
         int width = Gdx.graphics.getWidth();
         int height = Gdx.graphics.getHeight();
