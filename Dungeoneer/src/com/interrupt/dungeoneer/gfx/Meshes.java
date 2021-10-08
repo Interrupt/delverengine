@@ -177,71 +177,7 @@ public class Meshes {
 
     /** Generates a disc mesh. */
     public static Mesh disc(float radius, int segments) {
-        int componentsPerVertex = 6;
-        int indicesPerSegment = 3;
-
-        Mesh mesh = new Mesh(
-            true,
-            segments + 1,
-            segments * indicesPerSegment,
-            new VertexAttribute(
-                VertexAttributes.Usage.Position,
-                3,
-                ShaderProgram.POSITION_ATTRIBUTE
-            ),
-            new VertexAttribute(
-                VertexAttributes.Usage.ColorPacked,
-                4,
-                ShaderProgram.COLOR_ATTRIBUTE
-            ),
-            new VertexAttribute(
-                VertexAttributes.Usage.TextureCoordinates,
-                2,
-                ShaderProgram.TEXCOORD_ATTRIBUTE + "0"
-            )
-        );
-
-        float[] vertices = new float[(segments + 1) * componentsPerVertex];
-        short[] indices = new short[segments * indicesPerSegment];
-
-        float tau = (float)Math.PI * 2;
-        float step = tau / segments;
-
-        // Center vertex
-        vertices[0] = 0;
-        vertices[1] = 0;
-        vertices[2] = 0;
-        vertices[3] = Color.WHITE_FLOAT_BITS;
-        vertices[4] = 0;
-        vertices[5] = 0;
-
-        // Generate vertices
-        for (int i = 0; i < segments; i++) {
-            int offset = (i + 1) * componentsPerVertex;
-
-            vertices[offset + 0] = (float)Math.cos((i + 1) * step) * radius;
-            vertices[offset + 1] = 0;
-            vertices[offset + 2] = (float)Math.sin((i + 1) * step) * radius;
-            vertices[offset + 3] = Color.WHITE_FLOAT_BITS;
-            vertices[offset + 4] = 0;
-            vertices[offset + 5] = 0;
-        }
-
-        // Generate indices
-        for (short i = 0; i < segments; i++) {
-            int offset = i * indicesPerSegment;
-            short current = (short)(i + 1);
-            short next = (short)((i + 1) % segments + 1);
-
-            indices[offset + 0] = 0;
-            indices[offset + 1] = next;
-            indices[offset + 2] = current;
-        }
-
-        mesh.setVertices(vertices);
-        mesh.setIndices(indices);
-
-        return mesh;
+        return arc(radius, 0, 360, segments);
     }
 
     /** Generates a unit cone mesh. */
