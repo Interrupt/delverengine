@@ -6,15 +6,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
-import com.interrupt.dungeoneer.editor.handles.DragHandle;
+import com.interrupt.dungeoneer.editor.handles.Handle;
 import com.interrupt.dungeoneer.entities.Entity;
 
 @GizmoFor(target = Entity.class)
 public class EntityGizmo extends Gizmo {
-    private final DragHandle xAxisHandle;
-    private final DragHandle yAxisHandle;
-    private final DragHandle zAxisHandle;
-    private final DragHandle zPlaneHandle;
+    private final Handle xAxisHandle;
+    private final Handle yAxisHandle;
+    private final Handle zAxisHandle;
+    private final Handle zPlaneHandle;
 
     private Quaternion rotation = new Quaternion();
     private Vector3 scale = new Vector3();
@@ -23,7 +23,7 @@ public class EntityGizmo extends Gizmo {
 
         final float handleThickness = 1 / 32f;
 
-        xAxisHandle = new DragHandle(entity.x + 1, entity.y, entity.z - 0.5f) {
+        xAxisHandle = new Handle(entity.x + 1, entity.y, entity.z - 0.5f) {
             @Override
             public void draw() {
                 super.draw();
@@ -45,7 +45,7 @@ public class EntityGizmo extends Gizmo {
         xAxisHandle.setColor(EditorColors.X_AXIS);
         xAxisHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
 
-        yAxisHandle = new DragHandle(entity.x, entity.y + 1, entity.z - 0.5f) {
+        yAxisHandle = new Handle(entity.x, entity.y + 1, entity.z - 0.5f) {
             @Override
             public void draw() {
                 super.draw();
@@ -67,7 +67,7 @@ public class EntityGizmo extends Gizmo {
         yAxisHandle.setColor(EditorColors.Y_AXIS);
         yAxisHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
 
-        zAxisHandle = new DragHandle(entity.x, entity.y, entity.z - 0.5f) {
+        zAxisHandle = new Handle(entity.x, entity.y, entity.z - 0.5f) {
             @Override
             public void draw() {
                 super.draw();
@@ -87,7 +87,7 @@ public class EntityGizmo extends Gizmo {
         zAxisHandle.setColor(EditorColors.Z_AXIS);
         zAxisHandle.setHighlightColor(EditorColors.Z_AXIS_BRIGHT);
 
-        zPlaneHandle = new DragHandle(entity.x + 0.5f, entity.y, entity.z + 0.5f - 0.5f) {
+        zPlaneHandle = new Handle(entity.x + 0.5f, entity.y, entity.z + 0.5f - 0.5f) {
             @Override
             public void draw() {
                 super.draw();
