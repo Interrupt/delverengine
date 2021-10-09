@@ -66,11 +66,22 @@ public class Handle extends Handles.Handle {
         cursorDragOffset.set(position).sub(intersection.x, intersection.z, intersection.y);
     }
 
+    @Override
+    public void deselect() {
+        if (wasDragged) {
+            Editor.app.history.save();
+            wasDragged = false;
+        }
+    }
+
     private final Vector3 intersection = new Vector3();
     private final Plane plane = new Plane();
+    private boolean wasDragged = false;
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (!getSelected()) return false;
+
+        wasDragged = true;
 
         Camera camera = Editor.app.camera;
         plane.set(
