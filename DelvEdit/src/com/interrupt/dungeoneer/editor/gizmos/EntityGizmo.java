@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
+import com.interrupt.dungeoneer.editor.handles.ArrowHandle;
 import com.interrupt.dungeoneer.editor.handles.Handle;
 import com.interrupt.dungeoneer.entities.Entity;
 
@@ -16,78 +17,42 @@ public class EntityGizmo extends Gizmo {
     private final Handle zAxisHandle;
     private final Handle zPlaneHandle;
 
-    private Quaternion rotation = new Quaternion();
-    private Vector3 scale = new Vector3();
     public EntityGizmo(Entity entity) {
         super(entity);
 
-        final float handleThickness = 1 / 32f;
+        Quaternion axisRotation = new Quaternion();
 
-        xAxisHandle = new Handle(entity.x + 1, entity.y, entity.z - 0.5f) {
-            @Override
-            public void draw() {
-                super.draw();
-
-                Draw.color(getDrawColor());
-                rotation.setEulerAngles(0, 0, -90);
-                Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(handleThickness, handleThickness, 1));
-                rotation.idt();
-                Draw.color(Color.WHITE);
-            }
-
+        xAxisHandle = new ArrowHandle(entity.getPosition(), axisRotation.setEulerAngles(0, 0, -90)) {
             @Override
             public void change() {
                 super.change();
-                entity.x = position.x - 1;
+                entity.x = position.x;
             }
         };
         xAxisHandle.setColor(EditorColors.X_AXIS);
         xAxisHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
 
-        yAxisHandle = new Handle(entity.x, entity.y + 1, entity.z - 0.5f) {
-            @Override
-            public void draw() {
-                super.draw();
-
-                Draw.color(getDrawColor());
-                rotation.setEulerAngles(0, 90, 0);
-                Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(handleThickness, handleThickness, 1));
-                Draw.color(Color.WHITE);
-                rotation.idt();
-            }
-
+        yAxisHandle = new ArrowHandle(entity.getPosition(), axisRotation.setEulerAngles(0, 90, 0)) {
             @Override
             public void change() {
                 super.change();
-                entity.y = position.y - 1;
+                entity.y = position.y;
             }
         };
         yAxisHandle.setColor(EditorColors.Y_AXIS);
         yAxisHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
 
-        zAxisHandle = new Handle(entity.x, entity.y, entity.z - 0.5f) {
-            @Override
-            public void draw() {
-                super.draw();
-
-                Draw.color(getDrawColor());
-                Draw.cone(position, rotation, scale.set(0.25f, 0.25f, 0.25f));
-                Draw.cube(new Vector3(entity.x, entity.y, entity.z - 0.5f), rotation, scale.set(handleThickness, handleThickness, 1));
-                Draw.color(Color.WHITE);
-            }
-
+        zAxisHandle = new ArrowHandle(entity.getPosition(), axisRotation.setEulerAngles(90, 0, 0)) {
             @Override
             public void change() {
                 super.change();
-                entity.z = position.z - 1 + 0.5f;
+                entity.z = position.z + 0.5f;
             }
         };
         zAxisHandle.setColor(EditorColors.Z_AXIS);
         zAxisHandle.setHighlightColor(EditorColors.Z_AXIS_BRIGHT);
 
-        zPlaneHandle = new Handle(entity.x + 0.5f, entity.y, entity.z + 0.5f - 0.5f) {
+        zPlaneHandle = new Handle(entity.getPosition()) {
             @Override
             public void draw() {
                 super.draw();
@@ -115,9 +80,9 @@ public class EntityGizmo extends Gizmo {
 
     @Override
     public void draw() {
-        xAxisHandle.position.set(entity.x + 1, entity.y, entity.z - 0.5f);
-        yAxisHandle.position.set(entity.x, entity.y + 1, entity.z - 0.5f);
-        zAxisHandle.position.set(entity.x, entity.y, entity.z + 1 - 0.5f);
+        xAxisHandle.position.set(entity.x, entity.y, entity.z - 0.5f);
+        yAxisHandle.position.set(entity.x, entity.y, entity.z - 0.5f);
+        zAxisHandle.position.set(entity.x, entity.y, entity.z - 0.5f);
         zPlaneHandle.position.set(entity.x + 0.5f, entity.y + 0.5f, entity.z -  0.5f);
 
         xAxisHandle.draw();

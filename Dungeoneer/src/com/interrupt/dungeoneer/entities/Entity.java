@@ -914,6 +914,11 @@ public class Entity {
 	    z = other.z;
     }
 
+    private final transient Vector3 position = new Vector3();
+    public Vector3 getPosition() {
+        return position.set(x, y, z);
+    }
+
 	public void matchEntity(Entity toMatch) {
 		matchPositionAndVelocity(toMatch);
 		artType = toMatch.artType;

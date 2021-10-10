@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.interrupt.math.MathUtils;
 
 public class Meshes {
     /** Generates a unit cube mesh. */
@@ -214,8 +215,7 @@ public class Meshes {
         float[] vertices = new float[(segments + 2) * componentsPerVertex];
         short[] indices = new short[segments * indicesPerSegment];
 
-        float tau = (float)Math.PI * 2;
-        float step = tau / segments;
+        float step = MathUtils.TAU / segments;
 
         // Base center vertex
         vertices[0] = 0;
@@ -299,7 +299,6 @@ public class Meshes {
         float[] vertices = new float[(segments + 2) * componentsPerVertex];
         short[] indices = new short[segments * indicesPerSegment];
 
-        //float tau = (float)Math.PI * 2;
         float begin = (float)Math.toRadians(start);
         float stop = (float)Math.toRadians(end);
         float step = (stop - begin) / segments;
@@ -334,6 +333,72 @@ public class Meshes {
             indices[offset + 1] = next;
             indices[offset + 2] = current;
         }
+
+        mesh.setVertices(vertices);
+        mesh.setIndices(indices);
+
+        return mesh;
+    }
+
+    /** Combines several meshes into one.
+     * Adapated from: https://stackoverflow.com/questions/20170758/slow-model-batch-rendering-in-libgdx/20937752 */
+    public static Mesh combine(Mesh... meshes) {
+        if (meshes.length == 0) return null;
+
+        int combinedComponentsCount = 0;
+        int combinedIndicesCount = 0;
+        VertexAttributes attributes = meshes[0].getVertexAttributes();
+        int componentsPerVertex = meshes[0].getVertexSize() / 4;
+
+        for (Mesh mesh : meshes) {
+            if (mesh.getVertexAttributes().size() != attributes.size()) {
+                throw new RuntimeException("Can only combine meshes with matching vertex attributes");
+            }
+
+            combinedComponentsCount += mesh.getNumVertices() * componentsPerVertex;
+            combinedIndicesCount += mesh.getNumIndices();
+        }
+
+        float[] vertices = new float[combinedComponentsCount];
+        short[] indices = new short[combinedIndicesCount];
+
+        int indexOffset = 0;
+        int vertexOffset = 0;
+        int componentsOffset = 0;
+
+        for (Mesh mesh : meshes) {
+            int indexCount = mesh.getNumIndices();
+            int vertexCount = mesh.getNumVertices();
+            int componentsCount = vertexCount * componentsPerVertex;
+
+            // Copy indices
+            mesh.getIndices(indices, indexOffset);
+
+            // Adjust index offsets
+            for (int i = indexOffset; i < indexOffset + indexCount; i++) {
+                indices[i] += vertexOffset;
+            }
+
+            indexOffset += indexCount;
+
+            // Copy vertices
+            mesh.getVertices(
+                0,
+                componentsCount,
+                vertices,
+                componentsOffset
+            );
+
+            vertexOffset += vertexCount;
+            componentsOffset += componentsCount;
+        }
+
+        Mesh mesh = new Mesh(
+            true,
+            vertexOffset,
+            combinedIndicesCount,
+            attributes
+        );
 
         mesh.setVertices(vertices);
         mesh.setIndices(indices);

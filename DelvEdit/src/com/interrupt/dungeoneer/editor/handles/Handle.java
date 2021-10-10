@@ -5,18 +5,21 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Plane;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 
 public class Handle extends Handles.Handle {
     public final Vector3 position = new Vector3();
+    public final Quaternion rotation = new Quaternion();
+    public final Vector3 scale = new Vector3().set(1, 1, 1);
 
     private final Color color = Color.WHITE.cpy();
     private final Color highlightColor = Color.WHITE.cpy();
 
-    public Handle(float x, float y, float z) {
+    public Handle(Vector3 position) {
         new Handles().super();
-        position.set(x, y, z);
+        this.position.set(position);
     }
 
     public void setColor(Color color) {
