@@ -345,8 +345,8 @@ public class Meshes {
     public static Mesh combine(Mesh... meshes) {
         if (meshes.length == 0) return null;
 
-        int combinedComponentsCount = 0;
-        int combinedIndicesCount = 0;
+        int combinedVertexCount = 0;
+        int combinedIndexCount = 0;
         VertexAttributes attributes = meshes[0].getVertexAttributes();
         int componentsPerVertex = meshes[0].getVertexSize() / 4;
 
@@ -355,12 +355,12 @@ public class Meshes {
                 throw new RuntimeException("Can only combine meshes with matching vertex attributes");
             }
 
-            combinedComponentsCount += mesh.getNumVertices() * componentsPerVertex;
-            combinedIndicesCount += mesh.getNumIndices();
+            combinedVertexCount += mesh.getNumVertices();
+            combinedIndexCount += mesh.getNumIndices();
         }
 
-        float[] vertices = new float[combinedComponentsCount];
-        short[] indices = new short[combinedIndicesCount];
+        float[] vertices = new float[combinedVertexCount * componentsPerVertex];
+        short[] indices = new short[combinedIndexCount];
 
         int indexOffset = 0;
         int vertexOffset = 0;
@@ -395,8 +395,8 @@ public class Meshes {
 
         Mesh mesh = new Mesh(
             true,
-            vertexOffset,
-            combinedIndicesCount,
+            combinedVertexCount,
+            combinedIndexCount,
             attributes
         );
 
