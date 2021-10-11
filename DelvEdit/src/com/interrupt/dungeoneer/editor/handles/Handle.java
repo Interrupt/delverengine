@@ -44,7 +44,7 @@ public class Handle extends Handles.Handle {
         return color;
     }
 
-    private static final Vector3 cursorDragOffset = new Vector3();
+    protected static final Vector3 cursorDragOffset = new Vector3();
     @Override
     public void select() {
         // Capture offset of initial selection
@@ -77,9 +77,9 @@ public class Handle extends Handles.Handle {
         }
     }
 
-    private final Vector3 intersection = new Vector3();
-    private final Plane plane = new Plane();
-    private boolean wasDragged = false;
+    protected final Vector3 intersection = new Vector3();
+    protected final Plane plane = new Plane();
+    protected boolean wasDragged = false;
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (!getSelected()) return false;

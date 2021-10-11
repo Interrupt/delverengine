@@ -25,8 +25,7 @@ public class EntityGizmo extends Gizmo {
         xAxisHandle = new ArrowHandle(entity.getPosition(), axisRotation.setEulerAngles(0, 0, -90)) {
             @Override
             public void change() {
-                super.change();
-                entity.x = position.x;
+                entity.setPosition(position.x, position.y, position.z + 0.5f);
             }
         };
         xAxisHandle.setColor(EditorColors.X_AXIS);
@@ -35,8 +34,7 @@ public class EntityGizmo extends Gizmo {
         yAxisHandle = new ArrowHandle(entity.getPosition(), axisRotation.setEulerAngles(0, 90, 0)) {
             @Override
             public void change() {
-                super.change();
-                entity.y = position.y;
+                entity.setPosition(position.x, position.y, position.z + 0.5f);
             }
         };
         yAxisHandle.setColor(EditorColors.Y_AXIS);
@@ -45,8 +43,7 @@ public class EntityGizmo extends Gizmo {
         zAxisHandle = new ArrowHandle(entity.getPosition(), axisRotation.setEulerAngles(90, 0, 0)) {
             @Override
             public void change() {
-                super.change();
-                entity.z = position.z + 0.5f;
+                entity.setPosition(position.x, position.y, position.z + 0.5f);
             }
         };
         zAxisHandle.setColor(EditorColors.Z_AXIS);

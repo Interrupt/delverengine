@@ -1,14 +1,12 @@
 package com.interrupt.dungeoneer.editor.handles;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.gfx.Meshes;
 
-public class ArrowHandle extends Handle {
+public class ArrowHandle extends AxisAlignedHandle {
     private static final Mesh mesh;
 
     static {
@@ -26,16 +24,6 @@ public class ArrowHandle extends Handle {
     }
 
     public ArrowHandle(Vector3 position, Quaternion rotation) {
-        super(position);
-        this.rotation.set(rotation);
-    }
-
-    @Override
-    public void draw() {
-        super.draw();
-
-        Draw.color(getDrawColor());
-        Draw.mesh(mesh, position, rotation, scale);
-        Draw.color(Color.WHITE);
+        super(mesh, position, rotation);
     }
 }

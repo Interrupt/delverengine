@@ -898,20 +898,26 @@ public class Entity {
 		return Vector3.Zero;
 	}
 
-	public void setPosition(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
+    public void setPosition(Vector3 position) {
+        x = position.x;
+        y = position.y;
+        z = position.z;
+    }
 
-	public void setPosition(Entity other) {
-	    if (other == null) {
-	        return;
+    public void setPosition(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public void setPosition(Entity other) {
+        if (other == null) {
+            return;
         }
 
-	    x = other.x;
-	    y = other.y;
-	    z = other.z;
+        x = other.x;
+        y = other.y;
+        z = other.z;
     }
 
     private final transient Vector3 position = new Vector3();

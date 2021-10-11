@@ -23,4 +23,12 @@ public class MathUtils {
 
         return rotation;
     }
+
+    public static Vector3 swizzleXZY(Vector3 vector) {
+        float swap = vector.z;
+        vector.z = vector.y;
+        vector.y = swap;
+
+        return vector;
+    }
 }
