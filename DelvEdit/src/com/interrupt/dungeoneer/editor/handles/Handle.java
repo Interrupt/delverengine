@@ -10,17 +10,61 @@ import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 
 public class Handle extends Handles.Handle {
-    public final Vector3 position = new Vector3();
-    public final Quaternion rotation = new Quaternion();
-    public final Vector3 scale = new Vector3().set(1, 1, 1);
+    private final Vector3 position = new Vector3();
+    private final Quaternion rotation = new Quaternion();
+    private final Vector3 scale = new Vector3().set(1, 1, 1);
 
     private final Color color = Color.WHITE.cpy();
     private final Color highlightColor = Color.WHITE.cpy();
 
     public Handle(Vector3 position) {
+        this(position, new Quaternion(), new Vector3(1, 1, 1));
+    }
+
+    public Handle(Vector3 position, Quaternion rotation, Vector3 scale) {
         new Handles().super();
+
+        this.position.set(position);
+        this.rotation.set(rotation);
+        this.scale.set(scale);
+    }
+
+    public void setPosition(float x, float y, float z) {
+        position.set(x, y, z);
+    }
+
+    public void setPosition(Vector3 position) {
         this.position.set(position);
     }
+
+    public Vector3 getPosition() {
+        return position;
+    }
+
+    public void setRotation(float yaw, float pitch, float roll) {
+        rotation.setEulerAngles(yaw, pitch, roll);
+    }
+
+    public void setRotation(Quaternion rotation) {
+        this.rotation.set(rotation);
+    }
+
+    public Quaternion getRotation() {
+        return rotation;
+    }
+
+    public void setScale(float x, float y, float z) {
+        scale.set(x, y, z);
+    }
+
+    public void setScale(Vector3 scale) {
+        this.scale.set(scale);
+    }
+
+    public Vector3 getScale() {
+        return scale;
+    }
+
 
     public void setColor(Color color) {
         this.color.set(color);

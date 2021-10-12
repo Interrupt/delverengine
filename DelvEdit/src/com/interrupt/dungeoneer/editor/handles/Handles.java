@@ -142,7 +142,7 @@ public class Handles {
         }
     };
 
-    private static Color pickColor = Color.WHITE;
+    private static final Color pickColor = new Color();
     private static boolean picking = false;
 
     public static boolean isPicking() {
@@ -154,7 +154,11 @@ public class Handles {
     }
 
     public static void setPickColor(Color color) {
-        pickColor = color;
+        pickColor.set(color);
+    }
+
+    public static void setPickColor(Handle handle) {
+        Color.rgb888ToColor(pickColor, handle.getId());
     }
 
     public static void pickingBegin() {
@@ -191,8 +195,7 @@ public class Handles {
 
         for (Handle handle : all) {
             if (!handle.getVisible()) continue;
-            Color.rgb888ToColor(color, handle.getId());
-            setPickColor(color);
+            setPickColor(handle);
             handle.draw();
         }
 

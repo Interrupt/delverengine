@@ -15,8 +15,7 @@ public class AxisAlignedHandle extends Handle {
     private Mesh mesh;
 
     public AxisAlignedHandle(Mesh mesh, Vector3 position, Quaternion rotation) {
-        super(position);
-        this.rotation.set(rotation);
+        super(position, rotation, new Vector3(1, 1, 1));
         this.mesh = mesh;
     }
 
@@ -25,18 +24,19 @@ public class AxisAlignedHandle extends Handle {
         super.draw();
 
         Draw.color(getDrawColor());
-        Draw.mesh(mesh, position, rotation, scale);
+        Draw.mesh(mesh, getPosition(), getRotation(), getScale());
         Draw.color(Color.WHITE);
     }
 
     private static final Vector3 axis = new Vector3();
-    private static final Vector3 axisProjection = new Vector3();
+    private static final Vector3 projection = new Vector3();
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if (!getSelected()) return false;
 
         wasDragged = true;
 
+        Vector3 position = getPosition();
         Camera camera = Editor.app.camera;
         plane.set(
             position.x,
@@ -58,18 +58,18 @@ public class AxisAlignedHandle extends Handle {
 
         // Calculate vector along axis
         axis.set(Vector3.Y);
-        rotation.transform(axis);
+        getRotation().transform(axis);
         MathUtils.swizzleXZY(axis);
 
         // Handle translation
-        axisProjection.set(intersection).sub(position);
-        axis.nor().scl(axisProjection.dot(axis));
-        position.add(axis);
+        projection.set(intersection).sub(position);
+        MathUtils.project(projection, axis);
+        position.add(projection);
 
         // Preserve selection offset
-        axisProjection.set(cursorDragOffset);
-        axis.nor().scl(axisProjection.dot(axis));
-        position.add(axis);
+        projection.set(cursorDragOffset);
+        MathUtils.project(projection, axis);
+        position.add(projection);
 
         change();
 

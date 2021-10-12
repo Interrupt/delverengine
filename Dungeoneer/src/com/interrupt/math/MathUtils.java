@@ -10,12 +10,19 @@ public class MathUtils {
     private static final Vector3 tmp = new Vector3();
     private static final Vector3 tmp2 = new Vector3();
 
-    /** Creates a rotation with the given forward direction and default up direction (+y axis). */
+    /** Creates a rotation with the given forward direction and default up direction (+y axis).
+     * @param forward Forward direction
+     * @param rotation The Quaternion to set
+     * @return The given Quaternion for chaining */
     public static Quaternion lookRotation(Vector3 forward, Quaternion rotation) {
         return lookRotation(forward, Vector3.Y, rotation);
     }
 
-    /** Creates a rotation with the given forward and up directions. */
+    /** Creates a rotation with the given forward and up directions.
+	 * @param forward Forward direction
+	 * @param up Up direction
+	 * @param rotation The Quaternion to set
+	 * @return The given Quaternion for chaining */
     public static Quaternion lookRotation(Vector3 forward, Vector3 up, Quaternion rotation) {
         tmp.set(up).crs(forward).nor();
         tmp2.set(forward).crs(tmp).nor();
@@ -24,11 +31,23 @@ public class MathUtils {
         return rotation;
     }
 
+    /** Swaps y and z components of the given vector.
+	 * @param vector The vector for swizzling
+	 * @return vector for chaining */
     public static Vector3 swizzleXZY(Vector3 vector) {
         float swap = vector.z;
         vector.z = vector.y;
         vector.y = swap;
 
         return vector;
+    }
+
+    /** Projects given vector on onto vector.
+	 * @param vector The vector to project
+     * @param direction The vector to project onto
+	 * @return vector for chaining */
+    public static Vector3 project(Vector3 vector, Vector3 direction) {
+        float magnitude = vector.dot(direction);
+        return vector.set(direction).scl(magnitude);
     }
 }

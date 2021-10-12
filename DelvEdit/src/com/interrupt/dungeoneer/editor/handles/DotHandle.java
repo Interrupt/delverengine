@@ -22,20 +22,20 @@ public class DotHandle extends Handle {
 
     public DotHandle(Vector3 position, float size) {
         super(position);
-        scale.set(size, size, size);
+        setScale(size, size, size);
     }
 
-    private static final Quaternion rotation = new Quaternion();
+    //private static final Quaternion rotation = new Quaternion();
     @Override
     public void draw() {
         super.draw();
 
         // Look in the same direction as the camera.
         Camera camera = Editor.app.camera;
-        MathUtils.lookRotation(camera.direction, rotation);
+        MathUtils.lookRotation(camera.direction, getRotation());
 
         Draw.color(getDrawColor());
-        Draw.mesh(mesh, position, rotation, scale);
+        Draw.mesh(mesh, getPosition(), getRotation(), getScale());
         Draw.color(Color.WHITE);
     }
 }
