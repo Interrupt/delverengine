@@ -34,7 +34,7 @@ public class TransformTest {
 
         Vector3 expected = new Vector3(rootWorldPosition);
         Vector3 actual = new Vector3(rootWorldPosition);
-        t.worldToLocal(actual);
+        t.worldToLocalPosition(actual);
 
         assertEquals(expected, actual);
     }
@@ -55,7 +55,7 @@ public class TransformTest {
         Vector3 expected = childLocalPosition;
         Vector3 actual = new Vector3(childWorldPosition);
 
-        c.worldToLocal(actual);
+        c.worldToLocalPosition(actual);
 
         assertEquals(expected, actual);
     }
@@ -68,7 +68,7 @@ public class TransformTest {
 
         Vector3 expected = new Vector3(rootWorldPosition);
         Vector3 actual = new Vector3(rootWorldPosition);
-        t.localToWorld(actual);
+        t.localToWorldPosition(actual);
 
         assertEquals(expected, actual);
     }
@@ -88,7 +88,7 @@ public class TransformTest {
 
         Vector3 expected = childWorldPosition;
         Vector3 actual = new Vector3(childLocalPosition);
-        c.localToWorld(actual);
+        c.localToWorldPosition(actual);
 
         assertEquals(expected, actual);
     }
