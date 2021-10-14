@@ -11,32 +11,43 @@ public class PositionHandle extends CompositeHandle {
         super(position);
 
         Quaternion axisRotation = new Quaternion();
+        final Vector3 temp = new Vector3();
+
         PositionHandle self = this;
 
-        Handle xAxisHandle = new ArrowHandle(position, axisRotation.setEulerAngles(0, 0, -90)) {
+        Handle xAxisHandle = new ArrowHandle(Vector3.Zero, axisRotation.setEulerAngles(0, 0, -90)) {
             @Override
             public void change() {
-                self.setPosition(getPosition());
+                Vector3 delta = transform.getLocalPosition();
+                self.setPosition(self.getPosition().add(delta));
+                transform.setLocalPosition(Vector3.Zero);
+
                 self.change();
             }
         };
         xAxisHandle.setColor(EditorColors.X_AXIS);
         xAxisHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
 
-        Handle yAxisHandle = new ArrowHandle(position, axisRotation.setEulerAngles(0, 90, 0)) {
+        Handle yAxisHandle = new ArrowHandle(Vector3.Zero, axisRotation.setEulerAngles(0, 90, 0)) {
             @Override
             public void change() {
-                self.setPosition(getPosition());
+                Vector3 delta = transform.getLocalPosition();
+                self.setPosition(self.getPosition().add(delta));
+                transform.setLocalPosition(Vector3.Zero);
+
                 self.change();
             }
         };
         yAxisHandle.setColor(EditorColors.Y_AXIS);
         yAxisHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
 
-        Handle zAxisHandle = new ArrowHandle(position, axisRotation.setEulerAngles(90, 0, 0)) {
+        Handle zAxisHandle = new ArrowHandle(Vector3.Zero, axisRotation.setEulerAngles(90, 0, 0)) {
             @Override
             public void change() {
-                self.setPosition(getPosition());
+                Vector3 delta = transform.getLocalPosition();
+                self.setPosition(self.getPosition().add(delta));
+                transform.setLocalPosition(Vector3.Zero);
+
                 self.change();
             }
         };
@@ -44,31 +55,30 @@ public class PositionHandle extends CompositeHandle {
         zAxisHandle.setHighlightColor(EditorColors.Z_AXIS_BRIGHT);
 
         Handle zPlaneHandle = new Handle(position) {
-            private final Vector3 scale = new Vector3();
-
             @Override
             public void draw() {
                 super.draw();
 
                 Draw.color(getDrawColor());
-                Draw.quad(getPosition(), getRotation(), scale.set(0.25f, 0.25f, 0.25f));
+                Draw.quad(getPosition(), getRotation(), temp.set(0.25f, 0.25f, 0.25f));
                 Draw.color(Color.WHITE);
             }
 
             @Override
             public void change() {
-                self.setPosition(getPosition());
-                self.change();
+
             }
         };
         zPlaneHandle.setColor(EditorColors.Z_AXIS);
         zPlaneHandle.setHighlightColor(EditorColors.Z_AXIS_BRIGHT);
 
-        children.addAll(
-            xAxisHandle,
-            yAxisHandle,
-            zAxisHandle,
-            zPlaneHandle
-        );
+        add(xAxisHandle);
+        add(yAxisHandle);
+        add(zAxisHandle);
+    }
+
+    @Override
+    public void setPosition(Vector3 position) {
+        super.setPosition(position);
     }
 }

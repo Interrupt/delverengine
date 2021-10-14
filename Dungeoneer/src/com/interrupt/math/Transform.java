@@ -1,0 +1,203 @@
+package com.interrupt.math;
+
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+
+public class Transform {
+    private Vector3 position;
+    private Quaternion rotation;
+    private Vector3 scale;
+
+    private Matrix4 transformation;
+    private Matrix4 invTransformation;
+
+    private Transform parent;
+    private final Array<Transform> children = new Array<>();
+
+    private final static Vector3 temp = new Vector3();
+
+    public Transform() {
+        position = new Vector3();
+        rotation = new Quaternion();
+        scale = new Vector3(1, 1, 1);
+        transformation = new Matrix4();
+        invTransformation = new Matrix4(transformation).inv();
+        parent = null;
+        updateTransformation();
+    }
+
+    public Transform set(Transform other) {
+        position.set(other.position);
+        rotation.set(other.rotation);
+        scale.set(other.scale);
+        parent = null;
+        updateTransformation();
+
+        return this;
+    }
+
+    public Transform set(Vector3 position, Quaternion rotation, Vector3 scale) {
+        position.set(position);
+        rotation.set(rotation);
+        scale.set(scale);
+        parent = null;
+        updateTransformation();
+
+        return this;
+    }
+
+    private final Vector3 _position = new Vector3();
+    public Vector3 getPosition() {
+        localToWorld(_position.set(position));
+        return _position;
+    }
+
+    public void setPosition(float x, float y, float z) {
+        setPosition(temp.set(x, y, z));
+    }
+
+    public void setPosition(Vector3 position) {
+        worldToLocal(temp.set(position));
+        this.position.set(temp);
+        updateTransformation();
+    }
+
+    private final Quaternion _rotation = new Quaternion();
+    public Quaternion getRotation() {
+        localToWorld(_rotation.set(rotation));
+        return _rotation;
+    }
+
+    public void setRotation(float yaw, float pitch, float roll) {
+        setRotation(_rotation.setEulerAngles(yaw, pitch, roll));
+    }
+
+    public void setRotation(Quaternion rotation) {
+        worldToLocal(_rotation.set(rotation));
+        this.rotation.set(_rotation);
+        updateTransformation();
+    }
+
+    private final Vector3 _scale = new Vector3();
+    public Vector3 getScale() {
+        localToWorld(_scale.set(scale));
+        return _scale;
+    }
+
+    public void setScale(float x, float y, float z) {
+        setScale(temp.set(x, y ,z));
+    }
+
+    public void setScale(Vector3 scale) {
+        worldToLocal(temp.set(scale));
+        this.scale.set(temp);
+        updateTransformation();
+    }
+
+    public Vector3 getLocalPosition() {
+        return this.position;
+    }
+
+    public void setLocalPosition(Vector3 position) {
+        this.position.set(position);
+        updateTransformation();
+    }
+
+    public Quaternion getLocalRotation() {
+        return this.rotation;
+    }
+
+    public void setLocalRotation(Quaternion rotation) {
+        this.rotation.set(rotation);
+        updateTransformation();
+    }
+
+    public Vector3 getLocalScale() {
+        return this.scale;
+    }
+
+    public void setLocalScale(Vector3 scale) {
+        this.scale.set(scale);
+        updateTransformation();
+    }
+
+    public Transform getParent() {
+        return this.parent;
+    }
+
+    public void setParent(Transform parent) {
+        this.parent = parent;
+        updateTransformation();
+    }
+
+    public Matrix4 getTransformation() {
+        return transformation;
+    }
+
+    protected void updateTransformation() {
+        transformation.setToTranslation(position);
+        transformation.rotate(rotation);
+        transformation.scale(scale.x, scale.y, scale.z);
+
+        if(parent != null) {
+            transformation.mul(parent.getTransformation());
+        }
+
+        invTransformation.set(transformation).inv();
+
+        for (Transform child : children) {
+            child.updateTransformation();
+        }
+    }
+
+    public Transform getChild(int i) {
+        return children.get(i);
+    }
+
+    public void addChild(Transform child) {
+        children.add(child);
+        child.setParent(this);
+    }
+
+    public Vector3 localToWorld(Vector3 vector) {
+        if (parent != null) {
+            return vector.mul(parent.transformation);
+        }
+
+        return vector;
+    }
+
+    Matrix4 m = new Matrix4();
+    public Vector3 worldToLocal(Vector3 vector) {
+        if (parent == null) {
+            return vector;
+        }
+
+        m.set(parent.invTransformation);
+
+        return vector.mul(m);
+    }
+
+    public Quaternion localToWorld(Quaternion quaternion) {
+        if (parent != null) {
+            m.set(parent.transformation);
+            m.rotate(quaternion);
+            return m.getRotation(quaternion);
+        }
+
+        return quaternion;
+    }
+
+    public Quaternion worldToLocal(Quaternion quaternion) {
+        if (parent == null) {
+            return quaternion;
+        }
+
+        m.set(parent.invTransformation);
+        m.rotate(quaternion);
+
+        return m.getRotation(quaternion);
+    }
+}

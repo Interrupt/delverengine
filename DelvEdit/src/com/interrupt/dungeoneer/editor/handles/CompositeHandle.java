@@ -1,20 +1,23 @@
 package com.interrupt.dungeoneer.editor.handles;
 
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class CompositeHandle extends Handle {
-    protected Array<Handle> children = new Array<>();
+    private Array<Handle> children = new Array<>();
 
     public CompositeHandle(Vector3 position) {
         super(position);
     }
 
+    public void add(Handle child) {
+        children.add(child);
+        transform.addChild(child.transform);
+    }
+
     @Override
     public void draw() {
         super.draw();
-
 
         for (int i = 0; i < children.size; i++) {
             Handle child = children.get(i);
@@ -24,66 +27,6 @@ public class CompositeHandle extends Handle {
             }
 
             child.draw();
-        }
-    }
-
-    @Override
-    public void setPosition(float x, float y, float z) {
-        super.setPosition(x, y, z);
-
-        for (int i = 0; i < children.size; i++) {
-            Handle child = children.get(i);
-            child.setPosition(x, y ,z);
-        }
-    }
-
-    @Override
-    public void setPosition(Vector3 position) {
-        super.setPosition(position);
-
-        for (int i = 0; i < children.size; i++) {
-            Handle child = children.get(i);
-            child.setPosition(position);
-        }
-    }
-
-    @Override
-    public void setRotation(float yaw, float pitch, float roll) {
-        super.setRotation(yaw, pitch, roll);
-
-        for (int i = 0; i < children.size; i++) {
-            Handle child = children.get(i);
-            child.setRotation(yaw, pitch, roll);
-        }
-    }
-
-    @Override
-    public void setRotation(Quaternion rotation) {
-        super.setRotation(rotation);
-
-        for (int i = 0; i < children.size; i++) {
-            Handle child = children.get(i);
-            child.setRotation(rotation);
-        }
-    }
-
-    @Override
-    public void setScale(float x, float y, float z) {
-        super.setScale(x, y, z);
-
-        for (int i = 0; i < children.size; i++) {
-            Handle child = children.get(i);
-            child.setScale(x, y, z);
-        }
-    }
-
-    @Override
-    public void setScale(Vector3 scale) {
-        super.setScale(scale);
-
-        for (int i = 0; i < children.size; i++) {
-            Handle child = children.get(i);
-            child.setScale(scale);
         }
     }
 

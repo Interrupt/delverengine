@@ -71,6 +71,7 @@ public class AxisAlignedHandle extends Handle {
         MathUtils.project(projection, axis);
         position.add(projection);
 
+        setPosition(position);
         change();
 
         return false;

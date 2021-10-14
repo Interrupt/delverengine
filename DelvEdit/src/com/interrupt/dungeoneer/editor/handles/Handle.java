@@ -8,11 +8,10 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.math.Transform;
 
 public class Handle extends Handles.Handle {
-    private final Vector3 position = new Vector3();
-    private final Quaternion rotation = new Quaternion();
-    private final Vector3 scale = new Vector3().set(1, 1, 1);
+    public final Transform transform = new Transform();
 
     private final Color color = Color.WHITE.cpy();
     private final Color highlightColor = Color.WHITE.cpy();
@@ -24,47 +23,44 @@ public class Handle extends Handles.Handle {
     public Handle(Vector3 position, Quaternion rotation, Vector3 scale) {
         new Handles().super();
 
-        this.position.set(position);
-        this.rotation.set(rotation);
-        this.scale.set(scale);
+        transform.set(position, rotation, scale);
     }
 
     public void setPosition(float x, float y, float z) {
-        position.set(x, y, z);
+        transform.setPosition(x, y, z);
     }
 
     public void setPosition(Vector3 position) {
-        this.position.set(position);
+        transform.setPosition(position);
     }
 
     public Vector3 getPosition() {
-        return position;
+        return transform.getPosition();
     }
 
     public void setRotation(float yaw, float pitch, float roll) {
-        rotation.setEulerAngles(yaw, pitch, roll);
+        transform.setRotation(yaw, pitch, roll);
     }
 
     public void setRotation(Quaternion rotation) {
-        this.rotation.set(rotation);
+        transform.setRotation(rotation);
     }
 
     public Quaternion getRotation() {
-        return rotation;
+        return transform.getRotation();
     }
 
     public void setScale(float x, float y, float z) {
-        scale.set(x, y, z);
+        transform.setScale(x, y, z);
     }
 
     public void setScale(Vector3 scale) {
-        this.scale.set(scale);
+        transform.setScale(scale);
     }
 
     public Vector3 getScale() {
-        return scale;
+        return transform.getScale();
     }
-
 
     public void setColor(Color color) {
         this.color.set(color);
@@ -93,6 +89,7 @@ public class Handle extends Handles.Handle {
     public void select() {
         // Capture offset of initial selection
         Camera camera = Editor.app.camera;
+        Vector3 position = transform.getPosition();
         plane.set(
             position.x,
             position.z,
@@ -131,6 +128,7 @@ public class Handle extends Handles.Handle {
         wasDragged = true;
 
         Camera camera = Editor.app.camera;
+        Vector3 position = transform.getPosition();
         plane.set(
             position.x,
             position.z,
@@ -150,6 +148,7 @@ public class Handle extends Handles.Handle {
 
         // Preserve selection offset
         position.set(intersection.x, intersection.z, intersection.y).add(cursorDragOffset);
+        setPosition(position);
         change();
 
         return false;

@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.editor.handles.Handle;
 import com.interrupt.dungeoneer.editor.handles.PositionHandle;
+import com.interrupt.dungeoneer.entities.DirectionalEntity;
 import com.interrupt.dungeoneer.entities.Entity;
 
 @GizmoFor(target = Entity.class)
@@ -19,7 +20,8 @@ public class EntityGizmo extends Gizmo {
         positionHandle = new PositionHandle(entity.getPosition()) {
             @Override
             public void change() {
-                entity.setPosition(getPosition());
+                Vector3 position = getPosition();
+                entity.setPosition(position.x, position.y, position.z + 0.5f);
             }
         };
         Editor.app.editorInput.addListener(positionHandle);
@@ -27,7 +29,14 @@ public class EntityGizmo extends Gizmo {
 
     @Override
     public void draw() {
-        positionHandle.setPosition(entity.getPosition());
+        Vector3 position = entity.getPosition();
+        positionHandle.setPosition(position.x, position.y, position.z - 0.5f);
+
+        if (entity instanceof DirectionalEntity) {
+            DirectionalEntity d = (DirectionalEntity)entity;
+            positionHandle.setRotation(d.rotation.z, d.rotation.x, -d.rotation.y);
+        }
+
         positionHandle.draw();
 
         if (entity.isSolid) {
