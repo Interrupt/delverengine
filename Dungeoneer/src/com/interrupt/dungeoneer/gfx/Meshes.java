@@ -340,6 +340,103 @@ public class Meshes {
         return mesh;
     }
 
+    /** Generates a unit ring mesh. */
+    public static Mesh ring() {
+        return ring(1 - (1 / 8f), 1, 32);
+    }
+
+    /** Generates a ring mesh. */
+    public static Mesh ring(float innerRadius, float outerRadius, int segments) {
+        return ringArc(innerRadius, outerRadius, 0, 360, segments);
+    }
+
+    /** Generates a unit ring arc mesh. */
+    public static Mesh ringArc(float start, float end) {
+        return ringArc(1 - (1 / 8f), 1, start, end, 32);
+    }
+
+    /** Generates an ring arc mesh. */
+    public static Mesh ringArc(float innerRadius, float outerRadius, float start, float end, int segments) {
+        int componentsPerVertex = 6;
+        int indicesPerSegment = 6;
+
+        Mesh mesh = new Mesh(
+            true,
+            (segments + 1) * 2,
+            segments * indicesPerSegment,
+            new VertexAttribute(
+                VertexAttributes.Usage.Position,
+                3,
+                ShaderProgram.POSITION_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.ColorPacked,
+                4,
+                ShaderProgram.COLOR_ATTRIBUTE
+            ),
+            new VertexAttribute(
+                VertexAttributes.Usage.TextureCoordinates,
+                2,
+                ShaderProgram.TEXCOORD_ATTRIBUTE + "0"
+            )
+        );
+
+        float[] vertices = new float[(segments + 1) * 2 * componentsPerVertex];
+        short[] indices = new short[segments * indicesPerSegment];
+
+        float begin = (float)Math.toRadians(start);
+        float stop = (float)Math.toRadians(end);
+        float step = (stop - begin) / segments;
+
+        // Generate vertices
+        for (int i = 0; i <= segments; i++) {
+            int offset = i * 2 * componentsPerVertex;
+
+            float cos = (float)Math.cos(i * step + begin);
+            float sin = (float)Math.sin(i * step + begin);
+
+            // Inner vertex
+            vertices[offset + 0] = cos * innerRadius;
+            vertices[offset + 1] = 0;
+            vertices[offset + 2] = sin * innerRadius;
+            vertices[offset + 3] = Color.WHITE_FLOAT_BITS;
+            vertices[offset + 4] = 0;
+            vertices[offset + 5] = 0;
+
+            // Outer vertex
+            vertices[offset +  6] = cos * outerRadius;
+            vertices[offset +  7] = 0;
+            vertices[offset +  8] = sin * outerRadius;
+            vertices[offset +  9] = Color.WHITE_FLOAT_BITS;
+            vertices[offset + 10] = 0;
+            vertices[offset + 11] = 0;
+        }
+
+        // Generate indices
+        for (short i = 0; i < segments; i++) {
+            int offset = i * indicesPerSegment;
+            short innerCurrent = (short)(i * 2 + 0);
+            short outerCurrent = (short)(i * 2 + 1);
+            short innerNext = (short)(i * 2 + 2);
+            short outerNext = (short)(i * 2 + 3);
+
+            // Inner index
+            indices[offset + 0] = innerCurrent;
+            indices[offset + 1] = outerNext;
+            indices[offset + 2] = outerCurrent;
+
+            // Outer index
+            indices[offset + 3] = innerCurrent;
+            indices[offset + 4] = innerNext;
+            indices[offset + 5] = outerNext;
+        }
+
+        mesh.setVertices(vertices);
+        mesh.setIndices(indices);
+
+        return mesh;
+    }
+
     /** Combines several meshes into one.
      * Adapated from: https://stackoverflow.com/questions/20170758/slow-model-batch-rendering-in-libgdx/20937752 */
     public static Mesh combine(Mesh... meshes) {
