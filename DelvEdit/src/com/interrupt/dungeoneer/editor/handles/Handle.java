@@ -50,6 +50,10 @@ public class Handle extends Handles.Handle {
         return transform.getRotation();
     }
 
+    public void setScale(float scale) {
+        transform.setScale(scale, scale, scale);
+    }
+
     public void setScale(float x, float y, float z) {
         transform.setScale(x, y, z);
     }

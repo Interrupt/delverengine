@@ -183,11 +183,12 @@ public class Transform {
         return m.getTranslation(position);
     }
 
+    private static final Quaternion q = new Quaternion();
     public Quaternion localToWorldRotation(Quaternion quaternion) {
         if (parent != null) {
-            m.set(parent.transformation);
-            m.rotate(quaternion);
-            return m.getRotation(quaternion);
+            q.set(parent.getRotation());
+            MathUtils.inverse(q);
+            return q.mul(quaternion);
         }
 
         return quaternion;

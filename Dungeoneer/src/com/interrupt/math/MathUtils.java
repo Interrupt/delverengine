@@ -31,6 +31,15 @@ public class MathUtils {
         return rotation;
     }
 
+    private static final Quaternion x = new Quaternion();
+    public static Quaternion inverse(Quaternion quaternion) {
+        float rcp = 1f / quaternion.dot(quaternion);
+        x.set(-1 ,-1, -1, 1);
+        quaternion.mul(rcp).mul(x);
+
+        return quaternion;
+    }
+
     /** Swaps y and z components of the given vector.
      * @param vector The vector for swizzling
      * @return vector for chaining */

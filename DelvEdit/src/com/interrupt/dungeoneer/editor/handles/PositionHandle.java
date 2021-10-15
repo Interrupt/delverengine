@@ -81,4 +81,21 @@ public class PositionHandle extends CompositeHandle {
     public void setPosition(Vector3 position) {
         super.setPosition(position);
     }
+
+    @Override
+    public void draw() {
+        Camera camera = Editor.app.camera;
+        Vector3 position = getPosition();
+        float distance = Vector3.dst(
+            camera.position.x,
+            camera.position.z,
+            camera.position.y,
+            position.x,
+            position.y,
+            position.z
+        );
+        float scale = distance * 0.1f;
+        setScale(scale);
+        super.draw();
+    }
 }
