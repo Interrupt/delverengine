@@ -1,14 +1,25 @@
 package com.interrupt.dungeoneer.editor.handles;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
-import com.interrupt.dungeoneer.editor.gfx.Draw;
+import com.interrupt.dungeoneer.gfx.Meshes;
 
 public class PositionHandle extends CompositeHandle {
+    private static final Mesh mesh;
+
+    static {
+        // Construct an offset quad mesh
+        Matrix4 matrix = new Matrix4()
+            .translate(-0.5f, 0, 0.5f)
+            .scale(0.25f, 0.25f, 0.25f);
+
+        mesh = Meshes.quad();
+        mesh.transform(matrix);
+    }
+
     public PositionHandle(Vector3 position) {
         super(position);
 
@@ -30,7 +41,7 @@ public class PositionHandle extends CompositeHandle {
         xAxisHandle.setColor(EditorColors.X_AXIS);
         xAxisHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
 
-        Handle yAxisHandle = new ArrowHandle(Vector3.Zero, axisRotation.setEulerAngles(0, 90, 0)) {
+        Handle yAxisHandle = new ArrowHandle(Vector3.Zero, axisRotation.setEulerAngles(180, -90, 0)) {
             @Override
             public void change() {
                 Vector3 delta = transform.getLocalPosition();
@@ -56,19 +67,40 @@ public class PositionHandle extends CompositeHandle {
         zAxisHandle.setColor(EditorColors.Z_AXIS);
         zAxisHandle.setHighlightColor(EditorColors.Z_AXIS_BRIGHT);
 
-        Handle zPlaneHandle = new Handle(position) {
-            @Override
-            public void draw() {
-                super.draw();
-
-                Draw.color(getDrawColor());
-                Draw.quad(getPosition(), getRotation(), temp.set(0.25f, 0.25f, 0.25f));
-                Draw.color(Color.WHITE);
-            }
-
+        Handle xPlaneHandle = new PlaneAlignedHandle(mesh, Vector3.Zero, axisRotation.setEulerAngles(0, 0, -90)) {
             @Override
             public void change() {
+                Vector3 delta = transform.getLocalPosition();
+                self.setPosition(self.getPosition().add(delta));
+                transform.setLocalPosition(Vector3.Zero);
 
+                self.change();
+            }
+        };
+        xPlaneHandle.setColor(EditorColors.X_AXIS);
+        xPlaneHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
+
+        Handle yPlaneHandle = new PlaneAlignedHandle(mesh, Vector3.Zero, axisRotation.setEulerAngles(180, -90, 0)) {
+            @Override
+            public void change() {
+                Vector3 delta = transform.getLocalPosition();
+                self.setPosition(self.getPosition().add(delta));
+                transform.setLocalPosition(Vector3.Zero);
+
+                self.change();
+            }
+        };
+        yPlaneHandle.setColor(EditorColors.Y_AXIS);
+        yPlaneHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
+
+        Handle zPlaneHandle = new PlaneAlignedHandle(mesh, Vector3.Zero, axisRotation.setEulerAngles(90, 0, 0)) {
+            @Override
+            public void change() {
+                Vector3 delta = transform.getLocalPosition();
+                self.setPosition(self.getPosition().add(delta));
+                transform.setLocalPosition(Vector3.Zero);
+
+                self.change();
             }
         };
         zPlaneHandle.setColor(EditorColors.Z_AXIS);
@@ -77,6 +109,9 @@ public class PositionHandle extends CompositeHandle {
         add(xAxisHandle);
         add(yAxisHandle);
         add(zAxisHandle);
+        add(xPlaneHandle);
+        add(yPlaneHandle);
+        add(zPlaneHandle);
     }
 
     @Override
@@ -86,7 +121,7 @@ public class PositionHandle extends CompositeHandle {
 
     @Override
     public void draw() {
-        // Maintain constant screen size
+        /*// Maintain constant screen size
         Camera camera = Editor.app.camera;
         Vector3 position = getPosition();
         float distance = Vector3.dst(
@@ -98,7 +133,7 @@ public class PositionHandle extends CompositeHandle {
             position.z
         );
         float scale = distance * 0.1f;
-        setScale(scale);
+        setScale(scale);*/
         super.draw();
     }
 }
