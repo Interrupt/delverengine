@@ -1,8 +1,10 @@
 package com.interrupt.dungeoneer.editor.handles;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
 
@@ -84,6 +86,7 @@ public class PositionHandle extends CompositeHandle {
 
     @Override
     public void draw() {
+        // Maintain constant screen size
         Camera camera = Editor.app.camera;
         Vector3 position = getPosition();
         float distance = Vector3.dst(
