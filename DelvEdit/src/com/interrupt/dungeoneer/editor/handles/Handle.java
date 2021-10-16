@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor.handles;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
@@ -16,6 +17,8 @@ public class Handle extends Handles.Handle {
     private final Color color = Color.WHITE.cpy();
     private final Color highlightColor = Color.WHITE.cpy();
 
+    private static final Vector3 temp = new Vector3();
+
     public Handle(Vector3 position) {
         this(position, new Quaternion(), new Vector3(1, 1, 1));
     }
@@ -27,11 +30,17 @@ public class Handle extends Handles.Handle {
     }
 
     public void setPosition(float x, float y, float z) {
-        transform.setPosition(x, y, z);
+        temp.set(x, y ,z);
+        setPosition(temp);
     }
 
     public void setPosition(Vector3 position) {
-        transform.setPosition(position);
+        temp.set(position);
+        if (isSnapping()) {
+            Editor.app.grid.snap(temp);
+        }
+
+        transform.setPosition(temp.x, temp.y, temp.z);
     }
 
     public Vector3 getPosition() {
@@ -156,5 +165,9 @@ public class Handle extends Handles.Handle {
         change();
 
         return false;
+    }
+
+    private boolean isSnapping() {
+        return Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT);
     }
 }

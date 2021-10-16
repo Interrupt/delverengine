@@ -72,6 +72,7 @@ import com.interrupt.helpers.TileEdges;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
+import com.interrupt.math.Grid;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -86,6 +87,7 @@ public class EditorApplication implements ApplicationListener {
 	public Level level = null;
 	public GlRenderer renderer = null;
 	public EditorFile file = null;
+	public Grid grid = null;
 
 	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex }
 	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
@@ -370,6 +372,8 @@ public class EditorApplication implements ApplicationListener {
 
         renderer.init();
 		renderer.enableLighting = showLights;
+
+		grid = new Grid(1 / 16f);
 
 		spriteBatch = new DecalBatch(new SpriteGroupStrategy(camera, null, GlRenderer.worldShaderInfo, 1));
 
