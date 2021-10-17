@@ -288,8 +288,6 @@ public class ModManager {
             }
         }
 
-        animationManager.decorationCharge = animationManager.getAnimation("decorationCharge");
-
         return animationManager;
     }
 

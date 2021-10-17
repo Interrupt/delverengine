@@ -13,6 +13,7 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -242,7 +243,7 @@ public class Weapon extends Item {
     }
 
 	// override this
-	public void doAttack(Player p, Level lvl, float attackPower) { }
+	public void doAttack(Player p, Level lvl, float attackPower, LerpedAnimation handAnimation) { }
 
 	// and this
 	public void tickAttack(Player p, Level lvl, float time) { }

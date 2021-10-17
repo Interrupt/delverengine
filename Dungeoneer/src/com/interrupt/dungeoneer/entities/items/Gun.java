@@ -15,6 +15,7 @@ import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.StringManager;
@@ -92,7 +93,10 @@ public class Gun extends Weapon {
     }
 
 	@Override
-	public void doAttack(Player p, Level lvl, float attackPower) {
+	public void doAttack(Player p, Level lvl, float attackPower, LerpedAnimation handAnimation) {
+
+        if(p == null || handAnimation == null)
+            return;
 
 	    boolean hasAmmo = useAmmo(p);
 
@@ -104,8 +108,8 @@ public class Gun extends Weapon {
             return;
         }
 
-        if(p.handAnimation != null) p.handAnimation.stop();
-        p.playAttackAnimation(this, attackPower);
+        if(handAnimation != null) handAnimation.stop();
+        p.playAttackAnimation(this, attackPower, true);
 
         if(projectile != null) {
             doProjectileFire(p, lvl);

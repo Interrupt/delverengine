@@ -10,6 +10,7 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.projectiles.Missile;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.StringManager;
 
@@ -35,7 +36,7 @@ public class Bow extends Weapon {
 	}
 
 	@Override
-	public void doAttack(Player p, Level lvl, float attackPower) {
+	public void doAttack(Player p, Level lvl, float attackPower, LerpedAnimation handAnimation) {
 		Missile missile = getAmmo();
 
 		if(missile == null) {

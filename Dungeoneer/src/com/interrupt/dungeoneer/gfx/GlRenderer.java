@@ -1992,10 +1992,11 @@ public class GlRenderer {
 		int texOffset = 0;
 		Vector3 offset = game.player.handOffset;
 
-		if(game.player.handAnimation != null) {
-			rotation.set(game.player.handAnimation.curRotation);
-			transform.set(game.player.handAnimation.curTransform);
-			texOffset = game.player.handAnimation.getTexOffset();
+		LerpedAnimation animation = game.player.getHandAnimationPrimary();
+		if(animation != null) {
+			rotation.set(animation.curRotation);
+			transform.set(animation.curTransform);
+			texOffset = animation.getTexOffset();
 		}
 
 		if(heldItem instanceof Bow) {
@@ -2178,7 +2179,7 @@ public class GlRenderer {
 		int texOffset = 0;
         Vector3 offset = game.player.offhandOffset;
 
-        if (heldItem instanceof Weapon) {
+        /*if (heldItem instanceof Weapon) {
             Weapon weapon = (Weapon)heldItem;
             String animationName = weapon.attackAnimation;
             LerpedAnimation animation = Game.animationManager.getAnimation(animationName);
@@ -2188,6 +2189,14 @@ public class GlRenderer {
                 transform.set(-frame.transform.x, frame.transform.y, frame.transform.z);
                 texOffset = animation.curTexOffset;
             }
+        }*/
+
+        LerpedAnimation animation = game.player.getHandAnimationOffhand();
+        if(animation != null) {
+            // Need to inverse the X axis for the offhand animation
+            rotation.set(-animation.curRotation.x, animation.curRotation.y, animation.curRotation.z);
+            transform.set(-animation.curTransform.x, animation.curTransform.y, animation.curTransform.z);
+            texOffset = animation.getTexOffset();
         }
 
 		// hand bob

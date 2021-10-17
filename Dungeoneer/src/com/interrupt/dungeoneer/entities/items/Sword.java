@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.entities.triggers.BasicTrigger;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 
 import java.util.Random;
 
@@ -37,20 +38,20 @@ public class Sword extends Weapon {
 	private float hitTime = 10f;
 	
 	@Override
-	public void doAttack(Player p, Level lvl, float attackPower) {
+	public void doAttack(Player p, Level lvl, float attackPower, LerpedAnimation handAnimation) {
 		this.attackPower = attackPower;
 
-		if(p == null || p.handAnimation == null) {
+		if(p == null || handAnimation == null) {
 			return;
 		}
 		
 		p.setAttackSpeed(getSpeed());
-		p.handAnimateTimer = (p.handAnimation.length() / p.handAnimation.speed) * 0.75f;
+		p.handAnimateTimer = (handAnimation.length() / handAnimation.speed) * 0.75f;
 		
 		attackTimer = 0;
 		lastTickTime = 0;
 		
-		hitTime = (p.handAnimation.actionTime / p.handAnimation.speed) * 0.5f;
+		hitTime = (handAnimation.actionTime / handAnimation.speed) * 0.5f;
 		
 		Audio.playSound(swingSound, 0.25f, Game.rand.nextFloat() * 0.1f + 0.95f);
 	}

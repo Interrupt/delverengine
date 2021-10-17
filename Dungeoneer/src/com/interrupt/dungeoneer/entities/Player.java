@@ -40,7 +40,6 @@ import com.interrupt.dungeoneer.statuseffects.*;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
-import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -193,7 +192,8 @@ public class Player extends Actor {
 
 	private HashMap<String, Float> messageViews = new HashMap<String, Float>();
 
-	public transient LerpedAnimation handAnimation = null;
+	protected transient LerpedAnimation handAnimationPrimary = null;
+    protected transient LerpedAnimation handAnimationOffhand = null;
 
 	public PlayerHistory history = new PlayerHistory();
 
@@ -824,9 +824,12 @@ public class Player extends Actor {
 		visiblityMod *= visiblityMod;
 
 		if(heldItem != null) {
-			if(handAnimation != null && handAnimation.playing) handAnimation.animate(delta);
+			if(handAnimationPrimary != null && handAnimationPrimary.playing)
+			    handAnimationPrimary.animate(delta);
 		}
-		else if(heldItem == null) handAnimation = null;
+		else if(heldItem == null) handAnimationPrimary = null;
+
+		if(handAnimationOffhand != null && handAnimationOffhand.playing) handAnimationOffhand.animate(delta);
 
 		// Check for mobile attack press
 		if(Game.isMobile && !isInOverlay)
@@ -1171,7 +1174,8 @@ public class Player extends Actor {
 		}
 		else {
 			Item held = GetHeldItem();
-			if(handAnimation == null) playIdleAnimation(held);
+			if(handAnimationPrimary == null) playIdleAnimation(true);
+            if(handAnimationOffhand == null) playIdleAnimation(false);
 
 			if(held instanceof Weapon || held instanceof Decoration || held instanceof FusedBomb) {
 				// Automatic weapons should not do the attack when released
@@ -1198,7 +1202,7 @@ public class Player extends Actor {
 					if(held instanceof Gun) {
 						Gun g = (Gun)held;
 						if(g.canFire()) {
-							g.doAttack(this, level, 1);
+							g.doAttack(this, level, 1, handAnimationPrimary);
 						}
 					}
 					else {
@@ -1210,15 +1214,15 @@ public class Player extends Actor {
 					if(held instanceof Wand) {
 						Wand w = (Wand) held;
 						if (w.autoFire) {
-							if(handAnimation != null) handAnimation.stop();
+							if(handAnimationPrimary != null) handAnimationPrimary.stop();
 							Attack(level);
 						}
 						else {
-							if(attackCharge <= 0) playChargeAnimation(attackChargeSpeed);
+							if(attackCharge <= 0) playChargeAnimation(attackChargeSpeed, true);
 						}
 					}
 					else {
-						if(attackCharge <= 0) playChargeAnimation(attackChargeSpeed);
+						if(attackCharge <= 0) playChargeAnimation(attackChargeSpeed, true);
 					}
 
 					attackCharge += attackChargeSpeed * delta;
@@ -1430,7 +1434,7 @@ public class Player extends Actor {
 		if(GetHeldItem() instanceof Weapon) tossChargeSpeed = ((Weapon)GetHeldItem()).getChargeSpeed();
 
 		if(tossPower == 0) {
-			playTossChargeAnimation(tossChargeSpeed);
+			playTossChargeAnimation(tossChargeSpeed, true);
 		}
 
 		tossPower += tossChargeSpeed * 0.03f * delta;
@@ -1473,41 +1477,73 @@ public class Player extends Actor {
         visiblityMod = Math.min(1f, visiblityMod);
     }
 
-    private void playIdleAnimation(Item held) {
-        if(handAnimation == null && held instanceof Weapon) {
-            Weapon w = (Weapon)held;
-            handAnimation = Game.animationManager.getAnimation(w.chargeAnimation);
-            if(handAnimation == null) handAnimation = Game.animationManager.getAnimation(w.attackAnimation);
-            if(handAnimation != null) {
-                handAnimation.play(0f);
-                handAnimation.stop();
-            }
+    private void playIdleAnimation(boolean isPrimaryHand) {
+	    Item held = isPrimaryHand ? GetHeldItem() : GetHeldOffhandItem();
+	    LerpedAnimation animation = isPrimaryHand ? handAnimationPrimary : handAnimationOffhand;
+        String animId = isPrimaryHand ? "PRIMARY" : "OFFHAND";
+
+	    // Don't play a new weapon idle if one is already playing (or this is not a weapon)
+	    if(animation != null || !(held instanceof Weapon))
+	        return;
+
+        Weapon w = (Weapon)held;
+        animation = Game.animationManager.getAnimation(w.chargeAnimation, animId);
+        if(animation == null) animation = Game.animationManager.getAnimation(w.attackAnimation, animId);
+
+        if(animation != null) {
+            animation.play(0f);
+            animation.stop();
         }
+
+        // Set the current animation for a current hand to be the new idle
+        if(isPrimaryHand)
+            handAnimationPrimary = animation;
+        else
+            handAnimationOffhand = animation;
     }
 
-    private void playTossChargeAnimation(float animationSpeed) {
-		LerpedAnimation previousAnimation = handAnimation;
-		handAnimation = Game.animationManager.decorationCharge;
-		if(handAnimation != null) handAnimation.play(animationSpeed * 0.03f, previousAnimation);
+    private void playTossChargeAnimation(float animationSpeed, boolean isPrimaryHand) {
+        LerpedAnimation previousAnimation = isPrimaryHand ? handAnimationPrimary : handAnimationOffhand;
+        String animId = isPrimaryHand ? "PRIMARY" : "OFFHAND";
+
+        LerpedAnimation newAnimation = null;
+        newAnimation = Game.animationManager.getAnimation("decorationCharge", animId);
+        if(newAnimation != null) newAnimation.play(animationSpeed * 0.03f, previousAnimation);
+
+	    if(isPrimaryHand)
+            handAnimationPrimary = newAnimation;
+        else
+            handAnimationOffhand = newAnimation;
 	}
 
-	private void playChargeAnimation(float animationSpeed) {
-		LerpedAnimation previousAnimation = handAnimation;
+	private void playChargeAnimation(float animationSpeed, boolean isPrimaryHand) {
+        LerpedAnimation previousAnimation = isPrimaryHand ? handAnimationPrimary : handAnimationOffhand;
+        String animId = isPrimaryHand ? "PRIMARY" : "OFFHAND";
 
 		Item w = GetHeldItem();
 		w.onChargeStart();
 
+		LerpedAnimation newAnimation = null;
+
 		if(w instanceof Weapon) {
 			Weapon weapon = (Weapon)w;
-			handAnimation = Game.animationManager.getAnimation(weapon.chargeAnimation);
-			if(handAnimation != null) handAnimation.play(animationSpeed * 0.03f, previousAnimation);
+            newAnimation = Game.animationManager.getAnimation(weapon.chargeAnimation, animId);
+			if(newAnimation != null) newAnimation.play(animationSpeed * 0.03f, previousAnimation);
 		}
 		else if(w instanceof Decoration || w instanceof Potion || w instanceof FusedBomb) {
-			handAnimation = Game.animationManager.decorationCharge;
-			if(handAnimation != null) handAnimation.play(animationSpeed * 0.03f, previousAnimation);
+            newAnimation = Game.animationManager.getAnimation("decorationCharge", animId);
+			if(newAnimation != null) newAnimation.play(animationSpeed * 0.03f, previousAnimation);
 		}
 
-		if(handAnimation == null) playIdleAnimation(w);
+		if(newAnimation == null)
+		    playIdleAnimation(isPrimaryHand);
+		else {
+            if(isPrimaryHand) {
+                handAnimationPrimary = newAnimation;
+            } else {
+                handAnimationOffhand = newAnimation;
+            }
+        }
 	}
 
 	private Item pickItem(Level level, int pickX, int pickY, float maxDistance) {
@@ -1705,26 +1741,31 @@ public class Player extends Actor {
 		}
 	}
 
-	public void playAttackAnimation(Weapon w, float attackPower) {
-        playAttackAnimation(w, attackPower, ((w.getSpeed() + getAttackSpeedStatBoost()) * 0.25f) + ((stats.DEX - 4) * 0.015f));
+	public void playAttackAnimation(Weapon w, float attackPower, boolean isPrimaryHand) {
+        playAttackAnimation(w, attackPower, ((w.getSpeed() + getAttackSpeedStatBoost()) * 0.25f) + ((stats.DEX - 4) * 0.015f), isPrimaryHand);
 	}
 
-    public void playAttackAnimation(Weapon w, float attackPower, float speed) {
+    public void playAttackAnimation(Weapon w, float attackPower, float speed, boolean isPrimaryHand) {
         // may have to blend with the previous animation
-        LerpedAnimation previousAnimation = null;
-        if(handAnimation != null) {
-            previousAnimation = handAnimation;
-        }
+        LerpedAnimation previousAnimation = isPrimaryHand ? handAnimationPrimary : handAnimationOffhand;
+        LerpedAnimation newAnimation;
+
+        String animId = isPrimaryHand ? "PRIMARY" : "OFFHAND";
 
         // play either the weak or strong attack animation
         if(attackPower < 0.5f || w.attackStrongAnimation == null )
-            handAnimation = Game.animationManager.getAnimation(w.attackAnimation);
+            newAnimation = Game.animationManager.getAnimation(w.attackAnimation, animId);
         else
-            handAnimation = Game.animationManager.getAnimation(w.attackStrongAnimation);
+            newAnimation = Game.animationManager.getAnimation(w.attackStrongAnimation, animId);
 
-        if(handAnimation != null) {
+        if(newAnimation != null) {
             if(previousAnimation != null) previousAnimation.stop();
-            handAnimation.play(speed, previousAnimation);
+            newAnimation.play(speed, previousAnimation);
+
+           if(isPrimaryHand)
+                handAnimationPrimary = newAnimation;
+            else
+                handAnimationOffhand = newAnimation;
         }
     }
 
@@ -1741,8 +1782,8 @@ public class Player extends Actor {
 			Weapon w = (Weapon)held;
 
 			// start the attack
-			playAttackAnimation(w, attackPower);
-			w.doAttack(this, lvl, attackPower);
+			playAttackAnimation(w, attackPower, true);
+			w.doAttack(this, lvl, attackPower, handAnimationPrimary);
 		}
 		else
 		{
@@ -1910,7 +1951,7 @@ public class Player extends Actor {
 
 	public void ChangeHeldItem(Integer invPos, boolean doTransition)
 	{
-		if(handAnimation == null || !handAnimation.playing) {
+		if(handAnimationPrimary == null || !handAnimationPrimary.playing) {
 			selectedBarItem = invPos;
 
 			if(doTransition) {
@@ -1921,7 +1962,7 @@ public class Player extends Actor {
 				doingHeldItemTransition = false;
 			}
 
-			handAnimation = null;
+			handAnimationPrimary = null;
 			heldItem = invPos;
 
 			// switch sound!
@@ -2153,7 +2194,7 @@ public class Player extends Actor {
 				ChangeHeldItem(location, true);
 			} else {
 				// same selected item as previous, so either dequip or unwield it
-				if(equipped(itm) && (handAnimation == null || !handAnimation.playing)) {
+				if(equipped(itm) && (handAnimationPrimary == null || !handAnimationPrimary.playing)) {
 					dequip(itm);
 				}
 				else {
@@ -2619,5 +2660,13 @@ public class Player extends Actor {
 			if(itm != null && itm.drawable != null)
 				itm.drawable.refresh();
 		}
+    }
+
+    public LerpedAnimation getHandAnimationPrimary() {
+	    return handAnimationPrimary;
+    }
+
+    public LerpedAnimation getHandAnimationOffhand() {
+	    return handAnimationOffhand;
     }
 }

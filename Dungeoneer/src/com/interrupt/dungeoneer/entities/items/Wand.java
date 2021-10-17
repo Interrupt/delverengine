@@ -14,6 +14,7 @@ import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.managers.StringManager;
 
@@ -72,13 +73,16 @@ public class Wand extends Weapon {
 	}
 	
 	@Override
-	public void doAttack(Player p, Level lvl, float attackPower) {
+	public void doAttack(Player p, Level lvl, float attackPower, LerpedAnimation handAnimation) {
+
+        if(p == null || handAnimation == null)
+            return;
 
 		if(autoFire) {
 			p.handAnimateTimer = autoFireTime * 3f;
 		}
 		else {
-			p.handAnimateTimer = (p.handAnimation.length() / p.handAnimation.speed) * 0.75f;
+			p.handAnimateTimer = (handAnimation.length() / handAnimation.speed) * 0.75f;
 		}
 
 		attackTimer = 1.0f;
