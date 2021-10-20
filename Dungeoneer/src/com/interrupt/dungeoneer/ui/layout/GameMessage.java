@@ -99,7 +99,7 @@ public class GameMessage extends Element {
         boolean cursorNotCatched = (!Game.isMobile || Game.instance.input.isCursorCatched())
                 && (OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput);
         boolean gameNotPaused = !OverlayManager.instance.shouldPauseGame();
-        boolean lookingAtObject = Game.instance.player.lookedAtItem != null;
+        boolean lookingAtObject = Game.instance.player.lookedAt != null;
 
         return playerNotDead && cursorNotCatched && gameNotPaused && lookingAtObject;
     }

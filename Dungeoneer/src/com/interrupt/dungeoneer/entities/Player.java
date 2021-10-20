@@ -241,7 +241,7 @@ public class Player extends Actor {
     public int saveVersion = -1;
 
     /** Currently focused object. */
-    public LookAt lookedAtItem = null;
+    public LookAt lookedAt = null;
     /** Currently focused object's info. */
     public LookAtInfo lookedAtInfo = new LookAtInfo();
 
@@ -2635,16 +2635,16 @@ public class Player extends Actor {
     }
 
     public void setLookedAtItem(LookAt lookedAtItem) {
-        this.lookedAtItem = lookedAtItem;
+        this.lookedAt = lookedAtItem;
     }
 
     private void setLookedAtItem(Level level) {
-        LookAt backgroundItem = lookedAtItem;
+        LookAt backgroundItem = lookedAt;
 
         Entity centered = pickEntity(level, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0.7f);
-        lookedAtItem = (centered instanceof LookAt && centered != this) ? (LookAt) centered : null;
+        lookedAt = (centered instanceof LookAt && centered != this) ? (LookAt) centered : null;
 
-        if (lookedAtItem == null) {
+        if (lookedAt == null) {
             // Check for a wall hit.
             Ray ray = Game.camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
 
@@ -2655,17 +2655,17 @@ public class Player extends Actor {
             int checky = (int) (Math.floor(ray.origin.z + projy));
 
             Tile hit = level.getTile(checkx, checky);
-            lookedAtItem = (hit instanceof LookAt) ? (LookAt) hit : null;
+            lookedAt = (hit instanceof LookAt) ? (LookAt) hit : null;
         }
 
         // In case an entity did override this, make sure we display that instead.
-        if (lookedAtItem == null && backgroundItem != null) {
-            lookedAtItem = backgroundItem;
+        if (lookedAt == null && backgroundItem != null) {
+            lookedAt = backgroundItem;
         }
 
         // Update the cached info object.
-        if (lookedAtItem != null) {
-            lookedAtItem.getLookAtInfo(new LookAtInfoModifier() {
+        if (lookedAt != null) {
+            lookedAt.getLookAtInfo(new LookAtInfoModifier() {
                 @Override
                 public void modify(String title, String attributes, Color color) {
                     lookedAtInfo.setTitle(title);
