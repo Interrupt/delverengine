@@ -250,9 +250,9 @@ public class Trigger extends Entity {
         if(Game.isMobile) useText = StringManager.get("entities.Trigger.mobileUseText");
 
         if(getTriggerStatus() == TriggerStatus.WAITING || getTriggerStatus() == TriggerStatus.TRIGGERED) {
-            String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseVerb());
+            String prompt = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseVerb());
 
-            modifier.modify(title, null, Color.WHITE);
+            modifier.modify(prompt, null, Color.WHITE);
         }
     }
 }

@@ -2667,8 +2667,8 @@ public class Player extends Actor {
         if (lookedAt != null) {
             lookedAt.getLookAtInfo(new LookAtInfoModifier() {
                 @Override
-                public void modify(String title, String attributes, Color color) {
-                    lookedAtInfo.setTitle(title);
+                public void modify(String prompt, String attributes, Color color) {
+                    lookedAtInfo.setPrompt(prompt);
                     lookedAtInfo.setAttributes(attributes);
                     lookedAtInfo.setTitleColor(color);
                 }

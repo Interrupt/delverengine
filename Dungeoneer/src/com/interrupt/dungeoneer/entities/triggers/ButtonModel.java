@@ -229,8 +229,8 @@ public class ButtonModel extends Model {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
         if(Game.isMobile) useText = StringManager.get("triggers.ButtonModel.useMobileText");
 
-        String title = MessageFormat.format(StringManager.get("triggers.ButtonModel.useText"), useText, useVerb);
+        String prompt = MessageFormat.format(StringManager.get("triggers.ButtonModel.useText"), useText, useVerb);
 
-        modifier.modify(title, null, Color.WHITE);
+        modifier.modify(prompt, null, Color.WHITE);
     }
 }

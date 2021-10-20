@@ -516,9 +516,9 @@ public class Actor extends Entity {
             String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
 			if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
 
-            String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseTrigger().useVerb);
+            String prompt = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseTrigger().useVerb);
 
-            modifier.modify(title, null, Color.WHITE);
+            modifier.modify(prompt, null, Color.WHITE);
         }
     }
 }

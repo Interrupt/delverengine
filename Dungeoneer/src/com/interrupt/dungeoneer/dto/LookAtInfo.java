@@ -3,16 +3,16 @@ package com.interrupt.dungeoneer.dto;
 import com.badlogic.gdx.graphics.Color;
 
 public class LookAtInfo {
-    private String title;
+    private String prompt;
     private String attributes;
     private Color color;
 
-    public String getTitle() {
-        return title != null ? title : "";
+    public String getPrompt() {
+        return prompt != null ? prompt : "";
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
     }
 
     public String getAttributes() {
@@ -32,7 +32,7 @@ public class LookAtInfo {
     }
 
     public void reset() {
-        setTitle(null);
+        setPrompt(null);
         setAttributes(null);
         setTitleColor(null);
     }

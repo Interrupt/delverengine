@@ -121,8 +121,8 @@ public class Stairs extends Entity {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
         if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
 
-        String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseText());
+        String prompt = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseText());
 
-        modifier.modify(title, null, Color.WHITE);
+        modifier.modify(prompt, null, Color.WHITE);
     }
 }

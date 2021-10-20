@@ -48,8 +48,8 @@ public class ExitTile extends Tile implements LookAt {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
         if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
 
-        String title = MessageFormat.format(StringManager.get("entities.Player.exitDungeonText"), useText);
+        String prompt = MessageFormat.format(StringManager.get("entities.Player.exitDungeonText"), useText);
 
-        modifier.modify(title, null, Color.WHITE);
+        modifier.modify(prompt, null, Color.WHITE);
     }
 }

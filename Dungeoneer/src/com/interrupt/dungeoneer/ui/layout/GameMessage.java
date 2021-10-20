@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.ui.UiSkin;
 
 public class GameMessage extends Element {
@@ -15,7 +14,7 @@ public class GameMessage extends Element {
         VerticalGroup group = new VerticalGroup();
 
         group.addActor(createMessageLabel());
-        group.addActor(createTitleLabel());
+        group.addActor(createPromptLabel());
         group.addActor(createAttributesLabel());
 
         group.debug();
@@ -48,7 +47,7 @@ public class GameMessage extends Element {
         return label;
     }
 
-    private Label createTitleLabel() {
+    private Label createPromptLabel() {
         Label label = new Label("TITLE", UiSkin.getSkin()) {
             @Override
             public void act(float delta) {
@@ -60,7 +59,7 @@ public class GameMessage extends Element {
                     return;
                 }
 
-                setText(Game.instance.player.lookedAtInfo.getTitle());
+                setText(Game.instance.player.lookedAtInfo.getPrompt());
                 setColor(Game.instance.player.lookedAtInfo.getTitleColor());
                 setVisible(true);
             }
