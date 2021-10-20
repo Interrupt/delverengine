@@ -28,6 +28,7 @@ import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.GamepadManager;
+import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
@@ -1548,5 +1549,15 @@ public class Game {
     public void reloadAssets() {
         Art.refresh();
         instance.initHud();
+    }
+
+    public boolean shouldShowUseMessage() {
+        boolean playerNotDead = !Game.instance.player.isDead;
+        boolean cursorNotCatched = (!Game.isMobile || Game.instance.input.isCursorCatched())
+                && (OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput);
+        boolean gameNotPaused = !OverlayManager.instance.shouldPauseGame();
+        boolean lookingAtObject = Game.instance.player.lookedAt != null;
+
+        return playerNotDead && cursorNotCatched && gameNotPaused && lookingAtObject;
     }
 }

@@ -54,7 +54,7 @@ public class GameMessage extends Element {
             public void act(float delta) {
                 super.act(delta);
 
-                if (!shouldShowUseMessage()) {
+                if (!Game.instance.shouldShowUseMessage()) {
                     setText("");
                     setVisible(false);
                     return;
@@ -77,7 +77,7 @@ public class GameMessage extends Element {
             public void act(float delta) {
                 super.act(delta);
 
-                if (!shouldShowUseMessage()) {
+                if (!Game.instance.shouldShowUseMessage()) {
                     setText("");
                     setVisible(false);
                     return;
@@ -92,15 +92,5 @@ public class GameMessage extends Element {
         label.setAlignment(Align.center);
 
         return label;
-    }
-
-    private boolean shouldShowUseMessage() {
-        boolean playerNotDead = !Game.instance.player.isDead;
-        boolean cursorNotCatched = (!Game.isMobile || Game.instance.input.isCursorCatched())
-                && (OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput);
-        boolean gameNotPaused = !OverlayManager.instance.shouldPauseGame();
-        boolean lookingAtObject = Game.instance.player.lookedAt != null;
-
-        return playerNotDead && cursorNotCatched && gameNotPaused && lookingAtObject;
     }
 }
