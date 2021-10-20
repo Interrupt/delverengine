@@ -2,7 +2,7 @@ package com.interrupt.dungeoneer.dto;
 
 import com.badlogic.gdx.graphics.Color;
 
-public class LookAtDTO {
+public class LookAtInfo {
     private String title;
     private String attributes;
     private Color color;

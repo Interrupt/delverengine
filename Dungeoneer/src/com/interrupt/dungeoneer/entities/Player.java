@@ -18,7 +18,7 @@ import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.collision.Collision;
-import com.interrupt.dungeoneer.dto.LookAtDTO;
+import com.interrupt.dungeoneer.dto.LookAtInfo;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.entities.items.Potion.PotionType;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
@@ -243,7 +243,7 @@ public class Player extends Actor {
     /** Currently focused object. */
     public LookAt lookedAtItem = null;
     /** Currently focused object's info. */
-    public LookAtDTO lookedAtInfo = new LookAtDTO();
+    public LookAtInfo lookedAtInfo = new LookAtInfo();
 
 	public Player() {
 		isSolid = true;
