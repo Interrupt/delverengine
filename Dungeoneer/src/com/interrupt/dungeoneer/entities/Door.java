@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.items.Sword;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.CachePools;
@@ -20,6 +19,7 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.StringManager;
 
@@ -800,12 +800,12 @@ public class Door extends Entity {
 	}
 
     @Override
-    public LookAtDTO getLookAtInfo() {
+    public void getLookAtInfo(LookAtInfoModifier modifier) {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
         if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
 
         String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseText());
 
-        return new LookAtDTO(title, null, Color.WHITE);
+        modifier.modify(title, null, Color.WHITE);
     }
 }

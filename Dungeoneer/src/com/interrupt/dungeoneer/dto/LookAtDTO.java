@@ -7,21 +7,33 @@ public class LookAtDTO {
     private String attributes;
     private Color color;
 
-    public LookAtDTO(String title, String attributes, Color color) {
-        this.title = title;
-        this.attributes = attributes;
-        this.color = color;
+    public String getTitle() {
+        return title != null ? title : "";
     }
 
-    public String getTitle() {
-        return this.title;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getAttributes() {
-        return this.attributes;
+        return attributes != null ? attributes : "";
+    }
+
+    public void setAttributes(String attributes) {
+        this.attributes = attributes;
     }
 
     public Color getTitleColor() {
-        return this.color;
+        return color != null ? color : Color.WHITE;
+    }
+
+    public void setTitleColor(Color color) {
+        this.color = color;
+    }
+
+    public void reset() {
+        setTitle(null);
+        setAttributes(null);
+        setTitleColor(null);
     }
 }

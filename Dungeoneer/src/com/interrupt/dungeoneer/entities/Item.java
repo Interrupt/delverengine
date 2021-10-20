@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.items.Bow;
 import com.interrupt.dungeoneer.entities.items.ItemModification;
 import com.interrupt.dungeoneer.entities.items.Weapon;
@@ -25,6 +24,7 @@ import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -789,7 +789,7 @@ public class Item extends Entity {
 	}
 
     @Override
-    public LookAtDTO getLookAtInfo() {
+    public void getLookAtInfo(LookAtInfoModifier modifier) {
         boolean isNotMoving = Math.abs(xa) < 0.01f && Math.abs(ya) < 0.01f && Math.abs(za) < 0.01f;
 
         if (isNotMoving && !isPickup) {
@@ -798,9 +798,7 @@ public class Item extends Entity {
 
             String title = MessageFormat.format(StringManager.get("entities.Player.getItemText"), useText, GetName());
 
-            return new LookAtDTO(title, GetInfoText(), GetTextColor());
+            modifier.modify(title, GetInfoText(), GetTextColor());
         }
-
-        return null;
     }
 }

@@ -60,8 +60,8 @@ public class GameMessage extends Element {
                     return;
                 }
 
-                setText(Game.instance.player.lookedAtItem.getLookAtInfo().getTitle());
-                setColor(Game.instance.player.lookedAtItem.getLookAtInfo().getTitleColor());
+                setText(Game.instance.player.lookedAtInfo.getTitle());
+                setColor(Game.instance.player.lookedAtInfo.getTitleColor());
                 setVisible(true);
             }
         };
@@ -83,7 +83,7 @@ public class GameMessage extends Element {
                     return;
                 }
 
-                setText(Game.instance.player.lookedAtItem.getLookAtInfo().getAttributes());
+                setText(Game.instance.player.lookedAtInfo.getAttributes());
                 setVisible(true);
             }
         };
@@ -99,8 +99,7 @@ public class GameMessage extends Element {
         boolean cursorNotCatched = (!Game.isMobile || Game.instance.input.isCursorCatched())
                 && (OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput);
         boolean gameNotPaused = !OverlayManager.instance.shouldPauseGame();
-        boolean lookingAtObject = Game.instance.player.lookedAtItem != null
-                && Game.instance.player.lookedAtItem.getLookAtInfo() != null;
+        boolean lookingAtObject = Game.instance.player.lookedAtItem != null;
 
         return playerNotDead && cursorNotCatched && gameNotPaused && lookingAtObject;
     }

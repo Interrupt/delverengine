@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Player;
@@ -14,6 +13,7 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -245,16 +245,14 @@ public class Trigger extends Entity {
 	}
 
     @Override
-    public LookAtDTO getLookAtInfo() {
+    public void getLookAtInfo(LookAtInfoModifier modifier) {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
         if(Game.isMobile) useText = StringManager.get("entities.Trigger.mobileUseText");
 
         if(getTriggerStatus() == TriggerStatus.WAITING || getTriggerStatus() == TriggerStatus.TRIGGERED) {
             String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseVerb());
 
-            return new LookAtDTO(title, null, Color.WHITE);
+            modifier.modify(title, null, Color.WHITE);
         }
-
-        return null;
     }
 }

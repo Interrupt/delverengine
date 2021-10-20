@@ -18,6 +18,7 @@ import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.collision.Collision;
+import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.entities.items.Potion.PotionType;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
@@ -31,6 +32,7 @@ import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpFrame;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.dungeoneer.input.Actions.Action;
 import com.interrupt.dungeoneer.interfaces.LookAt;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.overlays.DebugOverlay;
 import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
@@ -240,6 +242,8 @@ public class Player extends Actor {
 
     /** Currently focused object. */
     public LookAt lookedAtItem = null;
+    /** Currently focused object's info. */
+    public LookAtDTO lookedAtInfo = new LookAtDTO();
 
 	public Player() {
 		isSolid = true;
@@ -2657,6 +2661,20 @@ public class Player extends Actor {
         // In case an entity did override this, make sure we display that instead.
         if (lookedAtItem == null && backgroundItem != null) {
             lookedAtItem = backgroundItem;
+        }
+
+        // Update the cached info object.
+        if (lookedAtItem != null) {
+            lookedAtItem.getLookAtInfo(new LookAtInfoModifier() {
+                @Override
+                public void modify(String title, String attributes, Color color) {
+                    lookedAtInfo.setTitle(title);
+                    lookedAtInfo.setAttributes(attributes);
+                    lookedAtInfo.setTitleColor(color);
+                }
+            });
+        } else {
+            lookedAtInfo.reset();
         }
     }
 }

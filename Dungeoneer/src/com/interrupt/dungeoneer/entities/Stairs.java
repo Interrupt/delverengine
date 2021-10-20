@@ -3,7 +3,6 @@ package com.interrupt.dungeoneer.entities;
 import com.badlogic.gdx.graphics.Color;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.dto.LookAtDTO;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
@@ -12,6 +11,7 @@ import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -117,12 +117,12 @@ public class Stairs extends Entity {
 	}
 
     @Override
-    public LookAtDTO getLookAtInfo() {
+    public void getLookAtInfo(LookAtInfoModifier modifier) {
         String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
         if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
 
         String title = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseText());
 
-        return new LookAtDTO(title, null, Color.WHITE);
+        modifier.modify(title, null, Color.WHITE);
     }
 }
