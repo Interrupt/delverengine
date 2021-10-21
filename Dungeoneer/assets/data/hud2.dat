@@ -56,9 +56,49 @@
             "y": -10
         },
         {
-            "class": "com.interrupt.dungeoneer.ui.layout.GameMessage",
+            "class": "com.interrupt.dungeoneer.ui.layout.Group",
             "anchor": "CENTER",
-            "pivot": "CENTER"
+            "children": [
+                {
+                    "class": "com.interrupt.dungeoneer.ui.layout.DynamicFormatText",
+                    "anchor": "CENTER",
+                    "y": 20,
+                    "frequency": 5,
+                    "pattern": "{0}",
+                    "args": [
+                        {
+                            "class": "com.interrupt.dungeoneer.ui.values.GameMessage",
+                            "field": "getMessage()"
+                        }
+                    ]
+                },
+                {
+                    "class": "com.interrupt.dungeoneer.ui.layout.DynamicFormatText",
+                    "anchor": "CENTER",
+                    "y": -10,
+                    "frequency": 5,
+                    "pattern": "{0}",
+                    "args": [
+                        {
+                            "class": "com.interrupt.dungeoneer.ui.values.Player",
+                            "field": "lookedAtInfo.getPrompt()"
+                        }
+                    ]
+                },
+                {
+                    "class": "com.interrupt.dungeoneer.ui.layout.DynamicFormatText",
+                    "anchor": "CENTER",
+                    "y": -30,
+                    "frequency": 5,
+                    "pattern": "{0}",
+                    "args": [
+                        {
+                            "class": "com.interrupt.dungeoneer.ui.values.Player",
+                            "field": "lookedAtInfo.getAdditionalInfo()"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

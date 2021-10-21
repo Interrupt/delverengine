@@ -13,6 +13,7 @@ import java.util.Objects;
 
 public class DynamicFormatText extends Element {
     public String pattern = "{0}";
+    public float frequency = 100f;
 
     public Array<DynamicValue> args = new Array<>();
 
@@ -41,7 +42,6 @@ public class DynamicFormatText extends Element {
                 super.act(delta);
 
                 // Only check if we need to update the text at 10hz
-                float frequency = 1000f / 10f;
                 if (Game.instance.time < lastCheck + frequency) return;
 
                 lastCheck = Game.instance.time;
