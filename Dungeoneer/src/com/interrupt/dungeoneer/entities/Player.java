@@ -2669,8 +2669,8 @@ public class Player extends Actor {
                 @Override
                 public void modify(String prompt, String attributes, Color color) {
                     lookedAtInfo.setPrompt(prompt);
-                    lookedAtInfo.setAttributes(attributes);
-                    lookedAtInfo.setTitleColor(color);
+                    lookedAtInfo.setAdditionalInfo(attributes);
+                    lookedAtInfo.setColor(color);
                 }
             });
         } else {

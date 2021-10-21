@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 
 public class LookAtInfo {
     private String prompt;
-    private String attributes;
+    private String additionalInfo;
     private Color color;
 
     public String getPrompt() {
@@ -15,25 +15,25 @@ public class LookAtInfo {
         this.prompt = prompt;
     }
 
-    public String getAttributes() {
-        return attributes != null ? attributes : "";
+    public String getAdditionalInfo() {
+        return additionalInfo != null ? additionalInfo : "";
     }
 
-    public void setAttributes(String attributes) {
-        this.attributes = attributes;
+    public void setAdditionalInfo(String attributes) {
+        this.additionalInfo = attributes;
     }
 
-    public Color getTitleColor() {
+    public Color getColor() {
         return color != null ? color : Color.WHITE;
     }
 
-    public void setTitleColor(Color color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 
     public void reset() {
         setPrompt(null);
-        setAttributes(null);
-        setTitleColor(null);
+        setAdditionalInfo(null);
+        setColor(null);
     }
 }

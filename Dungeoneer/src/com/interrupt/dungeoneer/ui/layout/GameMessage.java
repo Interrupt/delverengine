@@ -60,7 +60,7 @@ public class GameMessage extends Element {
                 }
 
                 setText(Game.instance.player.lookedAtInfo.getPrompt());
-                setColor(Game.instance.player.lookedAtInfo.getTitleColor());
+                setColor(Game.instance.player.lookedAtInfo.getColor());
                 setVisible(true);
             }
         };
@@ -82,7 +82,7 @@ public class GameMessage extends Element {
                     return;
                 }
 
-                setText(Game.instance.player.lookedAtInfo.getAttributes());
+                setText(Game.instance.player.lookedAtInfo.getAdditionalInfo());
                 setVisible(true);
             }
         };
