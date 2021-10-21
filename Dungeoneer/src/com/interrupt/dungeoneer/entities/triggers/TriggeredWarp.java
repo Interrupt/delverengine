@@ -11,14 +11,7 @@ import com.interrupt.managers.StringManager;
 import java.util.UUID;
 
 public class TriggeredWarp extends Trigger {
-    public TriggeredWarp() {
-        hidden = true;
-        spriteAtlas = "editor";
-        tex = 1;
-        useVerb = "ENTER";
-        // This needs to be set otherwise it breaks exiting the dungeon.
-        travelPath = UUID.randomUUID().toString();
-    }
+    public TriggeredWarp() { hidden = true; spriteAtlas = "editor"; tex = 1; useVerb = "ENTER"; }
 
 	@EditorProperty
 	public boolean isExit = false;
