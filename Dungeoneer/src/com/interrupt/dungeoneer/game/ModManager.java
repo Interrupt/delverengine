@@ -13,7 +13,6 @@ import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
-import com.interrupt.dungeoneer.scripting.ScriptLoader;
 import com.interrupt.dungeoneer.scripting.ScriptingApi;
 import com.interrupt.managers.*;
 import com.interrupt.utils.JsonUtil;
@@ -32,7 +31,9 @@ public class ModManager {
 
     private transient Array<String> excludeFiles = new Array<String>();
 
-    private static ScriptingApi scriptingApi = new ScriptLoader();
+    // Disabling custom scripting for now. Additional info can be found:
+    // https://github.com/Interrupt/delverengine/issues/267
+    private static ScriptingApi scriptingApi = null;
 
     public ModManager() { }
 
