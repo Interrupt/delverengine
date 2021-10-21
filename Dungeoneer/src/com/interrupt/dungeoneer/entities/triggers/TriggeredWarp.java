@@ -1,26 +1,24 @@
 package com.interrupt.dungeoneer.entities.triggers;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
-import com.interrupt.dungeoneer.entities.DynamicLight;
-import com.interrupt.dungeoneer.entities.Particle;
-import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.PositionedSound;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.game.TravelInfo;
 import com.interrupt.managers.StringManager;
 
-import java.util.Random;
 import java.util.UUID;
 
 public class TriggeredWarp extends Trigger {
-	public TriggeredWarp() { hidden = true; spriteAtlas = "editor"; tex = 1; useVerb = "ENTER"; }
+    public TriggeredWarp() {
+        hidden = true;
+        spriteAtlas = "editor";
+        tex = 1;
+        useVerb = "ENTER";
+        // This needs to be set otherwise it breaks exiting the dungeon.
+        travelPath = UUID.randomUUID().toString();
+    }
 
 	@EditorProperty
 	public boolean isExit = false;
@@ -87,7 +85,7 @@ public class TriggeredWarp extends Trigger {
 
 	@EditorProperty(group = "Level Objective")
 	public String objectivePrefabToSpawn = null;
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 		triggerStatus=TriggerStatus.WAITING;
