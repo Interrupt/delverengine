@@ -60,19 +60,19 @@ public class Handle extends Handles.Handle {
     }
 
     public void setScale(float scale) {
-        transform.setScale(scale, scale, scale);
+        transform.setLocalScale(scale, scale, scale);
     }
 
     public void setScale(float x, float y, float z) {
-        transform.setScale(x, y, z);
+        transform.setLocalScale(x, y, z);
     }
 
     public void setScale(Vector3 scale) {
-        transform.setScale(scale);
+        transform.setLocalScale(scale);
     }
 
     public Vector3 getScale() {
-        return transform.getScale();
+        return transform.getLocalScale();
     }
 
     public void setColor(Color color) {

@@ -50,7 +50,13 @@ public class Transform {
 
     private final Vector3 _position = new Vector3();
     public Vector3 getPosition() {
-        localToWorldPosition(_position.set(position));
+        if (parent != null) {
+            _position.set(position);
+            return parent.localToWorldPosition(_position);
+        }
+
+        _position.set(0, 0, 0);
+        localToWorldPosition(_position);
         return _position;
     }
 
@@ -59,7 +65,12 @@ public class Transform {
     }
 
     public void setPosition(Vector3 position) {
-        worldToLocalPosition(temp.set(position));
+        temp.set(position);
+
+        if (parent != null) {
+            parent.worldToLocalPosition(temp);
+        }
+
         this.position.set(temp);
         updateTransformation();
     }
@@ -77,22 +88,6 @@ public class Transform {
     public void setRotation(Quaternion rotation) {
         worldToLocalRotation(_rotation.set(rotation));
         this.rotation.set(_rotation);
-        updateTransformation();
-    }
-
-    private final Vector3 _scale = new Vector3();
-    public Vector3 getScale() {
-        localToWorldScale(_scale.set(scale));
-        return _scale;
-    }
-
-    public void setScale(float x, float y, float z) {
-        setScale(temp.set(x, y ,z));
-    }
-
-    public void setScale(Vector3 scale) {
-        worldToLocalScale(temp.set(scale));
-        this.scale.set(temp);
         updateTransformation();
     }
 
@@ -118,6 +113,12 @@ public class Transform {
         return this.scale;
     }
 
+    private static final Vector3 _scale = new Vector3();
+    public void setLocalScale(float x, float y, float z) {
+        _scale.set(x, y, z);
+        setLocalScale(_scale);
+    }
+
     public void setLocalScale(Vector3 scale) {
         this.scale.set(scale);
         updateTransformation();
@@ -137,12 +138,13 @@ public class Transform {
     }
 
     protected void updateTransformation() {
+        transformation.idt();
         transformation.setToTranslation(position);
         transformation.rotate(rotation);
         transformation.scale(scale.x, scale.y, scale.z);
 
         if(parent != null) {
-            transformation.mul(parent.getTransformation());
+            transformation.mul(parent.transformation);
         }
 
         invTransformation.set(transformation).inv();
@@ -162,33 +164,19 @@ public class Transform {
     }
 
     public Vector3 localToWorldPosition(Vector3 position) {
-        if (parent != null) {
-            m.set(parent.transformation);
-            m.translate(position);
-            return m.getTranslation(position);
-        }
-
-        return position;
+        return position.mul(transformation);
     }
 
     Matrix4 m = new Matrix4();
     public Vector3 worldToLocalPosition(Vector3 position) {
-        if (parent == null) {
-            return position;
-        }
-
-        m.set(parent.invTransformation);
-        m.translate(position);
-
-        return m.getTranslation(position);
+        return position.mul(invTransformation);
     }
 
     private static final Quaternion q = new Quaternion();
     public Quaternion localToWorldRotation(Quaternion quaternion) {
         if (parent != null) {
             q.set(parent.getRotation());
-            MathUtils.inverse(q);
-            return q.mul(quaternion);
+            return quaternion.mul(q);
         }
 
         return quaternion;
@@ -203,27 +191,5 @@ public class Transform {
         m.rotate(quaternion);
 
         return m.getRotation(quaternion);
-    }
-
-    public Vector3 localToWorldScale(Vector3 scale) {
-        if (parent != null) {
-            m.set(parent.transformation);
-            m.scale(scale.x, scale.y, scale.z);
-
-            return m.getScale(scale);
-        }
-
-        return scale;
-    }
-
-    public Vector3 worldToLocalScale(Vector3 scale) {
-        if (parent == null) {
-            return scale;
-        }
-
-        m.set(parent.invTransformation);
-        m.scale(scale.x, scale.y, scale.z);
-
-        return m.getScale(scale);
     }
 }

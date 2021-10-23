@@ -8,163 +8,83 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(GdxTestRunner.class)
 public class TransformTest {
     @Test
     public void TestPosition() {
-        Vector3 position = new Vector3(0.5f, -0.5f, 0);
+        Vector3 v = new Vector3();
 
-        Transform t = new Transform();
-        t.setPosition(position);
+        Transform parent = new Transform();
+        Transform child = new Transform();
+        parent.addChild(child);
 
-        Vector3 expected = new Vector3(position);
-        Vector3 actual = t.getPosition();
+        parent.setPosition(v.set(1, 2, 0));
+        child.setPosition(v.set(-1, -1, 0));
 
-        assertEquals(expected, actual);
+        // Check world position
+        Vector3 position = parent.getPosition();
+        assertEquals(new Vector3(1, 2, 0), position);
+
+        // Check local position
+        position = parent.getLocalPosition();
+        assertEquals(new Vector3(1, 2, 0), position);
+
+        // Check world position
+        position = child.getPosition();
+        assertEquals(new Vector3(-1, -1, 0), position);
+
+        // Check local position
+        position = child.getLocalPosition();
+        assertEquals(new Vector3(-2, -3, 0), position);
     }
 
     @Test
-    public void TestWorldToLocalRoot() {
-        Vector3 rootWorldPosition = new Vector3(0.5f, -0.5f, 0);
+    public void TestRepeatedSetPositionsOnRoot() {
+        Transform parent = new Transform();
 
-        Transform t = new Transform();
-        t.setPosition(rootWorldPosition);
+        parent.setPosition(1, 1, 0);
+        Vector3 position = parent.getPosition();
+        assertEquals(new Vector3(1, 1, 0), position);
 
-        Vector3 expected = new Vector3(rootWorldPosition);
-        Vector3 actual = new Vector3(rootWorldPosition);
-        t.worldToLocalPosition(actual);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void TestWorldToLocalChild() {
-        Transform t = new Transform();
-        Vector3 rootWorldPosition = new Vector3(0.5f, -0.5f, 0);
-        t.setPosition(rootWorldPosition);
-
-        Transform c = new Transform();
-        Vector3 childWorldPosition = new Vector3(1.5f, 0.5f, 1);
-        Vector3 childLocalPosition = new Vector3(1, 1, 1);
-
-        t.addChild(c);
-        c.setPosition(childWorldPosition);
-
-        Vector3 expected = childLocalPosition;
-        Vector3 actual = new Vector3(childWorldPosition);
-
-        c.worldToLocalPosition(actual);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void TestLocalToWorldRoot() {
-        Transform t = new Transform();
-        Vector3 rootWorldPosition = new Vector3(0.5f, -0.5f, 0);
-        t.setPosition(rootWorldPosition);
-
-        Vector3 expected = new Vector3(rootWorldPosition);
-        Vector3 actual = new Vector3(rootWorldPosition);
-        t.localToWorldPosition(actual);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void TestLocalToWorldChild() {
-        Transform t = new Transform();
-        Vector3 rootWorldPosition = new Vector3(0.5f, -0.5f, 0);
-        t.setPosition(rootWorldPosition);
-
-        Transform c = new Transform();
-        Vector3 childWorldPosition = new Vector3(1.5f, 0.5f, 1);
-        Vector3 childLocalPosition = new Vector3(1, 1, 1);
-
-        t.addChild(c);
-        c.setPosition(childWorldPosition);
-
-        Vector3 expected = childWorldPosition;
-        Vector3 actual = new Vector3(childLocalPosition);
-        c.localToWorldPosition(actual);
-
-        assertEquals(expected, actual);
-    }
-
-    public boolean epsilonEquals(Quaternion a, Quaternion b) {
-        if (a == null || b == null) return false;
-
-        float epsilon = MathUtils.FLOAT_ROUNDING_ERROR;
-
-		if (Math.abs(a.x - b.x) > epsilon) return false;
-		if (Math.abs(a.y - b.y) > epsilon) return false;
-		if (Math.abs(a.z - b.z) > epsilon) return false;
-		if (Math.abs(a.w - b.w) > epsilon) return false;
-
-		return true;
+        parent.setPosition(1, 1, 0);
+        position = parent.getPosition();
+        assertEquals(new Vector3(1, 1, 0), position);
     }
 
     @Test
     public void TestRotation() {
-        Quaternion rotation = new Quaternion().setEulerAngles(0, 90, 45);
+        Quaternion q = new Quaternion();
+        Quaternion rotation;
+        Transform parent = new Transform();
+        Transform child = new Transform();
+        parent.addChild(child);
 
-        Transform t = new Transform();
-        t.setRotation(rotation);
+        parent.setRotation(q.setEulerAngles(45, 0, 0));
+        child.setRotation(q.setEulerAngles(90, 0, 0));
 
-        Quaternion expected = new Quaternion(rotation);
-        Quaternion actual = t.getRotation();
+        // Check world rotation
+        rotation = parent.getRotation();
+        assertEquals(q.setEulerAngles(45, 0, 0), rotation);
 
-        assertTrue(epsilonEquals(expected, actual));
-    }
+        // Check local rotation
+        rotation = parent.getLocalRotation();
+        assertEquals(q.setEulerAngles(45, 0, 0), rotation);
 
-    @Test
-    public void TestNestedRotation() {
-        Quaternion rotation = new Quaternion().setEulerAngles(0, 90, 45);
-        Transform t = new Transform();
-        t.setRotation(rotation);
+        // Check world rotation
+        rotation = child.getRotation();
+        q.setEulerAngles(90, 0, 0);
+        assertEquals(q.x, rotation.x, MathUtils.FLOAT_ROUNDING_ERROR);
+        assertEquals(q.y, rotation.y, MathUtils.FLOAT_ROUNDING_ERROR);
+        assertEquals(q.z, rotation.z, MathUtils.FLOAT_ROUNDING_ERROR);
+        assertEquals(q.w, rotation.w, MathUtils.FLOAT_ROUNDING_ERROR);
 
-        Quaternion childRotation = new Quaternion().setEulerAngles(0, 0, 45);
-        Transform c = new Transform();
-        c.setRotation(childRotation);
-
-        t.addChild(c);
-
-        Quaternion expected = new Quaternion().setEulerAngles(0, 90, 90);
-        Quaternion actual = c.getRotation();
-
-        assertTrue(epsilonEquals(expected, actual));
-    }
-
-    @Test
-    public void TestScale() {
-        Vector3 scale = new Vector3(1, 0.5f, -2.5f);
-
-        Transform t = new Transform();
-        t.setScale(scale);
-
-        Vector3 expected = new Vector3(scale);
-        Vector3 actual = t.getScale();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void TestNestedScale() {
-        Vector3 scale = new Vector3(1, 0.5f, -2.5f);
-        Transform t = new Transform();
-        t.setScale(scale);
-
-        Vector3 childScale = new Vector3(2, 4, -0.8f);
-        Transform c = new Transform();
-        c.setScale(childScale);
-
-        t.addChild(c);
-
-        Vector3 expected = new Vector3(2, 2, 2);
-        Vector3 actual = c.getScale();
-
-        assertEquals(expected, actual);
+        // Check local rotation
+        rotation = child.getLocalRotation();
+        q.setEulerAngles(45, 0, 0);
+        assertEquals(q.x, rotation.x, MathUtils.FLOAT_ROUNDING_ERROR);
+        assertEquals(q.y, rotation.y, MathUtils.FLOAT_ROUNDING_ERROR);
+        assertEquals(q.z, rotation.z, MathUtils.FLOAT_ROUNDING_ERROR);
+        assertEquals(q.w, rotation.w, MathUtils.FLOAT_ROUNDING_ERROR);
     }
 }

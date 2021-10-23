@@ -54,7 +54,7 @@ public class PositionHandle extends CompositeHandle {
         yAxisHandle.setColor(EditorColors.Y_AXIS);
         yAxisHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
 
-        Handle zAxisHandle = new ArrowHandle(Vector3.Zero, axisRotation.setEulerAngles(90, 0, 0)) {
+        Handle zAxisHandle = new ArrowHandle(Vector3.Zero, axisRotation.setEulerAngles(0, 0, 0)) {
             @Override
             public void change() {
                 Vector3 delta = transform.getLocalPosition();
