@@ -175,8 +175,7 @@ public class Transform {
     private static final Quaternion q = new Quaternion();
     public Quaternion localToWorldRotation(Quaternion quaternion) {
         if (parent != null) {
-            q.set(parent.getRotation());
-            return quaternion.mul(q);
+            return quaternion.mulLeft(parent.getRotation());
         }
 
         return quaternion;
