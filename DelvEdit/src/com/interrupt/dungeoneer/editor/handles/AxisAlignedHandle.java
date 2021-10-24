@@ -13,10 +13,27 @@ import com.interrupt.math.MathUtils;
 /** Handle that constrains translation to given axis. */
 public class AxisAlignedHandle extends Handle {
     private Mesh mesh;
+    private final Vector3 axis = new Vector3();
 
-    public AxisAlignedHandle(Mesh mesh, Vector3 position, Quaternion rotation) {
-        super(position, rotation, new Vector3(1, 1, 1));
+    public AxisAlignedHandle(Mesh mesh, Vector3 position, Vector3 axis) {
+        super(
+            position,
+            new Quaternion(),
+            new Vector3(1, 1, 1)
+        );
         this.mesh = mesh;
+
+        setAxis(axis);
+    }
+
+    public void setAxis(Vector3 axis) {
+        axis.nor();
+        this.axis.set(axis);
+        MathUtils.swizzleXZY(axis);
+
+        Quaternion rotation = getRotation();
+        MathUtils.lookRotation(axis, Vector3.Z, rotation);
+        setRotation(rotation);
     }
 
     @Override
@@ -28,7 +45,6 @@ public class AxisAlignedHandle extends Handle {
         Draw.color(Color.WHITE);
     }
 
-    private static final Vector3 axis = new Vector3();
     private static final Vector3 projection = new Vector3();
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
@@ -55,11 +71,6 @@ public class AxisAlignedHandle extends Handle {
             intersection
         );
         MathUtils.swizzleXZY(intersection);
-
-        // Calculate vector along axis
-        axis.set(Vector3.Y);
-        getRotation().transform(axis);
-        MathUtils.swizzleXZY(axis);
 
         // Handle translation
         projection.set(intersection).sub(position);

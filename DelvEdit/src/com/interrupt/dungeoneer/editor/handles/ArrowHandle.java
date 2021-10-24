@@ -12,6 +12,7 @@ public class ArrowHandle extends AxisAlignedHandle {
     static {
         // Construct arrow mesh
         Matrix4 matrix = new Matrix4()
+            .rotate(new Quaternion().setEulerAngles(0, 90, 0))
             .translate(0, 1, 0)
             .scale(0.25f, 0.25f, 0.25f);
 
@@ -19,11 +20,14 @@ public class ArrowHandle extends AxisAlignedHandle {
         point.transform(matrix);
 
         Mesh stem = Meshes.cube(1 / 32f, 1 / 32f, 1f);
+        stem.transform(
+            new Matrix4().rotate(new Quaternion().setEulerAngles(0, 90, 0))
+        );
 
         mesh = Meshes.combine(point, stem);
     }
 
-    public ArrowHandle(Vector3 position, Quaternion rotation) {
-        super(mesh, position, rotation);
+    public ArrowHandle(Vector3 position, Vector3 axis) {
+        super(mesh, position, axis);
     }
 }
