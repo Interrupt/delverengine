@@ -105,8 +105,8 @@ public class Handle extends Handles.Handle {
         Vector3 position = transform.getPosition();
         plane.set(
             position.x,
-            position.z,
             position.y,
+            position.z,
             camera.direction.x,
             camera.direction.y,
             camera.direction.z
@@ -120,7 +120,7 @@ public class Handle extends Handles.Handle {
             intersection
         );
 
-        cursorDragOffset.set(position).sub(intersection.x, intersection.z, intersection.y);
+        cursorDragOffset.set(position).sub(intersection.x, intersection.y, intersection.z);
     }
 
     @Override
@@ -144,8 +144,8 @@ public class Handle extends Handles.Handle {
         Vector3 position = transform.getPosition();
         plane.set(
             position.x,
-            position.z,
             position.y,
+            position.z,
             camera.direction.x,
             camera.direction.y,
             camera.direction.z
@@ -160,7 +160,7 @@ public class Handle extends Handles.Handle {
         );
 
         // Preserve selection offset
-        position.set(intersection.x, intersection.z, intersection.y).add(cursorDragOffset);
+        position.set(intersection.x, intersection.y, intersection.z).add(cursorDragOffset);
         setPosition(position);
         change();
 

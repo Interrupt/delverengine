@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
-import com.interrupt.math.MathUtils;
 
 public class PlaneAlignedHandle extends Handle {
     private final Mesh mesh;
@@ -24,30 +23,28 @@ public class PlaneAlignedHandle extends Handle {
         super.draw();
 
         Draw.color(getDrawColor());
-        Draw.mesh(mesh, getPosition(), getRotation(), getScale());
+        Draw.mesh(mesh, transform.getTransformation());
         Draw.color(Color.WHITE);
     }
 
     private static final Vector3 axis = new Vector3();
-    private static final Vector3 projection = new Vector3();
 
     @Override
     public void select() {
         // Calculate vector along axis
         axis.set(Vector3.Y);
         getRotation().transform(axis);
-        MathUtils.swizzleXZY(axis);
 
         // Capture offset of initial selection
         Camera camera = Editor.app.camera;
         Vector3 position = transform.getPosition();
         plane.set(
             position.x,
-            position.z,
             position.y,
+            position.z,
             axis.x,
-            axis.z,
-            axis.y
+            axis.y,
+            axis.z
         );
         Intersector.intersectRayPlane(
             camera.getPickRay(
@@ -57,7 +54,6 @@ public class PlaneAlignedHandle extends Handle {
             plane,
             intersection
         );
-        MathUtils.swizzleXZY(intersection);
 
         cursorDragOffset.set(position).sub(intersection);
     }
@@ -71,17 +67,16 @@ public class PlaneAlignedHandle extends Handle {
         // Calculate vector along axis
         axis.set(Vector3.Y);
         getRotation().transform(axis);
-        MathUtils.swizzleXZY(axis);
 
         Vector3 position = getPosition();
         Camera camera = Editor.app.camera;
         plane.set(
             position.x,
-            position.z,
             position.y,
+            position.z,
             axis.x,
-            axis.z,
-            axis.y
+            axis.y,
+            axis.z
         );
         Intersector.intersectRayPlane(
             camera.getPickRay(
@@ -91,7 +86,6 @@ public class PlaneAlignedHandle extends Handle {
             plane,
             intersection
         );
-        MathUtils.swizzleXZY(intersection);
 
         // Preserve selection offset
         position.set(intersection).add(cursorDragOffset);

@@ -94,10 +94,20 @@ public class Draw {
         mesh(quad, position, rotation, scale);
     }
 
-    public static void mesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
+    public static void mesh(Mesh mesh, Matrix4 transform) {
         beginMeshRendering();
-        drawMeshInternal(mesh, position, rotation, scale);
+        drawMeshInternal(mesh, transform);
         endMeshRendering();
+    }
+
+    public static void mesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
+        model.set(
+            position,
+            rotation,
+            scale
+        );
+
+        mesh(mesh, model);
     }
 
     private static void beginLineRendering() {
@@ -247,12 +257,8 @@ public class Draw {
 
     private static final Matrix4 combined = new Matrix4();
     private static final Matrix4 model = new Matrix4();
-    private static void drawMeshInternal(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
-        model.idt()
-            .translate(position.x, position.z, position.y)
-            .rotate(rotation)
-            .scale(scale.x, scale.z, scale.y);
-
+    private static void drawMeshInternal(Mesh mesh, Matrix4 transform) {
+        model.set(transform);
         combined.set(Editor.app.camera.combined).mul(model);
 
         ShaderInfo info = GlRenderer.modelShaderInfo;

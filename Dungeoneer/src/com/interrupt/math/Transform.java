@@ -1,17 +1,18 @@
 package com.interrupt.math;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class Transform {
-    private Vector3 position;
-    private Quaternion rotation;
-    private Vector3 scale;
+    private final Vector3 position;
+    private final Quaternion rotation;
+    private final Vector3 scale;
 
-    private Matrix4 transformation;
-    private Matrix4 invTransformation;
+    private final Matrix4 transformation;
+    private final Matrix4 invTransformation;
 
     private Transform parent;
     private final Array<Transform> children = new Array<>();
@@ -77,8 +78,7 @@ public class Transform {
 
     private final Quaternion _rotation = new Quaternion();
     public Quaternion getRotation() {
-        localToWorldRotation(_rotation.set(rotation));
-        return _rotation;
+        return transformation.getRotation(_rotation, true);
     }
 
     public void setRotation(float yaw, float pitch, float roll) {
@@ -138,13 +138,25 @@ public class Transform {
     }
 
     protected void updateTransformation() {
-        transformation.idt();
-        transformation.setToTranslation(position);
-        transformation.rotate(rotation);
-        transformation.scale(scale.x, scale.y, scale.z);
+        // Disallow actual zero scale so matrix remains invertible
+        if (scale.x == 0) {
+            scale.x = MathUtils.FLOAT_ROUNDING_ERROR;
+        }
+        if (scale.y == 0) {
+            scale.y = MathUtils.FLOAT_ROUNDING_ERROR;
+        }
+        if (scale.z == 0) {
+            scale.z = MathUtils.FLOAT_ROUNDING_ERROR;
+        }
+
+        transformation.set(
+            position,
+            rotation,
+            scale
+        );
 
         if(parent != null) {
-            transformation.mul(parent.transformation);
+            transformation.mulLeft(parent.transformation);
         }
 
         invTransformation.set(transformation).inv();

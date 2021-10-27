@@ -21,7 +21,7 @@ public class EntityGizmo extends Gizmo {
             @Override
             public void change() {
                 Vector3 position = getPosition();
-                entity.setPosition(position.x, position.y, position.z + 0.5f);
+                entity.setPosition(position.x, position.z, position.y + 0.5f);
             }
         };
         Editor.app.editorInput.addListener(positionHandle);
@@ -30,11 +30,11 @@ public class EntityGizmo extends Gizmo {
     @Override
     public void draw() {
         Vector3 position = entity.getPosition();
-        positionHandle.setPosition(position.x, position.y, position.z - 0.5f);
+        positionHandle.setPosition(position.x, position.z - 0.5f, position.y);
 
         if (entity instanceof DirectionalEntity) {
             DirectionalEntity d = (DirectionalEntity)entity;
-            positionHandle.setRotation(d.rotation.z, d.rotation.x, -d.rotation.y);
+            positionHandle.setRotation(d.rotation.z, d.rotation.x, d.rotation.y);
         }
 
         positionHandle.draw();

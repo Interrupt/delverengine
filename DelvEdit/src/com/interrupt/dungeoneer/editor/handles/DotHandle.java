@@ -25,17 +25,18 @@ public class DotHandle extends Handle {
         setScale(size, size, size);
     }
 
-    //private static final Quaternion rotation = new Quaternion();
     @Override
     public void draw() {
         super.draw();
 
         // Look in the same direction as the camera.
         Camera camera = Editor.app.camera;
-        MathUtils.lookRotation(camera.direction, getRotation());
+        Quaternion rotation = getRotation();
+        MathUtils.lookRotation(camera.direction, rotation);
+        setRotation(rotation);
 
         Draw.color(getDrawColor());
-        Draw.mesh(mesh, getPosition(), getRotation(), getScale());
+        Draw.mesh(mesh, transform.getTransformation());
         Draw.color(Color.WHITE);
     }
 }

@@ -13,7 +13,6 @@ import com.interrupt.math.MathUtils;
 /** Handle that constrains translation to given axis. */
 public class AxisAlignedHandle extends Handle {
     private Mesh mesh;
-    private final Vector3 axis = new Vector3();
 
     public AxisAlignedHandle(Mesh mesh, Vector3 position, Vector3 axis) {
         super(
@@ -27,12 +26,9 @@ public class AxisAlignedHandle extends Handle {
     }
 
     public void setAxis(Vector3 axis) {
-        axis.nor();
-        this.axis.set(axis);
-        MathUtils.swizzleXZY(axis);
-
+        AxisAlignedHandle.axis.set(axis).nor();
         Quaternion rotation = getRotation();
-        MathUtils.lookRotation(axis, Vector3.Z, rotation);
+        MathUtils.lookRotation(AxisAlignedHandle.axis, rotation);
         setRotation(rotation);
     }
 
@@ -41,10 +37,11 @@ public class AxisAlignedHandle extends Handle {
         super.draw();
 
         Draw.color(getDrawColor());
-        Draw.mesh(mesh, getPosition(), getRotation(), getScale());
+        Draw.mesh(mesh, transform.getTransformation());
         Draw.color(Color.WHITE);
     }
 
+    private static final Vector3 axis = new Vector3();
     private static final Vector3 projection = new Vector3();
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
@@ -56,8 +53,8 @@ public class AxisAlignedHandle extends Handle {
         Camera camera = Editor.app.camera;
         plane.set(
             position.x,
-            position.z,
             position.y,
+            position.z,
             camera.direction.x,
             camera.direction.y,
             camera.direction.z
@@ -70,7 +67,11 @@ public class AxisAlignedHandle extends Handle {
             plane,
             intersection
         );
-        MathUtils.swizzleXZY(intersection);
+
+        // Transform axis to world orientation
+        axis.set(Vector3.Z);
+        Quaternion rotation = transform.getRotation();
+        rotation.transform(axis);
 
         // Handle translation
         projection.set(intersection).sub(position);

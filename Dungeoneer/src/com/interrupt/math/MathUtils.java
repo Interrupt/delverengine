@@ -15,6 +15,10 @@ public class MathUtils {
      * @param rotation The Quaternion to set
      * @return The given Quaternion for chaining */
     public static Quaternion lookRotation(Vector3 forward, Quaternion rotation) {
+        if (forward.epsilonEquals(Vector3.Y)) {
+            return lookRotation(forward, Vector3.Z, rotation);
+        }
+
         return lookRotation(forward, Vector3.Y, rotation);
     }
 
