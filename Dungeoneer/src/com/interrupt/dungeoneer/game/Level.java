@@ -196,7 +196,7 @@ public class Level {
 
 	public transient boolean rendererDirty = true;
 
-	public Color ambientColor = new Color(0f, 0f, 0f, 0.0f);
+	public Color ambientColor = Color.CLEAR;
 
 	public transient boolean isDirty = false;
 	public transient Array<Vector2> dirtyMapTiles = new Array<Vector2>();
