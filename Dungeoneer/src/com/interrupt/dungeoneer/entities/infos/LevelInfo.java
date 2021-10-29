@@ -46,6 +46,8 @@ public class LevelInfo extends Entity {
     public void editorTick(Level level, float delta) {
         super.editorTick(level, delta);
 
+        if (!levelNeedsUpdated(level))  return;
+
         // Ambient light
         level.ambientColor.set(ambientColor);
 
@@ -53,5 +55,14 @@ public class LevelInfo extends Entity {
         level.fogStart = fogStart;
         level.fogEnd = fogEnd;
         level.fogColor.set(fogColor);
+
+        level.isDirty = true;
+    }
+
+    private boolean levelNeedsUpdated(Level level) {
+        return level.fogStart != fogStart
+            || level.fogEnd != fogEnd
+            || !level.fogColor.equals(fogColor)
+            || !level.ambientColor.equals(ambientColor);
     }
 }
