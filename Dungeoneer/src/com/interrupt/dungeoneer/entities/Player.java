@@ -1374,46 +1374,6 @@ public class Player extends Actor {
             }
         }
 
-        if (Game.isDebugMode) {
-			Level currentLevel = Game.instance.level;
-
-			float r = currentLevel.fogColor.r;
-			float g = currentLevel.fogColor.g;
-			float b = currentLevel.fogColor.b;
-
-			float fogStart = currentLevel.fogStart;
-			float fogEnd = currentLevel.fogEnd;
-
-			float dx = (float)Gdx.input.getDeltaX() / 255f;
-			float dy = (float)Gdx.input.getDeltaX() / 255f;
-
-			IntArray ke = input.keyEvents;
-
-			if (Gdx.input.isKeyPressed(Keys.R)) {
-				r += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.G)) {
-				g += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.B)) {
-				b += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.F)) {
-				fogStart += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.V)) {
-				fogEnd += dx;
-			}
-
-			currentLevel.fogColor.set(r, g, b, 1);
-			currentLevel.fogStart = fogStart;
-			currentLevel.fogEnd = fogEnd;
-		}
-
 		if(isHoldingOrb && makeEscapeEffects) {
 			tickEscapeEffects(level, delta);
 		}
