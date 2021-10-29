@@ -90,7 +90,7 @@ public class GameApplication extends Game {
 				warp.generated = endingLevel.generated;
 				warp.levelToLoad = endingLevel.levelFileName;
 				warp.levelTheme = endingLevel.theme;
-				warp.fogColor = endingLevel.fogColor;
+				warp.fogColor.set(endingLevel.fogColor);
 				warp.fogEnd = endingLevel.fogEnd;
 				warp.fogStart = endingLevel.fogStart;
 				warp.fogEnd = endingLevel.viewDistance;

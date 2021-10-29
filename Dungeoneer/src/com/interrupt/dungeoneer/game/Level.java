@@ -196,7 +196,8 @@ public class Level {
 
 	public transient boolean rendererDirty = true;
 
-	public Color ambientColor = Color.CLEAR;
+    /** Color of ambient light. */
+	public Color ambientColor = new Color(0, 0, 0,1 );
 
 	public transient boolean isDirty = false;
 	public transient Array<Vector2> dirtyMapTiles = new Array<Vector2>();
@@ -298,10 +299,6 @@ public class Level {
 	public void loadFromEditor() {
 		needsSaving = false;
 		spawnMonsters = false;
-
-		fogStart = 10f;
-		fogEnd = 20f;
-		viewDistance = 20f;
 
 		Array<Entity> copyEntities = new Array<>(100);
 		Array<Entity> copyNonCollidableEntities = new Array<>(100);
@@ -556,7 +553,7 @@ public class Level {
 			genTheme = DungeonGenerator.GetGenData(theme);
 
 			if(source == Source.EDITOR) {
-				fogColor = openLevel.fogColor;
+				fogColor.set(openLevel.fogColor);
 				skyLightColor = openLevel.skyLightColor;
 			}
 
