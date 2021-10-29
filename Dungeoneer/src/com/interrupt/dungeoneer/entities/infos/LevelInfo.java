@@ -63,7 +63,7 @@ public class LevelInfo extends Entity {
     public LevelInfo() {
         hidden = true;
         spriteAtlas = "editor";
-        tex = 12;
+        tex = 21;
         isSolid = false;
     }
 
