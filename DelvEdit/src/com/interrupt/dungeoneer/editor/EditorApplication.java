@@ -579,6 +579,8 @@ public class EditorApplication implements ApplicationListener {
 				cameraController.setPosition(x, y, z);
 				cameraController.setRotation(rotationX, rotationY);
 
+                refreshLights();
+
 				Audio.stopLoopingSounds();
 			}
 
@@ -634,12 +636,17 @@ public class EditorApplication implements ApplicationListener {
 		renderer.editorIsRendering = player == null;
 		renderer.enableLighting = showLights;
 
-		level.fogStart = 500f;
-		level.fogEnd = 500f;
-		level.viewDistance = 500f;
+        if (!showLights) {
+            GlRenderer.fogStart = 500f;
+            GlRenderer.fogEnd = 500f;
+            GlRenderer.fogColor.set(Color.BLACK);
+        }
+        else {
+            GlRenderer.fogStart = level.fogStart;
+            GlRenderer.fogEnd = level.fogEnd;
+            GlRenderer.fogColor.set(level.fogColor);
+        }
 
-		GlRenderer.fogStart = level.fogStart;
-		GlRenderer.fogEnd = level.fogEnd;
 		GlRenderer.viewDistance = level.viewDistance;
 
 		cameraController.draw();
