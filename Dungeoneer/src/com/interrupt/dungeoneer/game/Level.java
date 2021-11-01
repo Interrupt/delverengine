@@ -103,7 +103,7 @@ public class Level {
 	/** Color of fog. */
 	public Color fogColor = new Color(defaultFogColor);
 
-    private static final Color defaultAmbientColor = new Color(0, 0, 0,1 );
+    private static final Color defaultAmbientColor = new Color(0, 0, 0, 1);
 
     /** Color of ambient light. */
     public Color ambientColor = new Color(defaultAmbientColor);
