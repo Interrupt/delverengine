@@ -13,6 +13,7 @@ public abstract class Element {
     public Align pivot = Align.UNSET;
 
     public Color color = Color.WHITE;
+    public DynamicValue dynamicColor = null;
 
     public DynamicValue visible = null;
 
@@ -22,7 +23,7 @@ public abstract class Element {
 
     public void init() {
         actor = createActor();
-        actor.setColor(color);
+        actor.setColor(dynamicColor != null ? dynamicColor.colorValue() : color);
 
         if (visible != null) {
             actor.addAction(new Action() {

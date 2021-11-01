@@ -21,6 +21,10 @@ import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.input.Actions;
+import com.interrupt.dungeoneer.input.ReadableKeys;
+import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -235,8 +239,9 @@ public class Item extends Entity {
 			}
 		}
 
-		if(Game.isMobile)
-			Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Item.mobileUseMessageText"),GetInfoText()));
+        if (Game.isMobile) {
+            Game.instance.player.setLookedAtItem(this);
+        }
 
 		if(!ignorePlayerCollision) {
 			ignorePlayerCollision = true;
@@ -259,6 +264,7 @@ public class Item extends Entity {
 		}
 	}
 
+    @Override
 	public void use(Player player, float projx, float projy)
 	{
 		float pxdir = player.x - x;
@@ -326,7 +332,7 @@ public class Item extends Entity {
 			}
 		}
 		else {
-			Game.ShowMessage(StringManager.get("entities.Item.noRoomText"), 1.0f, 1f);
+            Game.message2.add(StringManager.get("entities.Item.noRoomText"), 1);
 		}
 	}
 
@@ -570,6 +576,7 @@ public class Item extends Entity {
 		return newLineOrNone + modName + ": " + (modAmountPercent > 0 ? "+" : "") + amount;
 	}
 
+    @Override
 	public void updateDrawable() {
 		updateDrawableInternal(false);
 	}
@@ -780,4 +787,18 @@ public class Item extends Entity {
 
 		return null;
 	}
+
+    @Override
+    public void getLookAtInfo(LookAtInfoModifier modifier) {
+        boolean isNotMoving = Math.abs(xa) < 0.01f && Math.abs(ya) < 0.01f && Math.abs(za) < 0.01f;
+
+        if (isNotMoving && !isPickup) {
+            String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
+			if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
+
+            String prompt = MessageFormat.format(StringManager.get("entities.Player.getItemText"), useText, GetName());
+
+            modifier.modify(prompt, GetInfoText(), GetTextColor());
+        }
+    }
 }

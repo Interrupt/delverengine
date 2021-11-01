@@ -1,5 +1,7 @@
 package com.interrupt.dungeoneer.ui.values;
 
+import com.badlogic.gdx.graphics.Color;
+
 public class DynamicValue {
     private String value;
 
@@ -8,6 +10,7 @@ public class DynamicValue {
     private int intValue;
     private float floatValue;
     private boolean booleanValue;
+    private Color colorValue;
 
     public DynamicValue() {}
 
@@ -24,6 +27,10 @@ public class DynamicValue {
     }
 
     public DynamicValue(boolean value) {
+        this.value = String.valueOf(value);
+    }
+
+    public DynamicValue(Color value) {
         this.value = String.valueOf(value);
     }
 
@@ -46,6 +53,11 @@ public class DynamicValue {
         return booleanValue;
     }
 
+    public Color colorValue() {
+        validate();
+        return colorValue;
+    }
+
     public void setValue(int value) {
         this.value = String.valueOf(value);
         isDirty = true;
@@ -62,6 +74,11 @@ public class DynamicValue {
     }
 
     public void setValue(boolean value) {
+        this.value = String.valueOf(value);
+        isDirty = true;
+    }
+
+    public void setValue(Color value) {
         this.value = String.valueOf(value);
         isDirty = true;
     }
@@ -89,6 +106,13 @@ public class DynamicValue {
         }
         catch (Exception ignored) {
             booleanValue = false;
+        }
+
+        try {
+            colorValue = Color.valueOf(value);
+        }
+        catch (Exception ignored) {
+            colorValue = Color.WHITE;
         }
     }
 }

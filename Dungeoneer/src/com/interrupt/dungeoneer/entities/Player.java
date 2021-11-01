@@ -18,6 +18,7 @@ import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.collision.Collision;
+import com.interrupt.dungeoneer.dto.LookAtInfo;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.entities.items.Potion.PotionType;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
@@ -29,10 +30,10 @@ import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpFrame;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
-import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAt;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.dungeoneer.input.ControllerState;
-import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.overlays.DebugOverlay;
 import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
 import com.interrupt.dungeoneer.overlays.MapOverlay;
@@ -40,7 +41,6 @@ import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.rpg.Stats;
 import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
-import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
 import com.interrupt.managers.StringManager;
@@ -239,6 +239,11 @@ public class Player extends Actor {
 
     // Used to act on breaking changes between save versions
     public int saveVersion = -1;
+
+    /** Currently focused object. */
+    public LookAt lookedAt = null;
+    /** Currently focused object's info. */
+    public LookAtInfo lookedAtInfo = new LookAtInfo();
 
 	public Player() {
 		isSolid = true;
@@ -973,44 +978,7 @@ public class Player extends Actor {
 			hovering = pickItem(level, input.getPointerX(), input.getPointerY(), 0.9f);
 		}
 
-		if(!isDead && (!Game.isMobile || input.isCursorCatched()) && !OverlayManager.instance.shouldPauseGame()) {
-			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
-			if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
-
-			Entity centered = pickEntity(level, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0.7f);
-			if(centered != null && centered != this) {
-				if(centered instanceof Trigger) {
-					Trigger t = (Trigger)centered;
-					if(t.getTriggerStatus() == Trigger.TriggerStatus.WAITING || t.getTriggerStatus() == Trigger.TriggerStatus.TRIGGERED) {
-						Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Player.useText"), useText, t.getUseVerb()));
-					}
-				}
-				else if(centered instanceof Item && (Math.abs(centered.xa) < 0.01f && Math.abs(centered.ya) < 0.01f && Math.abs(centered.za) < 0.01f)) {
-					Item i = (Item)centered;
-
-					if (!i.isPickup) {
-						Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Player.getItemText"), useText, ((Item) (centered)).GetName() + "\n" + ((Item) (centered)).GetInfoText()), ((Item) (centered)).GetTextColor());
-					}
-				}
-				else if(centered instanceof Stairs) Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Player.useText"), useText, ((Stairs) (centered)).getUseText()));
-				else if(centered instanceof Door) Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Player.useText"), useText, ((Door)centered).getUseText()));
-				else if(centered instanceof ButtonModel) Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Player.useText"), useText, ((ButtonModel)centered).useVerb));
-				else if(centered instanceof Actor && ((Actor)centered).getUseTrigger() != null) Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Player.useText"), useText, ((Actor)centered).getUseTrigger().useVerb));
-			}
-			else {
-				// check for a wall hit
-				Ray ray = Game.camera.getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-
-				float projx = ray.direction.x * 0.7f;
-				float projy = ray.direction.z * 0.7f;
-
-				int checkx = (int)(Math.floor(ray.origin.x + projx));
-				int checky = (int)(Math.floor(ray.origin.z + projy));
-
-				Tile hit = level.getTile(checkx, checky);
-				if(hit instanceof ExitTile) Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Player.exitDungeonText"),useText));
-			}
-		}
+        setLookedAtItem(level);
 
 		// keyboard input
 		if(turnLeft) {
@@ -1600,14 +1568,14 @@ public class Player extends Actor {
 				if(e instanceof Item || e instanceof Stairs) {
 					if(Math.abs(x - e.x) < 0.5f && Math.abs(y - e.y) < 0.5f && Math.abs(z - e.z) < 1f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
 				else if(e instanceof Door) {
 					if(Math.abs(x - e.x) < 1f && Math.abs(y - e.y) < 1f && Math.abs(z - e.z) < 1f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
@@ -1615,7 +1583,7 @@ public class Player extends Actor {
 					Trigger trigger = (Trigger)e;
 					if(trigger.triggerType == TriggerType.USE && Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
@@ -1623,14 +1591,14 @@ public class Player extends Actor {
 					ButtonModel trigger = (ButtonModel)e;
 					if(Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
 				else if(e instanceof Actor) {
 					if(Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
 						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
+						Game.message2.clear();
 						return;
 					}
 				}
@@ -2679,5 +2647,49 @@ public class Player extends Actor {
 			if(itm != null && itm.drawable != null)
 				itm.drawable.refresh();
 		}
+    }
+
+    public void setLookedAtItem(LookAt lookedAtItem) {
+        this.lookedAt = lookedAtItem;
+    }
+
+    private void setLookedAtItem(Level level) {
+        LookAt backgroundItem = lookedAt;
+
+        Entity centered = pickEntity(level, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0.7f);
+        lookedAt = (centered instanceof LookAt && centered != this) ? (LookAt) centered : null;
+
+        if (lookedAt == null) {
+            // Check for a wall hit.
+            Ray ray = Game.camera.getPickRay(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+
+            float projx = ray.direction.x * 0.7f;
+            float projy = ray.direction.z * 0.7f;
+
+            int checkx = (int) (Math.floor(ray.origin.x + projx));
+            int checky = (int) (Math.floor(ray.origin.z + projy));
+
+            Tile hit = level.getTile(checkx, checky);
+            lookedAt = (hit instanceof LookAt) ? (LookAt) hit : null;
+        }
+
+        // In case an entity did override this, make sure we display that instead.
+        if (lookedAt == null && backgroundItem != null) {
+            lookedAt = backgroundItem;
+        }
+
+        // Update the cached info object.
+        if (lookedAt != null) {
+            lookedAt.getLookAtInfo(new LookAtInfoModifier() {
+                @Override
+                public void modify(String prompt, String attributes, Color color) {
+                    lookedAtInfo.setPrompt(prompt);
+                    lookedAtInfo.setAdditionalInfo(attributes);
+                    lookedAtInfo.setColor(color);
+                }
+            });
+        } else {
+            lookedAtInfo.reset();
+        }
     }
 }

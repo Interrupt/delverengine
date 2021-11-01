@@ -8,13 +8,19 @@ import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.game.*;
+import com.interrupt.dungeoneer.input.Actions;
+import com.interrupt.dungeoneer.input.ReadableKeys;
+import com.interrupt.dungeoneer.input.Actions.Action;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.dungeoneer.rpg.Stats;
 import com.interrupt.dungeoneer.statuseffects.ParalyzeEffect;
 import com.interrupt.dungeoneer.statuseffects.PoisonEffect;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.helpers.InterpolationHelper;
 import com.interrupt.helpers.InterpolationHelper.InterpolationMode;
+import com.interrupt.managers.StringManager;
 
+import java.text.MessageFormat;
 import java.util.Random;
 
 /** Class for representing Entities that can attack, bleed, die, and suffer from status effects. */
@@ -506,4 +512,16 @@ public class Actor extends Entity {
 
 		return shader;
 	}
+
+    @Override
+    public void getLookAtInfo(LookAtInfoModifier modifier) {
+        if (getUseTrigger() != null) {
+            String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
+			if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
+
+            String prompt = MessageFormat.format(StringManager.get("entities.Player.useText"), useText, getUseTrigger().useVerb);
+
+            modifier.modify(prompt, null, Color.WHITE);
+        }
+    }
 }

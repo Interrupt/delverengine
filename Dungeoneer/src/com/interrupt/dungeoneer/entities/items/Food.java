@@ -51,7 +51,7 @@ public class Food extends Item {
 
 		if(foodMod != 0) {
 			if (foodType == FoodType.food) {
-				Game.ShowMessage(StringManager.get("items.Food.eatFoodText"), 1, 1f);
+                Game.message2.add(StringManager.get("items.Food.eatFoodText"), 1);
 				player.hp += 1;
 				if (player.hp > player.getMaxHp()) player.hp = player.getMaxHp();
 
@@ -61,7 +61,7 @@ public class Food extends Item {
 					player.addStatusEffect(new PoisonEffect((int) (800 * Math.abs(foodMod)), 160, 1, false));
 
 			} else if (foodType == FoodType.booze) {
-				Game.ShowMessage(StringManager.get("items.Food.drinkBoozeText"), 1, 1f);
+                Game.message2.add(StringManager.get("items.Food.drinkBoozeText"), 1);
 				player.hp += 1;
 				if (player.hp > player.getMaxHp()) player.hp = player.getMaxHp();
 

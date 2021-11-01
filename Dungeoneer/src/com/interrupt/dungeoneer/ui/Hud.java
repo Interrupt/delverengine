@@ -204,7 +204,10 @@ public class Hud {
 						Game.hudManager.backpack.refresh();
 					}
 				}
-				if(!foundSlot) Game.ShowMessage(StringManager.get("ui.Hud.noRoomText"), 0.6f, 1f);
+
+                if (!foundSlot) {
+                    Game.message2.add(StringManager.get("ui.Hud.noRoomText"), 0.6f);
+                }
 			}
 			else {
 

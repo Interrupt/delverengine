@@ -42,10 +42,10 @@ public class BagUpgrade extends Item {
                 if (persistentUpgrade) {
                     Game.instance.progression.addHotbarSlot();
                     String message = StringManager.get("message.soulbound") + "\n" + upgradeStr;
-                    Game.ShowMessage(message, 5f);
+                    Game.message2.add(message, 5f);
                 }
                 else {
-                    Game.ShowMessage(upgradeStr, 3f);
+                    Game.message2.add(upgradeStr, 3f);
                 }
             } else {
                 player.addInventorySlot();
@@ -55,10 +55,10 @@ public class BagUpgrade extends Item {
                 if (persistentUpgrade) {
                     Game.instance.progression.addInventorySlot();
                     String message = StringManager.get("message.soulbound") + "\n" + upgradeStr;
-                    Game.ShowMessage(message, 5f);
+                    Game.message2.add(message, 5f);
                 }
                 else {
-                    Game.ShowMessage(upgradeStr, 3f);
+                    Game.message2.add(upgradeStr, 3f);
                 }
             }
         }

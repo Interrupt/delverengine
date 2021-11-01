@@ -645,7 +645,7 @@ public class Missile extends Item implements Directional {
         }
 
         if (!Game.instance.player.addToInventory(new ItemStack(Game.instance.itemManager.Copy(Missile.class, this), 1, name))) {
-            Game.ShowMessage(StringManager.get("items.Missile.noRoomText"), 1f);
+            Game.message2.add(StringManager.get("items.Missile.noRoomText"), 1f);
         }
     }
 

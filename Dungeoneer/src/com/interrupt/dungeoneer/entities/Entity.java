@@ -17,12 +17,14 @@ import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.interfaces.LookAt;
+import com.interrupt.dungeoneer.interfaces.LookAtInfoModifier;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 import java.util.Random;
 
 /** Base class for all entities in Delver Engine Levels. */
-public class Entity {
+public class Entity implements LookAt {
 	/** Id of Entity. */
 	@EditorProperty( group = "General" )
 	public String id;
@@ -1064,4 +1066,9 @@ public class Entity {
 	// for stencil shadows and halos
 	public HaloMode getHaloMode() { return HaloMode.NONE; }
 	public boolean hasShadow() { return shadowType != ShadowType.NONE; }
+
+    @Override
+    public void getLookAtInfo(LookAtInfoModifier modifier) {
+        // Do nothing per default.
+    }
 }
