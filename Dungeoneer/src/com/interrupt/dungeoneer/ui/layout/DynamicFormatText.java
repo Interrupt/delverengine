@@ -50,6 +50,10 @@ public class DynamicFormatText extends Element {
                     value = self.getText();
                     setText(value);
                 }
+
+                if (dynamicColor != null) {
+                    setColor(dynamicColor.colorValue());
+                }
             }
         };
 

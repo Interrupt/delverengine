@@ -3,6 +3,8 @@ package com.interrupt.dungeoneer.ui.values;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import com.badlogic.gdx.graphics.Color;
+
 public abstract class ReflectedValue extends DynamicValue {
     public String field;
 
@@ -30,6 +32,12 @@ public abstract class ReflectedValue extends DynamicValue {
     public boolean booleanValue() {
         validate();
         return super.booleanValue();
+    }
+
+    @Override
+    public Color colorValue() {
+        validate();
+        return super.colorValue();
     }
 
     private void validate() {
@@ -76,6 +84,10 @@ public abstract class ReflectedValue extends DynamicValue {
                     setValue((String) f.get(object));
                     return;
                 }
+                else if((fieldType).isAssignableFrom(Color.class)) {
+                    setValue((Color) f.get(object));
+                    return;
+                }
                 else {
                     setValue("UNSUPPORTED TYPE");
                     return;
@@ -103,6 +115,10 @@ public abstract class ReflectedValue extends DynamicValue {
                 }
                 else if ((returnType).isAssignableFrom(String.class)) {
                     setValue((String)method.invoke(object));
+                    return;
+                }
+                else if((returnType).isAssignableFrom(Color.class)) {
+                    setValue((Color)method.invoke(object));
                     return;
                 }
                 else {

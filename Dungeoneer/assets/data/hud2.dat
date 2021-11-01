@@ -83,7 +83,11 @@
                             "class": "com.interrupt.dungeoneer.ui.values.Player",
                             "field": "lookedAtInfo.getPrompt()"
                         }
-                    ]
+                    ],
+                    "dynamicColor": {
+                        "class": "com.interrupt.dungeoneer.ui.values.Player",
+                        "field": "lookedAtInfo.getColor()"
+                    }
                 },
                 {
                     "class": "com.interrupt.dungeoneer.ui.layout.DynamicFormatText",
