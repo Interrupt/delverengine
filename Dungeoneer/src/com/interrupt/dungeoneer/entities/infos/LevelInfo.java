@@ -71,7 +71,11 @@ public class LevelInfo extends Entity {
     public void init(Level level, Level.Source source) {
         super.init(level, source);
 
-        if (source != Level.Source.EDITOR) return;
+        if (source != Level.Source.EDITOR) {
+            // Set to inactive so it will get deleted
+            isActive = false;
+            return;
+        }
 
         levelName = level.levelName;
         ambientColor.set(level.ambientColor);
