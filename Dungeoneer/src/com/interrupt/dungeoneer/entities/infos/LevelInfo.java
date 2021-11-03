@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 
 import java.util.Objects;
 
@@ -40,24 +41,32 @@ public class LevelInfo extends Entity {
     @EditorProperty
     public static Color shadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
 
-    @EditorProperty
+    /** Path to mesh file of skybox. */
+    @EditorProperty(type = "FILE_PICKER", params = "meshes")
+    public static String skyboxMesh;
+
+    /** Path to texture file for skybox. */
+    @EditorProperty(type = "FILE_PICKER", params = "")
+    public static String skyboxTexture;
+
     /** Comma separated list of mp3 filepaths. */
+    @EditorProperty
     public static String music;
 
-    @EditorProperty
     /** Comma separated list of mp3 filepaths. */
+    @EditorProperty
     public static String actionMusic;
 
-    @EditorProperty
     /** Play music on a loop. */
+    @EditorProperty
     public static boolean loopMusic = true;
 
-    @EditorProperty(type = "FILE_PICKER", params = "audio", include_base = false)
     /** Ambient sound filepath. */
+    @EditorProperty(type = "FILE_PICKER", params = "audio", include_base = false)
     public static String ambientSound = null;
 
-    @EditorProperty
     /** Ambient sound volume. */
+    @EditorProperty
     public static float ambientSoundVolume = 0.5f;
 
     public LevelInfo() {
@@ -90,6 +99,11 @@ public class LevelInfo extends Entity {
         loopMusic = level.loopMusic;
         ambientSound = level.ambientSound;
         ambientSoundVolume = level.ambientSoundVolume;
+
+        if (level.skybox != null) {
+            skyboxMesh = level.skybox.meshFile;
+            skyboxTexture = level.skybox.textureFile;
+        }
     }
 
     @Override
@@ -112,6 +126,14 @@ public class LevelInfo extends Entity {
         level.ambientSound = ambientSound;
         level.ambientSoundVolume = ambientSoundVolume;
 
+        if (level.skybox == null) {
+            level.skybox = new DrawableMesh();
+        }
+
+        level.skybox.meshFile = skyboxMesh;
+        level.skybox.textureFile = skyboxTexture;
+        level.skybox.isDirty = true;
+
         level.isDirty = true;
     }
 
@@ -123,11 +145,28 @@ public class LevelInfo extends Entity {
             || !Objects.equals(level.levelName, levelName)
             || !level.skyLightColor.equals(skyLightColor)
             || !level.shadowColor.equals(shadowColor)
+            || skyboxNeedsUpdated(level)
             || !Objects.equals(level.music, music)
             || !Objects.equals(level.actionMusic, actionMusic)
             || !Objects.equals(level.loopMusic, loopMusic)
             || !Objects.equals(level.ambientSound, ambientSound)
             || !Objects.equals(level.ambientSoundVolume, ambientSoundVolume)
             || !level.ambientColor.equals(ambientColor);
+    }
+
+    private boolean skyboxNeedsUpdated(Level level) {
+        // If the mesh + texture is not set, no update is needed.
+        if (skyboxMesh == null || skyboxMesh.isEmpty()) return false;
+        if (skyboxTexture == null || skyboxTexture.isEmpty()) return false;
+
+        // If we get this far and the skybox is null, we need an update
+        if (level.skybox == null) return true;
+
+
+        // Verify drawable fields are equal
+        if (!level.skybox.meshFile.equals(skyboxMesh)) return true;
+        if (!level.skybox.textureFile.equals(skyboxTexture)) return true;
+
+        return false;
     }
 }

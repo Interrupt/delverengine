@@ -593,6 +593,13 @@ public class Level {
                 shadowColor.set(openLevel.shadowColor);
             }
 
+            if (openLevel.skybox != null && skybox == null) {
+                skybox = new DrawableMesh();
+                skybox.meshFile = openLevel.skybox.meshFile;
+                skybox.textureFile = openLevel.skybox.textureFile;
+                skybox.isDirty = true;
+            }
+
             if (music == null || music.isEmpty()) {
                 music = openLevel.music;
             }
