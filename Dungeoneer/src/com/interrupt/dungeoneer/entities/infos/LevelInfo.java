@@ -164,8 +164,8 @@ public class LevelInfo extends Entity {
 
 
         // Verify drawable fields are equal
-        if (!level.skybox.meshFile.equals(skyboxMesh)) return true;
-        if (!level.skybox.textureFile.equals(skyboxTexture)) return true;
+        if (!Objects.equals(level.skybox.meshFile, skyboxMesh)) return true;
+        if (!Objects.equals(level.skybox.textureFile, skyboxTexture)) return true;
 
         return false;
     }
