@@ -683,6 +683,22 @@ public class EditorApplication implements ApplicationListener {
 			level.updateLights(Source.EDITOR);
 		}
 
+        // Draw skybox
+        if(showLights && level.skybox != null) {
+            level.skybox.x = camera.position.x;
+            level.skybox.z = camera.position.y;
+            level.skybox.y = camera.position.z;
+            level.skybox.scale = 4f;
+            level.skybox.fullbrite = true;
+            level.skybox.update();
+
+            // draw sky
+            Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
+            renderer.renderSkybox(level.skybox);
+            Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
+            Gdx.gl20.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+        }
+
         renderer.Tesselate(level);
         renderer.renderWorld(level);
 
