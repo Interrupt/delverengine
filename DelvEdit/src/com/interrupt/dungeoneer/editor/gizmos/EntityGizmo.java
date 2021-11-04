@@ -1,12 +1,13 @@
 package com.interrupt.dungeoneer.editor.gizmos;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.editor.handles.Handle;
-import com.interrupt.dungeoneer.editor.handles.PositionHandle;
+import com.interrupt.dungeoneer.editor.handles.RotationHandle;
 import com.interrupt.dungeoneer.entities.DirectionalEntity;
 import com.interrupt.dungeoneer.entities.Entity;
 
@@ -17,11 +18,17 @@ public class EntityGizmo extends Gizmo {
     public EntityGizmo(Entity entity) {
         super(entity);
 
-        positionHandle = new PositionHandle(entity.getPosition()) {
+        positionHandle = new RotationHandle(entity.getPosition()) {
             @Override
             public void change() {
-                Vector3 position = getPosition();
-                entity.setPosition(position.x, position.z, position.y + 0.5f);
+                //Vector3 position = getPosition();
+                //entity.setPosition(position.x, position.z, position.y + 0.5f);
+                Quaternion rotation = getRotation();
+
+                if (entity instanceof  DirectionalEntity) {
+                    //DirectionalEntity d = (DirectionalEntity)entity;
+                    //d.setRotation(rotation.getRoll(), rotation.getPitch(), rotation.getYaw());
+                }
             }
         };
         Editor.app.editorInput.addListener(positionHandle);
@@ -34,7 +41,7 @@ public class EntityGizmo extends Gizmo {
 
         if (entity instanceof DirectionalEntity) {
             DirectionalEntity d = (DirectionalEntity)entity;
-            positionHandle.setRotation(d.rotation.z, d.rotation.x, d.rotation.y);
+            //positionHandle.setRotation(d.rotation.z, d.rotation.x, d.rotation.y);
         }
 
         positionHandle.draw();

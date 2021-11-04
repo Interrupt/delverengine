@@ -109,6 +109,11 @@ public class Transform {
         updateTransformation();
     }
 
+    public void setLocalRotation(float yaw, float pitch, float roll) {
+        rotation.setEulerAngles(yaw, pitch, roll);
+        updateTransformation();
+    }
+
     public Vector3 getLocalScale() {
         return this.scale;
     }
