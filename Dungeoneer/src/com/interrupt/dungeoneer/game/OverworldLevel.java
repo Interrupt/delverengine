@@ -9,7 +9,6 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.editor.EditorMarker;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.terrain.OverworldTerrainGenerator;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.partitioning.LightSpatialHash;
@@ -21,7 +20,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class OverworldLevel extends Level {
-	
+
 	public Map<String, OverworldChunk> chunks = new HashMap<String, OverworldChunk>();
 	private int chunkWidth = 25;
 
@@ -41,42 +40,42 @@ public class OverworldLevel extends Level {
 	private Array<OverworldChunk> freeChunks = new Array<OverworldChunk>();
 
 	private transient boolean firstLoad = true;
-	
+
 	public OverworldLevel()
 	{
 		fogStart = 35;
 		fogEnd = 50;
 		viewDistance = 100;
 		darkness = 1;
-		fogColor = new Color(231f / 255f, 213f / 255f, 86f / 255f,1);
+		fogColor.set(231f / 255f, 213f / 255f, 86f / 255f, 1f);
 
 		lightSpatialHash = new LightSpatialHash(1);
 
 		seed = new Random().nextInt();
 	}
-	
+
 	public OverworldLevel(int chunkWidth) {
 		// make a blank level for the editor
 		this.chunkWidth = chunkWidth;
-		
+
 		this.theme = "DUNGEON";
 
 		tiles = new Tile[width * height];
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
-		
+
 		isLoaded=true;
-		
+
 		fogStart = 35;
 		fogEnd = 50;
 		viewDistance = 100;
 		darkness = 1;
-		fogColor = new Color(231f / 255f, 213f / 255f, 86f / 255f,1);
+		fogColor.set(231f / 255f, 213f / 255f, 86f / 255f, 1f);
 		skyLightColor = new Color(Color.WHITE);
 
 		defaultWallTex = 36;
-		
+
 		floorPainter = new HashMap<String, Array<Float>>();
 		floorPainter.put("2", new Array<Float>(new Float[] {2f, 2f, 2f, 2f, 2f, 2f, 12f, 33f}));
 
@@ -90,20 +89,20 @@ public class OverworldLevel extends Level {
 
 		seed = new Random().nextInt();
 	}
-	
+
 	public void load(Source source) {
 		needsSaving = true;
 		isLoaded = true;
-		
+
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
 		static_entities = new Array<Entity>();
 
 		Tile.solidWall.wallTex = (byte) defaultWallTex;
-		
+
 		if(source != Source.EDITOR) editorMarkers.clear();
 		init(source);
-		
+
 		if(source != Source.EDITOR) GameManager.renderer.makeMapTextureForLevel(this);
 	}
 
@@ -112,15 +111,15 @@ public class OverworldLevel extends Level {
 		if(!isLoaded) return;
 
 		viewDistance = 100;
-		
+
 		Tile.solidWall.wallTex = 0;
-		
+
 		// set default wall texture
 		if(wallPainter != null) {
 			if(wallPainter.containsKey("0") && wallPainter.get("0").size > 0)
 				Tile.solidWall.wallTex = (byte) Math.round((wallPainter.get("0").get(0)));
 		}
-		
+
 		Tile.solidWall.wallTex = (byte) defaultWallTex;
 
 		if(GameManager.renderer != null) GameManager.renderer.setLevelToRender(this);
@@ -142,7 +141,7 @@ public class OverworldLevel extends Level {
 	{
 		int xChunk = (int)Math.floor((float)x / (float)chunkWidth);
 		int yChunk = (int)Math.floor((float)y / (float)chunkWidth);
-		
+
 		OverworldChunk c = GetChunk(xChunk, yChunk);
 		if(c == null) {
 			ephemeralTile.drawWalls = false;
@@ -158,24 +157,24 @@ public class OverworldLevel extends Level {
 			return c.getTile(x - (xChunk * chunkWidth), y - (yChunk * chunkWidth));
 		}
 	}
-	
+
 	public void setTile(int x, int y, Tile t) {
 		int xChunk = (int)Math.floor((float)x / (float)chunkWidth);
 		int yChunk = (int)Math.floor((float)y / (float)chunkWidth);
-		
+
 		OverworldChunk c = GetChunk(xChunk, yChunk);
 		if(c != null) {
 			c.setTile(x - (xChunk * chunkWidth), y - (yChunk * chunkWidth), t);
 		}
 	}
-	
+
 	public Tile getTileOrNull(int x, int y)
 	{
 		int xChunk = (int)Math.floor((float)x / (float)chunkWidth);
 		int yChunk = (int)Math.floor((float)y / (float)chunkWidth);
-		
+
 		OverworldChunk c = GetChunk(xChunk, yChunk);
-		if(c != null) 
+		if(c != null)
 			return c.getTileOrNull(x - (xChunk * chunkWidth), y - (yChunk * chunkWidth));
 
 		return null;
@@ -197,7 +196,7 @@ public class OverworldLevel extends Level {
 			// remove deleted entities
 			for(int i = 0 ; i < toDelete.size; i++) chunk.entities.removeValue(toDelete.get(i),true);
 			toDelete.clear();
-			
+
 			/* --- Tick Particles -- */
 			for(int i = 0; i < chunk.non_collidable_entities.size; i++)
 			{
@@ -210,7 +209,7 @@ public class OverworldLevel extends Level {
 			// remove deleted entities
 			for(int i = 0 ; i < toDelete.size; i++) chunk.non_collidable_entities.removeValue(toDelete.get(i),true);
 			toDelete.clear();
-			
+
 			/* --- Tick Static Entities -- */
 			for(int i = 0; i < chunk.static_entities.size; i++)
 			{
@@ -229,14 +228,14 @@ public class OverworldLevel extends Level {
 		//float timeOfDayMod = (float)Math.sin(GlRenderer.time * 0.75f);
 		//timeOfDayAmbientLightColor.set(timeOfDayMod * 0.65f, timeOfDayMod * 0.65f, timeOfDayMod * 0.65f, 0f);
 		timeOfDayAmbientLightColor.set(Color.BLACK);
-		
+
 		super.tick(delta);
 	}
-	
+
 	public OverworldChunk GetChunk(Integer x, Integer y) {
 		return chunks.get(x + "," + y);
 	}
-	
+
 	public void SetChunk(Integer x, Integer y, OverworldChunk chunk) {
 		chunk.xChunk = x;
 		chunk.yChunk = y;
@@ -341,7 +340,7 @@ public class OverworldLevel extends Level {
 
 		RemoveFarChunks(viewDistance, xChunk, yChunk);
 		MakeNewChunks(viewDistance, xChunk, yChunk);
-		
+
 		width = chunkWidth * 4;
 		height = chunkWidth * 4;
 	}
@@ -369,7 +368,7 @@ public class OverworldLevel extends Level {
 			}
 		}*/
 	}
-	
+
 	public String getLocationAt(int x, int y) {
 
 		String location = areas.get(x + "," + y);
@@ -380,28 +379,28 @@ public class OverworldLevel extends Level {
 
 		return null;
 	}
-	
+
 	public void spawnMonster()
 	{
-		
+
 	}
-	
+
 	public void updatePlayerSmell(int x, int y, float z, int iteration)
 	{
-		
+
 	}
-	
+
 	public short getPlayerSmellAt(int x, int y)
 	{
 		return 0;
 	}
-	
+
 	public void resetPlayerSmell() {
-		
+
 	}
-	
+
 	protected void updateSeenTiles(Player player) {
-		
+
 	}
 
 	public void updateSpatialHash(Player player) {

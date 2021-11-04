@@ -98,17 +98,30 @@ public class Level {
 	/** Ending distance of fog. */
 	public float fogEnd;
 
+    private static final Color defaultFogColor = new Color(0, 0, 0, 1);
+
 	/** Color of fog. */
-	public Color fogColor = new Color(0,0,0,1);
+	public Color fogColor = new Color(defaultFogColor);
+
+    private static final Color defaultAmbientColor = new Color(0, 0, 0, 1);
+
+    /** Color of ambient light. */
+    public Color ambientColor = new Color(defaultAmbientColor);
+
+    private static final float defaultViewDistance = 15f;
 
 	/** Camera far draw distance. */
-	public float viewDistance = 15;
+	public float viewDistance = defaultViewDistance;
+
+    private static final Color defaultSkyLightColor = new Color(0.5f,0.5f,0.5f,0);
 
 	/** Color from skybox. */
-	public Color skyLightColor = new Color(0.5f,0.5f,0.5f,0);
+	public Color skyLightColor = new Color(defaultSkyLightColor);
+
+    private static final Color defaultShadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
 
 	/** Color of shadows. */
-	public Color shadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
+	public Color shadowColor = new Color(defaultShadowColor);
 
 	public boolean isLoaded = false;
 	public boolean needsSaving = true;
@@ -131,8 +144,10 @@ public class Level {
 	/** Ambient sound filepath. */
 	public String ambientSound = null;
 
+    private static final float defaultAmbientSoundVolume = 0.5f;
+
 	/** Ambient sound volume. */
-	public Float ambientSoundVolume = 0.5f;
+	public Float ambientSoundVolume = defaultAmbientSoundVolume;
 
 	/** Array of additional themes to pull monsters from. */
 	public Array<String> alternateMonsterThemes = null;
@@ -195,8 +210,6 @@ public class Level {
 	public Array<EditorMarker> editorMarkers = new Array<EditorMarker>();
 
 	public transient boolean rendererDirty = true;
-
-	public Color ambientColor = Color.CLEAR;
 
 	public transient boolean isDirty = false;
 	public transient Array<Vector2> dirtyMapTiles = new Array<Vector2>();
@@ -298,10 +311,6 @@ public class Level {
 	public void loadFromEditor() {
 		needsSaving = false;
 		spawnMonsters = false;
-
-		fogStart = 10f;
-		fogEnd = 20f;
-		viewDistance = 20f;
 
 		Array<Entity> copyEntities = new Array<>(100);
 		Array<Entity> copyNonCollidableEntities = new Array<>(100);
@@ -555,10 +564,63 @@ public class Level {
 			editorMarkers = openLevel.editorMarkers;
 			genTheme = DungeonGenerator.GetGenData(theme);
 
-			if(source == Source.EDITOR) {
-				fogColor = openLevel.fogColor;
-				skyLightColor = openLevel.skyLightColor;
-			}
+            // Only set the following fields if the current values are the default.
+            if (levelName == null || levelName.isEmpty()) {
+                levelName = openLevel.levelName;
+            }
+
+            if (ambientColor.equals(defaultAmbientColor)) {
+                ambientColor.set(openLevel.ambientColor);
+            }
+
+            if (fogColor.equals(defaultFogColor)) {
+                fogColor.set(openLevel.fogColor);
+            }
+
+            if (fogStart == 0) {
+                fogStart = openLevel.fogStart;
+            }
+
+            if (fogEnd == 0) {
+                fogEnd = openLevel.fogEnd;
+            }
+
+            if (skyLightColor.equals(defaultSkyLightColor)) {
+                skyLightColor.set(openLevel.skyLightColor);
+            }
+
+            if (shadowColor.equals(defaultShadowColor)) {
+                shadowColor.set(openLevel.shadowColor);
+            }
+
+            if (openLevel.skybox != null && skybox == null) {
+                skybox = new DrawableMesh();
+                skybox.meshFile = openLevel.skybox.meshFile;
+                skybox.textureFile = openLevel.skybox.textureFile;
+                skybox.isDirty = true;
+            }
+
+            if (music == null || music.isEmpty()) {
+                music = openLevel.music;
+            }
+
+            if (actionMusic == null || actionMusic.isEmpty()) {
+                actionMusic = openLevel.actionMusic;
+            }
+
+            loopMusic |= openLevel.loopMusic;
+
+            if (ambientSound == null || ambientSound.isEmpty()) {
+                ambientSound = openLevel.ambientSound;
+            }
+
+            if (ambientSoundVolume == defaultAmbientSoundVolume) {
+                ambientSoundVolume = openLevel.ambientSoundVolume;
+            }
+
+            if (viewDistance == defaultViewDistance) {
+                viewDistance = openLevel.viewDistance;
+            }
 
 			for(int i = 0; i < openLevel.entities.size; i++) {
 				Entity copy = openLevel.entities.get(i);
