@@ -48,14 +48,21 @@ public class MathUtils {
     }
 
     public static Quaternion setEuler(Quaternion quaternion, float yaw, float pitch, float roll) {
-        double halfYaw = Math.toRadians(yaw) / 2;
-        double halfPitch = Math.toRadians(pitch) / 2;
-        double halfRoll = Math.toRadians(roll) / 2;
+        final double halfYaw = Math.toRadians(yaw) / 2;
+        final double halfPitch = Math.toRadians(pitch) / 2;
+        final double halfRoll = Math.toRadians(roll) / 2;
 
-        quaternion.x = (float)(cos(halfYaw) * sin(halfPitch) * cos(halfRoll) + sin(halfYaw) * cos(halfPitch) * sin(halfRoll));
-        quaternion.y = (float)(sin(halfYaw) * cos(halfPitch) * cos(halfRoll) - cos(halfYaw) * sin(halfPitch) * sin(halfRoll));
-        quaternion.z = (float)(cos(halfYaw) * cos(halfPitch) * sin(halfRoll) - sin(halfYaw) * sin(halfPitch) * cos(halfRoll));
-        quaternion.w = (float)(cos(halfYaw) * cos(halfPitch) * cos(halfRoll) + sin(halfYaw) * sin(halfPitch) * sin(halfRoll));
+        final double cosHalfYaw = cos(halfYaw);
+        final double sinHalfYaw = sin(halfYaw);
+        final double cosHalfPitch = cos(halfPitch);
+        final double sinHalfPitch = sin(halfPitch);
+        final double cosHalfRoll = cos(halfRoll);
+        final double sinHalfRoll = sin(halfRoll);
+
+        quaternion.x = (float)(cosHalfYaw * sinHalfPitch * cosHalfRoll + sinHalfYaw * cosHalfPitch * sinHalfRoll);
+        quaternion.y = (float)(sinHalfYaw * cosHalfPitch * cosHalfRoll - cosHalfYaw * sinHalfPitch * sinHalfRoll);
+        quaternion.z = (float)(cosHalfYaw * cosHalfPitch * sinHalfRoll - sinHalfYaw * sinHalfPitch * cosHalfRoll);
+        quaternion.w = (float)(cosHalfYaw * cosHalfPitch * cosHalfRoll + sinHalfYaw * sinHalfPitch * sinHalfRoll);
 
         return quaternion;
     }
