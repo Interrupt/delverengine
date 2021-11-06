@@ -3,44 +3,43 @@ package com.interrupt.dungeoneer.ui;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.utils.Json;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 
 public class UiSkin {
-	
+
 	private static Skin skin;
     private static BitmapFont font;
-    
+
     public static Skin getSkin() {
     	if(skin == null) loadSkin();
     	//font.setScale(1f);
     	return skin;
     }
-    
+
     public static BitmapFont getFont() {
     	if(font == null) loadSkin();
     	//font.setScale(1f);
     	return font;
     }
-    
+
     public static void loadSkin() {
     	Texture t = Art.loadTexture("ui/skin.png");
 		TextureAtlas atlas = new TextureAtlas();
 		TextureAtlas.AtlasRegion upRegion = atlas.addRegion("up", t, 0, 0, 48, 16);
 		TextureAtlas.AtlasRegion downRegion = atlas.addRegion("down", t, 0, 16, 48, 16);
-		atlas.addRegion("slider", t, 16, 32, 48, 16);
-		
+		TextureAtlas.AtlasRegion sliderRegion = atlas.addRegion("slider", t, 16, 32, 16, 16);
+		TextureAtlas.AtlasRegion knobBeforeRegion = atlas.addRegion("knobBefore", t, 32, 32, 16, 16);
+
 		atlas.addRegion("check-on", t, 0, 32, 16, 16);
 		atlas.addRegion("check-off", t, 0, 48, 16, 16);
-		atlas.addRegion("sliderKnob", t, 16, 48, 16, 16);
+		atlas.addRegion("knob", t, 16, 48, 16, 16);
+		atlas.addRegion("knobDown", t, 32, 48, 16, 16);
 
         Texture windowTexture = Art.loadTexture("ui/window.png");
         Texture noteTexture = Art.loadTexture("ui/note.png");
@@ -51,8 +50,8 @@ public class UiSkin {
         Texture tooltipTexture = Art.loadTexture("ui/tooltip.png");
 		Texture tableHover = Art.loadTexture("ui/table-hover.png");
 		Texture tableNoHover = Art.loadTexture("ui/table-no-hover.png");
-		
-		atlas.addRegion("window", windowTexture, 0, 0, windowTexture.getWidth(), windowTexture.getHeight());
+
+		TextureAtlas.AtlasRegion windowRegion = atlas.addRegion("window", windowTexture, 0, 0, windowTexture.getWidth(), windowTexture.getHeight());
 		TextureAtlas.AtlasRegion tooltipRegion = atlas.addRegion("tooltip-window", tooltipTexture, 0, 0, tooltipTexture.getWidth(), tooltipTexture.getHeight());
 		atlas.addRegion("note-window", noteTexture, 0, 0, noteTexture.getWidth(), noteTexture.getHeight());
         atlas.addRegion("map-window", mapTexture, 0, 0, mapTexture.getWidth(), mapTexture.getHeight());
@@ -67,11 +66,17 @@ public class UiSkin {
 		atlas.addRegion("menu-inv-btn-inactive", inventoryButtons, 0, 44, 30, 20);
 		atlas.addRegion("menu-char-btn-inactive", inventoryButtons, 0, 66, 30, 20);
 
-		upRegion.splits = new int[]{4, 4, 4, 4};
-		upRegion.pads = new int[]{0, 0, 4, 5};
+		upRegion.splits = new int[] {6, 6, 5, 9};
+		upRegion.pads = new int[] {0, 0, 4, 8};
 
-		downRegion.splits = new int[]{4, 4, 4, 4};
-		downRegion.pads = new int[]{0, 0, 5, 4};
+		downRegion.splits = new int[] {6, 6, 7, 7};
+		downRegion.pads = new int[] {0, 0, 4, 8};
+
+		sliderRegion.splits = new int[] {4, 4, 8, 7};
+		sliderRegion.pads = new int[] {0, 0, 0, 0};
+
+		knobBeforeRegion.splits = new int[] {4, 4, 8, 7};
+		knobBeforeRegion.pads = new int[] {0, 0, 0, 0};
 
 		tooltipRegion.splits = new int[]{10, 10, 10, 10};
 		tooltipRegion.pads = new int[]{8, 8, 8, 8};
@@ -81,6 +86,9 @@ public class UiSkin {
 
 		tableNoHoverAtlas.splits = new int[]{1, 1, 1, 1};
 		tableNoHoverAtlas.pads = new int[]{4, 1, 4, 2};
+
+		windowRegion.splits = new int[] {8, 8, 8, 8};
+		windowRegion.pads = new int[] {0, 0, 0, 0};
 
 		skin = new Skin(Game.getInternal("ui/skin.json"), atlas);
 
@@ -132,13 +140,13 @@ public class UiSkin {
 			}
 		}
     }
-    
+
     public static void clearCache() {
     	if(skin != null) {
     		//skin.dispose();
     		skin = null;
     	}
-    	
+
     	if(font != null) {
     		//font.dispose();
     		font = null;

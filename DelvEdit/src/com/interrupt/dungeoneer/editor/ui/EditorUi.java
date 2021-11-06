@@ -47,7 +47,6 @@ public class EditorUi {
     ActionListener pickAction;
     ActionListener uploadModAction;
     ActionListener setThemeAction;
-    ActionListener setFogSettingsAction;
 
     private final Vector2 propertiesSize = new Vector2();
 
@@ -83,18 +82,6 @@ public class EditorUi {
                 };
 
                 newLevelDialog.show(stage);
-            }
-        };
-
-        setFogSettingsAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                final SetFogDialog fogDialog = new SetFogDialog(smallSkin, Editor.app.getLevel()) {
-                    @Override
-                    protected void result(Object object) {
-                    }
-                };
-
-                fogDialog.show(stage);
             }
         };
 
@@ -287,7 +274,6 @@ public class EditorUi {
                 .addItem(new MenuItem("Resize Level", smallSkin, resizeWindowAction))
                 .addSeparator()
                 .addItem(new MenuItem("Set Theme", smallSkin, setThemeAction))
-                .addItem(new MenuItem("Set Fog Settings", smallSkin, setFogSettingsAction))
                 .addSeparator()
                 .addItem(new RoomGeneratorMenuItem(smallSkin))
                 .addItem(new LevelGeneratorMenuItem(smallSkin))
