@@ -21,14 +21,11 @@ public class EntityGizmo extends Gizmo {
         positionHandle = new RotationHandle(entity.getPosition()) {
             @Override
             public void change() {
-                //Vector3 position = getPosition();
-                //entity.setPosition(position.x, position.z, position.y + 0.5f);
-                Quaternion rotation = getRotation();
+                if (!(entity instanceof DirectionalEntity)) return;
 
-                if (entity instanceof  DirectionalEntity) {
-                    //DirectionalEntity d = (DirectionalEntity)entity;
-                    //d.setRotation(rotation.getRoll(), rotation.getPitch(), rotation.getYaw());
-                }
+                Quaternion rotation = getRotation();
+                DirectionalEntity d = (DirectionalEntity)entity;
+                d.setRotation(rotation.getPitch(), rotation.getRoll(), rotation.getYaw());
             }
         };
         Editor.app.editorInput.addListener(positionHandle);
@@ -41,7 +38,7 @@ public class EntityGizmo extends Gizmo {
 
         if (entity instanceof DirectionalEntity) {
             DirectionalEntity d = (DirectionalEntity)entity;
-            //positionHandle.setRotation(d.rotation.z, d.rotation.x, d.rotation.y);
+            positionHandle.setRotation(d.rotation.z, d.rotation.x, d.rotation.y);
         }
 
         positionHandle.draw();

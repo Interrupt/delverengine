@@ -8,16 +8,17 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
+import com.interrupt.dungeoneer.editor.gfx.Draw;
 import com.interrupt.dungeoneer.gfx.Meshes;
 
 public class RotationHandle extends CompositeHandle {
     private static final Mesh mesh;
 
     static {
-        mesh = Meshes.ring(1 - (1 / 8f), 1, 3);
+        mesh = Meshes.ring(1, 1 - (1 / 32f), 64);
     }
 
-    private class AxialRotationHandle extends PlaneAlignedHandle {
+    private abstract class AxialRotationHandle extends PlaneAlignedHandle {
         private final Vector3 axis = new Vector3();
 
         public AxialRotationHandle(Mesh mesh, Vector3 position, Quaternion rotation) {
@@ -29,6 +30,7 @@ public class RotationHandle extends CompositeHandle {
             // Calculate vector along axis
             axis.set(Vector3.Y);
             getRotation().transform(axis);
+            axis.nor();
 
             // Capture offset of initial selection
             Camera camera = Editor.app.camera;
@@ -60,13 +62,8 @@ public class RotationHandle extends CompositeHandle {
 
             wasDragged = true;
 
-            // Calculate vector along axis
-            axis.set(Vector3.Y);
-            Quaternion rotation = getRotation();
-            rotation.transform(axis);
-
-            Vector3 position = getPosition();
             Camera camera = Editor.app.camera;
+            Vector3 position = getPosition();
             plane.set(
                 position.x,
                 position.y,
@@ -88,13 +85,13 @@ public class RotationHandle extends CompositeHandle {
             cursorDragOffset.set(intersection).sub(position);
             Vector3 p = new Vector3(intersection).sub(position).nor();
             dragRotation.setFromCross(o, p);
-            dragRotation.mul(rotation);
 
-            setRotation(dragRotation);
-            change();
+            rotate(dragRotation);
 
             return false;
         }
+
+        public abstract void rotate(Quaternion rotation);
     }
 
     public RotationHandle(Vector3 position) {
@@ -103,6 +100,15 @@ public class RotationHandle extends CompositeHandle {
         Handle self = this;
         Quaternion q = new Quaternion().setEulerAngles(90, 0, 0);
         Handle zPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q) {
+            @Override
+            public void rotate(Quaternion rotation) {
+                Quaternion r = self.getRotation();
+                r.mul(rotation);
+                self.setRotation(r);
+
+                change();
+            }
+
             @Override
             public void change() {
                 self.change();
@@ -113,17 +119,48 @@ public class RotationHandle extends CompositeHandle {
 
         Handle xPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q.setEulerAngles(0, 0, -90)) {
             @Override
+            public void rotate(Quaternion rotation) {
+                Quaternion r = self.getRotation();
+                r.mulLeft(rotation);
+                self.setRotation(r);
+
+                change();
+            }
+
+            @Override
             public void change() {
-                Quaternion rotation = getRotation();
-                self.setRotation(rotation);
-                this.transform.setLocalRotation(q.setEulerAngles(0, 0, -90));
                 self.change();
             }
         };
         xPlaneHandle.setColor(EditorColors.X_AXIS);
         xPlaneHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
 
-        //add(xPlaneHandle);
+        Handle yPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q.setEulerAngles(180, -90, 0)) {
+            @Override
+            public void rotate(Quaternion rotation) {
+                Quaternion r = self.getRotation();
+                r.mulLeft(rotation);
+                self.setRotation(r);
+
+                change();
+            }
+
+            @Override
+            public void change() {
+                self.change();
+            }
+        };
+        yPlaneHandle.setColor(EditorColors.Y_AXIS);
+        yPlaneHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
+
+        add(xPlaneHandle);
+        add(yPlaneHandle);
         add(zPlaneHandle);
+    }
+
+    @Override
+    public void draw() {
+        super.draw();
+        Draw.wireSphere(getPosition(), 1f);
     }
 }
