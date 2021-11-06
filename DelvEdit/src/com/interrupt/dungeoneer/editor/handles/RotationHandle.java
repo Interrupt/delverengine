@@ -18,7 +18,7 @@ public class RotationHandle extends CompositeHandle {
         mesh = Meshes.ring(1, 1 - (1 / 32f), 64);
     }
 
-    private abstract class AxialRotationHandle extends PlaneAlignedHandle {
+    private class AxialRotationHandle extends PlaneAlignedHandle {
         private final Vector3 axis = new Vector3();
 
         public AxialRotationHandle(Mesh mesh, Vector3 position, Quaternion rotation) {
@@ -90,66 +90,22 @@ public class RotationHandle extends CompositeHandle {
 
             return false;
         }
-
-        public abstract void rotate(Quaternion rotation);
     }
 
     public RotationHandle(Vector3 position) {
         super(position);
 
-        Handle self = this;
         Quaternion q = new Quaternion().setEulerAngles(90, 0, 0);
-        Handle zPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q) {
-            @Override
-            public void rotate(Quaternion rotation) {
-                Quaternion r = self.getRotation();
-                r.mul(rotation);
-                self.setRotation(r);
 
-                change();
-            }
-
-            @Override
-            public void change() {
-                self.change();
-            }
-        };
+        Handle zPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q);
         zPlaneHandle.setColor(EditorColors.Z_AXIS);
         zPlaneHandle.setHighlightColor(EditorColors.Z_AXIS_BRIGHT);
 
-        Handle xPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q.setEulerAngles(0, 0, -90)) {
-            @Override
-            public void rotate(Quaternion rotation) {
-                Quaternion r = self.getRotation();
-                r.mulLeft(rotation);
-                self.setRotation(r);
-
-                change();
-            }
-
-            @Override
-            public void change() {
-                self.change();
-            }
-        };
+        Handle xPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q.setEulerAngles(0, 0, -90));
         xPlaneHandle.setColor(EditorColors.X_AXIS);
         xPlaneHandle.setHighlightColor(EditorColors.X_AXIS_BRIGHT);
 
-        Handle yPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q.setEulerAngles(180, -90, 0)) {
-            @Override
-            public void rotate(Quaternion rotation) {
-                Quaternion r = self.getRotation();
-                r.mulLeft(rotation);
-                self.setRotation(r);
-
-                change();
-            }
-
-            @Override
-            public void change() {
-                self.change();
-            }
-        };
+        Handle yPlaneHandle = new AxialRotationHandle(mesh, Vector3.Zero, q.setEulerAngles(180, -90, 0));
         yPlaneHandle.setColor(EditorColors.Y_AXIS);
         yPlaneHandle.setHighlightColor(EditorColors.Y_AXIS_BRIGHT);
 
@@ -162,5 +118,13 @@ public class RotationHandle extends CompositeHandle {
     public void draw() {
         super.draw();
         Draw.wireSphere(getPosition(), 1f);
+    }
+
+    private void rotate(Quaternion rotation) {
+        Quaternion r = getRotation();
+        r.mulLeft(rotation);
+        setRotation(r);
+
+        change();
     }
 }
