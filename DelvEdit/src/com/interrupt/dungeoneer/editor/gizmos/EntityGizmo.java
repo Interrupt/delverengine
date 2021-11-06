@@ -10,6 +10,7 @@ import com.interrupt.dungeoneer.editor.handles.Handle;
 import com.interrupt.dungeoneer.editor.handles.RotationHandle;
 import com.interrupt.dungeoneer.entities.DirectionalEntity;
 import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.math.MathUtils;
 
 @GizmoFor(target = Entity.class)
 public class EntityGizmo extends Gizmo {
@@ -25,7 +26,11 @@ public class EntityGizmo extends Gizmo {
 
                 Quaternion rotation = getRotation();
                 DirectionalEntity d = (DirectionalEntity)entity;
-                d.setRotation(rotation.getPitch(), rotation.getRoll(), rotation.getYaw());
+                d.setRotation(
+                    MathUtils.getPitch(rotation),
+                    MathUtils.getRoll(rotation),
+                    MathUtils.getYaw(rotation)
+                );
             }
         };
         Editor.app.editorInput.addListener(positionHandle);

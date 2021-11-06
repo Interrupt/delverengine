@@ -3,6 +3,9 @@ package com.interrupt.math;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 public class MathUtils {
     public static final float PI = 3.1415927f;
     public static final float TAU = 6.2831854f;
@@ -42,6 +45,45 @@ public class MathUtils {
         quaternion.mul(rcp).mul(x);
 
         return quaternion;
+    }
+
+    public static Quaternion setEuler(Quaternion quaternion, float yaw, float pitch, float roll) {
+        double halfYaw = Math.toRadians(yaw) / 2;
+        double halfPitch = Math.toRadians(pitch) / 2;
+        double halfRoll = Math.toRadians(roll) / 2;
+
+        quaternion.x = (float)(cos(halfYaw) * sin(halfPitch) * cos(halfRoll) + sin(halfYaw) * cos(halfPitch) * sin(halfRoll));
+        quaternion.y = (float)(sin(halfYaw) * cos(halfPitch) * cos(halfRoll) - cos(halfYaw) * sin(halfPitch) * sin(halfRoll));
+        quaternion.z = (float)(cos(halfYaw) * cos(halfPitch) * sin(halfRoll) - sin(halfYaw) * sin(halfPitch) * cos(halfRoll));
+        quaternion.w = (float)(cos(halfYaw) * cos(halfPitch) * cos(halfRoll) + sin(halfYaw) * sin(halfPitch) * sin(halfRoll));
+
+        return quaternion;
+    }
+
+    /** Get the yaw euler angle in degrees, which is the rotation around the y axis. Requires that this quaternion is normalized.
+     * Higher precision than libGDX implementation.
+     * @param quaternion The quaternion
+     * @return the rotation around the y axis in radians (between -180 and +180) */
+    public static float getYaw(Quaternion quaternion) {
+        return (float)Math.toDegrees(quaternion.getGimbalPole() == 0 ? Math.atan2(2.0 * (quaternion.y * quaternion.w + quaternion.x * quaternion.z), 1.0 - 2.0 * (quaternion.y * quaternion.y + quaternion.x * quaternion.x)) : 0.0);
+    }
+
+    /** Get the pitch euler angle in degrees, which is the rotation around the x axis. Requires that this quaternion is normalized.
+     * Higher precision than libGDX implementation.
+     * @param quaternion The quaternion
+     * @return the rotation around the x axis in degrees (between -90 and +90) */
+    public static float getPitch(Quaternion quaternion) {
+        final double pole = quaternion.getGimbalPole();
+        return (float)Math.toDegrees(pole == 0 ? Math.asin(com.badlogic.gdx.math.MathUtils.clamp(2.0 * (quaternion.w * quaternion.x - quaternion.z * quaternion.y), -1.0, 1.0)) : pole * Math.PI * 0.5);
+    }
+
+    /** Get the roll euler angle in degrees, which is the rotation around the z axis. Requires that this quaternion is normalized.
+     * Higher precision than libGDX implementation.
+     * @param quaternion The quaternion
+     * @return the rotation around the z axis in degrees (between -180 and +180) */
+    public static float getRoll(Quaternion quaternion) {
+        final double pole = quaternion.getGimbalPole();
+        return (float)Math.toDegrees(pole == 0 ? Math.atan2(2.0 * (quaternion.w * quaternion.z + quaternion.y * quaternion.x), 1.0 - 2.0 * (quaternion.x * quaternion.x + quaternion.z * quaternion.z)) : pole * 2.0 * com.badlogic.gdx.math.MathUtils.atan2(quaternion.y, quaternion.w));
     }
 
     /** Swaps y and z components of the given vector.

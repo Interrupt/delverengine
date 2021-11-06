@@ -82,7 +82,8 @@ public class Transform {
     }
 
     public void setRotation(float yaw, float pitch, float roll) {
-        setRotation(_rotation.setEulerAngles(yaw, pitch, roll));
+        com.interrupt.math.MathUtils.setEuler(_rotation, yaw, pitch, roll);
+        setRotation(_rotation);
     }
 
     public void setRotation(Quaternion rotation) {
@@ -110,7 +111,7 @@ public class Transform {
     }
 
     public void setLocalRotation(float yaw, float pitch, float roll) {
-        rotation.setEulerAngles(yaw, pitch, roll);
+        com.interrupt.math.MathUtils.setEuler(rotation, yaw, pitch, roll);
         updateTransformation();
     }
 
