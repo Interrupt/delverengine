@@ -26,10 +26,13 @@ public class EntityGizmo extends Gizmo {
 
                 Quaternion rotation = getRotation();
                 DirectionalEntity d = (DirectionalEntity)entity;
+                Vector3 eulerAngles = d.getRotation();
+                MathUtils.toEuler(rotation, eulerAngles);
+
                 d.setRotation(
-                    MathUtils.getPitch(rotation),
-                    MathUtils.getRoll(rotation),
-                    MathUtils.getYaw(rotation)
+                    eulerAngles.x,
+                    eulerAngles.z,
+                    eulerAngles.y
                 );
             }
         };

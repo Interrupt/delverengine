@@ -93,6 +93,36 @@ public class MathUtils {
         return (float)Math.toDegrees(pole == 0 ? Math.atan2(2.0 * (quaternion.w * quaternion.z + quaternion.y * quaternion.x), 1.0 - 2.0 * (quaternion.x * quaternion.x + quaternion.z * quaternion.z)) : pole * 2.0 * com.badlogic.gdx.math.MathUtils.atan2(quaternion.y, quaternion.w));
     }
 
+    /** Get Euler angles for given Quaternion. Handles gimbal lock singularities.
+     * @param quaternion A Quaternion to convert. Assumed to be normalized.
+     * @param vector Vector3 to represent euler angles.
+     * @return v for chaining.
+     */
+    public static Vector3 toEuler(Quaternion quaternion, Vector3 vector) {
+        final float x = quaternion.x;
+        final float y = quaternion.y;
+        final float z = quaternion.z;
+        final float w = quaternion.w;
+
+        // Handle gimbal lock.
+        float test = x * w - y * z;
+        if (Math.abs(test) > 0.4995f) {
+            final float sign = Math.signum(test);
+
+            vector.x = 90f * sign;
+            vector.y = (float)Math.toDegrees(2f * Math.atan2(y, x)) * sign;
+            vector.z = 0;
+
+            return vector;
+        }
+
+        vector.x = (float)Math.toDegrees(Math.asin(2f * (x * w - y * z)));
+        vector.y = (float)Math.toDegrees(Math.atan2(2f * (y * w + x * z), 1 - 2f * (x * x + y * y)));
+        vector.z = (float)Math.toDegrees(Math.atan2(2f * (z * w + x * y), 1 - 2f * (x * x + z * z)));
+
+        return vector;
+    }
+
     /** Swaps y and z components of the given vector.
      * @param vector The vector for swizzling
      * @return vector for chaining */
