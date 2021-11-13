@@ -1977,7 +1977,7 @@ public class EditorApplication implements ApplicationListener {
         if(pointBatch != null) pointBatch.dispose();
         pointBatch = new DecalBatch(new SpriteGroupStrategy(camera, null, GlRenderer.worldShaderInfo, 1));
 
-		pickerFrameBuffer = CreateFrameBuffer(pickerFrameBuffer, width, height, true, true);
+		pickerFrameBuffer = CreateFrameBuffer(pickerFrameBuffer, width, height, true, false);
 
 		if(pickerPixelBuffer != null)
 			pickerPixelBuffer.dispose();
