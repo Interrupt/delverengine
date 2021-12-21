@@ -15,13 +15,13 @@ public abstract class Drawable {
 	public float frustumCullSize = 0.55f;
 	public String shader = null;
 	public Entity.BlendMode blendMode = Entity.BlendMode.OPAQUE;
-	
-	protected transient boolean isDirty = true;
-	
+
+	public transient boolean isDirty = true;
+
 	public void update(Entity e) {
 		// implement in subclasses
 	}
-	
+
 	public void refresh() {
 		isDirty = true;
 	}

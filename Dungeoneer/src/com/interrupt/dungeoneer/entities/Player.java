@@ -40,6 +40,7 @@ import com.interrupt.dungeoneer.statuseffects.*;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
+import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -274,8 +275,8 @@ public class Player extends Actor {
 		if(canAddInventorySlot()) {
 			inventorySize++;
 			inventory.add(null);
-			Game.bag.refresh();
-			Game.hotbar.refresh();
+			Game.hudManager.backpack.refresh();
+			Game.hudManager.quickSlots.refresh();
 
 			if(inventorySize - hotbarSize >= 35) {
 				SteamApi.api.achieve("SQUID3");
@@ -292,8 +293,8 @@ public class Player extends Actor {
 			hotbarSize++;
 			inventorySize++;
 			inventory.add(null);
-			Game.bag.refresh();
-			Game.hotbar.refresh();
+			Game.hudManager.backpack.refresh();
+			Game.hudManager.quickSlots.refresh();
 
 			if(hotbarSize >= 9) {
 				SteamApi.api.achieve("SQUID4");
@@ -354,16 +355,18 @@ public class Player extends Actor {
 
 	@Override
 	public void tick(Level level, float delta) {
-
         setMusicVolume();
-
 		stepUpTick(delta);
-
 		calculatedStats.Recalculate(this);
 
 		// refresh the UI if it's being shown
 		if(calculatedStats.statsChanged()) {
 			Game.instance.refreshMenu();
+		}
+
+		// adjust the rendering field of view based on status effects
+		if(GameManager.renderer != null) {
+			GameManager.renderer.setFieldOfViewMod(getFieldOfViewModifier());
 		}
 
 		if(hp > getMaxHp()) hp = getMaxHp();
@@ -1377,46 +1380,6 @@ public class Player extends Actor {
             }
         }
 
-        if (Game.isDebugMode) {
-			Level currentLevel = Game.instance.level;
-
-			float r = currentLevel.fogColor.r;
-			float g = currentLevel.fogColor.g;
-			float b = currentLevel.fogColor.b;
-
-			float fogStart = currentLevel.fogStart;
-			float fogEnd = currentLevel.fogEnd;
-
-			float dx = (float)Gdx.input.getDeltaX() / 255f;
-			float dy = (float)Gdx.input.getDeltaX() / 255f;
-
-			IntArray ke = input.keyEvents;
-
-			if (Gdx.input.isKeyPressed(Keys.R)) {
-				r += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.G)) {
-				g += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.B)) {
-				b += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.F)) {
-				fogStart += dx;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.V)) {
-				fogEnd += dx;
-			}
-
-			currentLevel.fogColor.set(r, g, b, 1);
-			currentLevel.fogStart = fogStart;
-			currentLevel.fogEnd = fogEnd;
-		}
-
 		if(isHoldingOrb && makeEscapeEffects) {
 			tickEscapeEffects(level, delta);
 		}
@@ -2077,8 +2040,8 @@ public class Player extends Actor {
 		int itempos = inventory.indexOf(item, true);
 		if(itempos >= 0) inventory.set(inventory.indexOf(item, true), null);
 
-		Game.hotbar.refresh();
-		Game.bag.refresh();
+		Game.hudManager.quickSlots.refresh();
+		Game.hudManager.backpack.refresh();
 		Game.hud.refreshEquipLocations();
 	}
 
@@ -2168,7 +2131,7 @@ public class Player extends Actor {
 
 	public void DoHotbarAction(final int hotbarSlot) {
 		int location = hotbarSlot - 1;
-		if(location < 0 || location >= inventory.size || location + 1 > Game.hotbar.columns) return;
+		if(location < 0 || location >= inventory.size || location + 1 > Game.hudManager.quickSlots.columns) return;
 		UseInventoryItem(location);
 	}
 
@@ -2287,6 +2250,19 @@ public class Player extends Actor {
 		}
 
 		return baseSpeed * GetEquippedSpeedMod();
+	}
+
+	public float getFieldOfViewModifier() {
+		float adjustedFieldOfViewMod = 1.0f;
+		if(statusEffects == null || statusEffects.size <= 0)
+			return adjustedFieldOfViewMod;
+
+		for(StatusEffect s : statusEffects) {
+			if(s.active)
+				adjustedFieldOfViewMod *= s.getFieldOfViewMod();
+		}
+
+		return adjustedFieldOfViewMod;
 	}
 
 	public void setupController() {

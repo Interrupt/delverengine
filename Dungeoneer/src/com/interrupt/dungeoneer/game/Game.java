@@ -34,6 +34,7 @@ import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
 import com.interrupt.managers.EntityManager;
+import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.StringManager;
@@ -82,6 +83,7 @@ public class Game {
 	public ItemManager itemManager;
 	public MonsterManager monsterManager;
 	public EntityManager entityManager;
+    public static HUDManager hudManager;
 
 	public static boolean isMobile = false;
 	public static boolean isDebugMode = false;
@@ -93,8 +95,6 @@ public class Game {
 	public static Tooltip tooltip = new Tooltip();
     public static Stage ui;
 
-    public static Hotbar hotbar = new Hotbar(6,1,0);
-    public static Hotbar bag = new Hotbar(6,3,6);
     public static Hud hud = null;
 
     public static CharacterScreen characterScreen = null;
@@ -113,6 +113,8 @@ public class Game {
     public static final Random rand = new Random();
 
     protected int saveLoc = 0;
+
+    protected float gameTimeScale = 1.0f;
 
     public Progression progression = null;
 
@@ -167,6 +169,8 @@ public class Game {
 			entityManager = new EntityManager();
 		}
 		EntityManager.setSingleton(entityManager);
+
+        loadHUDManager(modManager);
 	}
 
 	/** Create game for editor usage. */
@@ -186,7 +190,6 @@ public class Game {
 
 		DecalManager.setQuality(Options.instance.gfxQuality);
 
-		bag.visible = false;
 		// Load the base game data
 		if(gameData == null) {
 			gameData = modManager.loadGameData();
@@ -200,6 +203,8 @@ public class Game {
 		hud = new Hud();
 
 		loadManagers();
+
+        hudManager.backpack.visible = false;
 
 		Gdx.app.log("DelverLifeCycle", "READY EDITOR ONE");
 
@@ -394,7 +399,7 @@ public class Game {
 
 		DecalManager.setQuality(Options.instance.gfxQuality);
 
-		bag.visible = false;
+		hudManager.backpack.visible = false;
 
 		// Load the levels data file, keep the levels array null for now (try loading from save first)
 		Array<Level> dataLevels = buildLevelLayout();
@@ -515,7 +520,9 @@ public class Game {
 	}
 
 	public void tick(float delta) {
-		time += delta;
+	    // The speed of time can be changed, but we still want to know the original delta
+	    float timeModifiedDelta = delta * gameTimeScale;
+		time += timeModifiedDelta;
 
 		if(messageTimer > 0) messageTimer -= delta;
 		if(flashTimer > 0) flashTimer -= delta;
@@ -533,8 +540,10 @@ public class Game {
 
         if (gameOver) return;
 
-		level.tick(delta);
-		player.tick(level, delta, input);
+        // Entities should update using the time modified delta
+		level.tick(timeModifiedDelta);
+		player.tick(level, delta * player.actorTimeScale, input);
+
 		input.tick();
         Audio.tick(delta, player, level);
 		Game.pathfinding.tick(delta);
@@ -549,8 +558,8 @@ public class Game {
 		if(ui != null)
 			ui.act(delta);
 
-		hotbar.tickUI(input);
-		bag.tickUI(input);
+        hudManager.quickSlots.tickUI(input);
+		hudManager.backpack.tickUI(input);
 		hud.tick(input);
 
 		// keep the cache clean
@@ -620,7 +629,7 @@ public class Game {
 			level.generated = warp.generated;
 			level.levelFileName = warp.levelToLoad;
 			level.theme = warp.levelTheme;
-			level.fogColor = warp.fogColor;
+			level.fogColor.set(warp.fogColor);
 			level.ambientTileLighting = warp.ambientLightColor;
 			level.fogEnd = warp.fogEnd;
 			level.fogStart = warp.fogStart;
@@ -1166,8 +1175,8 @@ public class Game {
 	}
 
 	public static void RefreshUI() {
-		hotbar.refresh();
-		bag.refresh();
+		hudManager.quickSlots.refresh();
+		hudManager.backpack.refresh();
 		hud.refreshEquipLocations();
 	}
 
@@ -1177,10 +1186,10 @@ public class Game {
 		Integer mouseOverSlot = null;
 		Game.dragging = null;
 
-		if(hotbar.getMouseOverSlot() != null) {
-			mouseOverSlot = hotbar.getMouseOverSlot() + hotbar.invOffset;
-		} else if(bag.visible && bag.getMouseOverSlot() != null) {
-			mouseOverSlot = bag.getMouseOverSlot() + bag.invOffset;
+		if(hudManager.quickSlots.getMouseOverSlot() != null) {
+			mouseOverSlot = hudManager.quickSlots.getMouseOverSlot() + hudManager.quickSlots.invOffset;
+		} else if(hudManager.backpack.visible && hudManager.backpack.getMouseOverSlot() != null) {
+			mouseOverSlot = hudManager.backpack.getMouseOverSlot() + hudManager.backpack.invOffset;
 		}
 
 		String equipOverSlot = null;
@@ -1352,7 +1361,7 @@ public class Game {
 		}
 
 		// Show the proper bag slots
-		Game.bag.visible = menuMode == MenuMode.Inventory;
+		Game.hudManager.backpack.visible = menuMode == MenuMode.Inventory;
 		for(EquipLoc loc : hud.equipLocations.values())
 		{
 			loc.visible = menuMode != MenuMode.Hidden;
@@ -1495,6 +1504,14 @@ public class Game {
 		return 0;
 	}
 
+	public void SetGameTimeScale(float worldSpeedModifier) {
+        gameTimeScale = worldSpeedModifier;
+    }
+
+    public float GetGameTimeScale() {
+	    return gameTimeScale;
+    }
+
 	public void recalculateUiScale() {
 		uiSize = 80f * Game.getDynamicUiScale();
 
@@ -1529,4 +1546,13 @@ public class Game {
 
 		return min;
 	}
+
+    private static void loadHUDManager(ModManager modManager) {
+        hudManager = modManager.loadHUDManager();
+
+        if (null == hudManager) {
+            hudManager = new HUDManager();
+            ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
+        }
+    }
 }

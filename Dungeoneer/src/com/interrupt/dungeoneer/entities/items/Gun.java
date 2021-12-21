@@ -11,6 +11,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.projectiles.Projectile;
+import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -72,12 +73,15 @@ public class Gun extends Weapon {
 	/** Projectile to fire. Will use hitscan if null. */
 	public Projectile projectile = null;
 
+    /** Spell to fire. Will use hitscan if null. */
+	public Spell spell = null;
+
     public Gun() { itemType = ItemType.wand; chargesAttack = false; }
 
 	public Gun(float x, float y) {
 		super(x, y, 16, ItemType.wand, StringManager.get("items.Gun.defaultNameText")); speed = 0.01f;
 	}
-	
+
 	public String GetInfoText() {
 		return super.GetInfoText();
 	}
@@ -86,7 +90,7 @@ public class Gun extends Weapon {
     public String GetItemText() {
         return super.GetItemText();
     }
-	
+
 	@Override
 	public void doAttack(Player p, Level lvl, float attackPower) {
 
@@ -103,10 +107,15 @@ public class Gun extends Weapon {
         if(p.handAnimation != null) p.handAnimation.stop();
         p.playAttackAnimation(this, attackPower);
 
-        if(projectile == null)
-            doHitScanFire(p, lvl);
-        else
+        if(projectile != null) {
             doProjectileFire(p, lvl);
+        }
+        else if (spell != null) {
+            doSpellFire(p, lvl);
+        }
+        else {
+            doHitScanFire(p, lvl);
+        }
 
         // gunfire effect!
         if(muzzleFlash == null) {
@@ -189,6 +198,31 @@ public class Gun extends Weapon {
         Vector3 rightDirection = new Vector3(Game.camera.direction).crs(Game.camera.up).nor();
         rightDirection.scl(-1);
         return rightDirection;
+    }
+
+    private void doSpellFire(Player p, Level lvl) {
+        for(int pi = 0; pi < projectileNum; pi++) {
+            Vector3 position = new Vector3(x, y, z);
+            Vector3 crosshairDirection = getCrosshairDirection(-0.4f);
+
+            Vector3 direction;
+            if(crosshairDirection != null) {
+                direction = new Vector3(crosshairDirection);
+            }
+            else {
+                direction = new Vector3(Game.camera.direction);
+            }
+
+            if (projectileSpreadX != 0) {
+                direction.rotate(Vector3.Y, (Game.rand.nextFloat() - 0.5f) * projectileSpreadX);
+            }
+
+            if (projectileSpreadY != 0) {
+                direction.rotate(getRightDirection(), (Game.rand.nextFloat() - 0.5f) * projectileSpreadY);
+            }
+
+            spell.doCast(p, direction, position);
+        }
     }
 
     private void doHitScanFire(Player p, Level lvl) {

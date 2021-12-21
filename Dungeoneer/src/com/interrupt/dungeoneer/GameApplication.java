@@ -90,7 +90,7 @@ public class GameApplication extends Game {
 				warp.generated = endingLevel.generated;
 				warp.levelToLoad = endingLevel.levelFileName;
 				warp.levelTheme = endingLevel.theme;
-				warp.fogColor = endingLevel.fogColor;
+				warp.fogColor.set(endingLevel.fogColor);
 				warp.fogEnd = endingLevel.fogEnd;
 				warp.fogStart = endingLevel.fogStart;
 				warp.fogEnd = endingLevel.viewDistance;
@@ -100,6 +100,8 @@ public class GameApplication extends Game {
 				warp.skyLightColor = endingLevel.skyLightColor;
 				warp.music = endingLevel.music;
 				warp.ambientSound = endingLevel.ambientSound;
+				// Warp must be initialized to work correctly.
+				warp.init(endingLevel, Level.Source.SPAWNED);
 
 				GameManager.getGame().player.makeEscapeEffects = false;
 				GameManager.getGame().warpToLevel("ending", warp);

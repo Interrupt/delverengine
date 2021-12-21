@@ -9,11 +9,9 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -25,7 +23,6 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Progression;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.overlays.ModsOverlay;
@@ -46,35 +43,35 @@ public class MainMenuScreen extends BaseScreen {
     private TextButton playButton;
     private TextButton deleteButton;
     private TextButton optionsButton;
-    
+
     private Progression[] progress = new Progression[3];
-    private Player[] saveGames = new Player[3];    
+    private Player[] saveGames = new Player[3];
     private Integer selectedSave;
-    
+
     private boolean ignoreEscapeKey = false;
     private boolean refreshOnEscape = false;
 
     private Array<Table> saveSlotUi = new Array<>();
-    
+
     private Player errorPlayer = new Player();
-    
+
     private Color fadeColor = new Color(Color.BLACK);
     private boolean fadingOut = false;
     private float fadeFactor = 1f;
 
     private static final String BASE_SAVE_DIR = "save/";
-	
+
 	public MainMenuScreen() {
 		if(splashScreenInfo != null) {
 		    splashLevel = splashScreenInfo.backgroundLevel;
         }
-		
+
 		screenName = "MainMenuScreen";
-		
+
 		menuTexture = Art.loadTexture("menu.png");
 		menuRegions = new TextureRegion[(menuTexture.getWidth() / 16) * (menuTexture.getHeight() / 16)];
 		int count = 0;
-		
+
 		for(int y = 0; y < (menuTexture.getHeight() / 16); y++) {
 			for(int x = 0; x < (menuTexture.getWidth() / 16); x++) {
 				menuRegions[count++] = new TextureRegion(menuTexture, x * 16, y * 16, 16, 16);
@@ -89,8 +86,42 @@ public class MainMenuScreen extends BaseScreen {
 
         buttonTable = new Table();
 
+        FileHandle upFile = Game.getInternal("ui/discord_up.png");
+        if (upFile.exists()) {
+            Drawable drawable = new TextureRegionDrawable(new Texture(upFile));
+            Drawable downDrawable = null;
+
+            FileHandle downFile = Game.getInternal("ui/discord_down.png");
+            if (downFile.exists()) {
+                downDrawable = new TextureRegionDrawable(new Texture(Game.getInternal("ui/discord_down.png")));
+            }
+
+            ImageButton discordButton = new ImageButton(drawable, downDrawable) {
+                @Override
+                public void act(float delta) {
+                    super.act(delta);
+                    setY(8);
+                    setX(ui.getWidth() - this.getWidth() - 8);
+                }
+            };
+            discordButton.setColor(Colors.DISCORD_BUTTON);
+            discordButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Gdx.net.openURI("https://discord.gg/gMEg3PPgD4");
+                }
+            });
+
+            ui.addActor(discordButton);
+        }
+
+        Label versionLabel = new Label(Game.VERSION, skin);
+        versionLabel.setPosition(8, 8);
+        versionLabel.setColor(Color.GRAY);
+        ui.addActor(versionLabel);
+
         ui.addActor(fullTable);
-		
+
 		Gdx.input.setInputProcessor(ui);
 	}
 
@@ -127,6 +158,8 @@ public class MainMenuScreen extends BaseScreen {
                 handleOptionsButtonEvent();
             }
         });
+
+
 
         TextButton modsButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.modsButton")), skin);
         modsButton.addListener(new ClickListener() {
@@ -285,7 +318,7 @@ public class MainMenuScreen extends BaseScreen {
         buttonTable.add(playButtonTable).align(Align.left).fillX().expand();
 
         if(hasMods())
-            buttonTable.add(modsButton).align(Align.right).height(20);
+            buttonTable.add(modsButton).padRight(4).align(Align.right).height(20);
 
         buttonTable.add(optionsButton).align(Align.right).height(20f);
         buttonTable.pack();
@@ -413,48 +446,36 @@ public class MainMenuScreen extends BaseScreen {
 
         refreshOnEscape = true;
     }
-	
+
 	@Override
 	public void show() {
 		super.show();
-		
+
 		if(Game.instance != null)
 			Game.instance.clearMemory();
-		
+
 		loadSavegames();
 
         makeContent();
-		
+
 		ignoreEscapeKey = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 
         if(splashScreenInfo.music != null)
             Audio.playMusic(splashScreenInfo.music, true);
 	}
-    
+
     @Override
 	public void draw(float delta) {
 		super.draw(delta);
-		
+
 		renderer = GameManager.renderer;
 		ui.draw();
 
         if(fadeFactor < 1f) {
             renderer.drawFlashOverlay(fadeColor.set(0f, 0f, 0f, 1f - fadeFactor));
         }
-
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-        float fontSize = Game.getDynamicUiScale() * 140;
-        float smallFontSize = fontSize * 0.15f;
-
-        renderer.uiBatch.setProjectionMatrix(renderer.camera2D.combined);
-        renderer.uiBatch.begin();
-
-        renderer.drawTextRightJustified(Game.VERSION, (w / 2) - smallFontSize, (-h / 2) + smallFontSize, smallFontSize, Color.GRAY, Color.BLACK);
-
-        renderer.uiBatch.end();
 	}
-	
+
 	private String getSaveName(Progression p, Integer levelNum, String levelName) {
 		if(p != null && p.won) return StringManager.get("screens.MainMenuScreen.finishedSaveSlot");
 		if(levelNum == null) return StringManager.get("screens.MainMenuScreen.deadSaveSlot");
@@ -462,14 +483,14 @@ public class MainMenuScreen extends BaseScreen {
 		if(levelNum == -1 && Game.gameData.tutorialLevel != null) {
             return Game.gameData.tutorialLevel.levelName;
         }
-		
+
 		return levelName;
 	}
 
     @Override
 	public void tick(float delta) {
         super.tick(delta);
-		
+
 		// quit!
 		if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 			if(!ignoreEscapeKey) {
@@ -483,7 +504,7 @@ public class MainMenuScreen extends BaseScreen {
             }
 		}
 		else ignoreEscapeKey = false;
-		
+
 		ui.act(delta);
 
         if(fadingOut) {
@@ -493,7 +514,7 @@ public class MainMenuScreen extends BaseScreen {
             Audio.setMusicVolume(Math.min(1f, 1f * fadeFactor));
         }
 	}
-	
+
 	public void selectSaveButtonEvent(int saveLoc, Table selected) {
         gamepadSelectionIndex = saveLoc;
 
@@ -504,15 +525,15 @@ public class MainMenuScreen extends BaseScreen {
         if(selected != null) {
             selected.setColor(Color.WHITE);
         }
-		
+
         playButton.setVisible(saveGames[saveLoc] != errorPlayer);
 		selectedSave = saveLoc;
-		
+
 		deleteButton.setVisible(saveGames[selectedSave] != null || progress[selectedSave] != null);
 
         Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
 	}
-    
+
     /** Handles the event when the play button is clicked. */
 	private void handlePlayButtonEvent(boolean force) {
         Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
@@ -564,7 +585,7 @@ public class MainMenuScreen extends BaseScreen {
             }
         })));
 	}
-    
+
     /** Handles the event when the delete button is clicked. */
 	private void handleDeleteButtonEvent(boolean force) {
 	    if(!force) {
@@ -584,7 +605,7 @@ public class MainMenuScreen extends BaseScreen {
 		deleteSavegame(selectedSave);
 		selectedSave = null;
     }
-    
+
     /** Handles the event when the options button is clicked. */
     private void handleOptionsButtonEvent() {
         GameApplication.SetScreen(new OverlayWrapperScreen(new OptionsOverlay(false, true)));
@@ -594,10 +615,10 @@ public class MainMenuScreen extends BaseScreen {
     private void handleModsButtonEvent() {
         GameApplication.SetScreen(new OverlayWrapperScreen(new ModsOverlay()));
     }
-	
+
 	private void loadSavegames() {
 		FileHandle dir = Game.getFile(BASE_SAVE_DIR);
-		
+
 		Gdx.app.log("DelverLifeCycle", "Getting savegames from " + dir.path());
 		for(int i = 0; i < saveGames.length; i++) {
 			FileHandle file = Game.getFile(BASE_SAVE_DIR + i + "/player.dat");
@@ -611,7 +632,7 @@ public class MainMenuScreen extends BaseScreen {
 				}
 			}
 		}
-		
+
 		for(int i = 0; i < saveGames.length; i++) {
 			FileHandle file = Game.getFile(BASE_SAVE_DIR + "game_" + i + ".dat");
 			if(file.exists())
@@ -625,7 +646,7 @@ public class MainMenuScreen extends BaseScreen {
 			}
 		}
 	}
-	
+
 	private void deleteSavegame(int saveLoc) {
 		try {
 			FileHandle file = Game.getFile(BASE_SAVE_DIR + saveLoc + "/");
@@ -634,7 +655,7 @@ public class MainMenuScreen extends BaseScreen {
 		} catch(Exception ex) {
             Gdx.app.error("DelverLifeCycle", ex.getMessage());
         }
-		
+
 		try {
 			FileHandle file = Game.getFile(BASE_SAVE_DIR + "game_" + saveLoc + ".dat");
 			Gdx.app.log("DelverLifeCycle", "Deleting progress " + file.path());

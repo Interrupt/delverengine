@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "Hotbar",
+    "type": "object",
+    "properties": {
+        "class": {
+            "const": "com.interrupt.dungeoneer.ui.Hotbar",
+            "description": "Fully-qualified Java class name."
+        },
+        "columns": {
+            "type": "integer",
+            "description": "The column count."
+        },
+        "rows": {
+            "type": "integer",
+            "description": "The row count."
+        },
+        "invOffset": {
+            "type": "integer",
+            "description": "TODO"
+        },
+        "yOffset": {
+            "type": "number",
+            "description": "TODO"
+        },
+        "visible": {
+            "type": "boolean",
+            "description": "Is the hotbar shown?",
+            "default": true
+        },
+        "dragging": {
+            "$ref": "../entities/Item.schema.json",
+            "description": "The currently dragged item."
+        },
+        "gamepadPosition": {
+            "type": "integer",
+            "description": "TODO"
+        }
+    },
+    "required": ["class"]
+}

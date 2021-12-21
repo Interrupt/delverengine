@@ -579,6 +579,8 @@ public class EditorApplication implements ApplicationListener {
 				cameraController.setPosition(x, y, z);
 				cameraController.setRotation(rotationX, rotationY);
 
+                refreshLights();
+
 				Audio.stopLoopingSounds();
 			}
 
@@ -634,12 +636,17 @@ public class EditorApplication implements ApplicationListener {
 		renderer.editorIsRendering = player == null;
 		renderer.enableLighting = showLights;
 
-		level.fogStart = 500f;
-		level.fogEnd = 500f;
-		level.viewDistance = 500f;
+        if (!showLights) {
+            GlRenderer.fogStart = 500f;
+            GlRenderer.fogEnd = 500f;
+            GlRenderer.fogColor.set(Color.BLACK);
+        }
+        else {
+            GlRenderer.fogStart = level.fogStart;
+            GlRenderer.fogEnd = level.fogEnd;
+            GlRenderer.fogColor.set(level.fogColor);
+        }
 
-		GlRenderer.fogStart = level.fogStart;
-		GlRenderer.fogEnd = level.fogEnd;
 		GlRenderer.viewDistance = level.viewDistance;
 
 		cameraController.draw();
@@ -675,6 +682,22 @@ public class EditorApplication implements ApplicationListener {
 			lightsDirty = false;
 			level.updateLights(Source.EDITOR);
 		}
+
+        // Draw skybox
+        if(showLights && level.skybox != null) {
+            level.skybox.x = camera.position.x;
+            level.skybox.z = camera.position.y;
+            level.skybox.y = camera.position.z;
+            level.skybox.scale = 4f;
+            level.skybox.fullbrite = true;
+            level.skybox.update();
+
+            // draw sky
+            Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
+            renderer.renderSkybox(level.skybox);
+            Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
+            Gdx.gl20.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+        }
 
         renderer.Tesselate(level);
         renderer.renderWorld(level);
@@ -1977,7 +2000,7 @@ public class EditorApplication implements ApplicationListener {
         if(pointBatch != null) pointBatch.dispose();
         pointBatch = new DecalBatch(new SpriteGroupStrategy(camera, null, GlRenderer.worldShaderInfo, 1));
 
-		pickerFrameBuffer = CreateFrameBuffer(pickerFrameBuffer, width, height, true, true);
+		pickerFrameBuffer = CreateFrameBuffer(pickerFrameBuffer, width, height, true, false);
 
 		if(pickerPixelBuffer != null)
 			pickerPixelBuffer.dispose();

@@ -20,6 +20,9 @@ public class GameData {
     /** Filepath of player data. */
     public String playerDataFile = "player.dat";
 
+    /** Filepath of hud data. */
+    public String hudDataFile = "hud.dat";
+
     /** Is player allowed to jump? */
     public boolean playerJumpEnabled = false;
 

@@ -29,7 +29,6 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.Entity.ArtType;
-import com.interrupt.dungeoneer.entities.Item.ItemType;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.entities.projectiles.Projectile;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredMessage;
@@ -100,6 +99,9 @@ public class GlRenderer {
 	protected int y;
 	protected int i;
 
+	// The game can scale the camera's field of view up or down depending on gameplay logic
+	private float fieldOfViewMod = 1.0f;
+
 	public static float time = 0;
 
 	public Array<WorldChunk> chunks;
@@ -144,7 +146,6 @@ public class GlRenderer {
 	public static final Color INVBOX_CAN_EQUIP = new Color(0.5f,1f,0.5f,0.6f);
 	public static final Color INVBOX_CAN_EQUIP_HOVER = new Color(0.5f,1f,0.5f,0.8f);
 	public static final Color INVBOX_NOT_AVAILABLE = new Color(1f,0.4f,0.4f,0.8f);
-	public static final Color SHADOW_COLOR = new Color(0.5f, 0.4f, 0.85f, 1f);
 
 	public static final Color DEATH_COLOR = new Color(0.6f, 0f, 0f, 1f);
 
@@ -161,15 +162,10 @@ public class GlRenderer {
 	protected Color crosshairColor = new Color(1f,1f,1f,0.35f);
 
 	protected String keystr = "";
-	protected String lvlText = "";
-	protected String xpText = "";
-	protected String goldText = "";
 	protected String healthText = "";
-	protected final String heart = "<";
 
 	protected Array<DrawableMesh> meshesToRender = new Array<DrawableMesh>();
 	protected Array<Entity> decalsToRender = new Array<Entity>();
-	protected Array<FogSprite> fogSpritesToRender = new Array<FogSprite>();
 
 	protected boolean hasShaders = true;
 
@@ -178,7 +174,6 @@ public class GlRenderer {
 
 	protected int lastDrawnHp = 0;
 	protected int lastDrawnMaxHp = 0;
-	protected int lastDrawnKeys = 0;
 
 	protected Vector2 cameraBob = new Vector2();
 	protected Vector3 forwardDirection = new Vector3();
@@ -188,7 +183,6 @@ public class GlRenderer {
 	protected Vector3 handMaxDirection = new Vector3();
 	protected Vector3 handMaxDirectionOffhand = new Vector3();
 	protected float handMaxLerpTime = 0f;
-	protected float offhandMaxLerpTime = 0f;
 
 	protected ShapeRenderer collisionLineRenderer = null;
 
@@ -206,7 +200,6 @@ public class GlRenderer {
 	public static float viewDistance = 20f;
 
 	protected Color heldItemColor = new Color(1f, 1f, 1f, 1f);
-	protected Color heldItemOffhandColor = new Color(1f, 1f, 1f, 1f);
 
 	public static DrawableMesh skybox = null;
 
@@ -320,8 +313,8 @@ public class GlRenderer {
 
 		// Reset UI and inventory
 		if(Game.instance != null && Game.instance.player != null) {
-			if(Game.hotbar != null)
-				Game.hotbar.refresh();
+			if(Game.hudManager.quickSlots != null)
+				Game.hudManager.quickSlots.refresh();
 
 			Game.instance.player.resetInventoryDrawables();
 		}
@@ -419,14 +412,14 @@ public class GlRenderer {
 		Gdx.app.log("DelverLifeCycle", "Initializing HUD");
 
 		Game.ui.clear();
-		Game.hotbar.init(itemTextures.getSpriteRegions());
-		Game.bag.init(itemTextures.getSpriteRegions());
+		Game.hudManager.quickSlots.init();
+		Game.hudManager.backpack.init();
 		Game.hud.init(itemTextures.getSpriteRegions());
 	}
 
 	public void render(Game game) {
 
-		time += Gdx.graphics.getDeltaTime();
+		time += Gdx.graphics.getDeltaTime() * game.GetGameTimeScale();
 
 		boolean inCutscene = cutsceneCamera != null && cutsceneCamera.isActive;
 
@@ -465,6 +458,7 @@ public class GlRenderer {
 
 		camera.far = viewDistance;
 		camera.up.set(0, 1, 0);
+		camera.fieldOfView = Options.instance.fieldOfView * fieldOfViewMod;
 
 		if(!inCutscene) {
 			camera.position.x = xPos;
@@ -561,7 +555,7 @@ public class GlRenderer {
 			camera.update();
 			drawHeldItem();
 			drawOffhandItem();
-			camera.fieldOfView = Options.instance.fieldOfView;
+			camera.fieldOfView = Options.instance.fieldOfView * fieldOfViewMod;
 			camera.near = 0.05f;
 			camera.update();
 
@@ -613,11 +607,11 @@ public class GlRenderer {
 		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
 		uiBatch.setProjectionMatrix(camera2D.combined);
 
-		Game.bag.yOffset = 1.7f;
+		Game.hudManager.backpack.yOffset = 1.7f;
 
 		if(!Options.instance.hideUI || Game.instance.getShowingMenu()) {
-			drawInventory(Game.hotbar);
-			drawInventory(Game.bag);
+			drawInventory(Game.hudManager.quickSlots);
+			drawInventory(Game.hudManager.backpack);
 			drawInventory(Game.hud.equipLocations);
 		}
 
@@ -667,14 +661,7 @@ public class GlRenderer {
 		uiBatch.setColor(Color.WHITE);
 
 		if(OverlayManager.instance.current() == null || !OverlayManager.instance.current().catchInput) {
-			// show crosshair if a ranged weapon is held
-			Item held = game.player.GetHeldItem();
-			if (held != null && (held.itemType == ItemType.bow || held.itemType == ItemType.junk || held.itemType == ItemType.wand)) {
-				if(!Options.instance.hideUI) {
-					float crosshairSize = 18f;
-					drawText("+", -0.5f * crosshairSize, -0.65f * crosshairSize, crosshairSize, crosshairColor);
-				}
-			}
+			drawCrosshair();
 
 			int textYPos = 0;
 			if (Game.messageTimer > 0 && !OverlayManager.instance.shouldPauseGame()) {
@@ -736,8 +723,8 @@ public class GlRenderer {
 			if(hoverItm == null) hoverItm = game.player.hovering;
 
 			if(Game.isMobile) {
-				hoverItm = Game.hotbar.dragging;
-				if(hoverItm == null) hoverItm = Game.bag.dragging;
+				hoverItm = Game.hudManager.quickSlots.dragging;
+				if(hoverItm == null) hoverItm = Game.hudManager.backpack.dragging;
 				if(hoverItm == null) hoverItm = Game.hud.dragging;
 			}
 
@@ -764,8 +751,39 @@ public class GlRenderer {
 		}
 	}
 
+    private void drawCrosshair() {
+        if (!shouldDrawCrosshair()) {
+            return;
+        }
+
+        float crosshairSize = 18f;
+        drawText(
+            "+",
+            -0.5f * crosshairSize,
+            -0.65f * crosshairSize,
+            crosshairSize,
+            crosshairColor
+        );
+    }
+
+    private boolean shouldDrawCrosshair() {
+        Item held = game.player.GetHeldItem();
+        if (held == null) {
+            return false;
+        }
+
+        if (Options.instance.hideUI) {
+            return false;
+        }
+
+        return Options.instance.alwaysShowCrosshair
+            || held.itemType == Item.ItemType.bow
+            || held.itemType == Item.ItemType.junk
+            || held.itemType == Item.ItemType.wand;
+    }
+
 	public void updateShaderAttributes() {
-		Color ambientColor = Color.BLACK;
+		Color ambientColor = loadedLevel.ambientColor;
 		if(loadedLevel instanceof OverworldLevel) {
 			ambientColor = ((OverworldLevel)loadedLevel).timeOfDayAmbientLightColor;
 		}
@@ -994,7 +1012,7 @@ public class GlRenderer {
 	public void renderWorld(Level loadedLvl) {
 		Tesselate(loadedLvl);
 
-		Color ambientColor = Color.BLACK;
+		Color ambientColor = loadedLvl.ambientColor;
 		if(loadedLvl instanceof OverworldLevel) {
 			ambientColor = ((OverworldLevel)loadedLvl).timeOfDayAmbientLightColor;
 		}
@@ -1118,7 +1136,7 @@ public class GlRenderer {
 
 	public void renderEntities(Level level) {
 
-		Color ambientColor = Color.BLACK;
+		Color ambientColor = level.ambientColor;
 		if(level instanceof OverworldLevel) {
 			ambientColor = ((OverworldLevel)level).timeOfDayAmbientLightColor;
 		}
@@ -1775,7 +1793,7 @@ public class GlRenderer {
 			}
 		}
 
-		if(hotbar == Game.hotbar) {
+		if(hotbar == Game.hudManager.quickSlots) {
 			for(int x = 0; x < hotbar.columns; x++) {
 				float xPos = -((uiSize * invLength) / 2.0f) + uiSize * x + (uiSize * 0.05f);
 				float yPos = camera2D.viewportHeight / 2 - (0 + 1) * uiSize + (uiSize * 0.05f);
@@ -2671,14 +2689,14 @@ public class GlRenderer {
 		float aspectRatio = (float) width / (float) height;
 
 		if(camera == null) {
-			camera = new PerspectiveCamera(Options.instance.fieldOfView, 1f * aspectRatio, 1f);
+			camera = new PerspectiveCamera(Options.instance.fieldOfView * fieldOfViewMod, 1f * aspectRatio, 1f);
 			camera.near = 0.1f;
 			camera.far = 15f;
 		}
 		else {
 			camera.viewportWidth = 1f * aspectRatio;
 			camera.viewportHeight = 1f;
-			camera.fieldOfView = Options.instance.fieldOfView;
+			camera.fieldOfView = Options.instance.fieldOfView * fieldOfViewMod;
 		}
 
 		camera.update(true);
@@ -4076,4 +4094,8 @@ public class GlRenderer {
 		entityPickColor.set(r / 255f, g / 255f, b / 255f, 1f);
 		entitiesForPicking.put(index, e);
 	}
+
+	public void setFieldOfViewMod(float newFieldOfView) {
+	    fieldOfViewMod = newFieldOfView;
+    }
 }

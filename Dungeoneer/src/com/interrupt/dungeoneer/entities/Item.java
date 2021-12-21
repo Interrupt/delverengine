@@ -368,7 +368,7 @@ public class Item extends Entity {
 				yOffset = (float)Math.sin(GlRenderer.time) * 0.05f;
 			}
 			else {
-				roll += 250f * Gdx.graphics.getDeltaTime();
+				roll += 250f * (delta * 0.015f);
 			}
 		}
 		else {

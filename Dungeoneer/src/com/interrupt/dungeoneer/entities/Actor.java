@@ -102,6 +102,9 @@ public class Actor extends Entity {
 
 	/** Strength of drunk effect. */
 	public float drunkMod = 0;
+
+	/** Modifier for how fast we are moving through time, could have time sped up or down for just us. */
+	public float actorTimeScale = 1f;
 	
 	public Actor() { shadowType = ShadowType.BLOB; canStepUpOn = false; }
 	

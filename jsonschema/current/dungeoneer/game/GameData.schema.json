@@ -48,6 +48,11 @@
             "default": "player.dat",
             "description": "Filepath of player data."
         },
+        "hudDataFile": {
+            "type": "string",
+            "default": "hud.dat",
+            "description": "Filepath of hud data."
+        },
         "playerJumpEnabled": {
             "type": "boolean",
             "default": false,

@@ -30,6 +30,11 @@
         "localizedName": "Mods",
         "comment": "Text for the mods button, which will open the mods menu."
     },
+    "screens.MainMenuScreen.discordButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Discord",
+        "comment": "Text for the Discord button, which will open a web browser."
+    },
     "screens.MainMenuScreen.selectSaveSlot": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Select Save Slot",
@@ -144,6 +149,11 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Show Hud ",
         "comment": "Label for UI size slider."
+    },
+    "screens.OptionsScreen.showCrosshairLabel": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Always Show Crosshair",
+        "comment": "Label for always show crosshair checkbox."
     },
     "screens.OptionsScreen.headBobLabel": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",

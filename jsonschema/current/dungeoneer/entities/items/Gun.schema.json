@@ -83,6 +83,11 @@
             "$ref": "../projectiles/Projectile.schema.json",
             "baseClass": "Gun"
         },
+        "spell": {
+            "description": "Spell to fire. Will use hitscan if not set.",
+            "$ref": "../spells/Spell.schema.json",
+            "baseClass": "Gun"
+        },
         "baseMods": {
             "description": "Base modifiers",
             "$ref": "../items/ItemModification.schema.json",
