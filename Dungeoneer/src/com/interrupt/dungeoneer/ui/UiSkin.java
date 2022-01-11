@@ -66,11 +66,11 @@ public class UiSkin {
 		atlas.addRegion("menu-inv-btn-inactive", inventoryButtons, 0, 44, 30, 20);
 		atlas.addRegion("menu-char-btn-inactive", inventoryButtons, 0, 66, 30, 20);
 
-		upRegion.splits = new int[] {6, 6, 5, 9};
-		upRegion.pads = new int[] {0, 0, 4, 8};
+		upRegion.splits = new int[] {7, 7, 6, 9};
+		upRegion.pads = new int[] {7, 7, 4, 8};
 
 		downRegion.splits = new int[] {6, 6, 7, 7};
-		downRegion.pads = new int[] {0, 0, 4, 8};
+		downRegion.pads = new int[] {7, 7, 4, 8};
 
 		sliderRegion.splits = new int[] {4, 4, 8, 7};
 		sliderRegion.pads = new int[] {0, 0, 0, 0};

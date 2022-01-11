@@ -6,8 +6,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -15,51 +15,26 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Scaling;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
-import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Progression;
-import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.overlays.ModsOverlay;
 import com.interrupt.dungeoneer.overlays.OptionsOverlay;
+import com.interrupt.dungeoneer.overlays.SelectSaveSlotOverlay;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
-import com.interrupt.utils.JsonUtil;
-
-import java.text.MessageFormat;
+import com.interrupt.utils.OSUtils;
 
 public class MainMenuScreen extends BaseScreen {
-    private Texture menuTexture;
-    private TextureRegion[] menuRegions;
-
-    private Table fullTable = null;
-    private Table buttonTable = null;
-
-    private TextButton playButton;
-    private TextButton deleteButton;
-    private TextButton optionsButton;
-
-    private Progression[] progress = new Progression[3];
-    private Player[] saveGames = new Player[3];
-    private Integer selectedSave;
-
     private boolean ignoreEscapeKey = false;
     private boolean refreshOnEscape = false;
-
-    private Array<Table> saveSlotUi = new Array<>();
-
-    private Player errorPlayer = new Player();
 
     private Color fadeColor = new Color(Color.BLACK);
     private boolean fadingOut = false;
     private float fadeFactor = 1f;
-
-    private static final String BASE_SAVE_DIR = "save/";
 
 	public MainMenuScreen() {
 		if(splashScreenInfo != null) {
@@ -68,24 +43,37 @@ public class MainMenuScreen extends BaseScreen {
 
 		screenName = "MainMenuScreen";
 
-		menuTexture = Art.loadTexture("menu.png");
-		menuRegions = new TextureRegion[(menuTexture.getWidth() / 16) * (menuTexture.getHeight() / 16)];
-		int count = 0;
-
-		for(int y = 0; y < (menuTexture.getHeight() / 16); y++) {
-			for(int x = 0; x < (menuTexture.getWidth() / 16); x++) {
-				menuRegions[count++] = new TextureRegion(menuTexture, x * 16, y * 16, 16, 16);
-			}
-		}
-
 		ui = new Stage(viewport);
 
-        fullTable = new Table(skin);
-        fullTable.setFillParent(true);
-        fullTable.align(Align.center);
+		Gdx.input.setInputProcessor(ui);
+	}
 
-        buttonTable = new Table();
+    public void makeContent2() {
+        clearGamepadEntries();
+        Stage stage = ui;
+        //ui.setDebugAll(true);
 
+        Table table = new Table();
+        table.setFillParent(true);
+
+        float spacing = 4.0f;
+
+        Stack stack = new Stack();
+
+        //region Background Layer
+        Table layerTable = new Table();
+        layerTable.setName("backgroundLayer");
+        layerTable.pad(8.0f);
+
+        // Version
+        Label label = new Label(Game.VERSION, skin);
+        label.setColor(Color.GRAY);
+        layerTable.add(label).align(Align.bottomLeft);
+
+        // Empty cell to take all available space
+        layerTable.add().grow();
+
+        // Discord
         FileHandle upFile = Game.getInternal("ui/discord_up.png");
         if (upFile.exists()) {
             Drawable drawable = new TextureRegionDrawable(new Texture(upFile));
@@ -96,15 +84,7 @@ public class MainMenuScreen extends BaseScreen {
                 downDrawable = new TextureRegionDrawable(new Texture(Game.getInternal("ui/discord_down.png")));
             }
 
-            ImageButton discordButton = new ImageButton(drawable, downDrawable) {
-                @Override
-                public void act(float delta) {
-                    super.act(delta);
-                    setY(8);
-                    setX(ui.getWidth() - this.getWidth() - 8);
-                }
-            };
-            discordButton.setColor(Colors.DISCORD_BUTTON);
+            ImageButton discordButton = new ImageButton(drawable, downDrawable);
             discordButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -112,257 +92,125 @@ public class MainMenuScreen extends BaseScreen {
                 }
             });
 
-            ui.addActor(discordButton);
+            layerTable.add(discordButton).align(Align.bottomRight);
         }
 
-        Label versionLabel = new Label(Game.VERSION, skin);
-        versionLabel.setPosition(8, 8);
-        versionLabel.setColor(Color.GRAY);
-        ui.addActor(versionLabel);
+        stack.addActor(layerTable);
+        //endregion
 
-        ui.addActor(fullTable);
+        //region Menu Layer
+        layerTable = new Table();
+        layerTable.setName("menuLayer");
+        layerTable.pad(8.0f);
 
-		Gdx.input.setInputProcessor(ui);
-	}
+        // Pad above menu 1/3 free space
+        layerTable.add().growY();
 
-    public void makeContent() {
-	    this.gamepadEntries.clear();
-	    this.gamepadSelectionIndex = null;
-	    refreshOnEscape = false;
+        // Logo
+        if(splashScreenInfo.logoImage != null) {
+            layerTable.row();
 
-        String paddedButtonText = " {0} ";
+            Texture texture = Art.loadTexture(splashScreenInfo.logoImage);
 
-        // The main action buttons
-        playButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.playButton")), skin);
-        playButton.setColor(Colors.PLAY_BUTTON);
-        playButton.addListener(new ClickListener() {
+            if(splashScreenInfo.logoFilter) {
+                texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            }
+
+            Image image = new Image(texture);
+            image.setScaling(Scaling.fit);
+            layerTable.add(image).prefHeight(96f);
+        }
+
+        layerTable.row();
+        Table buttonTable = new Table();
+
+        // Play
+        TextButton textButton = new TextButton(StringManager.get("screens.MainMenuScreen.playButton"), skin);
+        textButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                handlePlayButtonEvent(false);
+                handlePlayButtonEvent();
             }
         });
+        addGamepadEntry(textButton);
+        buttonTable.add(textButton).spaceBottom(spacing).fillX();
 
-        deleteButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.eraseButton")), skin);
-        deleteButton.setColor(Colors.ERASE_BUTTON);
-        deleteButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                handleDeleteButtonEvent(false);
-            }
-        });
+        // Mods
+        if (hasMods()) {
+            buttonTable.row();
+            textButton = new TextButton(StringManager.get("screens.MainMenuScreen.modsButton"), skin);
+            textButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    handleModsButtonEvent();
+                }
+            });
+            addGamepadEntry(textButton);
+            buttonTable.add(textButton).spaceBottom(spacing).fillX();
+        }
 
-        optionsButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.optionsButton")), skin);
-        optionsButton.addListener(new ClickListener() {
+        // Options
+        buttonTable.row();
+        textButton = new TextButton(StringManager.get("screens.MainMenuScreen.optionsButton"), skin);
+        textButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 handleOptionsButtonEvent();
             }
         });
+        addGamepadEntry(textButton);
+        buttonTable.add(textButton).spaceBottom(spacing).fillX();
 
-
-
-        TextButton modsButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.modsButton")), skin);
-        modsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                handleModsButtonEvent();
-            }
-        });
-
-        // Start building the UI
-        fullTable.padTop(42);
-        fullTable.clearChildren();
-        fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).align(Align.left).padTop(24f);
-        fullTable.add(deleteButton).align(Align.right).padTop(20f);
-        fullTable.row();
-
-        buttonTable.clearChildren();
-
-        NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(skin.getRegion("save-select"), 6, 6, 6, 6));
-
-        for(int i = 0; i < 3; i++) {
-            final int loc = i;
-
-            String saveName = StringManager.get("screens.MainMenuScreen.newGameSaveSlot");
-            if(saveGames[i] != null && saveGames[i] == errorPlayer) saveName = StringManager.get("screens.MainMenuScreen.errorSaveSlot");
-            else if(saveGames[i] != null) saveName = getSaveName(progress[i], saveGames[i].levelNum, saveGames[i].levelName);
-            else {
-                if(progress[i] != null) saveName = getSaveName(progress[i], null, null);
-            }
-
-            float fontScale = 1f;
-            float rowHeight = 15f;
-
-            Label fileTitle = new Label("" + (i + 1), skin);
-            fileTitle.setFontScale(fontScale);
-            fileTitle.setColor(Color.GRAY);
-
-            final Table t = new Table(skin);
-            t.add(fileTitle).size(20f, rowHeight * 2f).align(Align.center);
-            t.setBackground(fileSelectBg);
-            t.center();
-
-            Label locationLabel = new Label(saveName, skin);
-            locationLabel.setFontScale(fontScale);
-
-            Table t2 = new Table(skin);
-            t2.align(Align.left);
-
-            if(progress[i] != null) {
-                Label playtimeLabel = new Label(progress[i].getPlaytime(), skin);
-                playtimeLabel.setAlignment(Align.right);
-
-                Table topRow = new Table();
-                topRow.add(locationLabel);
-                topRow.add(playtimeLabel).expand().align(Align.right);
-
-                t2.add(topRow).width(220).padTop(2);
-                t2.row();
-
-                TextureAtlas itemAtlas = TextureAtlas.cachedAtlases.get("item");
-
-                Image goldIcon = new Image(new TextureRegionDrawable(itemAtlas.getSprite(89)));
-                goldIcon.setAlign(Align.left);
-
-                Image skullIcon = new Image(new TextureRegionDrawable(itemAtlas.getSprite(56)));
-                skullIcon.setAlign(Align.left);
-
-                Image orbIcon = new Image(new TextureRegionDrawable(itemAtlas.getSprite(59)));
-                orbIcon.setAlign(Align.left);
-
-                Label goldLabel = new Label(progress[i].gold + "", skin);
-                goldLabel.setFontScale(fontScale);
-
-                Label deathLabel = new Label(progress[i].deaths + "", skin);
-                deathLabel.setFontScale(fontScale);
-
-                Label winsLabel = new Label(progress[i].wins + "", skin);
-                winsLabel.setFontScale(fontScale);
-
-                Table progressTable = new Table(skin);
-                progressTable.add(goldIcon).width(20).height(20).align(Align.left);
-                progressTable.add(goldLabel).width(45);
-                progressTable.add(skullIcon).width(20).height(20).align(Align.left);
-                progressTable.add(deathLabel).padLeft(2).width(45);
-
-                if(progress[i].wins > 0) {
-                    progressTable.add(orbIcon).width(20).height(20).align(Align.left);
-                    progressTable.add(winsLabel).padLeft(2).width(45);
-                }
-
-                progressTable.pack();
-
-                t2.add(progressTable).align(Align.left);
-            }
-            else {
-                t2.add(locationLabel).align(Align.left).size(220, rowHeight * 2f).padTop(2f).padBottom(4f);
-            }
-
-            t2.pack();
-
-            t.add(t2);
-            t.pack();
-
-            // fancy animation!
-            t.addAction(Actions.sequence(Actions.fadeOut(0.0001f), Actions.delay(((float) i + 1f) * 0.1f), Actions.fadeIn(0.2f)));
-
-            t.setTouchable(Touchable.enabled);
-            t.addListener(new ClickListener() {
-
+        // Quit
+        if (OSUtils.isDesktop()) {
+            buttonTable.row();
+            textButton = new TextButton(StringManager.get("screens.MainMenuScreen.quitButton"), skin);
+            textButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    selectSaveButtonEvent(loc, t);
+                    Gdx.app.exit();
                 }
             });
-
-            // keep track of this slot for changing the color later
-            t.setColor(Color.GRAY);
-            saveSlotUi.add(t);
-
-            fullTable.add(t).height(42f).padTop(4f).colspan(2);
-            fullTable.row();
-
-            GamepadEntry g = new GamepadEntry(
-                t,
-                new GamepadEntryListener() {
-                    @Override
-                    public void onPress() {
-                        for (EventListener listener : playButton.getListeners()) {
-                            if (listener instanceof ClickListener) {
-                                ((ClickListener) listener).clicked(new InputEvent(), playButton.getX(), playButton.getY());
-                            }
-                        }
-                    }
-                },
-                new GamepadEntryListener() {
-                    @Override
-                    public void onPress() {
-                        if (!deleteButton.isVisible()) {
-                            return;
-                        }
-
-                        for (EventListener listener : deleteButton.getListeners()) {
-                            if (listener instanceof ClickListener) {
-                                ((ClickListener) listener).clicked(new InputEvent(), playButton.getX(), playButton.getY());
-                            }
-                        }
-                    }
-                }
-            );
-            this.gamepadEntries.add(g);
+            addGamepadEntry(textButton);
+            buttonTable.add(textButton).growX();
         }
 
-        Table playButtonTable = new Table();
-        playButtonTable.add(playButton).align(Align.left).height(20f).expand();
+        layerTable.add(buttonTable);
 
-        buttonTable.add(playButtonTable).align(Align.left).fillX().expand();
+        // Pad below menu 2/3 free space
+        layerTable.row();
+        layerTable.add().growY();
+        layerTable.row();
+        layerTable.add().growY();
 
-        if(hasMods())
-            buttonTable.add(modsButton).padRight(4).align(Align.right).height(20);
+        stack.addActor(layerTable);
+        //endregion
 
-        buttonTable.add(optionsButton).align(Align.right).height(20f);
-        buttonTable.pack();
+        //region Modal Layer
+        layerTable = new Table();
+        layerTable.setName("modalLayer");
+        layerTable.pad(8.0f);
+        stack.addActor(layerTable);
+        //endregion
 
-        GamepadEntry optionsEntry = new GamepadEntry(optionsButton, new GamepadEntryListener() {
-            @Override
-            public void onPress() {
-                for (EventListener listener : optionsButton.getListeners()) {
-                    if (listener instanceof ClickListener) {
-                        ((ClickListener) listener).clicked(new InputEvent(), optionsButton.getX(), optionsButton.getY());
-                    }
-                }
-            }
-        },
-        new GamepadEntryListener() {
-            @Override
-            public void onPress() {
-                for (EventListener listener : optionsButton.getListeners()) {
-                    if (listener instanceof ClickListener) {
-                        ((ClickListener) listener).clicked(new InputEvent(), optionsButton.getX(), optionsButton.getY());
-                    }
-                }
-            }
-        });
+        table.add(stack).grow();
 
-        gamepadEntries.add(optionsEntry);
+        table.addAction(
+            Actions.sequence(
+                Actions.fadeOut(0.0001f),
+                Actions.fadeIn(0.2f)
+            )
+        );
 
-        fullTable.row();
-        fullTable.add(buttonTable).colspan(2).height(30f).fill(true, false).align(Align.center);
-        fullTable.row();
-        fullTable.add().colspan(2).height(60f);
-
-        fullTable.pack();
-        fullTable.padTop(42);
-
-        fullTable.addAction(Actions.sequence(Actions.fadeOut(0.0001f), Actions.fadeIn(0.2f)));
-
-        playButton.setVisible(false);
-        deleteButton.setVisible(false);
+        stage.addActor(table);
     }
 
     public void showModal(String message, String yesText, String noText, ClickListener yesListener, int width) {
-	    Table full = fullTable;
-	    fullTable.padTop(0);
+        Table menu = ui.getRoot().findActor("menuLayer");
+        menu.setVisible(false);
+
+        Table full = ui.getRoot().findActor("modalLayer");
+	    full.padTop(0);
 	    full.clear();
 
 	    Label text = new Label(message, UiSkin.getSkin());
@@ -385,7 +233,7 @@ public class MainMenuScreen extends BaseScreen {
         noButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                makeContent();
+                menu.setVisible(true);
             }
         });
 
@@ -397,51 +245,9 @@ public class MainMenuScreen extends BaseScreen {
 
         full.add(t);
 
-        GamepadEntry yesEntry = new GamepadEntry(yesButton, new GamepadEntryListener() {
-            @Override
-            public void onPress() {
-                for (EventListener listener : yesButton.getListeners()) {
-                    if (listener instanceof ClickListener) {
-                        ((ClickListener) listener).clicked(new InputEvent(), yesButton.getX(), yesButton.getY());
-                    }
-                }
-            }
-        },
-        new GamepadEntryListener() {
-            @Override
-            public void onPress() {
-                for (EventListener listener : yesButton.getListeners()) {
-                    if (listener instanceof ClickListener) {
-                        ((ClickListener) listener).clicked(new InputEvent(), yesButton.getX(), yesButton.getY());
-                    }
-                }
-            }
-        });
-
-        GamepadEntry noEntry = new GamepadEntry(noButton, new GamepadEntryListener() {
-            @Override
-            public void onPress() {
-                for (EventListener listener : noButton.getListeners()) {
-                    if (listener instanceof ClickListener) {
-                        ((ClickListener) listener).clicked(new InputEvent(), noButton.getX(), noButton.getY());
-                    }
-                }
-            }
-        },
-        new GamepadEntryListener() {
-            @Override
-            public void onPress() {
-                for (EventListener listener : noButton.getListeners()) {
-                    if (listener instanceof ClickListener) {
-                        ((ClickListener) listener).clicked(new InputEvent(), noButton.getX(), noButton.getY());
-                    }
-                }
-            }
-        });
-
-        gamepadEntries.clear();
-        gamepadEntries.add(noEntry);
-        gamepadEntries.add(yesEntry);
+        clearGamepadEntries();
+        addGamepadEntry(noButton);
+        addGamepadEntry(yesButton);
         this.gamepadSelectionIndex = null;
 
         refreshOnEscape = true;
@@ -454,9 +260,7 @@ public class MainMenuScreen extends BaseScreen {
 		if(Game.instance != null)
 			Game.instance.clearMemory();
 
-		loadSavegames();
-
-        makeContent();
+        makeContent2();
 
 		ignoreEscapeKey = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 
@@ -476,17 +280,6 @@ public class MainMenuScreen extends BaseScreen {
         }
 	}
 
-	private String getSaveName(Progression p, Integer levelNum, String levelName) {
-		if(p != null && p.won) return StringManager.get("screens.MainMenuScreen.finishedSaveSlot");
-		if(levelNum == null) return StringManager.get("screens.MainMenuScreen.deadSaveSlot");
-
-		if(levelNum == -1 && Game.gameData.tutorialLevel != null) {
-            return Game.gameData.tutorialLevel.levelName;
-        }
-
-		return levelName;
-	}
-
     @Override
 	public void tick(float delta) {
         super.tick(delta);
@@ -496,7 +289,7 @@ public class MainMenuScreen extends BaseScreen {
 			if(!ignoreEscapeKey) {
 			    if(refreshOnEscape) {
                     refreshOnEscape = false;
-                    makeContent();
+                    makeContent2();
                 }
                 else {
                     Gdx.app.exit();
@@ -515,96 +308,10 @@ public class MainMenuScreen extends BaseScreen {
         }
 	}
 
-	public void selectSaveButtonEvent(int saveLoc, Table selected) {
-        gamepadSelectionIndex = saveLoc;
-
-        for(int i = 0; i < saveSlotUi.size; i++) {
-            saveSlotUi.get(i).setColor(Color.GRAY);
-        }
-
-        if(selected != null) {
-            selected.setColor(Color.WHITE);
-        }
-
-        playButton.setVisible(saveGames[saveLoc] != errorPlayer);
-		selectedSave = saveLoc;
-
-		deleteButton.setVisible(saveGames[selectedSave] != null || progress[selectedSave] != null);
-
-        Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
-	}
-
     /** Handles the event when the play button is clicked. */
-	private void handlePlayButtonEvent(boolean force) {
-        Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
-
-        if(!force) {
-            Progression p = progress[selectedSave];
-            if(p != null) {
-                Array<String> missing = p.checkForMissingMods();
-                if(missing.size > 0) {
-                    ClickListener playListener = new ClickListener() {
-                        @Override
-                        public void clicked(InputEvent event, float x, float y) {
-                            handlePlayButtonEvent(true);
-                        }
-                    };
-
-                    String message = StringManager.get("screens.MainMenuScreen.missingModsWarning");
-                    StringBuilder missingModsStringBuilder = new StringBuilder();
-
-                    for(int i = 0; i < missing.size; i++) {
-                        String m = missing.get(i);
-
-                        int maxModLength = 30;
-                        if(m.length() > maxModLength)
-                            m = m.substring(0, maxModLength - 3) + "...";
-
-                            missingModsStringBuilder.append(m);
-                            missingModsStringBuilder.append("\n");
-                    }
-
-                    showModal(MessageFormat.format(message, missingModsStringBuilder.toString()), StringManager.get("screens.MainMenuScreen.playButton"), StringManager.get("screens.MainMenuScreen.cancelButton"), playListener, 260);
-                    return;
-                }
-            }
-        }
-
-        fullTable.addAction(Actions.sequence(Actions.fadeOut(0.3f), Actions.delay(0.5f), Actions.addAction(new Action() {
-            @Override
-            public boolean act(float v) {
-                fadingOut = true;
-                return true;
-            }
-        })
-        , Actions.delay(1.75f), Actions.addAction(new Action() {
-            @Override
-            public boolean act(float v) {
-                GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
-                return true;
-            }
-        })));
+	private void handlePlayButtonEvent() {
+        GameApplication.SetScreen(new OverlayWrapperScreen(new SelectSaveSlotOverlay()));
 	}
-
-    /** Handles the event when the delete button is clicked. */
-	private void handleDeleteButtonEvent(boolean force) {
-	    if(!force) {
-            ClickListener eraseListener = new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    handleDeleteButtonEvent(true);
-                }
-            };
-
-            showModal(StringManager.get("screens.MainMenuScreen.eraseSaveWarning"), StringManager.get("screens.MainMenuScreen.eraseButton"), StringManager.get("screens.MainMenuScreen.cancelButton"), eraseListener, 220);
-            return;
-        }
-
-		saveGames[selectedSave] = null;
-		progress[selectedSave] = null;
-		deleteSavegame(selectedSave);
-		selectedSave = null;
-    }
 
     /** Handles the event when the options button is clicked. */
     private void handleOptionsButtonEvent() {
@@ -615,57 +322,6 @@ public class MainMenuScreen extends BaseScreen {
     private void handleModsButtonEvent() {
         GameApplication.SetScreen(new OverlayWrapperScreen(new ModsOverlay()));
     }
-
-	private void loadSavegames() {
-		FileHandle dir = Game.getFile(BASE_SAVE_DIR);
-
-		Gdx.app.log("DelverLifeCycle", "Getting savegames from " + dir.path());
-		for(int i = 0; i < saveGames.length; i++) {
-			FileHandle file = Game.getFile(BASE_SAVE_DIR + i + "/player.dat");
-			if(file.exists())
-			{
-				try {
-					saveGames[i] = JsonUtil.fromJson(Player.class, file);
-				}
-				catch(Exception ex) {
-					saveGames[i] = errorPlayer;
-				}
-			}
-		}
-
-		for(int i = 0; i < saveGames.length; i++) {
-			FileHandle file = Game.getFile(BASE_SAVE_DIR + "game_" + i + ".dat");
-			if(file.exists())
-			{
-				try {
-					progress[i] = JsonUtil.fromJson(Progression.class, file);
-				}
-				catch(Exception ex) {
-					progress[i] = null;
-				}
-			}
-		}
-	}
-
-	private void deleteSavegame(int saveLoc) {
-		try {
-			FileHandle file = Game.getFile(BASE_SAVE_DIR + saveLoc + "/");
-			Gdx.app.log("DelverLifeCycle", "Deleting savegame " + file.path());
-			file.deleteDirectory();
-		} catch(Exception ex) {
-            Gdx.app.error("DelverLifeCycle", ex.getMessage());
-        }
-
-		try {
-			FileHandle file = Game.getFile(BASE_SAVE_DIR + "game_" + saveLoc + ".dat");
-			Gdx.app.log("DelverLifeCycle", "Deleting progress " + file.path());
-			file.delete();
-		} catch(Exception ex) {
-            Gdx.app.error("DelverLifeCycle", ex.getMessage());
-        }
-
-        makeContent();
-	}
 
 	private boolean hasMods() {
 	    if(Game.modManager == null) return false;
