@@ -44,7 +44,13 @@ public class GameApplication extends Game {
         levelChangeScreen = new LevelChangeScreen(gameManager);
         winScreen = new WinScreen(gameManager);
 
-        setScreen(new SplashScreen());
+        if (com.interrupt.dungeoneer.game.Game.skipIntro)
+        {
+            setScreen(new MainMenuScreen());
+        }
+        else {
+            setScreen(new SplashScreen());
+        }
 	}
 
 	public void createFromEditor(Level level) {

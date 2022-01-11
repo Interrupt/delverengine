@@ -90,6 +90,7 @@ public class Game {
 	public static boolean drawDebugBoxes = false;
 	public static boolean ignoreEscape = false;
 	public static boolean inEditor = false;
+    public static boolean skipIntro = false;
 
 	// UI stuff
 	public static Tooltip tooltip = new Tooltip();
