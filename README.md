@@ -7,7 +7,7 @@ Delver engine and editor source code release
 This source release does not contain or cover the game data from Delver, the game data remains subject to the original copyright and applicable law.
 
 ## Building
-To compile on your own ensure you have installed [JDK8](https://adoptopenjdk.net/) or higher. Open a terminal to the repo root and run the following commands:
+To compile on your own ensure you have installed [JDK8](https://adoptium.net/) or higher. Open a terminal to the repo root and run the following commands:
 
 ### Game
  
