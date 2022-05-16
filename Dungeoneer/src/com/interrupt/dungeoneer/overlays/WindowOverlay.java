@@ -79,7 +79,7 @@ public abstract class WindowOverlay extends Overlay {
 
 		// Allow all overlays to be exited via the menu cancel button
 		if (Game.gamepadManager.controllerState.menuButtonEvents.contains(ControllerState.MenuButtons.CANCEL, true)) {
-			OverlayManager.instance.remove(this);
+            back();
 			Game.gamepadManager.controllerState.clearEvents();
 			Game.gamepadManager.controllerState.resetState();
 		}

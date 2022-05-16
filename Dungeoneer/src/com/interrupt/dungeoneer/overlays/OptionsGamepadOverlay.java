@@ -264,6 +264,11 @@ public class OptionsGamepadOverlay extends WindowOverlay {
         return mainTable;
     }
 
+    @Override
+    public void back() {
+        saveAndClose();
+    }
+
     public void saveAndClose() {
         Options.instance.gamepad_use = Actions.gamepadBindings.get(Actions.Action.USE);
         Options.instance.gamepad_attack = Actions.gamepadBindings.get(Actions.Action.ATTACK);

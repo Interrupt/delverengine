@@ -274,6 +274,11 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         doForcedValuesUpdate=false;
     }
 
+    @Override
+    public void back() {
+        saveAndClose();
+    }
+
     public void saveAndClose() {
         saveOptions();
         OverlayManager.instance.replaceCurrent(new OptionsOverlay(dimScreen, showBackground));

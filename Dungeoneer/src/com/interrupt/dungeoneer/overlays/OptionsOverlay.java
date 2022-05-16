@@ -350,6 +350,11 @@ public class OptionsOverlay extends WindowOverlay {
         doForcedValuesUpdate=false;
     }
 
+    @Override
+    public void back() {
+        saveAndClose();
+    }
+
     public void saveAndClose() {
         saveOptions();
         visible = false;
