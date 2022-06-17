@@ -577,6 +577,8 @@ public class PropertiesMenu extends Table {
                 for (Entity entity : selectedEntities) {
                     currentField.set(entity, Integer.parseInt(val));
                 }
+
+                Editor.app.history.saveState(Editor.app.level);
             }
         }
         catch(Exception ex) {
@@ -591,6 +593,8 @@ public class PropertiesMenu extends Table {
                     currentField.set(entity, new Material(val.texAtlas, val.tex));
                 }
             }
+
+            Editor.app.history.saveState(Editor.app.level);
         }
         catch(Exception ex) {
             Gdx.app.error("DelvEdit", ex.getMessage());
@@ -703,6 +707,7 @@ public class PropertiesMenu extends Table {
                 }
             }
 
+            Editor.app.history.saveState(Editor.app.level);
             Editor.app.refreshLights();
 
             for(Entity entity : selectedEntities) {
