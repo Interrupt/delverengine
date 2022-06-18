@@ -23,11 +23,11 @@ public class LevelInfo extends Entity {
 
     /** Starting distance of fog. */
     @EditorProperty
-    public static float fogStart = 1f;
+    public static float fogStart = 0f;
 
     /** Ending distance of fog. */
     @EditorProperty
-    public static float fogEnd = 34f;
+    public static float fogEnd = 15f;
 
     /** Color of fog. */
     @EditorProperty

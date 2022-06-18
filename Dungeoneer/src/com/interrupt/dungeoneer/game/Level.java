@@ -92,12 +92,12 @@ public class Level {
 	/** Unused. */
 	public float darkness = 1;
 
-    private static final float defaultFogStart = 1f;
+    private static final float defaultFogStart = 0f;
 
 	/** Starting distance of fog. */
 	public float fogStart = defaultFogStart;
 
-    private static final float defaultFogEnd = 34f;
+    private static final float defaultFogEnd = 15f;
 
 	/** Ending distance of fog. */
 	public float fogEnd = defaultFogEnd;
