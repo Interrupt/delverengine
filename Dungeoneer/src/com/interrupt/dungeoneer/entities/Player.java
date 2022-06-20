@@ -273,39 +273,41 @@ public class Player extends Actor {
 		canStepUpOn = false;
 	}
 
-	public boolean canAddInventorySlot() {
+	public boolean canAddBackpackSlot() {
 		return backpackSize < MAX_BACKPACK_SIZE;
 	}
 
-	public void addInventorySlot() {
-		if(canAddInventorySlot()) {
-			inventorySize++;
-			inventory.add(null);
-			Game.hudManager.backpack.refresh();
-			Game.hudManager.quickSlots.refresh();
+    public void addBackpackSlot() {
+        if (!canAddBackpackSlot())
+            return;
 
-			if(backpackSize >= MAX_BACKPACK_SIZE - 1) {
-				SteamApi.api.achieve("SQUID3");
-			}
-		}
-	}
+        backpackSize++;
+        inventory.add(null);
+        Game.hudManager.backpack.refresh();
+        Game.hudManager.quickSlots.refresh();
+
+        if (backpackSize >= MAX_BACKPACK_SIZE - 1) {
+            SteamApi.api.achieve("SQUID3");
+        }
+    }
 
 	public boolean canAddHotbarSlot() {
 		return hotbarSize < MAX_HOTBAR_SIZE;
 	}
 
-	public void addHotbarSlot() {
-		if(canAddHotbarSlot()) {
-			hotbarSize++;
-			inventory.add(null);
-			Game.hudManager.backpack.refresh();
-			Game.hudManager.quickSlots.refresh();
+    public void addHotbarSlot() {
+        if (!canAddHotbarSlot())
+            return;
 
-			if(hotbarSize >= MAX_HOTBAR_SIZE - 1) {
-				SteamApi.api.achieve("SQUID4");
-			}
-		}
-	}
+        hotbarSize++;
+        inventory.add(null);
+        Game.hudManager.backpack.refresh();
+        Game.hudManager.quickSlots.refresh();
+
+        if (hotbarSize >= MAX_HOTBAR_SIZE - 1) {
+            SteamApi.api.achieve("SQUID4");
+        }
+    }
 
 	public void makeStartingInventory() {
 

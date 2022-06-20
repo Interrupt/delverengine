@@ -20,24 +20,24 @@ import com.interrupt.helpers.Upgrade;
 import com.interrupt.managers.StringManager;
 
 public class TriggeredShop extends Trigger {
-	
+
 	public enum ShopType { upgrades, scrolls, potions, weapons, wands, armor, persistent }
 
 	@EditorProperty
 	public String messageFile = null;
-	
+
 	@EditorProperty
 	public ShopType shopType = ShopType.upgrades;
-	
+
 	@EditorProperty
 	public String title = StringManager.get("triggers.TriggeredShop.titleText");
-	
+
 	@EditorProperty
 	public String description = StringManager.get("triggers.TriggeredShop.descriptionText");
 
 	@EditorProperty
 	public boolean pausesGame = false;
-	
+
 	public Array<ShopItem> items = null;
 
 	public TriggeredShop() { hidden = true; spriteAtlas = "editor"; tex = 16; isSolid = true; }
@@ -69,7 +69,7 @@ public class TriggeredShop extends Trigger {
 
 		super.init(level, source);
 	}
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 
@@ -95,7 +95,7 @@ public class TriggeredShop extends Trigger {
 		else {
 			showShopOverlay(null);
 		}
-		
+
 		super.doTriggerEvent(value);
 	}
 
@@ -151,7 +151,7 @@ public class TriggeredShop extends Trigger {
 			if(items == null) items = new Array<ShopItem>();
 			else items.clear();
 
-			if(Game.instance.player.canAddInventorySlot()) {
+			if(Game.instance.player.canAddBackpackSlot()) {
 				BagUpgrade inventoryUpgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.INVENTORY, true);
 				inventoryUpgrade.name = "Soulbound Bag Expansion";
 				inventoryUpgrade.cost = 30;
