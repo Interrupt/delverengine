@@ -438,8 +438,8 @@ public class Game {
 			// Set progression
 			player.randomSeed = rand.nextInt();
 			player.gold = progression.gold;
-			player.inventorySize += (progression.inventoryUpgrades + progression.hotbarUpgrades);
 			player.hotbarSize += progression.hotbarUpgrades;
+            player.backpackSize += progression.inventoryUpgrades;
 			player.startPlaytime();
 
 			// maybe make the game harder after the player has won before?

@@ -1914,8 +1914,7 @@ public class Player extends Actor {
 		return addToInventory(item, true);
 	}
 
-	public boolean addToInventory(Item item, boolean autoEquip)
-	{
+	public boolean addToInventory(Item item, boolean autoEquip) {
 		initInventory();
 
         if(item instanceof Key) {
@@ -1940,21 +1939,15 @@ public class Player extends Actor {
 			}
 		}
 
-		if(inventory.size < inventorySize) inventory.add(item);
-		else
-		{
-			// find an open spot
-			boolean foundSpot = false;
-			for(int i = 0; i < inventorySize && !foundSpot; i++)
-			{
-				if(inventory.get(i) == null)
-				{
-					inventory.set(i, item);
-					foundSpot = true;
-				}
-			}
-			if(!foundSpot) return false;
-		}
+        // find an open spot
+        boolean foundSpot = false;
+        for(int i = 0; i < inventory.size && !foundSpot; i++) {
+            if(inventory.get(i) == null) {
+                inventory.set(i, item);
+                foundSpot = true;
+            }
+        }
+        if(!foundSpot) return false;
 
 		if((item instanceof Weapon || item instanceof Decoration || item instanceof FusedBomb) && heldItem == null && autoEquip) {
 			equip(item);
