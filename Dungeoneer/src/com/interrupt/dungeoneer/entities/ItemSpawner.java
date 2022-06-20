@@ -12,14 +12,14 @@ public class ItemSpawner extends DirectionalEntity {
 	public enum ItemType { melee, ranged, armor, wands, potions, scrolls, decorations, unique, junk, food }
 
 	public enum ItemPlacement { world, player_hotbar, player_inventory, player_equip }
-	
+
 	@EditorProperty(group = "Spawns") public ItemType itemType = ItemType.melee;
 	@EditorProperty(group = "Spawns") public Integer itemLevel = null;
 	@EditorProperty(group = "Spawns") public Item.ItemCondition itemCondition = Item.ItemCondition.normal;
 	@EditorProperty(group = "Spawns") public String itemName = null;
 	@EditorProperty(group = "Spawns") boolean waitForTrigger = false;
 	@EditorProperty(group = "Spawns") ItemPlacement placement = ItemPlacement.world;
-	
+
 	@Override
 	public void init(Level level, Source source) {
 		if(!waitForTrigger && (source == Source.LEVEL_START || source == Source.SPAWNED) && isActive) {
@@ -92,42 +92,34 @@ public class ItemSpawner extends DirectionalEntity {
 		return null;
 	}
 
-	public void placeInInventory(Entity e) {
-		if(e == null)
+	public void placeInInventory(Entity entity) {
+		if(null == entity)
 			return;
 
-		if(e instanceof Item) {
-			Item item = (Item)e;
+		if(!(entity instanceof Item))
+            return;
 
-			if(Game.instance == null || Game.instance.player == null)
-				return;
+        if(null == Game.instance || null == Game.instance.player)
+            return;
 
-			Player p = Game.instance.player;
+        Item item = (Item)entity;
+        Player player = Game.instance.player;
 
-			// might need to initialize this?
-			if(p.inventory != null) {
-				if (p.inventory.size < p.inventorySize) {
-					for (int i = 0; i < p.inventorySize; i++)
-						p.inventory.add(null);
-				}
-			}
+        boolean foundSpot = false;
 
-			boolean foundSpot = false;
+        if(placement == ItemPlacement.player_hotbar || placement == ItemPlacement.player_equip) {
+            foundSpot = player.addToInventory(item, placement == ItemPlacement.player_equip);
+        }
+        else {
+            foundSpot = player.addToBackpack(item);
+            if(!foundSpot) {
+                foundSpot = player.addToInventory(item, placement == ItemPlacement.player_equip);
+            }
+        }
 
-			if(placement == ItemPlacement.player_hotbar || placement == ItemPlacement.player_equip) {
-				foundSpot = p.addToInventory(item, placement == ItemPlacement.player_equip);
-			}
-			else {
-				foundSpot = p.addToBackpack(item);
-				if(!foundSpot) {
-					foundSpot = p.addToInventory(item, placement == ItemPlacement.player_equip);
-				}
-			}
-
-			if(!foundSpot) {
-				p.throwItem(item, Game.GetLevel(), 0f, 0f);
-			}
-		}
+        if(!foundSpot) {
+            player.throwItem(item, Game.GetLevel(), 0f, 0f);
+        }
 	}
 
 	@Override

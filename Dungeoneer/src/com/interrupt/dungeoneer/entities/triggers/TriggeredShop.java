@@ -152,18 +152,18 @@ public class TriggeredShop extends Trigger {
 			else items.clear();
 
 			if(Game.instance.player.canAddBackpackSlot()) {
-				BagUpgrade inventoryUpgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.INVENTORY, true);
-				inventoryUpgrade.name = "Soulbound Bag Expansion";
-				inventoryUpgrade.cost = 30;
-				inventoryUpgrade.cost += (Game.instance.progression.inventoryUpgrades * Game.instance.progression.inventoryUpgrades) * (int) (inventoryUpgrade.cost * 0.75f);
-				items.add(new ShopItem(inventoryUpgrade, true,"SQUID2"));
+				BagUpgrade upgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.INVENTORY, true);
+				upgrade.name = "Soulbound Bag Expansion";
+				upgrade.cost = 30;
+				upgrade.cost += (Game.instance.progression.inventoryUpgrades * Game.instance.progression.inventoryUpgrades) * (int) (upgrade.cost * 0.75f);
+				items.add(new ShopItem(upgrade, true,"SQUID2"));
 			}
 			if(Game.instance.player.canAddHotbarSlot()) {
-				BagUpgrade hotbarUpgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.HOTBAR, true);
-				hotbarUpgrade.name = "Soulbound Belt Expansion";
-				hotbarUpgrade.cost = 60;
-				hotbarUpgrade.cost += (Game.instance.progression.hotbarUpgrades * Game.instance.progression.hotbarUpgrades) * (int) (hotbarUpgrade.cost);
-				items.add(new ShopItem(hotbarUpgrade, true, "SQUID1"));
+				BagUpgrade upgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.HOTBAR, true);
+				upgrade.name = "Soulbound Belt Expansion";
+				upgrade.cost = 60;
+				upgrade.cost += (Game.instance.progression.hotbarUpgrades * Game.instance.progression.hotbarUpgrades) * (int) (upgrade.cost);
+				items.add(new ShopItem(upgrade, true, "SQUID1"));
 			}
 
 			// No upgrades, sell scrolls instead

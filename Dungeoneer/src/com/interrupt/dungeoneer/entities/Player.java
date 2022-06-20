@@ -125,7 +125,7 @@ public class Player extends Actor {
 	public int levelNum = 0;
 
 	/** Player inventory. */
-	public Array<Item> inventory = new Array<Item>();
+	public Array<Item> inventory = new Array<>();
 	public Integer selectedBarItem = null;
 	public Integer heldItem = null;
 
@@ -310,11 +310,7 @@ public class Player extends Actor {
     }
 
 	public void makeStartingInventory() {
-
-		// initialize the inventory
-		if(inventory.size < inventorySize) {
-			for (int i = 0; i < inventorySize; i++) inventory.add(null);
-		}
+        initInventory();
 
 		if(startingInventory != null && startingInventory.size > 0) {
 			boolean equippedWeapon = false;
@@ -1920,12 +1916,15 @@ public class Player extends Actor {
 
 	public boolean addToInventory(Item item, boolean autoEquip)
 	{
-		if(item instanceof Key) {
+		initInventory();
+
+        if(item instanceof Key) {
 			keys++;
 			return true;
 		}
 
-		if(inventory.contains(item, true)) return false;
+		if (inventoryContains(item))
+            return false;
 
 		// this might be a stack
 		if(item instanceof ItemStack) {
@@ -1968,7 +1967,9 @@ public class Player extends Actor {
 	}
 
     public boolean addToBackpack(Item item) {
-        if (inventory.contains(item, true))
+        initInventory();
+
+        if (inventoryContains(item))
             return false;
 
         // Find a spot in the backpack
@@ -1987,8 +1988,10 @@ public class Player extends Actor {
 
 	public void removeFromInventory(Item item)
 	{
-		if(!inventory.contains(item, true)) return;
-		dequip(item);
+		if (!inventoryContains(item))
+            return;
+
+        dequip(item);
 
 		// save all the equipped items, so we can update their locations when the array changes
 		Item held = GetHeldItem();
@@ -2591,5 +2594,19 @@ public class Player extends Actor {
 
     public int getTargetInventorySize() {
         return hotbarSize + backpackSize;
+    }
+
+    public void initInventory() {
+        if (null == inventory)
+            inventory = new Array<>();
+
+        if (inventory.size < getTargetInventorySize()) {
+            for (int i = 0; i < getTargetInventorySize(); i++)
+                inventory.add(null);
+        }
+    }
+
+    private boolean inventoryContains(Item item) {
+        return inventory.contains(item, true);
     }
 }

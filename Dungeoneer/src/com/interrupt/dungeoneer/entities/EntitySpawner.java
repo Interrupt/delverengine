@@ -10,7 +10,7 @@ public class EntitySpawner extends DirectionalEntity {
 	public EntitySpawner() { artType = ArtType.hidden; tex = 0; }
 
 	public enum ItemPlacement { world, player_hotbar, player_inventory, player_equip }
-	
+
 	@EditorProperty(group = "Spawns") public String entityCategory = "Decorations";
 	@EditorProperty(group = "Spawns") public String entityName = "Skull";
 	@EditorProperty(group = "Spawns") public float spawnVelocity = 0.1f;
@@ -18,25 +18,25 @@ public class EntitySpawner extends DirectionalEntity {
 	@EditorProperty(group = "Spawns") public boolean destroyAfterSpawn = false;
     @EditorProperty(group = "Spawns") public String spawnSound = null;
 	@EditorProperty(group = "Spawns") ItemPlacement placement = ItemPlacement.world;
-	
+
 	@Override
 	public void tick(Level level, float delta) {
-		
+
 	}
-	
+
 	@Override
 	public void onTrigger(Entity instigator, String value) {
 		if(!isActive) return;
-		
+
 		Entity spawned = Game.instance.entityManager.getEntity(entityCategory, entityName);
 		if(spawned != null) {
 			Vector3 speed = getDirection();
 			speed.scl(spawnVelocity);
-			
+
 			spawned.xa = speed.x;
 			spawned.ya = speed.y;
 			spawned.za = speed.z;
-			
+
 			spawned.x = x + (Game.rand.nextFloat() * spawnSpread.x * 0.5f) - spawnSpread.x * 0.5f;
 			spawned.y = y + (Game.rand.nextFloat() * spawnSpread.y * 0.5f) - spawnSpread.y * 0.5f;
 			spawned.z = z + (Game.rand.nextFloat() * spawnSpread.z * 0.5f) - spawnSpread.z * 0.5f;
@@ -50,45 +50,37 @@ public class EntitySpawner extends DirectionalEntity {
         if(spawnSound != null) {
             Audio.playPositionedSound(spawnSound, new Vector3(x,y,z), 1f, 12f);
         }
-		
+
 		if(destroyAfterSpawn) isActive = false;
 	}
 
-	public void placeInInventory(Entity e) {
-		if(e == null)
+	public void placeInInventory(Entity entity) {
+		if(null == entity)
 			return;
 
-		if(e instanceof Item) {
-			Item item = (Item)e;
+		if(!(entity instanceof Item))
+            return;
 
-			if(Game.instance == null || Game.instance.player == null)
-				return;
+        if(null == Game.instance || null == Game.instance.player)
+            return;
 
-			Player p = Game.instance.player;
+        Item item = (Item)entity;
+        Player player = Game.instance.player;
 
-			// might need to initialize this?
-			if(p.inventory != null) {
-				if (p.inventory.size < p.inventorySize) {
-					for (int i = 0; i < p.inventorySize; i++)
-						p.inventory.add(null);
-				}
-			}
+        boolean foundSpot = false;
 
-			boolean foundSpot = false;
+        if(placement == ItemPlacement.player_hotbar || placement == ItemPlacement.player_equip) {
+            foundSpot = player.addToInventory(item, placement == ItemPlacement.player_equip);
+        }
+        else {
+            foundSpot = player.addToBackpack(item);
+            if(!foundSpot) {
+                foundSpot = player.addToInventory(item, placement == ItemPlacement.player_equip);
+            }
+        }
 
-			if(placement == ItemPlacement.player_hotbar || placement == ItemPlacement.player_equip) {
-				foundSpot = p.addToInventory(item, placement == ItemPlacement.player_equip);
-			}
-			else {
-				foundSpot = p.addToBackpack(item);
-				if(!foundSpot) {
-					foundSpot = p.addToInventory(item, placement == ItemPlacement.player_equip);
-				}
-			}
-
-			if(!foundSpot) {
-				p.throwItem(item, Game.GetLevel(), 0f, 0f);
-			}
-		}
+        if(!foundSpot) {
+            player.throwItem(item, Game.GetLevel(), 0f, 0f);
+        }
 	}
 }
