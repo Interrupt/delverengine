@@ -142,7 +142,10 @@ public class Player extends Actor {
 
 	private Integer tapLength = null;
 
-	public int hotbarSize = 5;
+    private static final int DEFAULT_HOTBAR_SIZE = 5;
+    private static final int MAX_HOTBAR_SIZE = 10;
+	public int hotbarSize = DEFAULT_HOTBAR_SIZE;
+
 	public int inventorySize = 23;
 
 	public Item hovering = null;
@@ -285,7 +288,7 @@ public class Player extends Actor {
 	}
 
 	public boolean canAddHotbarSlot() {
-		return hotbarSize < 10;
+		return hotbarSize < MAX_HOTBAR_SIZE;
 	}
 
 	public void addHotbarSlot() {
@@ -296,7 +299,7 @@ public class Player extends Actor {
 			Game.hudManager.backpack.refresh();
 			Game.hudManager.quickSlots.refresh();
 
-			if(hotbarSize >= 9) {
+			if(hotbarSize >= MAX_HOTBAR_SIZE - 1) {
 				SteamApi.api.achieve("SQUID4");
 			}
 		}
