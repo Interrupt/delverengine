@@ -62,15 +62,15 @@ public class Hotbar {
             columns = Game.instance.player.hotbarSize;
         } else if (this == Game.hudManager.backpack) {
             invOffset = Game.instance.player.hotbarSize;
-            rows = (int) Math.ceil((Game.instance.player.inventorySize - invOffset) / columns) + 1;
-            if ((Game.instance.player.inventorySize - invOffset) % columns == 0)
+            rows = (int) Math.ceil((Game.instance.player.getTargetInventorySize() - invOffset) / columns) + 1;
+            if ((Game.instance.player.getTargetInventorySize() - invOffset) % columns == 0)
                 rows--;
         }
 
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 final int btnLoc = x + (y * columns) + invOffset;
-                if (btnLoc < Game.instance.player.inventorySize) {
+                if (btnLoc < Game.instance.player.getTargetInventorySize()) {
                     Item itm = Game.instance.player.inventory.get(btnLoc);
                     if (itm != null) {
                         MultiTouchButton itmButton = new MultiTouchButton(
@@ -107,7 +107,7 @@ public class Hotbar {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 final int i = x + (y * columns) + invOffset;
-                if (i < Game.instance.player.inventorySize) {
+                if (i < Game.instance.player.getTargetInventorySize()) {
                     if (itemButtons.containsKey(i)) {
                         MultiTouchButton hb = itemButtons.get(i);
 
@@ -157,7 +157,7 @@ public class Hotbar {
                             && yCursorPos <= ((y + 1) * uiSize) + (yOffset * uiSize)
                             && yCursorPos > (y * uiSize) + (yOffset * uiSize)) {
                         final int btnLoc = x + (y * columns) + invOffset;
-                        if (btnLoc < Game.instance.player.inventorySize) {
+                        if (btnLoc < Game.instance.player.getTargetInventorySize()) {
                             mouseOverSlot = i;
                         }
                     }

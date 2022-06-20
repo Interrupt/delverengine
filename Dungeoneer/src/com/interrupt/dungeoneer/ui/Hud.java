@@ -199,7 +199,7 @@ public class Hud {
 			else if(Game.instance.input.getPointerX(uiTouchPointer) > Gdx.graphics.getWidth() - uiSize && Game.instance.input.getPointerY(uiTouchPointer) < uiSize) {
 				// dropping item into inventory
 				boolean foundSlot = false;
-				for(int i = 6; i < Game.instance.player.inventorySize; i++) {
+				for(int i = 6; i < Game.instance.player.getTargetInventorySize(); i++) {
 					if(Game.instance.player.inventory.get(i) == null) {
 						foundSlot = true;
 						Game.instance.player.inventory.set(i, dragging);
