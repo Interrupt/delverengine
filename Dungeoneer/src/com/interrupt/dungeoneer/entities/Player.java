@@ -146,6 +146,10 @@ public class Player extends Actor {
     private static final int MAX_HOTBAR_SIZE = 10;
 	public int hotbarSize = DEFAULT_HOTBAR_SIZE;
 
+    private static final int DEFAULT_BACKPACK_SIZE = 18;
+    private static int MAX_BACKPACK_SIZE = 36;
+    public int backpackSize = DEFAULT_BACKPACK_SIZE;
+
 	public int inventorySize = 23;
 
 	public Item hovering = null;
@@ -271,7 +275,7 @@ public class Player extends Actor {
 	}
 
 	public boolean canAddInventorySlot() {
-		return inventorySize - hotbarSize < 36;
+		return inventorySize - hotbarSize < MAX_BACKPACK_SIZE;
 	}
 
 	public void addInventorySlot() {
@@ -281,7 +285,7 @@ public class Player extends Actor {
 			Game.hudManager.backpack.refresh();
 			Game.hudManager.quickSlots.refresh();
 
-			if(inventorySize - hotbarSize >= 35) {
+			if(inventorySize - hotbarSize >= MAX_BACKPACK_SIZE - 1) {
 				SteamApi.api.achieve("SQUID3");
 			}
 		}
