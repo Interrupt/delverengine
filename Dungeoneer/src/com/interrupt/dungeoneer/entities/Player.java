@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntArray;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameInput;
@@ -40,7 +39,6 @@ import com.interrupt.dungeoneer.statuseffects.*;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
-import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -150,6 +148,7 @@ public class Player extends Actor {
     private static int MAX_BACKPACK_SIZE = 36;
     public int backpackSize = DEFAULT_BACKPACK_SIZE;
 
+    @Deprecated
 	public int inventorySize = 23;
 
 	public Item hovering = null;
@@ -275,7 +274,7 @@ public class Player extends Actor {
 	}
 
 	public boolean canAddInventorySlot() {
-		return inventorySize - hotbarSize < MAX_BACKPACK_SIZE;
+		return backpackSize < MAX_BACKPACK_SIZE;
 	}
 
 	public void addInventorySlot() {
@@ -285,7 +284,7 @@ public class Player extends Actor {
 			Game.hudManager.backpack.refresh();
 			Game.hudManager.quickSlots.refresh();
 
-			if(inventorySize - hotbarSize >= MAX_BACKPACK_SIZE - 1) {
+			if(backpackSize >= MAX_BACKPACK_SIZE - 1) {
 				SteamApi.api.achieve("SQUID3");
 			}
 		}
@@ -298,7 +297,6 @@ public class Player extends Actor {
 	public void addHotbarSlot() {
 		if(canAddHotbarSlot()) {
 			hotbarSize++;
-			inventorySize++;
 			inventory.add(null);
 			Game.hudManager.backpack.refresh();
 			Game.hudManager.quickSlots.refresh();
