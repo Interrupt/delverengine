@@ -1965,22 +1965,23 @@ public class Player extends Actor {
 		return true;
 	}
 
-	public boolean addToBackpack(Item item) {
+    public boolean addToBackpack(Item item) {
+        if (inventory.contains(item, true))
+            return false;
 
-		if(inventory.contains(item, true)) return false;
+        // Find a spot in the backpack
+        for (int i = hotbarSize; i < getTargetInventorySize(); i++) {
+            if (inventory.get(i) == null) {
+                inventory.set(i, item);
+                item.onPickup();
+                Game.RefreshUI();
 
-		// Find a spot in the backpack
-		for(int i = hotbarSize; i < inventorySize; i++) {
-			if(inventory.get(i) == null) {
-				inventory.set(i, item);
-				item.onPickup();
-				Game.RefreshUI();
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 	public void removeFromInventory(Item item)
 	{
@@ -2584,5 +2585,9 @@ public class Player extends Actor {
 			if(itm != null && itm.drawable != null)
 				itm.drawable.refresh();
 		}
+    }
+
+    public int getTargetInventorySize() {
+        return hotbarSize + backpackSize;
     }
 }
