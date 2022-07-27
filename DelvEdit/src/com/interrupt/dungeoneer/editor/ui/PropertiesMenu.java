@@ -25,6 +25,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PropertiesMenu extends Table {
     public ArrayMap<String, Array<Field>> arrayMap = new ArrayMap<String, Array<Field>>();
@@ -154,6 +157,15 @@ public class PropertiesMenu extends Table {
                         fieldMap.put(field, button);
                     }
                     else if(field.getType() == String.class) {
+                        TextField tf = new TextField(v, skin);
+                        tf.setTextFieldListener(getTextFieldListener(field));
+
+                        add(label).align(Align.left);
+                        add(tf).align(Align.left).fill();
+
+                        fieldMap.put(field, tf);
+                    }
+                    else if (field.getType() == TagSet.class) {
                         TextField tf = new TextField(v, skin);
                         tf.setTextFieldListener(getTextFieldListener(field));
 
@@ -637,6 +649,13 @@ public class PropertiesMenu extends Table {
                             currentField.set(entity, val);
                         }
                     }
+                    else if(currentField.getType() == TagSet.class) {
+                        for(Entity entity : selectedEntities) {
+                            TagSet tags = new TagSet();
+                            tags.addAll(Stream.of(val.split(",")).map((v) -> v.trim()).toArray(String[]::new));
+                            currentField.set(entity, tags);
+                        }
+                    }
                 }
                 else if(actor instanceof TextButton) {
                     String val = ((TextButton)actor).getText().toString();
@@ -714,7 +733,7 @@ public class PropertiesMenu extends Table {
             }
         }
         catch(Exception ex) {
-            Gdx.app.error("DelvEdit", ex.getMessage());
+            Gdx.app.error("DelvEdit: Property Change", ex.getMessage());
         }
     }
 
