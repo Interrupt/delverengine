@@ -1,6 +1,6 @@
 package com.interrupt.dungeoneer.input;
 
-import com.badlogic.gdx.controllers.PovDirection;
+//import com.badlogic.gdx.controllers.PovDirection;
 
 public class Xbox360OSXPad extends GamepadDefinition
 {
@@ -14,10 +14,10 @@ public class Xbox360OSXPad extends GamepadDefinition
    public static final int BUTTON_B = 12;
    public static final int BUTTON_BACK = 6;
    public static final int BUTTON_START = 7;
-   public static final PovDirection BUTTON_DPAD_UP = PovDirection.north;
-   public static final PovDirection BUTTON_DPAD_DOWN = PovDirection.south;
-   public static final PovDirection BUTTON_DPAD_RIGHT = PovDirection.east;
-   public static final PovDirection BUTTON_DPAD_LEFT = PovDirection.west;
+   //public static final PovDirection BUTTON_DPAD_UP = PovDirection.north;
+   //public static final PovDirection BUTTON_DPAD_DOWN = PovDirection.south;
+   //public static final PovDirection BUTTON_DPAD_RIGHT = PovDirection.east;
+   //public static final PovDirection BUTTON_DPAD_LEFT = PovDirection.west;
    public static final int BUTTON_LB = 8;
    public static final int BUTTON_L3 = 4;
    public static final int BUTTON_RB = 9;

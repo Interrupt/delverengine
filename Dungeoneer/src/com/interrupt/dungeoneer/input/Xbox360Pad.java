@@ -1,6 +1,6 @@
 package com.interrupt.dungeoneer.input;
 
-import com.badlogic.gdx.controllers.PovDirection;
+//import com.badlogic.gdx.controllers.PovDirection;
 
 public class Xbox360Pad extends GamepadDefinition
 {
@@ -9,7 +9,7 @@ public class Xbox360Pad extends GamepadDefinition
     * Therefore its IMO a better bet to check for:
     * if (controller.getName().toLowerCase().contains("xbox") &&
                   controller.getName().contains("360"))
-    * 
+    *
     * Controller (Gamepad for Xbox 360)
       Controller (XBOX 360 For Windows)
       Controller (Xbox 360 Wireless Receiver for Windows)
@@ -26,10 +26,10 @@ public class Xbox360Pad extends GamepadDefinition
    public static final int BUTTON_B = 1;
    public static final int BUTTON_BACK = 6;
    public static final int BUTTON_START = 7;
-   public static final PovDirection BUTTON_DPAD_UP = PovDirection.north;
-   public static final PovDirection BUTTON_DPAD_DOWN = PovDirection.south;
-   public static final PovDirection BUTTON_DPAD_RIGHT = PovDirection.east;
-   public static final PovDirection BUTTON_DPAD_LEFT = PovDirection.west;
+   //public static final PovDirection BUTTON_DPAD_UP = PovDirection.north;
+   //public static final PovDirection BUTTON_DPAD_DOWN = PovDirection.south;
+   //public static final PovDirection BUTTON_DPAD_RIGHT = PovDirection.east;
+   //public static final PovDirection BUTTON_DPAD_LEFT = PovDirection.west;
    public static final int BUTTON_LB = 4;
    public static final int BUTTON_L3 = 8;
    public static final int BUTTON_RB = 5;

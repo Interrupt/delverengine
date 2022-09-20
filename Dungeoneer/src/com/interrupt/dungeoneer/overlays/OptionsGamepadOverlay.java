@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.controllers.PovDirection;
+//import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -108,7 +108,7 @@ public class OptionsGamepadOverlay extends WindowOverlay {
                 return false;
             }
 
-            @Override
+            /*@Override
             public boolean povMoved(Controller controller, int povCode, PovDirection value) {
                 Actions.Action action = getCurrentlyEditing();
                 if(action != null) {
@@ -116,9 +116,9 @@ public class OptionsGamepadOverlay extends WindowOverlay {
                     setupTable();
                 }
                 return false;
-            }
+            }*/
 
-            @Override
+            /*@Override
             public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
                 Actions.Action action = getCurrentlyEditing();
                 if(action != null) {
@@ -126,9 +126,9 @@ public class OptionsGamepadOverlay extends WindowOverlay {
                     setupTable();
                 }
                 return false;
-            }
+            }*/
 
-            @Override
+            /*@Override
             public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
                 Actions.Action action = getCurrentlyEditing();
                 if(action != null) {
@@ -136,12 +136,12 @@ public class OptionsGamepadOverlay extends WindowOverlay {
                     setupTable();
                 }
                 return false;
-            }
+            }*/
 
-            @Override
+            /*@Override
             public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
                 return false;
-            }
+            }*/
         };
 
         content = new Table();

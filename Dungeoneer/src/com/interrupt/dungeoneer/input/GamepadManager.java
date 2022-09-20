@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.controllers.PovDirection;
-import com.badlogic.gdx.controllers.mappings.Ouya;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -15,7 +13,7 @@ import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.input.ControllerState.DPAD;
 
 public class GamepadManager implements ControllerListener {
-	
+
 	public ControllerState controllerState = null;
 	public Interpolation moveLerp = Interpolation.fade;
 	public Interpolation lookLerp = Interpolation.fade;
@@ -23,18 +21,18 @@ public class GamepadManager implements ControllerListener {
 
 	private float menuRepeatTimer = 0f;
 	private boolean menuRepeated = false;
-	public Float deadzoneMagnitude = 0.15f; 
-	
+	public Float deadzoneMagnitude = 0.15f;
+
 	private Vector2 result = new Vector2();
 	private Vector2 direction = new Vector2();
 	private Vector2 offset = new Vector2();
 
 	public ArrayMap<Controller, GamepadDefinition> controllerMapping = new ArrayMap<Controller, GamepadDefinition>();
-	
-	public GamepadManager(ControllerState state) { 
+
+	public GamepadManager(ControllerState state) {
 		controllerState = state;
 	}
-	
+
 	public void tick(float delta) {
 		if(controllerState != null) {
 			controllerState.buttonEvents.clear();
@@ -66,7 +64,7 @@ public class GamepadManager implements ControllerListener {
 				controllerState.controllerLook.x = lookLerp.apply(Math.abs(input.x)) * lookXSign;
 				controllerState.controllerLook.y = lookLerp.apply(Math.abs(input.y)) * lookYSign;
 			}
-			
+
 			// in menu mode, let the move stick fake dpad inputs for menu movement
 			if(menuMode) {
 				if(menuRepeatTimer <= 0) {
@@ -79,13 +77,13 @@ public class GamepadManager implements ControllerListener {
 					else if(controllerState.controllerMove.y < -0.3f)
 						controllerState.dpadEvents.add(DPAD.UP);
 				}
-				
+
 				if(controllerState.dpadEvents.size > 0) {
 					menuRepeatTimer = menuRepeated ? 0.15f : 0.3f;
 					menuRepeated = true;
 					Gdx.app.log("Delver", controllerState.dpadEvents.get(0).name());
 				}
-				
+
 				if(menuRepeated) {
 					if(Math.abs(controllerState.controllerMove.x) < 0.1f
 							&& Math.abs(controllerState.controllerMove.y) < 0.1f) {
@@ -93,8 +91,8 @@ public class GamepadManager implements ControllerListener {
 						menuRepeatTimer = 0;
 					}
 				}
-				
-				
+
+
 				if(menuRepeatTimer > 0) menuRepeatTimer -= delta;
 			}
 		}
@@ -239,7 +237,7 @@ public class GamepadManager implements ControllerListener {
 		return result;
 	}
 
-    @Override
+    /*@Override
     public boolean povMoved (Controller controller, int povIndex, PovDirection value) {
 		boolean result = matchButton(povIndex, GamepadBinding.GamepadInputType.POV, value.ordinal(), 0);
 
@@ -268,24 +266,24 @@ public class GamepadManager implements ControllerListener {
 		}
 
         return result;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean xSliderMoved (Controller controller, int sliderIndex, boolean value) {
 		boolean result = matchButton(sliderIndex, GamepadBinding.GamepadInputType.SLIDER, value ? 1 : 0, 0);
 		return result;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean ySliderMoved (Controller controller, int sliderIndex, boolean value) {
 		boolean result = matchButton(sliderIndex, GamepadBinding.GamepadInputType.SLIDER, value ? 0 : 1, 0);
 		return result;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean accelerometerMoved (Controller controller, int accelerometerIndex, Vector3 value) {
         return false;
-    }
+    }*/
 
     @Override
     public void connected (Controller controller) {
@@ -296,7 +294,7 @@ public class GamepadManager implements ControllerListener {
     public void disconnected (Controller controller) {
     	controllerMapping.removeKey(controller);
     }
-    
+
     public void init() {
     	controllerMapping.clear();
     	Controller first = Controllers.getControllers().first();
@@ -315,9 +313,9 @@ public class GamepadManager implements ControllerListener {
         else if (controllerName.contains("sony")) {
             controllerMapping.put(controller, new GamepadDefinition(new SonyPad()));
         }
-        else if (controller.getName().equals(Ouya.ID)) {
+        /*else if (controller.getName().equals(Ouya.ID)) {
             controllerMapping.put(controller, new GamepadDefinition(new Ouya()));
-        }
+        }*/
         else if (controllerName.contains("moga")) {
             controllerMapping.put(controller, new GamepadDefinition(new MogaProPad()));
         }
@@ -327,20 +325,20 @@ public class GamepadManager implements ControllerListener {
 
         Options.SetGamepadBindings(controllerMapping.get(controller));
     }
-    
+
     public Vector2 applyDeadzone(Vector2 rawInput) {
     	// If the input is below the threshold, return a zero vector.
     	result.set(rawInput);
     	if (result.len() <= deadzoneMagnitude) {
     		return Vector2.Zero;
     	}
-    	
+
     	// Normalize the input from the threshold to 1.0f
     	direction.set(rawInput).nor();
     	offset.set(direction).scl(deadzoneMagnitude);
-    	
+
     	result.sub(offset).scl( 1f / direction.sub(offset).len());
-    	
+
     	return result;
     }
 }

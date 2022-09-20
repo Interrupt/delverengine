@@ -1,6 +1,6 @@
 package com.interrupt.dungeoneer.input;
 
-import com.badlogic.gdx.controllers.mappings.Ouya;
+//import com.badlogic.gdx.controllers.mappings.Ouya;
 
 import java.util.Hashtable;
 
@@ -9,7 +9,7 @@ public class GamepadDefinition {
 	public static Hashtable<Actions.Action, GamepadBinding> gamepadBindings = new Hashtable<Actions.Action, GamepadBinding>();
 	public GamepadDefinition() { }
 
-	public GamepadDefinition(Ouya ouya) {
+	/*public GamepadDefinition(Ouya ouya) {
 		gamepadBindings.put(Actions.Action.USE, new GamepadBinding(Ouya.BUTTON_O, GamepadBinding.GamepadInputType.BUTTON));
 		gamepadBindings.put(Actions.Action.INVENTORY, new GamepadBinding(Ouya.BUTTON_U, GamepadBinding.GamepadInputType.BUTTON));
 		gamepadBindings.put(Actions.Action.MAP, new GamepadBinding(Ouya.BUTTON_Y, GamepadBinding.GamepadInputType.BUTTON));
@@ -34,8 +34,8 @@ public class GamepadDefinition {
 
 		gamepadBindings.put(Actions.Action.DROP, new GamepadBinding(Ouya.AXIS_RIGHT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, 1));
 		gamepadBindings.put(Actions.Action.ATTACK, new GamepadBinding(Ouya.AXIS_LEFT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, 1));
-	}
-	
+	}*/
+
 	public GamepadDefinition(Xbox360Pad pad) {
 		gamepadBindings.put(Actions.Action.USE, new GamepadBinding(Xbox360Pad.BUTTON_A, GamepadBinding.GamepadInputType.BUTTON));
 		gamepadBindings.put(Actions.Action.MAP, new GamepadBinding(Xbox360Pad.BUTTON_Y, GamepadBinding.GamepadInputType.BUTTON));
@@ -63,7 +63,7 @@ public class GamepadDefinition {
 		gamepadBindings.put(Actions.Action.ATTACK, new GamepadBinding(Xbox360Pad.AXIS_RIGHT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, -1));
 		gamepadBindings.put(Actions.Action.DROP, new GamepadBinding(Xbox360Pad.AXIS_RIGHT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, 1));
 	}
-	
+
 	public GamepadDefinition(Xbox360OSXPad pad) {
 		gamepadBindings.put(Actions.Action.USE, new GamepadBinding(Xbox360OSXPad.BUTTON_A, GamepadBinding.GamepadInputType.BUTTON));
 		gamepadBindings.put(Actions.Action.MAP, new GamepadBinding(Xbox360OSXPad.BUTTON_Y, GamepadBinding.GamepadInputType.BUTTON));
@@ -91,7 +91,7 @@ public class GamepadDefinition {
 		gamepadBindings.put(Actions.Action.ATTACK, new GamepadBinding(Xbox360OSXPad.AXIS_RIGHT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, -1));
 		gamepadBindings.put(Actions.Action.DROP, new GamepadBinding(Xbox360OSXPad.AXIS_RIGHT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, 1));
 	}
-	
+
 	public GamepadDefinition(SonyPad pad) {
 		gamepadBindings.put(Actions.Action.USE, new GamepadBinding(SonyPad.BUTTON_X, GamepadBinding.GamepadInputType.BUTTON));
 		gamepadBindings.put(Actions.Action.INVENTORY, new GamepadBinding(SonyPad.BUTTON_SQUARE, GamepadBinding.GamepadInputType.BUTTON));
@@ -119,7 +119,7 @@ public class GamepadDefinition {
 		gamepadBindings.put(Actions.Action.ATTACK, new GamepadBinding(SonyPad.AXIS_RIGHT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, 1));
 		gamepadBindings.put(Actions.Action.DROP, new GamepadBinding(SonyPad.AXIS_LEFT_TRIGGER, GamepadBinding.GamepadInputType.AXIS, 1));
 	}
-	
+
 	public GamepadDefinition(MogaProPad pad) {
 		gamepadBindings.put(Actions.Action.USE, new GamepadBinding(MogaProPad.BUTTON_A, GamepadBinding.GamepadInputType.BUTTON));
 		gamepadBindings.put(Actions.Action.INVENTORY, new GamepadBinding(MogaProPad.BUTTON_X, GamepadBinding.GamepadInputType.BUTTON));
