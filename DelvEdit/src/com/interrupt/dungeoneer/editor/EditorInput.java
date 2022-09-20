@@ -149,9 +149,9 @@ public class EditorInput implements InputProcessor {
     }
 
     @Override
-    public boolean scrolled(int amount) {
+    public boolean scrolled(float amountX, float amountY) {
         for (InputProcessor listener : listeners) {
-            boolean results = listener.scrolled(amount);
+            boolean results = listener.scrolled(amountX, amountY);
             if (results) {
                 return true;
             }

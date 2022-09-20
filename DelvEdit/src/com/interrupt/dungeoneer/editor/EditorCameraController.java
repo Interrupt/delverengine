@@ -214,8 +214,8 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
     }
 
     @Override
-    public boolean scrolled(int amount) {
-        scrollAmount += amount;
+    public boolean scrolled(float amountX, float amountY) {
+        scrollAmount += amountY;
 
         return false;
     }

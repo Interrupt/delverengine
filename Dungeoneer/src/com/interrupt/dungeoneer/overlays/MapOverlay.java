@@ -108,7 +108,7 @@ public class MapOverlay extends Overlay {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        		if ((button==0)&&(Options.instance.mouseButton1Action == Action.MAP) || 
+        		if ((button==0)&&(Options.instance.mouseButton1Action == Action.MAP) ||
         			(button==1)&&(Options.instance.mouseButton2Action == Action.MAP) ||
         			(button==2)&&(Options.instance.mouseButton3Action == Action.MAP)
         		) {
@@ -133,7 +133,7 @@ public class MapOverlay extends Overlay {
             }
 
             @Override
-            public boolean scrolled(int i) {
+            public boolean scrolled(float amountX, float amountY) {
                 return false;
             }
         };
