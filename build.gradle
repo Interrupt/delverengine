@@ -13,7 +13,8 @@ allprojects {
     version = '1.4.0'
     ext {
         appName = "delver"
-        gdxVersion = '1.9.9'
+        gdxVersion = '1.11.0'
+        gdxControllersVersion = '2.2.2'
         roboVMVersion = '2.3.9'
         kryoVersion = '2.24.0'
         reflectionsVersion = '0.9.12'
@@ -35,8 +36,7 @@ project(":DungeoneerDesktop") {
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
     }
 }
 
@@ -56,7 +56,7 @@ project(":Dungeoneer") {
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.esotericsoftware.kryo:kryo:$kryoVersion"
         api "com.bladecoder.ink:blade-ink:$inkVersion"
     }
