@@ -66,28 +66,28 @@ public class UiSkin {
 		atlas.addRegion("menu-inv-btn-inactive", inventoryButtons, 0, 44, 30, 20);
 		atlas.addRegion("menu-char-btn-inactive", inventoryButtons, 0, 66, 30, 20);
 
-        upRegion.names = new String[]{"split", "pads"};
+        upRegion.names = new String[]{"split", "pad"};
         upRegion.values = new int[][] {{6, 6, 5, 9}, {0, 0, 4, 8}};
 
-		downRegion.names = new String[] {"split", "pads"};
+		downRegion.names = new String[] {"split", "pad"};
         downRegion.values = new int[][] {{6, 6, 7, 7}, {0, 0, 4, 8}};
 
-		sliderRegion.names = new String[] {"split", "pads"};
+		sliderRegion.names = new String[] {"split", "pad"};
         sliderRegion.values = new int[][] {{4, 4, 8, 7}, {0, 0, 0, 0}};
 
-		knobBeforeRegion.names = new String[] {"split", "pads"};
+		knobBeforeRegion.names = new String[] {"split", "pad"};
         knobBeforeRegion.values = new int[][] {{4, 4, 8, 7}, {0, 0, 0, 0}};
 
-		tooltipRegion.names = new String[] {"split", "pads"};
+		tooltipRegion.names = new String[] {"split", "pad"};
         tooltipRegion.values = new int[][] {{10, 10, 10, 10}, {8, 8, 8, 8}};
 
-		tableHoverAtlas.names = new String[] {"split", "pads"};
+		tableHoverAtlas.names = new String[] {"split", "pad"};
         tableHoverAtlas.values = new int[][] {{1, 1, 1, 1}, {4, 1, 4, 2}};
 
-		tableNoHoverAtlas.names = new String[] {"split", "pads"};
+		tableNoHoverAtlas.names = new String[] {"split", "pad"};
         tableNoHoverAtlas.values = new int[][] {{1, 1, 1, 1}, {4, 1, 4, 2}};
 
-		windowRegion.names = new String[] {"split", "pads"};
+		windowRegion.names = new String[] {"split", "pad"};
         windowRegion.values = new int[][] {{8, 8, 8, 8}, {0, 0, 0, 0}};
 
 		skin = new Skin(Game.getInternal("ui/skin.json"), atlas);
