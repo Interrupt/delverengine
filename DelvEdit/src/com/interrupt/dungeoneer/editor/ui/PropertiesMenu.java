@@ -1,7 +1,9 @@
 package com.interrupt.dungeoneer.editor.ui;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
@@ -18,7 +20,7 @@ import com.interrupt.dungeoneer.editor.EditorArt;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
-import org.lwjgl.LWJGLUtil;
+//import org.lwjgl.LWJGLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -373,9 +375,11 @@ public class PropertiesMenu extends Table {
                                 }
 
                                 Gdx.input.setCursorPosition((int) firstX, (int) firstY);
-                                if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
+
+                                // CC: LWJGL3 hax
+                                /*if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
                                     Gdx.input.setCursorPosition((int) firstX, Gdx.graphics.getHeight() - 1 - (int) firstY);
-                                }
+                                }*/
                             }
 
                             @Override

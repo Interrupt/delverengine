@@ -3,8 +3,9 @@ package com.interrupt.dungeoneer.editor;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -328,23 +329,27 @@ public class EditorApplication implements ApplicationListener {
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
-		Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
+        // We are the app now!
+        Editor.app = this;
 
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "New Level - DelvEdit";
-		config.fullscreen = false;
-		config.width = defaultMode.width;
-		config.height = defaultMode.height;
-		config.vSyncEnabled = true;
-		config.foregroundFPS = 120;
-		config.backgroundFPS = 30;
-		config.stencil = 8;
+		Graphics.DisplayMode defaultMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
 
-		config.addIcon("icon-128.png", Files.FileType.Internal); // 128x128 icon (mac OS)
-		config.addIcon("icon-32.png", Files.FileType.Internal);  // 32x32 icon (Windows + Linux)
-		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+		config.setTitle("New Level - DelvEdit");
+		config.setWindowedMode(defaultMode.width, defaultMode.height);
+        config.setMaximized(true);
+        config.useVsync(true);
+		config.setForegroundFPS(144);
+        config.setIdleFPS(30);
 
-		new LwjglApplication(this, config) {
+        // TODO: Can turn on MSAA now! Rad.
+        config.setBackBufferConfig(8,8,8,8,16,8,0);
+
+		config.setWindowIcon(Files.FileType.Internal, "icon-128.png"); // 128x128 icon (mac OS)
+		config.setWindowIcon(Files.FileType.Internal, "icon-32.png");  // 32x32 icon (Windows + Linux)
+		config.setWindowIcon(Files.FileType.Internal, "icon-16.png");  // 16x16 icon (Windows)
+
+		new Lwjgl3Application(this, config) {
 		    public void close() {
 		        Editor.dispose();
 		        super.exit();
