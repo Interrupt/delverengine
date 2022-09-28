@@ -235,32 +235,30 @@ public class GamepadManager implements ControllerListener {
 		return matchButton(axisIndex, GamepadBinding.GamepadInputType.AXIS, (value > 0) ? 1 : -1, value);
 	}
 
-    public boolean dpadMenuNavigation(Controller controller, int buttonIndex) {
-        if (!this.menuMode) return false;
+    public void dpadMenuNavigation(Controller controller, int buttonIndex) {
+        if (!this.menuMode) return;
 
         ControllerMapping mapping = controller.getMapping();
 
         if (buttonIndex == mapping.buttonDpadUp) {
             this.controllerState.dpadEvents.add(DPAD.UP);
-            return true;
+            return;
         }
 
         if (buttonIndex == mapping.buttonDpadDown) {
             this.controllerState.dpadEvents.add(DPAD.DOWN);
-            return true;
+            return;
         }
 
         if (buttonIndex == mapping.buttonDpadRight) {
             this.controllerState.dpadEvents.add(DPAD.RIGHT);
-            return true;
+            return;
         }
 
         if (buttonIndex == mapping.buttonDpadLeft) {
             this.controllerState.dpadEvents.add(DPAD.LEFT);
-            return true;
+            return;
         }
-
-        return false;
     }
 
     @Override
