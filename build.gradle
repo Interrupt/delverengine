@@ -15,6 +15,7 @@ allprojects {
         appName = "delver"
         gdxVersion = '1.11.0'
         gdxControllersVersion = '2.2.2'
+        jamepadVersion = '2.0.14.2'
         roboVMVersion = '2.3.9'
         kryoVersion = '2.24.0'
         reflectionsVersion = '0.9.12'
@@ -35,8 +36,12 @@ project(":DungeoneerDesktop") {
     dependencies {
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+        implementation("com.badlogicgames.jamepad:jamepad:$jamepadVersion") {
+            exclude group: 'com.badlogicgames.gdx', module: 'gdx-jnigen-loader'
+        }
     }
 }
 
@@ -49,6 +54,10 @@ project(":DelvEdit") {
         api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "org.reflections:reflections:$reflectionsVersion"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+        implementation("com.badlogicgames.jamepad:jamepad:$jamepadVersion") {
+            exclude group: 'com.badlogicgames.gdx', module: 'gdx-jnigen-loader'
+        }
     }
 }
 
