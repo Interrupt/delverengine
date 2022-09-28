@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 
@@ -35,7 +36,6 @@ public class DesktopStarter {
         config.useVsync(Options.instance.vsyncEnabled);
         config.setBackBufferConfig(8,8,8,8,16,8,Options.instance.antiAliasingSamples);
         config.setForegroundFPS(Options.instance.fpsLimit);
-        config.setIdleFPS(30);
 
         // More sounds! Libgdx sets these settings low by default
         config.setAudioConfig(32, 512, 18);
