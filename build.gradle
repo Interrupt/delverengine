@@ -36,7 +36,6 @@ project(":DungeoneerDesktop") {
     dependencies {
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
         // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
         //api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
@@ -53,7 +52,6 @@ project(":DelvEdit") {
     dependencies {
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
         // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
         // api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
