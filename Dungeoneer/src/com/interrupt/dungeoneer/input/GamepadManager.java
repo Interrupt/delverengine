@@ -221,23 +221,18 @@ public class GamepadManager implements ControllerListener {
 
 	@Override
 	public boolean buttonDown (Controller controller, int buttonIndex) {
-		boolean result = matchButton(buttonIndex, GamepadBinding.GamepadInputType.BUTTON, 0, 1);
-
         dpadMenuNavigation(controller, buttonIndex);
-
-        return result;
+		return matchButton(buttonIndex, GamepadBinding.GamepadInputType.BUTTON, 0, 1);
 	}
 
 	@Override
 	public boolean buttonUp (Controller controller, int buttonIndex) {
-		boolean result = matchButton(buttonIndex, GamepadBinding.GamepadInputType.BUTTON, 0, 0);
-		return result;
+		return matchButton(buttonIndex, GamepadBinding.GamepadInputType.BUTTON, 0, 0);
 	}
 
 	@Override
 	public boolean axisMoved (Controller controller, int axisIndex, float value) {
-		boolean result = matchButton(axisIndex, GamepadBinding.GamepadInputType.AXIS, (value > 0) ? 1 : -1, value);
-		return result;
+		return matchButton(axisIndex, GamepadBinding.GamepadInputType.AXIS, (value > 0) ? 1 : -1, value);
 	}
 
     public boolean dpadMenuNavigation(Controller controller, int buttonIndex) {
