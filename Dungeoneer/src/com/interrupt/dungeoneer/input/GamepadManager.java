@@ -297,4 +297,8 @@ public class GamepadManager implements ControllerListener {
 
     	return result;
     }
+
+    public int controllerCount() {
+        return controllerMapping.size;
+    }
 }
