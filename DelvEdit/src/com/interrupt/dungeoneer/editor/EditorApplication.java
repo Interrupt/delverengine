@@ -2531,7 +2531,13 @@ public class EditorApplication implements ApplicationListener {
 
 		cubeVertArray.shrink();
 
-        float[] vertices = new float[cubeVertArray.size + (cubeVertArray.size / 3) * 4];
+        // Now make the actual mesh vertices and indices
+        int numLines = width * height;
+
+        // Each line has start and end points for a total of six vertices, and eight colors
+        int numVertices = (numLines * 6) + (numLines * 8);
+
+        float[] vertices = new float[numVertices];
         int i = 0;
         for (int pIdx = 0; pIdx < cubeVertArray.size;) {
         		// vertex position
@@ -2553,7 +2559,7 @@ public class EditorApplication implements ApplicationListener {
 			indices[i++] = (short)(i - 1);
         }
 
-		Mesh mesh = new Mesh(false, vertices.length, indices.length, new VertexAttribute(Usage.Position, 3, "a_position"), new VertexAttribute(Usage.ColorUnpacked, 4, "a_color"));
+		Mesh mesh = new Mesh(true, vertices.length, indices.length, new VertexAttribute(Usage.Position, 3, "a_position"), new VertexAttribute(Usage.ColorUnpacked, 4, "a_color"));
         mesh.setVertices(vertices);
         mesh.setIndices(indices);
 
