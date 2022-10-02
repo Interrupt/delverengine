@@ -341,7 +341,6 @@ public class EditorApplication implements ApplicationListener {
         config.useVsync(true);
 		config.setForegroundFPS(144);
         config.setIdleFPS(30);
-        config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 3, 2);
 
         // TODO: Can turn on MSAA now! Rad.
         config.setBackBufferConfig(8,8,8,8,16,8,0);
