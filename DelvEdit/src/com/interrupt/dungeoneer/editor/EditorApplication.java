@@ -341,9 +341,10 @@ public class EditorApplication implements ApplicationListener {
         config.useVsync(true);
 		config.setForegroundFPS(144);
         config.setIdleFPS(30);
-
-        // TODO: Can turn on MSAA now! Rad.
         config.setBackBufferConfig(8,8,8,8,16,8,0);
+
+        // Enable OpenGL Emulation over ANGLE for better cross platform support
+        config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
 
 		config.setWindowIcon(Files.FileType.Internal, "icon-128.png"); // 128x128 icon (mac OS)
 		config.setWindowIcon(Files.FileType.Internal, "icon-32.png");  // 32x32 icon (Windows + Linux)

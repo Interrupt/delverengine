@@ -13,7 +13,7 @@ allprojects {
     version = '1.4.0'
     ext {
         appName = "delver"
-        gdxVersion = '1.11.0'
+        gdxVersion = '1.11.1-SNAPSHOT'
         gdxControllersVersion = '2.2.2'
         jamepadVersion = '2.0.14.2'
         roboVMVersion = '2.3.9'
@@ -36,6 +36,7 @@ project(":DungeoneerDesktop") {
     dependencies {
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
         // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
         //api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
@@ -52,6 +53,7 @@ project(":DelvEdit") {
     dependencies {
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
         // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
         // api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"

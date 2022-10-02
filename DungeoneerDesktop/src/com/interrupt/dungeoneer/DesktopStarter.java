@@ -40,6 +40,9 @@ public class DesktopStarter {
         // More sounds! Libgdx sets these settings low by default
         config.setAudioConfig(32, 512, 18);
 
+        // Enable OpenGL Emulation over ANGLE for better cross platform support
+        config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
+
         config.setWindowIcon(Files.FileType.Internal, "icon-128.png"); // 128x128 icon (mac OS)
         config.setWindowIcon(Files.FileType.Internal, "icon-32.png");  // 32x32 icon (Windows + Linux)
         config.setWindowIcon(Files.FileType.Internal, "icon-16.png");  // 16x16 icon (Windows)
