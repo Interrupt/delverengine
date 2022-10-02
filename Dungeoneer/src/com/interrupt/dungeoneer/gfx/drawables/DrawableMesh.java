@@ -27,12 +27,12 @@ public class DrawableMesh extends Drawable {
 
 	/** Mesh texture filepath. */
 	public String textureFile = "meshes.png";
-	
+
 	public transient Mesh loadedMesh;
 	public transient Texture loadedTexture;
-	
+
 	public transient boolean couldLoad = true;
-	
+
 	private transient Matrix4 modelView = null;
 	private transient Matrix4 combined = new Matrix4();
 
@@ -55,7 +55,7 @@ public class DrawableMesh extends Drawable {
 
 	/** Rotation z-coordinate. */
 	public float rotZ = 0;
-	
+
 	public transient BoundingBox bbox = null;
 	private transient BoundingBox frustrumCheckBox = new BoundingBox();
 
@@ -81,11 +81,11 @@ public class DrawableMesh extends Drawable {
 		this.meshFile = meshFile;
 		this.textureFile = textureFile;
 	}
-	
+
 	public void draw (PerspectiveCamera camera, Color color, ShaderInfo shader, float fogStart, float fogEnd, Color fogColor, float time) {
-		
+
 		this.color = color;
-		
+
 		loadedTexture = Art.cachedTextures.get(textureFile);
 		if(loadedTexture == null) {
 			loadedTexture = Art.loadTexture(textureFile);
@@ -118,7 +118,7 @@ public class DrawableMesh extends Drawable {
 			}
 
 			if(bakedMesh != null && !GameManager.renderer.renderingForPicking) {
-				shader.setAttributes(combined, 0, fogStart, fogEnd, time, Color.BLACK, fogColor, !fullbrite);
+				shader.setAttributes(camera.position, combined, 0, fogStart, fogEnd, time, Color.BLACK, fogColor, !fullbrite);
 				shader.begin();
 				try {
 					bakedMesh.render(shader.shader, GL20.GL_TRIANGLES);
@@ -129,7 +129,7 @@ public class DrawableMesh extends Drawable {
 				}
 			}
 			else if(loadedMesh != null) {
-				shader.setAttributes(combined, 0, fogStart, fogEnd, time, color, fogColor, !fullbrite);
+				shader.setAttributes(camera.position, combined, 0, fogStart, fogEnd, time, color, fogColor, !fullbrite);
 				shader.begin();
 				try {
 					loadedMesh.render(shader.shader, GL20.GL_TRIANGLES);
@@ -143,19 +143,19 @@ public class DrawableMesh extends Drawable {
 			shader.end();
 		}
 	}
-	
+
 	public boolean isInFrustrum(PerspectiveCamera camera) {
-		
+
 		if(bbox != null) {
 			frustrumCheckBox.set(bbox);
 			frustrumCheckBox.mul(modelView);
-			
+
 			return camera.frustum.boundsInFrustum(frustrumCheckBox);
 		}
-		
+
 		return true;
 	}
-	
+
 	public void update(Entity e) {
 		x = e.x;
 		y = e.y;
@@ -166,7 +166,7 @@ public class DrawableMesh extends Drawable {
 		shader = e.getShader();
 		update();
 	}
-	
+
 	public void update() {
 
     	// Refresh everything
@@ -197,7 +197,7 @@ public class DrawableMesh extends Drawable {
 
 		if(scaleVector != null) modelView.scale(scaleVector.x, scaleVector.y, scaleVector.z);
 		else modelView.scale(scale, scale, scale);
-			
+
 		// load if not already
 		if(loadedMesh == null && couldLoad) {
 			try {
@@ -206,7 +206,7 @@ public class DrawableMesh extends Drawable {
 				if(loadedMesh != null) {
 					bbox = Art.getCachedMeshBounds(meshFile);
 				}
-				
+
 				loadedTexture = Art.loadTexture(textureFile);
 
 				// Uhoh!

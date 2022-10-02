@@ -791,7 +791,8 @@ public class GlRenderer {
 		ShaderManager shaderManager = ShaderManager.getShaderManager();
 		for(int i = 0; i < shaderManager.loadedShaders.size; i++) {
 			ShaderInfo shader = shaderManager.loadedShaders.getValueAt(i);
-			shader.setAttributes(camera.combined,
+			shader.setAttributes(camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,
@@ -1018,7 +1019,9 @@ public class GlRenderer {
 		}
 
 		if(worldShaderInfo != null) {
-			worldShaderInfo.setAttributes(camera.combined,
+			worldShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,
@@ -1028,7 +1031,9 @@ public class GlRenderer {
 		}
 
 		if(waterShaderInfo != null) {
-			waterShaderInfo.setAttributes(camera.combined,
+			waterShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,
@@ -1038,7 +1043,9 @@ public class GlRenderer {
 		}
 
 		if(waterEdgeShaderInfo != null) {
-			waterEdgeShaderInfo.setAttributes(camera.combined,
+			waterEdgeShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,
@@ -1048,7 +1055,9 @@ public class GlRenderer {
 		}
 
 		if(fogShaderInfo != null) {
-			fogShaderInfo.setAttributes(camera.combined,
+			fogShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,
@@ -1142,7 +1151,9 @@ public class GlRenderer {
 		}
 
 		if(spriteShaderInfo != null) {
-			spriteShaderInfo.setAttributes(camera.combined,
+			spriteShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,
@@ -1203,7 +1214,9 @@ public class GlRenderer {
 		renderingForPicking = true;
 
 		if(spriteShaderInfo != null) {
-			spriteShaderInfo.setAttributes(camera.combined,
+			spriteShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,
@@ -1516,7 +1529,9 @@ public class GlRenderer {
 		GL20 gl = getGL();
 
 		if(spriteShaderInfo != null) {
-			spriteShaderInfo.setAttributes(camera.combined,
+			spriteShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					fogStart,
 					fogEnd,

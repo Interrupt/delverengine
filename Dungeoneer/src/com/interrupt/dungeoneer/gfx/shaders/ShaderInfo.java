@@ -18,8 +18,9 @@ import com.interrupt.dungeoneer.gfx.GlRenderer;
 
 public class ShaderInfo {
 	public ShaderProgram shader;
-	
+
 	int u_projectionViewMatrix;
+    int u_cameraPos;
 	int u_texture;
 	int u_fogStart;
 	int u_fogEnd;
@@ -30,8 +31,9 @@ public class ShaderInfo {
 	int u_UsedLights;
 	int u_LightColors;
 	int u_LightPositions;
-	
+
 	Matrix4 projectionView;
+    Vector3 cameraPos;
 	int texture;
 	float fogStart;
 	float fogEnd;
@@ -40,7 +42,7 @@ public class ShaderInfo {
 	Color ambientColor = new Color();
 	Color fogColor = new Color();
 	boolean useLights = true;
-	
+
 	boolean hasBegun = false;
 
     ArrayMap<String, Integer> attributeLocations = new ArrayMap<String, Integer>();
@@ -54,9 +56,10 @@ public class ShaderInfo {
 		this.shader = shader;
 		init();
 	}
-	
+
 	public void init() {
 		u_projectionViewMatrix = shader.getUniformLocation("u_projectionViewMatrix");
+        u_cameraPos = shader.getUniformLocation("u_cameraPos");
 		u_texture = shader.getUniformLocation("u_texture");
 		u_fogStart = shader.getUniformLocation("u_fogStart");
 		u_fogEnd = shader.getUniformLocation("u_fogEnd");
@@ -65,15 +68,16 @@ public class ShaderInfo {
 		u_FogColor = shader.getUniformLocation("u_FogColor");
 		u_UsedLights = shader.getUniformLocation("u_UsedLights");
 		u_DrawDistance = shader.getUniformLocation("u_drawDistance");
-		
+
 		u_LightColors = shader.getUniformLocation("u_LightColors[0]");
 		if(u_LightColors == -1) u_LightColors = shader.getUniformLocation("u_LightColors");
-		
+
 		u_LightPositions = shader.getUniformLocation("u_LightPositions[0]");
 		if(u_LightPositions == -1) u_LightPositions = shader.getUniformLocation("u_LightPositions");
 	}
-	
-	public void setAttributes(Matrix4 projectionView, int texture, float fogStart, float fogEnd, float time, Color inAmbientColor, Color inFogColor) {
+
+	public void setAttributes(Vector3 cameraPos, Matrix4 projectionView, int texture, float fogStart, float fogEnd, float time, Color inAmbientColor, Color inFogColor) {
+        this.cameraPos = cameraPos;
 		this.projectionView = projectionView;
 		this.texture = texture;
 		this.fogStart = fogStart;
@@ -102,9 +106,9 @@ public class ShaderInfo {
 			setShaderUniform(loc, value);
 		}
     }
-	
-	public void setAttributes(Matrix4 projectionView, int texture, float fogStart, float fogEnd, float time, Color inAmbientColor, Color inFogColor, boolean useLights) {
-		setAttributes(projectionView, texture, fogStart, fogEnd, time, inAmbientColor, inFogColor);
+
+	public void setAttributes(Vector3 cameraPos, Matrix4 projectionView, int texture, float fogStart, float fogEnd, float time, Color inAmbientColor, Color inFogColor, boolean useLights) {
+		setAttributes(cameraPos, projectionView, texture, fogStart, fogEnd, time, inAmbientColor, inFogColor);
 		this.useLights = useLights;
 	}
 
@@ -153,7 +157,7 @@ public class ShaderInfo {
 	public void begin() {
 		begin(0);
 	}
-	
+
 	public void begin(int texOffset) {
 
 		if(!hasBegun) {
@@ -162,6 +166,7 @@ public class ShaderInfo {
 		}
 
 		if(projectionView != null) shader.setUniformMatrix(u_projectionViewMatrix, projectionView);
+        if(cameraPos != null) shader.setUniformf(u_cameraPos, cameraPos);
         shader.setUniformi(u_texture, 0);
         shader.setUniformf(u_fogStart, fogStart);
         shader.setUniformf(u_fogEnd, fogEnd);
@@ -190,7 +195,7 @@ public class ShaderInfo {
 			setShaderUniform(loc, value);
         }
 	}
-	
+
 	public void end() {
 		hasBegun = false;
 		shader.end();
@@ -201,7 +206,7 @@ public class ShaderInfo {
         shader.setUniform4fv(u_LightColors, GlRenderer.lightColors, 0, GlRenderer.lightColors.length);
         shader.setUniform3fv(u_LightPositions, GlRenderer.lightPositions, 0, GlRenderer.lightPositions.length);
 	}
-	
+
 	public boolean hasBegun() {
 		return hasBegun;
 	}

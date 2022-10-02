@@ -2,6 +2,7 @@ uniform mat4 u_projectionViewMatrix;
 uniform float u_fogStart;
 uniform float u_fogEnd;
 uniform float u_time;
+uniform vec3 u_cameraPos;
 
 uniform vec4 u_AmbientColor;
 uniform vec4 u_FogColor;
@@ -24,6 +25,7 @@ const float c_zerof = 0.0;
 const float c_onef = 1.0;
 
 vec4 vertexPositionInEye;
+float fogLength;
 
 float calcFogFactor(float distanceToEye);
 
@@ -47,9 +49,8 @@ void main() {
 
   v_color.a = 1.0;
     
-  vertexPositionInEye = gl_Position;
-  v_fogFactor = calcFogFactor(-vertexPositionInEye.z - u_fogEnd * (1.0 - a_color.a));
-  v_eyeDistance = -vertexPositionInEye.z;
+  v_eyeDistance = -distance(u_cameraPos, a_position.xyz);
+  v_fogFactor = calcFogFactor(v_eyeDistance - u_fogEnd * (1.0 - a_color.a));
 }
 
 float calcFogFactor(float distanceToEye)

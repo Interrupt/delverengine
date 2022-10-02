@@ -527,7 +527,9 @@ public class EditorApplication implements ApplicationListener {
 		if(gameApp == null)
 			GlRenderer.time += Gdx.graphics.getDeltaTime();
 
-		GlRenderer.worldShaderInfo.setAttributes(camera.combined,
+		GlRenderer.worldShaderInfo.setAttributes(
+                camera.position,
+                camera.combined,
 				0,
 				1000,
 				1000,
@@ -535,7 +537,9 @@ public class EditorApplication implements ApplicationListener {
 				Color.BLACK,
 				Color.BLACK);
 
-		GlRenderer.waterShaderInfo.setAttributes(camera.combined,
+		GlRenderer.waterShaderInfo.setAttributes(
+                camera.position,
+                camera.combined,
 				0,
 				1000,
 				1000,
@@ -543,7 +547,9 @@ public class EditorApplication implements ApplicationListener {
 				Color.BLACK,
 				Color.BLACK);
 
-        GlRenderer.waterEdgeShaderInfo.setAttributes(camera.combined,
+        GlRenderer.waterEdgeShaderInfo.setAttributes(
+                camera.position,
+                camera.combined,
                 0,
                 1000,
                 1000,
@@ -551,7 +557,9 @@ public class EditorApplication implements ApplicationListener {
                 Color.BLACK,
                 Color.BLACK);
 
-		GlRenderer.fogShaderInfo.setAttributes(camera.combined,
+		GlRenderer.fogShaderInfo.setAttributes(
+                camera.position,
+                camera.combined,
 				0,
 				1000,
 				1000,
@@ -789,7 +797,9 @@ public class EditorApplication implements ApplicationListener {
 		GlRenderer.EnableBlending(true);
 
 		if(gridMesh != null && player == null) {
-			GlRenderer.worldShaderInfo.setAttributes(camera.combined,
+			GlRenderer.worldShaderInfo.setAttributes(
+                    camera.position,
+                    camera.combined,
 					0,
 					10,
 					90,
