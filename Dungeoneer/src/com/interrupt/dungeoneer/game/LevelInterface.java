@@ -13,8 +13,8 @@ import com.interrupt.dungeoneer.entities.Stairs;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.tiles.Tile;
 
-import java.util.logging.FileHandler;
-
+// Use the LevelInterface instead of a specific Level implementation.
+// This could allow us to have different level types: eg: we could load Doom levels!
 public interface LevelInterface {
     void load();
     void load(Level.Source source);
