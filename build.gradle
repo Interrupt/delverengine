@@ -41,9 +41,6 @@ project(":DungeoneerDesktop") {
         //api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-        implementation("com.badlogicgames.jamepad:jamepad:$jamepadVersion") {
-            exclude group: 'com.badlogicgames.gdx', module: 'gdx-jnigen-loader'
-        }
     }
 }
 
@@ -59,9 +56,6 @@ project(":DelvEdit") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "org.reflections:reflections:$reflectionsVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-        implementation("com.badlogicgames.jamepad:jamepad:$jamepadVersion") {
-            exclude group: 'com.badlogicgames.gdx', module: 'gdx-jnigen-loader'
-        }
     }
 }
 
