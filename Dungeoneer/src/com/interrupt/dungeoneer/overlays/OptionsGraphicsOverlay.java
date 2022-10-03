@@ -35,6 +35,8 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
     private Slider postProcessingQualitySlider;
     private SpinnerButton<String> postProcessingOptions;
 
+    private SpinnerButton<Options.RenderingEngine> renderingEngineSpinner;
+
     private Table mainTable;
 
     Label aaWarning;
@@ -161,6 +163,21 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
 
         addGamepadButtonOrder(postProcessingOptions, postProcessingLabel);
 
+        // Rendering Engine
+        Label renderingEngineLabel = new Label(StringManager.get("screens.OptionsScreen.renderingEngineLabel"),skin.get(Label.LabelStyle.class));
+        mainTable.add(renderingEngineLabel);
+        Array<Options.RenderingEngine> availableRenderers = new Array<>(Options.RenderingEngine.values());
+        renderingEngineSpinner = new SpinnerButton<>(availableRenderers, skin.get(TextButton.TextButtonStyle.class));
+
+        if (Options.instance.renderingEngine != null) {
+            renderingEngineSpinner.setValue(Options.instance.renderingEngine);
+        }
+
+        addGamepadButtonOrder(renderingEngineSpinner, renderingEngineLabel);
+
+        mainTable.add(renderingEngineSpinner);
+        mainTable.row();
+
         // Anti Aliasing
         fxaaCheckbox = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
         fxaaCheckbox.setChecked(Options.instance.fxaaEnabled);
@@ -259,6 +276,7 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         Options.instance.shadowsEnabled = shadows.isChecked();
         Options.instance.fxaaEnabled = fxaaCheckbox.isChecked();
         Options.instance.gfxQuality = particleDensity.getValue();
+        Options.instance.renderingEngine = renderingEngineSpinner.getValue();
         Options.instance.postProcessingQuality = (int)postProcessingQualitySlider.getValue();
         Options.instance.enablePostProcessing = (!postProcessingOptions.getValue().equals("Off") && Options.instance.postProcessingQuality != 0) || Options.instance.fxaaEnabled;
         Options.instance.postProcessFilter = "post_filter_" + postProcessingOptions.getValue();
@@ -284,6 +302,7 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         Options.instance.fieldOfView = fovSlider.getValue();
         Options.instance.shadowsEnabled = shadows.isChecked();
         Options.instance.fxaaEnabled = fxaaCheckbox.isChecked();
+        Options.instance.renderingEngine = renderingEngineSpinner.getValue();
         Options.instance.postProcessingQuality = (int)postProcessingQualitySlider.getValue();
         Options.instance.enablePostProcessing = (!postProcessingOptions.getValue().equals("Off") && Options.instance.postProcessingQuality != 0) || Options.instance.fxaaEnabled;
         Options.instance.postProcessFilter = "post_filter_" + postProcessingOptions.getValue();
