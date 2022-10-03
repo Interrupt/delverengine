@@ -2,12 +2,14 @@ package com.interrupt.dungeoneer.entities.triggers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Light;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.serializers.v2.LevelSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -35,7 +37,7 @@ public class LevelSwap extends Trigger {
             Level level = LevelSerializer.loadLevel(levelFile);
 
             if (level != null) {
-                Level currentLevel = Game.GetLevel();
+                LevelInterface currentLevel = Game.GetLevel();
 
                 // Rotate the sublevel to match
                 for(int i = 0; i < rotAccumulator; i++) {
@@ -66,47 +68,50 @@ public class LevelSwap extends Trigger {
         }
     }
 
-    public void updateLights(Level newLevel, Level existingLevel)
+    public void updateLights(LevelInterface newLevel, LevelInterface existingLevel)
     {
         // light emitting entities
-        for(int i = 0; i < newLevel.entities.size; i++)
+        Array<Entity> dynamicEntities = newLevel.getEntities();
+        for(int i = 0; i < dynamicEntities.size; i++)
         {
-            Entity e = newLevel.entities.get(i);
+            Entity e = dynamicEntities.get(i);
             if(e instanceof Light && e.isActive)
             {
                 Light t = (Light)e;
-                existingLevel.lightSpatialHash.AddLight(t);
+                existingLevel.AddLight(t);
             }
         }
 
-        for(int i = 0; i < newLevel.non_collidable_entities.size; i++)
+        Array<Entity> nonCollidableEntities = newLevel.getNonCollidableEntities();
+        for(int i = 0; i < nonCollidableEntities.size; i++)
         {
-            Entity e = newLevel.non_collidable_entities.get(i);
+            Entity e = nonCollidableEntities.get(i);
             if(e instanceof Light && e.isActive)
             {
                 Light t = (Light)e;
-                existingLevel.lightSpatialHash.AddLight(t);
+                existingLevel.AddLight(t);
             }
         }
 
-        for(int i = 0; i < newLevel.static_entities.size; i++)
+        Array<Entity> staticEntities = newLevel.getStaticEntities();
+        for(int i = 0; i < staticEntities.size; i++)
         {
-            Entity e = newLevel.static_entities.get(i);
+            Entity e = staticEntities.get(i);
             if(e instanceof Light && e.isActive)
             {
                 Light t = (Light)e;
-                existingLevel.lightSpatialHash.AddLight(t);
+                existingLevel.AddLight(t);
             }
         }
 
         // light some entities
-        for(Entity e : newLevel.entities) {
+        for(Entity e : dynamicEntities) {
             e.updateLight(existingLevel);
         }
-        for(Entity e : newLevel.non_collidable_entities) {
+        for(Entity e : nonCollidableEntities) {
             e.updateLight(existingLevel);
         }
-        for(Entity e : newLevel.static_entities) {
+        for(Entity e : staticEntities) {
             e.updateLight(existingLevel);
         }
     }

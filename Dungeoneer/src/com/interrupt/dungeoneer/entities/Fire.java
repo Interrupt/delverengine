@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.managers.EntityManager;
 
@@ -64,7 +65,7 @@ public class Fire extends AnimatedSprite {
     }
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         super.init(level, source);
 
         this.lifeTime += Game.rand.nextFloat() * this.randomLifeTime;
@@ -88,7 +89,7 @@ public class Fire extends AnimatedSprite {
     boolean makeSound = true;
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         super.tick(level, delta);
 
         spreadTimer -= delta;
@@ -142,7 +143,7 @@ public class Fire extends AnimatedSprite {
         tickAttached(level, delta);
     }
 
-    public void burn(Level level) {
+    public void burn(LevelInterface level) {
         //Array<Entity> entities = level.getEntitiesColliding(x - 0.5f, y - 0.5f, z, collision, this);
         Array<Entity> entities = level.getEntitiesColliding(x, y, z, this.fireCollision, this);
 
@@ -166,7 +167,7 @@ public class Fire extends AnimatedSprite {
         }
     }
 
-    public void spread(Level level) {
+    public void spread(LevelInterface level) {
         Array<Entity> entities = level.getEntitiesColliding(x, y, z, collision, this);
         for(Entity e : entities) {
             if(e instanceof Breakable) {
@@ -175,7 +176,7 @@ public class Fire extends AnimatedSprite {
         }
     }
 
-    public void spreadTo(Entity e, Level level) {
+    public void spreadTo(Entity e, LevelInterface level) {
         Fire currentFire = (Fire)e.getAttached(Fire.class);
         boolean isOnFire = currentFire != null;
 

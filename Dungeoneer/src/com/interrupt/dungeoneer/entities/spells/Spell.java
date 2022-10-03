@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 
@@ -50,21 +51,21 @@ public class Spell {
 
 	/** Entity to spawn when spell is cast. */
 	public Entity castVfx = null;
-	
+
 	public Spell() { }
-	
+
 	// casting directly costs spell points
 	public void cast(Actor owner, Vector3 direction) {
 		if(owner.mp < mpCost) return;
-		
+
 		owner.mp -= mpCost;
 		if(owner.mp < 0) owner.mp = 0;
 		if(owner.mp > owner.maxMp) owner.mp = owner.maxMp;
-		
+
 		doCast(owner, direction, new Vector3(owner.x, owner.y, owner.z));
 		playCastSound(owner);
 	}
-	
+
 	// zapping from a wand or scroll costs no spell points
 	public void zap(Actor owner, Vector3 direction) {
 		zap(owner, direction, new Vector3(owner.x, owner.y, owner.z));
@@ -91,7 +92,7 @@ public class Spell {
 
         playCastSound(owner);
     }
-	
+
 	// Override this for specific spell effects
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) { }
 
@@ -100,8 +101,8 @@ public class Spell {
 	}
 
 	// Override this for different spell casting effects
-	protected void doCastEffect(Vector3 pos, Level level, Entity owner) { }
-	
+	protected void doCastEffect(Vector3 pos, LevelInterface level, Entity owner) { }
+
 	// Override this for different casting sounds
 	public void playCastSound(Actor owner) {
 		if(owner == Game.instance.player) {
@@ -111,13 +112,13 @@ public class Spell {
 			Audio.playPositionedSound(castSound, new Vector3(owner.x, owner.y, owner.z), castSoundVolume, 12);
 		}
 	}
-	
+
 	public int doAttackRoll()
-	{	
+	{
 		Random r = new Random();
 		int dmg = baseDamage;
 		dmg += r.nextInt(randDamage + 1);
-		
+
 		return dmg;
 	}
 }

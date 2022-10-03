@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.interrupt.dungeoneer.game.LevelInterface;
 
 public class LookAtTrigger extends BasicTrigger {
     /** How long must player looked at until trigger event fires. */
@@ -22,12 +23,12 @@ public class LookAtTrigger extends BasicTrigger {
 	private final transient Vector3 t_checkDistance = new Vector3();
 
 	public LookAtTrigger() { hidden = true; spriteAtlas = "editor"; tex = 11; }
-	
+
 	@Override
 	public void doTriggerEvent(String value) { }
 
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 		super.tick(level, delta);
 
 		if(isActive) {

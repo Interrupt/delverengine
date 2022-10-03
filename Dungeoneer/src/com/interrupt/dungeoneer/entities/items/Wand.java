@@ -14,6 +14,7 @@ import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.managers.StringManager;
 
@@ -30,7 +31,7 @@ public class Wand extends Weapon {
     /** Require charges to fire? */
 	@EditorProperty
 	public boolean usesCharges = true;
-	
+
 	private transient int lastComputedChargeValue = 0;
 	private transient String chargeText = "0";
 
@@ -58,21 +59,21 @@ public class Wand extends Weapon {
 		super(x, y, 16, ItemType.wand, StringManager.get("items.Wand.defaultNameText"));
 		charges = 5;
 	}
-	
+
 	public Color getColor()
 	{
 		return Weapon.getEnchantmentColor(this.damageType);
 	}
-	
+
 	public String GetInfoText() {
 		if(usesCharges)
 			return MessageFormat.format(StringManager.get("items.Wand.infoText"), getChargeNumber(Game.instance.player)) + "\n" + super.GetInfoText();
 		else
 			return super.GetInfoText();
 	}
-	
+
 	@Override
-	public void doAttack(Player p, Level lvl, float attackPower) {
+	public void doAttack(Player p, LevelInterface lvl, float attackPower) {
 
 		if(autoFire) {
 			p.handAnimateTimer = autoFireTime * 3f;
@@ -93,12 +94,12 @@ public class Wand extends Weapon {
 
 		Vector3 direction = getCrosshairDirection(-0.3f);
 		if(direction == null) direction = Game.camera.direction;
-		
+
 		spell.damageType = damageType;
 		spell.baseDamage = getBaseDamage();
 		spell.randDamage = getRandDamage();
 		spell.zap(p, direction.cpy(), new Vector3(x + direction.x * 0.15f, y + direction.z * 0.15f, z + direction.y * 0.15f));
-		
+
 		p.history.usedWand(this);
 
 		if(autoFire)
@@ -116,14 +117,14 @@ public class Wand extends Weapon {
 		}
 		return super.getRandDamage() + boost;
 	}
-	
+
 	public int getChargeNumber(Player p) {
 		if(!usesCharges)
 			return 1;
 
 		return charges + (int)(p.getMagicStatBoost() * magicStatBoostMod);
 	}
-	
+
 	public String getChargeText() {
 
 		if(!usesCharges)
@@ -138,7 +139,7 @@ public class Wand extends Weapon {
 		}
 	}
 
-	public void makeFireEffect(Level lvl) {
+	public void makeFireEffect(LevelInterface lvl) {
 	    if(fireEffect == null) {
             Particle p = CachePools.getParticle(x, y, z - 0.35f, 0, 0, 0, 18, spell.spellColor, true);
 

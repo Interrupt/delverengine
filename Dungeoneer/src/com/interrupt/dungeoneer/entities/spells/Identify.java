@@ -10,6 +10,7 @@ import com.interrupt.dungeoneer.entities.items.ItemModification;
 import com.interrupt.dungeoneer.entities.items.Potion;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 
 import java.util.Random;
@@ -43,7 +44,7 @@ public class Identify extends Spell {
     }
 
     @Override
-    protected void doCastEffect(Vector3 pos, Level level, Entity owner) {
+    protected void doCastEffect(Vector3 pos, LevelInterface level, Entity owner) {
 
         Random r = Game.rand;
         int particleCount = 20;

@@ -32,9 +32,9 @@ public class Beam extends Spell {
 		float xOffset = (owner == p) ? 0f : 0f;
 		float yOffset = (owner == p) ? 0f : 0f;
 		float zOffset = (owner == p) ? 0f : 0.31f;
-		
+
 		//float speed = 0.9f;
-		
+
 		int dmg = doAttackRoll();
 
 		spellColor.a = 1f;
@@ -45,9 +45,9 @@ public class Beam extends Spell {
 		projectile.startTex = startTex;
 		projectile.endTex = endTex;
 		projectile.spriteAtlas = spriteAtlas;
-		Game.GetLevel().entities.add(projectile);
+		Game.GetLevel().addEntity(projectile);
 	}
-	
+
 	@Override
 	public void playCastSound(Actor owner) {
 		Audio.playPositionedSound("mg_light_shoot_01.mp3,mg_light_shoot_02.mp3,mg_light_shoot_03.mp3,mg_light_shoot_04.mp3", new Vector3(owner.x, owner.y, owner.z), 0.75f, 13f);

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
@@ -51,9 +52,9 @@ public class SpriteBeam extends DirectionalEntity {
 		artType = ArtType.sprite;
 		isSolid = false;
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		if(drawable == null || !(drawable instanceof DrawableBeam)) {
 			drawable = new DrawableBeam(tex, artType);
@@ -65,13 +66,13 @@ public class SpriteBeam extends DirectionalEntity {
 			if(animation.done) isActive = false;	// die when done playing an animation
 		}
 	}
-	
+
 	@Override
-	public void updateLight(Level level) {
+	public void updateLight(LevelInterface level) {
 		if(!fullbrite)
             color = level.getLightColorAt(x, y, z + 0.08f, null, new Color());
 	}
-	
+
 	// Start an animation on this sprite
 	public void playAnimation(SpriteAnimation animation, boolean looping) {
 		this.animation = animation;
@@ -86,7 +87,7 @@ public class SpriteBeam extends DirectionalEntity {
 			animation.randomizeTime();
 		}
 	}
-	
+
 	public void stopAnimation() {
 		animation = null;
 	}

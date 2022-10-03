@@ -4,6 +4,7 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 
@@ -23,14 +24,14 @@ public class SkyboxArea extends Area {
     DrawableMesh skybox = null;
     DrawableMesh defaultSkybox = null;
 
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         skybox = new DrawableMesh();
         skybox.meshFile = skyboxMesh;
         skybox.textureFile = skyboxTexture;
     }
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         boolean wasInZone = playerIsInZone;
 
         if(Game.instance != null && Game.instance.player != null && Game.instance.level != null) {
@@ -42,8 +43,8 @@ public class SkyboxArea extends Area {
             playerIsInZone = level.entitiesAreEncroaching(this, renderer.cutsceneCamera);
         }
 
-
-        if(wasInZone != playerIsInZone || (playerIsInZone && GlRenderer.skybox != skybox))
-            GlRenderer.skybox = playerIsInZone ? skybox : level.skybox;
+    // FIXME: Skybox!
+        /*if(wasInZone != playerIsInZone || (playerIsInZone && GlRenderer.skybox != skybox))
+            GlRenderer.skybox = playerIsInZone ? skybox : level.skybox;*/
     }
 }

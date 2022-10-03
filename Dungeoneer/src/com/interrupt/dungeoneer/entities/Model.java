@@ -4,6 +4,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 
 public class Model extends DirectionalEntity {
@@ -22,47 +23,47 @@ public class Model extends DirectionalEntity {
 	/** Should lighting for this Model be baked? */
 	@EditorProperty( group = "Visual")
 	public boolean bakeLighting = false;
-	
+
 	public transient String lastMeshFile = null;
     public transient String lastTextureFile = null;
-	
+
 	public Model() {
-		
+
 	}
-	
+
 	public Model(String meshFile) {
 		this.meshFile = meshFile;
 	}
-	
+
 	public Model(String meshFile, String textureFile) {
 		this.meshFile = meshFile;
 		this.textureFile = textureFile;
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		if(isActive) super.tick(level, delta);
 	}
-	
+
 	public void updateDrawable() {
 		if((meshFile == null || (lastMeshFile != meshFile)) || (textureFile == null || (lastTextureFile != textureFile))) {
-			
+
 			String pickedMeshFile = meshFile;
 			if(meshFile.contains(",")) {
 				String[] files = meshFile.split(",");
 				pickedMeshFile = files[Game.rand.nextInt(files.length)];
 			}
-			
+
 			String pickedTextureFile = textureFile;
 			if(textureFile.contains(",")) {
 				String[] files = textureFile.split(",");
 				pickedTextureFile = files[Game.rand.nextInt(files.length)];
 			}
-			
+
 			drawable = new DrawableMesh(pickedMeshFile, pickedTextureFile);
 		}
-		
+
 		if(drawable != null && drawable instanceof DrawableMesh) {
 			DrawableMesh drbl = (DrawableMesh)drawable;
 			drbl.rotX = rotation.x;
@@ -72,18 +73,18 @@ public class Model extends DirectionalEntity {
 			drbl.isStaticMesh = !isDynamic && !bakeLighting;
 			drbl.drawOffset.z = yOffset;
 			drbl.bakeLighting = bakeLighting;
-			
+
 			drawable.update(this);
 		}
-		
+
 		lastMeshFile = meshFile;
         lastTextureFile = textureFile;
 	}
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		super.init(level, source);
-		
+
 		if(drawable != null && source != Source.EDITOR) {
             if(drawable instanceof DrawableMesh) {
                 DrawableMesh drawableMesh = (DrawableMesh) drawable;

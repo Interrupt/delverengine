@@ -11,6 +11,7 @@ import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 
 public class SplashExplosion extends Spell {
@@ -27,25 +28,25 @@ public class SplashExplosion extends Spell {
     public String explodeSound = "explode.mp3,explode_02.mp3,explode_03.mp3,explode_04.mp3";
 
 	private Entity owner = null;
-	
+
 	public SplashExplosion() { }
-	
+
 	public SplashExplosion(DamageType damageType, int damage) {
 		this.damageType = damageType;
 		this.damage = damage;
 	}
-	
+
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
 		this.owner = owner;
 		doCast(new Vector3((float)owner.x + 0.5f,(float)owner.y + 0.5f,(float)owner.z + 0.3f), direction);
 	}
-	
+
 	public void doCast(Vector3 pos, Vector3 direction) {
-		Level level = Game.GetLevel();
-		
+		LevelInterface level = Game.GetLevel();
+
 		Color color = Weapon.getEnchantmentColor(this.damageType);
-		
+
 		Particle ring = new Particle(pos.x, pos.y, pos.z, 0, 0, 0, 0, color, true);
 		((DrawableSprite)ring.drawable).billboard = false;
 		((DrawableSprite)ring.drawable).dir.set(Vector3.Y).nor();
@@ -66,8 +67,8 @@ public class SplashExplosion extends Spell {
 		ring.isActive = true;
 		ring.initialized = false;
 		ring.isDynamic = true;
-		Game.instance.level.non_collidable_entities.add(ring);
-		
+		Game.instance.level.addEntity(ring);
+
 		// make explosion
 		Explosion explosion = new Explosion();
 		explosion.explosionLightLifetime = 25;
@@ -76,27 +77,27 @@ public class SplashExplosion extends Spell {
 		explosion.z = pos.z - 0.45f;
 		explosion.owner = owner;
 		explosion.makeDustRing = true;
-		
+
 		explosion.impulseDistance = radius * 4f;
 		explosion.impulseAmount = physicsForce;
 		explosion.damage = damage;
 		explosion.damageType = damageType;
 		explosion.color = new Color(color);
-		
+
 		explosion.scale = 2f;
 
 		explosion.hitDecal = new ProjectedDecal(ArtType.sprite, 19, 1.25f);
 
 		// some spells apply status effects
 		explosion.applyStatusEffect = applyStatusEffect;
-		
+
 		if(damageType == DamageType.POISON) {
 			explosion.explodeSound = "trap_poison.mp3";
 		}
 		else if(castSound != null) {
 			explosion.explodeSound = explodeSound;
 		}
-		
-		level.entities.add(explosion);
+
+		level.addEntity(explosion);
 	}
 }

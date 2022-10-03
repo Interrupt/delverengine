@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.interfaces.Directional;
 
 public class PhysicsForceArea extends Area implements Directional {
@@ -27,7 +28,7 @@ public class PhysicsForceArea extends Area implements Directional {
     public transient Vector3 dirWork = new Vector3();
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         if(!enabled)
             return;
 

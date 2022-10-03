@@ -12,10 +12,7 @@ import com.interrupt.dungeoneer.entities.Door.DoorType;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
-import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Colors;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.animation.AnimationAction;
@@ -340,10 +337,10 @@ public class Monster extends Actor implements Directional {
 		stepHeight = 0.4f;
 	}
 
-	public void Init(Level level, int playerLevel)
+	public void Init(LevelInterface level, int playerLevel)
 	{
 		// If the player is scaling faster than the level difficulty, bump up a little bit
-		int levelDifficulty = (int)(level.dungeonLevel * 1.5f);
+		int levelDifficulty = (int)(level.getDifficulty() * 1.5f);
 		int calcedDifficulty = levelDifficulty;
 
 		if(playerLevel > levelDifficulty) {
@@ -370,7 +367,7 @@ public class Monster extends Actor implements Directional {
 		placeMonster(level);
 	}
 
-	public void placeMonster(Level level) {
+	public void placeMonster(LevelInterface level) {
 		// Don't spawn if we are spawning *inside* something else
 		boolean levelFree = level.isFree(x, y, z, collision, stepHeight, floating, null);
 		boolean entityFree = level.checkEntityCollision(x, y, z, collision, this) == null;
@@ -422,7 +419,7 @@ public class Monster extends Actor implements Directional {
     }
 
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		if(!isActive)
 			return;
@@ -871,7 +868,7 @@ public class Monster extends Actor implements Directional {
 		return baseSpeed;
 	}
 
-	private boolean isGoodPathLocation(Level level, float checkX, float checkY, float checkZ) {
+	private boolean isGoodPathLocation(LevelInterface level, float checkX, float checkY, float checkZ) {
 		Entity collidesWith = level.checkEntityCollision(checkX, checkY, checkZ, collision, this);
 		if(collidesWith != null && collidesWith != attackTarget) {
 			return false;
@@ -885,7 +882,7 @@ public class Monster extends Actor implements Directional {
 		return true;
 	}
 
-	private boolean tryPathAdjust(Level level, float tryLocX, float tryLocY) {
+	private boolean tryPathAdjust(LevelInterface level, float tryLocX, float tryLocY) {
 		float checkX = Game.rand.nextBoolean() ? -0.6f : 0.6f;
 		float checkY = Game.rand.nextBoolean() ? -0.6f : 0.6f;
 
@@ -900,7 +897,7 @@ public class Monster extends Actor implements Directional {
 		return true;
 	}
 
-	private boolean findPathToPlayer(Level level)
+	private boolean findPathToPlayer(LevelInterface level)
 	{
 		PathNode node = Game.pathfinding.GetNodeAt(x + xa, y + ya, z + za);
 
@@ -966,7 +963,7 @@ public class Monster extends Actor implements Directional {
 		if (damage > 0) {
 			takeDamage(damage, damageType, instigator);
 
-			Level level = Game.GetLevel();
+			LevelInterface level = Game.GetLevel();
 			hitEffect(level, damageType);
 
 			if(hp > 0) {
@@ -993,7 +990,7 @@ public class Monster extends Actor implements Directional {
 					proj.start = 0.01f;
 					proj.isOrtho = true;
 
-					Game.instance.level.entities.add(proj);
+					Game.instance.level.addEntity(proj);
 				}
 
 				if(triggersWhenHurt != null && !triggersWhenHurt.isEmpty()) {
@@ -1003,7 +1000,7 @@ public class Monster extends Actor implements Directional {
 		}
 	}
 
-	public void spawnLoot(Level level) {
+	public void spawnLoot(LevelInterface level) {
 		Array<Item> toSpawn = new Array<Item>();
 
 		// Random loot, 50% chance of spawning something
@@ -1051,7 +1048,7 @@ public class Monster extends Actor implements Directional {
 		}
 	}
 
-	public void spawnEntities(Level level) {
+	public void spawnEntities(LevelInterface level) {
 		if (this.spawns != null && this.spawns.size > 0) {
 			for (int i = 0; i < this.spawnsCount; i++) {
 				// Grab a random spawn element to create
@@ -1080,7 +1077,7 @@ public class Monster extends Actor implements Directional {
 		}
 	}
 
-	public void die(Level level)
+	public void die(LevelInterface level)
 	{
 		boolean splattered = hp < -500f;
 		isActive = false;
@@ -1110,7 +1107,7 @@ public class Monster extends Actor implements Directional {
 				proj.start = 0.01f;
 				proj.isOrtho = true;
 
-				Game.instance.level.entities.add(proj);
+				Game.instance.level.addEntity(proj);
 			}
 		}
 
@@ -1122,7 +1119,7 @@ public class Monster extends Actor implements Directional {
 		// spawn a corpse if there is an animation for it
 		if(dieAnimation != null && !splattered) {
 			Corpse corpse = new Corpse(this);
-			level.entities.add(corpse);
+			level.addEntity(corpse);
 		}
 
 		Audio.playPositionedSound("sfx_death_enemy_01.mp3,sfx_death_enemy_02.mp3,sfx_death_enemy_03.mp3,sfx_death_enemy_04.mp3", new Vector3(x, y, z), soundVolume, 1f, 12f);
@@ -1133,7 +1130,7 @@ public class Monster extends Actor implements Directional {
 		}
 	}
 
-	public void bleed(Level level)
+	public void bleed(LevelInterface level)
 	{
 		if(tickcount > bleedTimer)
 		{
@@ -1399,7 +1396,7 @@ public class Monster extends Actor implements Directional {
 	}
 
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		if(source != Source.LEVEL_LOAD) {
 			// Set some default properties if being first created
 			origtex = tex;
@@ -1531,7 +1528,7 @@ public class Monster extends Actor implements Directional {
 	}
 
 	@Override
-	public void editorTick(Level level, float delta) {
+	public void editorTick(LevelInterface level, float delta) {
 		super.editorTick(level, delta);
 
 		if(walkAnimation == null)

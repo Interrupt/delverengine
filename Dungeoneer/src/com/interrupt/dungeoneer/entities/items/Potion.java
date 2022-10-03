@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.statuseffects.*;
 import com.interrupt.managers.StringManager;
 
@@ -222,7 +223,7 @@ public class Potion extends Item {
 			bomb.applyStatusEffect = getStatusEffect();
 			if(immediate) bomb.countdownTimer = 0;
 
-			Game.GetLevel().entities.add(bomb);
+			Game.GetLevel().addEntity(bomb);
 
 			Audio.playPositionedSound("potions/sfx_boil.mp3", new Vector3(x,y,z), 0.6f, 12f);
 
@@ -234,7 +235,7 @@ public class Potion extends Item {
 	}
 
 	@Override
-	public void tossItem(Level level, float attackPower) {
+	public void tossItem(LevelInterface level, float attackPower) {
 		if (attackPower > 0.5f) {
 			this.activateExplosion(false);
 		}

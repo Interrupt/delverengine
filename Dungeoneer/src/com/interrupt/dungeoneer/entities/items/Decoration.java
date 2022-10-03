@@ -9,10 +9,11 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 
 public class Decoration extends Item {
-	
-	public Decoration() { 
+
+	public Decoration() {
 		stepHeight = 0.1f;
 		collision.set(0.2f,0.2f,0.2f);
 		isSolid = true;
@@ -24,9 +25,9 @@ public class Decoration extends Item {
 	public Decoration(float x, float y, int tex, String name) {
 		super(x, y, tex, ItemType.junk, name);
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		super.tick(level, delta);
 	}

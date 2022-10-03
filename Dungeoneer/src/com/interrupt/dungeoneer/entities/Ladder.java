@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.entities;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 
 public class Ladder extends Model {
@@ -11,13 +12,13 @@ public class Ladder extends Model {
     private transient Vector3 climbArea = new Vector3();
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         climbArea = new Vector3(collision);
         climbArea.add(0.1f, 0.1f, 0f);
     }
 
     @Override
-    public void tick(Level level, float delta)
+    public void tick(LevelInterface level, float delta)
     {
         Array<Entity> touching = level.getEntitiesColliding(x, y, z, climbArea, this);
         for(Entity e : touching) {

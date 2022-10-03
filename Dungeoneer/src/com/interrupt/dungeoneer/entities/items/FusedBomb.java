@@ -96,7 +96,7 @@ public class FusedBomb extends Item {
     }
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         super.init(level, source);
 
         if (wasJustPlacedInEditor(source)) {
@@ -113,7 +113,7 @@ public class FusedBomb extends Item {
     }
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         super.tick(level, delta);
 
         if (isWet) {
@@ -174,11 +174,11 @@ public class FusedBomb extends Item {
     }
 
     @Override
-    public void tickEquipped(Player player, Level level, float delta, String equipLoc) {
+    public void tickEquipped(Player player, LevelInterface level, float delta, String equipLoc) {
         tick(level, delta);
     }
 
-    public void explode(Level level) {
+    public void explode(LevelInterface level) {
         isActive = false;
         isSolid = false;
 
@@ -213,7 +213,7 @@ public class FusedBomb extends Item {
         }
     }
 
-    public void fizzle(Level level) {
+    public void fizzle(LevelInterface level) {
         // make a bunch of small particles
         int pCount = 3;
         pCount *= Options.instance.gfxQuality;

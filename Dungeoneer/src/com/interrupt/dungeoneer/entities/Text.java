@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableText;
 import com.interrupt.dungeoneer.ui.FontBounds;
@@ -36,7 +37,7 @@ public class Text extends DirectionalEntity {
     }
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         // Handle conversion of old text entities.
         if (drawable instanceof DrawableSprite) { // Under new circumstances, the drawable cannot be a DrawableSprite.
             drawable = new DrawableText();

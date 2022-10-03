@@ -15,6 +15,7 @@ import com.interrupt.dungeoneer.entities.Stairs.StairDirection;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.managers.StringManager;
 import com.interrupt.utils.Logger;
@@ -26,7 +27,7 @@ public class LevelChangeScreen extends BaseScreen {
 	public String text = StringManager.get("screens.LoadingScreen.loadingLabel");
 
 	protected GameManager dungeoneerComponent;
-    
+
     private int hasDrawn = 0;
     private boolean hasLoaded = false;
 
@@ -37,7 +38,7 @@ public class LevelChangeScreen extends BaseScreen {
 	public String backgroundTextureFile = "splash/DungeonLoadingScreen.png";
 
 	private boolean didDisposeArt = false;
-	
+
 	public LevelChangeScreen(GameManager dungeoneerComponent) {
 		this.dungeoneerComponent = dungeoneerComponent;
 		useBackgroundLevel = false;
@@ -87,9 +88,9 @@ public class LevelChangeScreen extends BaseScreen {
 
 	public void setInfoFromLevel() {
 		if(stair != null) {
-			Array<Level> levels = Game.buildLevelLayout();
+			Array<LevelInterface> levels = Game.buildLevelLayout();
 
-			Level l = null;
+			LevelInterface l = null;
 			try {
 				l = levels.get(levelNum - 1);
 			}
@@ -99,10 +100,11 @@ public class LevelChangeScreen extends BaseScreen {
 
 			// Set the level name text
 			if(l != null) {
-				text = l.levelName;
+				text = l.getLevelName();
 
-				if(l.loadingScreenBackground != null && !l.loadingScreenBackground.isEmpty()) {
-					backgroundTextureFile = l.loadingScreenBackground;
+                String loadingScreenBackground = l.getLoadingScreenBackgroundFilename();
+				if(loadingScreenBackground != null && !loadingScreenBackground.isEmpty()) {
+					backgroundTextureFile = loadingScreenBackground;
 				}
 			}
 			else {
@@ -159,7 +161,7 @@ public class LevelChangeScreen extends BaseScreen {
 
 		hasDrawn++;
 	}
-	
+
 	public void tick(float delta) {
 		if(hasDrawn > 4 && !hasLoaded) {
 			hasLoaded = true;

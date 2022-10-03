@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.ReadableKeys;
 import com.interrupt.dungeoneer.input.Actions.Action;
@@ -85,21 +86,21 @@ public class Trigger extends Entity {
 	/** Does this appear during end game? */
 	@EditorProperty( group = "End Game" )
 	public boolean appearsDuringEndgame = true;
-	
+
 	protected boolean selfDestructs = true;
-	
+
 	protected TriggerStatus triggerStatus=TriggerStatus.WAITING;
 	private float triggerTime = 0;
-	
+
 	public Trigger() {
 		hidden = true; spriteAtlas = "editor"; tex = 11;
 	}
-	
+
 	public Trigger(String triggers) {
 		this.artType = ArtType.hidden;
 		this.triggersId = triggers;
 	}
-	
+
 	public Trigger(String triggers, float delay) {
 		this.artType = ArtType.hidden;
 		this.triggersId = triggers;
@@ -107,7 +108,7 @@ public class Trigger extends Entity {
 	}
 
 	@Override
-	public void init(Level level, Level.Source source) {
+	public void init(LevelInterface level, Level.Source source) {
 		if(Game.instance != null && Game.instance.player != null) {
 			// Might need to despawn this during the endgame
 			if(Game.instance.player.isHoldingOrb) {
@@ -117,10 +118,10 @@ public class Trigger extends Entity {
 			}
 		}
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta) {
-		
+	public void tick(LevelInterface level, float delta) {
+
 		// check for touch events
 		if(triggerType != TriggerType.USE) {
             Array<Entity> encroaching = level.getEntitiesColliding(x, y, z, this);
@@ -137,7 +138,7 @@ public class Trigger extends Entity {
                 else if (triggerType == TriggerType.ANY_TOUCHED) fire(null);
             }
 		}
-		
+
 		if (triggerStatus==TriggerStatus.DESTROYED && selfDestructs){
 			this.isActive=false;
 		}
@@ -160,14 +161,14 @@ public class Trigger extends Entity {
 				}
 			}
 		}
-		
+
 		if(Game.isMobile && triggerType == TriggerType.USE && Math.abs(Game.instance.player.x - x) < 0.8f && Math.abs(Game.instance.player.y - y) < 0.8f) {
 			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
 			if(Game.isMobile) useText = StringManager.get("entities.Trigger.mobileUseText");
 			Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Trigger.mobileUseText"), useText, this.getUseVerb()));
 		}
 	}
-	
+
 	@Override
 	public void use(Player p, float projx, float projy) {
 		fire(null);
@@ -207,13 +208,13 @@ public class Trigger extends Entity {
 		if (triggerStatus==TriggerStatus.WAITING){
 			triggerStatus=TriggerStatus.TRIGGERED;
 			triggerTime=triggerDelay;
-			
+
 			// update the value if one was given
 			if(value != null && !value.equals(""))
 				triggerValue=value;
 		}
 	}
-	
+
 	@Override
 	public void onTrigger(Entity instigator, String value) {
 		if(triggerPropogates) {
@@ -223,7 +224,7 @@ public class Trigger extends Entity {
 			fire(triggerValue);
 		}
 	}
-	
+
 	// triggers can be delayed, fire the actual trigger here
 	public void doTriggerEvent(String value) {
 		Audio.playPositionedSound(triggerSound, new Vector3((float)x,(float)y,(float)z), 0.8f, 11f);

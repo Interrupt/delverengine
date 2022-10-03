@@ -12,25 +12,26 @@ import com.interrupt.dungeoneer.entities.Entity.ArtType;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 
 public class AmbientSound extends PositionedSound {
-	
+
 	@EditorProperty(type = "FILE_PICKER", params = "audio", include_base = false)
 	public String soundFile = "torch.mp3";
 
 	@EditorProperty
 	public boolean loadOnStartup = false;
-	
+
 	public AmbientSound() { hidden = true; spriteAtlas = "editor"; tex = 15; isSolid = false; persists = true; }
-	
+
 	public transient boolean canUpdate = true;
 
 	public transient float curVolume = 1f;
 
 	public AmbientSound(float x, float y, float z, String soundFile, float volume, float pitch, float radius) {
 		artType = ArtType.hidden;
-		
+
 		this.volume = volume;
 		this.soundFile = soundFile;
 		this.radius = radius;
@@ -38,13 +39,13 @@ public class AmbientSound extends PositionedSound {
 		this.y = y;
 		this.z = z;
 		this.pitch = pitch;
-		
+
 		persists = true;
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
-	{	
+	public void tick(LevelInterface level, float delta)
+	{
 		// ambient looping sounds aren't supported on mobile
 		if(Game.isMobile) {
 			isActive = false;
@@ -52,7 +53,7 @@ public class AmbientSound extends PositionedSound {
 		}
 
 		curVolume = getPositionalVolume();
-		
+
 		try {
 			if(curVolume > 0) {
 				if(canUpdate) {
@@ -88,7 +89,7 @@ public class AmbientSound extends PositionedSound {
 		catch( Exception ex) {
 			canUpdate = false;
 			Gdx.app.log("Delver", ex.toString());
-		}	
+		}
 	}
 
 	public void refreshVolume() {
@@ -96,41 +97,41 @@ public class AmbientSound extends PositionedSound {
 			sound.setVolume(soundInstance, curVolume * Options.instance.sfxVolume);
 		}
 	}
-	
+
 	private float getPositionalVolume()
 	{
 		Camera camera = GameManager.renderer.camera;
-		
+
 		float distance = Math.max( Math.abs(x - camera.position.x), Math.abs(y - camera.position.z) );
 		float dmod = distance / radius;
 		if(dmod > 1) dmod = 1;
 		dmod = 1 - dmod;
-		
+
 		return (dmod * volume);
 	}
-	
+
 	@Override
-	public void editorTick(Level level, float delta) {
+	public void editorTick(LevelInterface level, float delta) {
 		tick(level,delta);
 	}
-	
+
 	@Override
-	public void editorStartPreview(Level level) {
+	public void editorStartPreview(LevelInterface level) {
 		editorStopPreview(level);
 		sound = null;
 		soundInstance = null;
 		canUpdate = true;
 	}
-	
+
 	@Override
-	public void editorStopPreview(Level level) {
+	public void editorStopPreview(LevelInterface level) {
 		canUpdate = false;
 		if(soundInstance != null && sound != null) {
 			sound.stop(soundInstance);
 			soundInstance = null;
 		}
 	}
-	
+
 	@Override
 	public void onDispose() {
 		if(soundInstance != null && sound != null) {
@@ -138,9 +139,9 @@ public class AmbientSound extends PositionedSound {
 			soundInstance = null;
 		}
 	}
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		if(loadOnStartup && !Game.isMobile) {
 			sound = Audio.loadSound(soundFile);
 			if(sound != null) {

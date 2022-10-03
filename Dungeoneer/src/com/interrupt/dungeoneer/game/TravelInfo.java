@@ -9,7 +9,7 @@ public class TravelInfo {
     public int fromLevelNum;
 
     // some warps might not want to unload their level
-    public transient Level level = null;
+    public transient LevelInterface level = null;
 
     public TravelInfo() { }
 

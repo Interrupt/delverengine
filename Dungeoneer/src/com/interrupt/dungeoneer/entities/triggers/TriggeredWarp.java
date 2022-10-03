@@ -5,6 +5,7 @@ import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.TravelInfo;
 import com.interrupt.managers.StringManager;
 
@@ -120,7 +121,7 @@ public class TriggeredWarp extends Trigger {
 	}
 
 	@Override
-	public void init(Level level, Level.Source source) {
+	public void init(LevelInterface level, Level.Source source) {
 		if(source != Level.Source.EDITOR) {
 			// Ensure that a travel path is always set. If not, make one now.
 			if (travelPath == null || travelPath.isEmpty())

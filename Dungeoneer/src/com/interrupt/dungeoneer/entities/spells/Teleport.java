@@ -16,18 +16,19 @@ import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class Teleport extends Spell {
-	
+
 	public Teleport() { }
-	
+
 	public Teleport(DamageType damageType) {
 		this.damageType = damageType;
 	}
-	
+
 	/** Handles individual teleport (ex. casting a spell from a scroll). */
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
@@ -36,36 +37,36 @@ public class Teleport extends Spell {
 
 	/** Handles teleport for every actor, including the player, within a certain radius (ex. stepping on a pressure plate trap). */
 	public void doCast(Vector3 pos, Vector3 direction) {
-		Level level = Game.GetLevel();
-		
-		int seed = (int)pos.x * level.width + (int)pos.y;
-		
-		for(Entity e : level.entities) {
+		LevelInterface level = Game.GetLevel();
+
+		int seed = (int)pos.x * level.getWidth() + (int)pos.y;
+
+		for(Entity e : level.getEntities()) {
 			if(e.isActive && e.isDynamic && !(e instanceof Door) && !(e instanceof Mover) && !(e instanceof Trigger) && Math.abs(e.x - pos.x) < 0.5f + e.collision.x && Math.abs(e.y - pos.y) < 0.5f + e.collision.y) {
 				teleport(e, seed);
 			}
 		}
-		
+
 		Player p = Game.instance.player;
 		if(Math.abs(p.x - pos.x) < 0.5f + p.collision.x && Math.abs(p.y - pos.y) < 0.5f + p.collision.y) {
 			teleport(p, seed);
 			p.history.teleported();
 		}
 	}
-	
+
 	/**
 	 * Teleports the specified entity to a random location based on the provided seed number. Providing the same seed
 	 * will result in the same location. Any actor entity, such as a monster, already at that location will be killed.
 	 */
 	public void teleport(Entity e, int seed) {
-		Level level = Game.GetLevel();
-		if(level.dungeonLevel == 0) return;
-		
+		LevelInterface level = Game.GetLevel();
+		if(level.getDifficulty() == 0) return;
+
 		Random r = new Random(seed);
 		int tries = 0;
 		while(tries++ < 1000) {
-			int checkX = r.nextInt(level.width);
-			int checkY = r.nextInt(level.height);
+			int checkX = r.nextInt(level.getWidth());
+			int checkY = r.nextInt(level.getHeight());
 			Tile checkTile = level.getTile(checkX, checkY);
 			if(checkTile.CanSpawnHere()) {
 				e.x = checkX + 0.5f;
@@ -83,7 +84,7 @@ public class Teleport extends Spell {
 	}
 
 	@Override
-	protected void doCastEffect(Vector3 pos, Level level, Entity owner) {
+	protected void doCastEffect(Vector3 pos, LevelInterface level, Entity owner) {
 
 		// might have a custom vfx
 		if(castVfx != null) {
@@ -101,7 +102,7 @@ public class Teleport extends Spell {
 		int particleCount = 20;
 		particleCount *= Options.instance.gfxQuality;
 		if(particleCount <= 0) particleCount = 1;
-		
+
 		for(int i = 0; i < particleCount; i++)
 		{
 			int speed = r.nextInt(45) + 10;
@@ -119,9 +120,9 @@ public class Teleport extends Spell {
 
 			level.SpawnNonCollidingEntity(part);
 		}
-		
+
 		level.SpawnNonCollidingEntity( new DynamicLight(pos.x,pos.y,pos.z, new Vector3(Color.ORANGE.r * 2f, Color.ORANGE.g * 2f, Color.ORANGE.b * 2f)).startLerp(new Vector3(0,0,0), 40, true).setHaloMode(Entity.HaloMode.BOTH) );
-		
+
 		Audio.playPositionedSound("trap_tele.mp3", new Vector3(pos.x, pos.y, pos.z), 0.6f, 12f);
 	}
 }

@@ -9,6 +9,7 @@ import com.interrupt.dungeoneer.entities.items.BagUpgrade;
 import com.interrupt.dungeoneer.entities.items.Elixer;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Progression;
 import com.interrupt.dungeoneer.overlays.MessageOverlay;
 import com.interrupt.dungeoneer.overlays.Overlay;
@@ -20,24 +21,24 @@ import com.interrupt.helpers.Upgrade;
 import com.interrupt.managers.StringManager;
 
 public class TriggeredShop extends Trigger {
-	
+
 	public enum ShopType { upgrades, scrolls, potions, weapons, wands, armor, persistent }
 
 	@EditorProperty
 	public String messageFile = null;
-	
+
 	@EditorProperty
 	public ShopType shopType = ShopType.upgrades;
-	
+
 	@EditorProperty
 	public String title = StringManager.get("triggers.TriggeredShop.titleText");
-	
+
 	@EditorProperty
 	public String description = StringManager.get("triggers.TriggeredShop.descriptionText");
 
 	@EditorProperty
 	public boolean pausesGame = false;
-	
+
 	public Array<ShopItem> items = null;
 
 	public TriggeredShop() { hidden = true; spriteAtlas = "editor"; tex = 16; isSolid = true; }
@@ -45,7 +46,7 @@ public class TriggeredShop extends Trigger {
 	private Integer messageProgression = null;
 
 	@Override
-	public void init(Level level, Level.Source source) {
+	public void init(LevelInterface level, Level.Source source) {
 		if(source == Level.Source.LEVEL_START) {
 			if(messageFile != null && messageFile.contains(",")) {
 				String[] messages = messageFile.split(",");
@@ -69,7 +70,7 @@ public class TriggeredShop extends Trigger {
 
 		super.init(level, source);
 	}
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 
@@ -95,7 +96,7 @@ public class TriggeredShop extends Trigger {
 		else {
 			showShopOverlay(null);
 		}
-		
+
 		super.doTriggerEvent(value);
 	}
 

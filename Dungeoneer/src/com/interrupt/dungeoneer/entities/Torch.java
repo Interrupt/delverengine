@@ -5,6 +5,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.managers.EntityManager;
 
@@ -34,7 +35,7 @@ public class Torch extends Light {
 	protected SpriteAnimation animation = null;
 
 	public ParticleEmitter emitter = null;
-	
+
 	public Torch() { spriteAtlas = "sprite"; hidden = false; collision.set(0.05f,0.05f,0.2f); fullbrite = true; haloMode = HaloMode.BOTH; haloOffset = 0.8f; }
 
 	/** Looping ambient sound. */
@@ -48,16 +49,16 @@ public class Torch extends Light {
 	/** Make ParticleEmitter? */
 	@EditorProperty
 	public boolean makeEmitter = true;
-	
+
 	public Torch(float x, float y, int tex, Color lightColor) {
 		super(x, y, lightColor, 3.2f);
 		artType = ArtType.sprite;
 		collision.set(0.05f,0.05f,0.2f);
 		this.tex = texAnimStart;
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		if(torchAnimateMode == TorchAnimateModes.RANDOM) {
 			ticks += delta;
@@ -76,18 +77,18 @@ public class Torch extends Light {
 				if(animation.done) isActive = false;	// die when done playing an animation
 			}
 		}
-		
+
 		if(emitter != null) {
 			emitter.tick(level, delta);
 		}
-		
+
 		color = lightColor;
 	}
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		this.tex = texAnimStart;
-		
+
 		super.init(level, source);
 		collision.set(0.05f,0.05f,0.2f);
 
@@ -101,7 +102,7 @@ public class Torch extends Light {
                 emitter.persists = false;
                 emitter.detailLevel = DetailLevel.HIGH;
                 emitter.init(level, source);
-                level.non_collidable_entities.add(emitter);
+                level.addEntity(emitter);
             }
 
             if(makeFlies) {
@@ -114,14 +115,14 @@ public class Torch extends Light {
 						flies.z = z + 0.225f;
 					}
                     flies.persists = false;
-                    level.non_collidable_entities.add(flies);
+                    level.addEntity(flies);
                 }
             }
 
             if(audio != null) {
 				AmbientSound sound = new AmbientSound(x, y, z, audio, 1f, 1f, 3.5f);
 				sound.persists = false;
-				level.non_collidable_entities.add(sound);
+				level.addEntity(sound);
 			}
         }
 

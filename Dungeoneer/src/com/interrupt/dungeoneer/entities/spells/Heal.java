@@ -6,6 +6,7 @@ import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 
 import java.util.Random;
@@ -26,7 +27,7 @@ public class Heal extends Spell {
 	}
 
 	@Override
-	protected void doCastEffect(Vector3 pos, Level level, Entity owner) {
+	protected void doCastEffect(Vector3 pos, LevelInterface level, Entity owner) {
 		pos.z -= 0.275f;
 
 		Random r = Game.rand;

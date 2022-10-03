@@ -3,10 +3,7 @@ package com.interrupt.dungeoneer.entities;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.items.Weapon;
-import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.MonsterManager;
@@ -78,7 +75,7 @@ public class Corpse extends Entity {
 	}
 
 	@Override
-	public void init(Level level, Level.Source source) {
+	public void init(LevelInterface level, Level.Source source) {
 		if(source == Level.Source.LEVEL_LOAD && isActive) {
 			Player p = Game.instance.player;
 
@@ -91,7 +88,7 @@ public class Corpse extends Entity {
 		}
 	}
 
-	public void revive(Level level, Player p, boolean makeUndead) {
+	public void revive(LevelInterface level, Player p, boolean makeUndead) {
 		if(p == null) return;
 		if(!isActive) return;
 		MonsterManager mm = Game.GetMonsterManager();
@@ -124,7 +121,7 @@ public class Corpse extends Entity {
 			}
 		}
 		else {
-			Monster m = mm.GetMonster(level.theme, monsterName);
+			Monster m = mm.GetMonster(level.getTheme(), monsterName);
 			if(m != null) {
 				m.x = x;
 				m.y = y;
@@ -166,7 +163,7 @@ public class Corpse extends Entity {
 	}
 
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		super.tick(level, delta);
 
@@ -207,7 +204,7 @@ public class Corpse extends Entity {
 			proj.start = 0.01f;
 			proj.isOrtho = true;
 
-			Game.instance.level.entities.add(proj);
+			Game.instance.level.addEntity(proj);
 		}
 	}
 }

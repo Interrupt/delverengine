@@ -7,6 +7,7 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -64,7 +65,7 @@ public class Game {
 
 	public boolean gameOver = false;
 
-	public Level level;
+	public LevelInterface level;
 	protected int levelNum;
 
 	public static float messageTimer = 0;
@@ -174,7 +175,7 @@ public class Game {
 	}
 
 	/** Create game for editor usage. */
-	public Game(Level levelToStart) {
+	public Game(LevelInterface levelToStart) {
 		instance = this;
 		level = levelToStart;
 
@@ -245,11 +246,11 @@ public class Game {
 	}
 
 	// build the list of levels using a predefined dungeon layout
-	private static Array<Level> loadDataLevels() {
+	private static Array<LevelInterface> loadDataLevels() {
 		FileHandle dungeonFile = Game.findInternalFileInMods("data/dungeons.dat");
 		if(!dungeonFile.exists()) return null;
 
-		Array<Level> dataLevels = new Array<Level>();
+		Array<LevelInterface> dataLevels = new Array<LevelInterface>();
 		{
 			dataLevels = JsonUtil.fromJson(Array.class, dungeonFile);
 		}
@@ -329,7 +330,7 @@ public class Game {
 	}
 
 	// build the list of levels
-	public static Array<Level> buildLevelLayout() {
+	public static Array<LevelInterface> buildLevelLayout() {
 
 	    Gdx.app.log("Delver", "Building Dungeon Layout");
 
@@ -375,7 +376,7 @@ public class Game {
             }
         });
 
-        Array<Level> levels = new Array<Level>();
+        Array<LevelInterface> levels = new Array<LevelInterface>();
         for(SectionDefinition s : sectionsFound) {
             Gdx.app.log("Delver", " Adding section " + s.name);
             levels.addAll(s.buildLevels());
@@ -402,7 +403,7 @@ public class Game {
 		hudManager.backpack.visible = false;
 
 		// Load the levels data file, keep the levels array null for now (try loading from save first)
-		Array<Level> dataLevels = buildLevelLayout();
+		Array<LevelInterface> dataLevels = buildLevelLayout();
 
 		// load the game progress
 		progression = loadProgression(saveLoc);
@@ -469,17 +470,12 @@ public class Game {
 			// Now we can load the level
 			level.load();
 
-			if(level.playerStartX != null && level.playerStartY != null) {
-				player.x = level.playerStartX + 0.5f;
-				player.y = level.playerStartY + 0.5f;
-			}
-			else {
-				player.x = 0;
-				player.y = 0;
-			}
+            Vector3 playerStart = level.getPlayerStartLocation();
+            player.x = playerStart.x;
+            player.y = playerStart.y;
 
 			player.z = level.getTile((int)player.x, (int)player.y).getFloorHeight() + 0.5f;
-			if(level.playerStartRot != null) player.rot = (float)Math.toRadians(-(level.playerStartRot + 180f));
+            player.rot = level.getPlayerStartRotation();
 
 			level.setPlayer(player);
 			player.levelNum = levelNum;
@@ -626,23 +622,7 @@ public class Game {
 
 		if(!loadedLevel) {
 			level = new Level();
-			level.generated = warp.generated;
-			level.levelFileName = warp.levelToLoad;
-			level.theme = warp.levelTheme;
-			level.fogColor.set(warp.fogColor);
-			level.ambientTileLighting = warp.ambientLightColor;
-			level.fogEnd = warp.fogEnd;
-			level.fogStart = warp.fogStart;
-			level.skyLightColor = new Color(warp.skyLightColor);
-			level.viewDistance = level.fogEnd + 2;
-			level.isDirty = true;
-			level.levelName = warp.levelName;
-			level.makeStairsDown = false;
-			level.spawnMonsters = warp.spawnMonsters;
-			level.objectivePrefab = warp.objectivePrefabToSpawn;
-			level.music = warp.music;
-			level.ambientSound = warp.ambientSound;
-
+			level.makeLevelFromWarp(warp);
 			level.load();
 		}
 
@@ -650,7 +630,8 @@ public class Game {
 
 		player.ignoreStairs = true;
 
-		if(level.up != null) {
+        // FIXME player starts!
+		/*if(level.up != null) {
 				player.x = level.up.x;
 				player.y = level.up.y + 0.05f;
 				player.z = level.getTile((int)level.up.x, (int)level.up.y).floorHeight + 0.5f;
@@ -661,7 +642,7 @@ public class Game {
 			player.x = level.playerStartX + 0.5f;
 			player.y = level.playerStartY + 0.5f;
 			player.z = level.getTile((int) player.x, (int) player.y).floorHeight + 0.5f;
-		}
+		}*/
 
 		if(warp != null && warp.toWarpMarkerId != null) {
 			putPlayerAtWarpMarker(warp.toWarpMarkerId);
@@ -670,9 +651,9 @@ public class Game {
 		player.xa = 0;
 		player.ya = 0;
 
-		GameManager.renderer.setLevelToRender(level);
+		GameManager.renderer.setLevelToRender((Level)level);
 
-		level.rendererDirty = true;
+		level.markRendererDirty();
 
 		GameScreen.resetDelta = true;
 
@@ -731,7 +712,7 @@ public class Game {
 
 		if(info.level != null) {
 			level = info.level;
-			level.isDirty = true;
+			level.markDirty();
 			level.init(Source.LEVEL_LOAD);
 		}
 		else {
@@ -763,8 +744,8 @@ public class Game {
 		player.xa = 0;
 		player.ya = 0;
 
-		GameManager.renderer.setLevelToRender(level);
-		level.rendererDirty = true;
+		GameManager.renderer.setLevelToRender((Level)level);
+		level.markRendererDirty();
 
 		GameScreen.resetDelta = true;
 
@@ -792,7 +773,7 @@ public class Game {
 		else
 			levelNum--;
 
-		Array<Level> levels = buildLevelLayout();
+		Array<LevelInterface> levels = buildLevelLayout();
 
 		if(levelNum < 0) levelNum = 0;
 		if(levelNum > levels.size - 1) levelNum = levels.size - 1;
@@ -806,7 +787,7 @@ public class Game {
 		level.setPlayer(player);
 
 		// TODO: Generate levels!
-		if(!level.isLoaded)
+		if(!level.isLoaded())
 			level.load();
 		else
 			level.init(Source.LEVEL_LOAD);
@@ -817,9 +798,9 @@ public class Game {
 		player.levelNum = levelNum;
 
 		if(stair.direction == StairDirection.down)
-			stair = level.up;
+			stair = level.getStairs(StairDirection.up);
 		else
-			stair = level.down;
+            stair = level.getStairs(StairDirection.down);
 
 		if(stair != null) {
 			player.x = stair.x;
@@ -834,19 +815,20 @@ public class Game {
 				player.rot = (float)Math.toRadians(-(stair.exitRotation) + 180);
 		}
 		else {
-			player.x = level.playerStartX + 0.5f;
-			player.y = level.playerStartY + 0.5f;
-			player.z = level.getTile(level.playerStartX, level.playerStartY).floorHeight + 0.5f;
+            Vector3 startLoc = level.getPlayerStartLocation();
+			player.x = startLoc.x;
+			player.y = startLoc.y;
+            player.z = startLoc.z;
+			//player.z = level.getTile(level.playerStartX, level.playerStartY).floorHeight + 0.5f;
 			player.xa = 0;
 			player.ya = 0;
 
-			if(level.playerStartRot != null)
-				player.rot = (float)Math.toRadians(-(level.playerStartRot + 90f));
+            player.rot = level.getPlayerStartRotation();
 		}
 
 		player.ignoreStairs = true;
 
-		level.rendererDirty = true;
+		level.markRendererDirty();
 		GameScreen.resetDelta = true;
 
 		Gdx.app.log("DelverLifeCycle", "Level Changed");
@@ -943,7 +925,7 @@ public class Game {
 		    Gdx.app.log("DelverLifeCycle", "Error saving options");
 		}
 
-		if(level.needsSaving) {
+		if(level.needsSaving()) {
 			Gdx.app.log("DelverLifeCycle", "Saving Level");
 
 			FileHandle file = getFile(levelDir + levelNum + ".bin");
@@ -960,7 +942,8 @@ public class Game {
 			// can't save some entity data
 			level.preSaveCleanup();
 
-			KryoSerializer.saveLevel(file, level);
+            // ready to save!
+            level.save(file);
 		}
 
 		// save the player
@@ -984,7 +967,7 @@ public class Game {
 		FileHandle dir = getFile(levelDir);
 		if(!dir.exists()) dir.mkdirs();
 
-		if(level != null && level.needsSaving)
+		if(level != null && level.needsSaving())
 		{
 			Gdx.app.log("DelverLifeCycle", "Saving Level " + levelNum);
 
@@ -994,7 +977,7 @@ public class Game {
 			Gdx.app.log("DelverLifeCycle", "Saving to " + file.path());
 
 			level.preSaveCleanup();
-			KryoSerializer.saveLevel(file, level);
+            level.save(file);
 		}
 		else Gdx.app.log("DelverLifeCycle", "Level " + levelNum + " did not need saving");
 
@@ -1035,7 +1018,7 @@ public class Game {
 		FileHandle file = getFile(levelDir + levelNumber + ".dat");
 		FileHandle kryofile = getFile(levelDir + levelNumber + ".bin");
 
-		Array<Level> dataLevels = buildLevelLayout();
+		Array<LevelInterface> dataLevels = buildLevelLayout();
 
 		if(kryofile.exists()) {
 			if(travelPathKey == null && levelNumber >= 0 && dataLevels.get(levelNumber) instanceof OverworldLevel) {
@@ -1145,7 +1128,7 @@ public class Game {
         return new FileHandle(file);
     }
 
-	public static Level GetLevel()
+	public static LevelInterface GetLevel()
 	{
 		return instance.level;
 	}
@@ -1227,7 +1210,7 @@ public class Game {
 					swap.y = dragging.y;
 					swap.z = dragging.z;
 					swap.isActive = true;
-					Game.instance.level.entities.add(swap);
+					Game.instance.level.addEntity(swap);
 				}
 			}
 
@@ -1265,7 +1248,7 @@ public class Game {
 					swap.z = dragging.z;
 					swap.physicsSleeping = false;
 					swap.isActive = true;
-					Game.instance.level.entities.add(swap);
+					Game.instance.level.addEntity(swap);
 				}
 
 			}
@@ -1452,14 +1435,6 @@ public class Game {
 
 	public void updateMouseInput() {
 		if(player != null) player.updateMouseInput(input);
-	}
-
-	public String getLevelName(int num) {
-		Array<Level> dungeonData = buildLevelLayout();
-		Level l = dungeonData.get(num);
-		if(l != null) return l.levelName;
-
-		return MessageFormat.format(StringManager.get("game.Game.levelNameText"), num);
 	}
 
 	public int getSaveSlot() {

@@ -8,6 +8,7 @@ import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.noise.PerlinNoise;
@@ -18,16 +19,16 @@ public class Particle extends Sprite {
 	public float lifetime = 82;
 	public float starttime = 0;
 	public boolean initialized = true;
-	
+
 	public boolean checkCollision = true;
-	
+
 	public float startScale = 1;
 	public float endScale = 1;
 	public transient float timeModifier = 0;
 
 	public Color startColor;
 	public Color endColor;
-	
+
 	public transient Interpolation interpolation = Interpolation.circleIn;
 
 	public float rotateAmount = 0f;
@@ -59,7 +60,7 @@ public class Particle extends Sprite {
 		// Create a drawable sprite that scales from the center
 		drawable = new DrawableSprite(tex, artType, false);
 	}
-	
+
 	public Particle(float x, float y, float z, float xv, float yv, float zv, int tex, Color c, boolean fullbrite)
 	{
 		this.x = x;
@@ -68,24 +69,24 @@ public class Particle extends Sprite {
 
 		this.tex = tex;
 		artType = ArtType.particle;
-		
+
 		this.xa = xv * 2;
 		this.ya = yv * 2;
 		this.za = zv * 2;
 
 		lifetime = 20 + r.nextInt(160);
-		
+
 		color = new Color(c);
-		
+
 		isSolid = false;
 		this.fullbrite = fullbrite;
 
 		// Create a drawable sprite that scales from the center
 		drawable = new DrawableSprite(tex, artType, false);
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		if(!initialized) {
 			starttime = lifetime;
@@ -96,7 +97,7 @@ public class Particle extends Sprite {
 
 			initialized = true;
 		}
-		
+
 		if(scale != endScale) {
 			if(drawable != null) {
 				timeModifier = 1 - (lifetime / starttime);
@@ -111,7 +112,7 @@ public class Particle extends Sprite {
 			color.set(startColor);
 			color.lerp(endColor, timeModifier);
 		}
-		
+
 		lifetime -= delta;
 		if(lifetime < 0)
 		{
@@ -133,12 +134,12 @@ public class Particle extends Sprite {
 			this.za = speed.y;
 		}
 		CachePools.freeVector3(speed);
-		
+
 		if(checkCollision) {
 			if(!physicsSleeping) {
 				float nextx = x + (xa * delta) * 2f;
 				float nexty = y + (ya * delta) * 2f;
-				
+
 				if (level.isFree(nextx, y, z, collision, 0.01f, floating, null)) {
 					Entity colliding = level.checkEntityCollision(nextx, y, z, collision.x, collision.y, collision.z, this);
 					if(colliding == null)
@@ -154,7 +155,7 @@ public class Particle extends Sprite {
 					xa *= -0.12;
 					ya *= 0.9;
 				}
-				
+
 				if (level.isFree(x, nexty, z, collision, 0.01f, floating, null)) {
 					Entity colliding = level.checkEntityCollision(x, nexty, z, collision.x, collision.y, collision.z, this);
 					if(colliding == null)
@@ -169,14 +170,14 @@ public class Particle extends Sprite {
 					xa *= 0.9;
 					ya *= -0.12;
 				}
-				
+
 				float floorHeight = level.maxFloorHeight(x, y, z, 0);
 				float ceilHeight = level.minCeilHeight(x, y, z, 0) + 0.485f;
 				boolean onFloor = z <= floorHeight + 0.5f;
-				
+
 				Entity onEntity = level.checkEntityCollision(x, y, (z + za), collision.x, collision.y, collision.z, this);
 				if(!onFloor) onFloor = onEntity != null && za <= 0;
-				
+
 				// ceiling collision
 				if(z > ceilHeight)
 				{
@@ -187,7 +188,7 @@ public class Particle extends Sprite {
 				{
 					za = 0;
 				}
-				
+
 				if(onFloor)
 				{
 					// floor friction
@@ -199,7 +200,7 @@ public class Particle extends Sprite {
 					xa -= (xa - (xa * 0.98)) * delta;
 					ya -= (ya - (ya * 0.98)) * delta;
 				}
-				
+
 				if(!onFloor && !floating) za -= 0.0035f * delta; // falling; add gravity
 				else if(onFloor)
 				{
@@ -208,20 +209,20 @@ public class Particle extends Sprite {
 						if(Math.abs(za) < 0.01) za = 0;
 						else za = -za * 0.2f;
 					} else za = 0;
-					
+
 					if(onEntity == null) {
 						if(z > floorHeight + 0.5f - 0.08f)
 						z = floorHeight + 0.5f;
 					}
 					else if (onEntity != null && z - onEntity.z + onEntity.collision.z < stepHeight)
 						z = onEntity.z + onEntity.collision.z;
-					
+
 					// sleep to save collision cycles if not moving very fast
 					if(onFloor && (onEntity == null || !onEntity.isDynamic) && Math.abs(xa) < 0.0001f && Math.abs(ya) < 0.0001f && Math.abs(za) < 0.0001f) physicsSleeping = true;
 				}
-				
+
 				isOnFloor = onFloor;
-				
+
 				//x += xa * delta;
 				//y += ya * delta;
 				z += za * delta;
@@ -229,11 +230,11 @@ public class Particle extends Sprite {
 			else {
 				if(Math.abs(xa) > 0.0001f || Math.abs(ya) > 0.0001f || Math.abs(za) > 0.0001f) physicsSleeping = false;
 			}
-			
+
 		} else {
 			if(!floating)
 				za -= 0.0035f;
-			
+
 			x += xa * delta;
 			y += ya * delta;
 			z += za * delta;
@@ -248,7 +249,7 @@ public class Particle extends Sprite {
 		if(movementRotateAmount != 0) {
 			roll += (movementRotateAmount * getMovementRollSpeed()) * delta;
 		}
-		
+
 		if(animation != null && animation.playing) {
 			animation.animate(delta, this);
 		}
@@ -259,12 +260,12 @@ public class Particle extends Sprite {
 	public float getMovementRollSpeed() {
 		return ((xa + ya + za) / 3f) * 100f;
 	}
-	
+
 	public void editorTick(Level level, float delta) {
 		super.editorTick(level, delta);
 		tick(level, delta);
 	}
-	
+
 	public void playAnimation(int startTex, int endTex, float speed) {
 		this.playAnimation(startTex, endTex, speed, false);
 	}
@@ -277,9 +278,9 @@ public class Particle extends Sprite {
 			lifetime = speed;
 		}
 	}
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		if(attached != null) {
 			for(int i = 0; i < attached.size; i++) {
 				attached.get(i).init(level, source);

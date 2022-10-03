@@ -10,6 +10,7 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.projectiles.Missile;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.StringManager;
 
@@ -35,7 +36,7 @@ public class Bow extends Weapon {
 	}
 
 	@Override
-	public void doAttack(Player p, Level lvl, float attackPower) {
+	public void doAttack(Player p, LevelInterface lvl, float attackPower) {
 		Missile missile = getAmmo();
 
 		if(missile == null) {
@@ -45,7 +46,7 @@ public class Bow extends Weapon {
 
 		int damageRoll = doAttackRoll(attackPower, p);
 		if(damageRoll == 0) damageRoll = 1;
-		
+
 		float power = attackPower * (this.range / 4.0f) * 0.5f;
 		missile.isActive = true;
 		missile.isDynamic = true;
@@ -75,8 +76,8 @@ public class Bow extends Weapon {
 			missile.effectLifetime = 200f;
 		}
 
-		lvl.entities.add(missile);
-		
+		lvl.addEntity(missile);
+
 		Audio.playSound(fireSound, 0.25f);
 	}
 
@@ -101,7 +102,7 @@ public class Bow extends Weapon {
 		}
 		return null;
 	}
-	
+
 	public Missile getAmmo() {
 		Item found = findAmmo();
 		if(found != null) {
@@ -120,7 +121,7 @@ public class Bow extends Weapon {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Integer getHeldTex() {
 		Item found = findAmmo();

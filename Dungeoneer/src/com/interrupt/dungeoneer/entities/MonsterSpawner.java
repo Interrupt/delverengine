@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -14,7 +15,7 @@ import java.util.Random;
 
 public class MonsterSpawner extends DirectionalEntity {
 	public MonsterSpawner() { artType = ArtType.sprite; tex = 0; spriteAtlas = "editor"; tex = 4; hidden = true; }
-	
+
 	@EditorProperty(group = "Spawns") public String monsterTheme = "DUNGEON";
 	@EditorProperty(group = "Spawns") public String monsterName = "THIEF";
 	@EditorProperty(group = "Spawns") boolean waitForTrigger = false;
@@ -27,7 +28,7 @@ public class MonsterSpawner extends DirectionalEntity {
 
 	public int placeAttempts = 10;
 
-	public void spawn(Level level) {
+	public void spawn(LevelInterface level) {
 		if(isActive) {
 			for (int i = 0; i < spawnAmount; i++) {
 				Monster m;
@@ -59,7 +60,7 @@ public class MonsterSpawner extends DirectionalEntity {
 		}
 	}
 
-	public void placeMonster(Monster m, Level level) {
+	public void placeMonster(Monster m, LevelInterface level) {
 		boolean didPlace = false;
 
 		// don't bother with more attempts if we're just spawning here
@@ -99,7 +100,7 @@ public class MonsterSpawner extends DirectionalEntity {
 	}
 
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 		if(!waitForTrigger) {
 			spawn(level);
 		}
@@ -112,7 +113,7 @@ public class MonsterSpawner extends DirectionalEntity {
 		}
 	}
 
-	private void doEffect(Vector3 pos, Level level, Entity owner) {
+	private void doEffect(Vector3 pos, LevelInterface level, Entity owner) {
 		Random r = Game.rand;
 		int particleCount = 20;
 		particleCount *= Options.instance.gfxQuality;

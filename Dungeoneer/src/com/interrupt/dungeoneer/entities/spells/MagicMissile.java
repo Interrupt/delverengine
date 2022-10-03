@@ -46,7 +46,7 @@ public class MagicMissile extends Spell {
 
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
-		
+
 		int dmg = doAttackRoll();
 
 		if (Math.abs(this.shotAccuracy) < 1.0f) {
@@ -56,7 +56,7 @@ public class MagicMissile extends Spell {
 		}
 
 		MagicMissileProjectile projectile = makeProjectile(position, direction, dmg, owner);
-		Game.GetLevel().entities.add(projectile);
+		Game.GetLevel().addEntity(projectile);
 	}
 
 	// Make the projectile to fire

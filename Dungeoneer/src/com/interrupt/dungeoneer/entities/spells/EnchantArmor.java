@@ -8,10 +8,7 @@ import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.items.Armor;
 import com.interrupt.dungeoneer.entities.items.ItemModification;
 import com.interrupt.dungeoneer.entities.items.Weapon;
-import com.interrupt.dungeoneer.game.Colors;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.game.*;
 
 import java.util.Random;
 
@@ -46,7 +43,7 @@ public class EnchantArmor extends Spell {
     }
 
     @Override
-    protected void doCastEffect(Vector3 pos, Level level, Entity owner) {
+    protected void doCastEffect(Vector3 pos, LevelInterface level, Entity owner) {
 
         Random r = Game.rand;
         int particleCount = 20;

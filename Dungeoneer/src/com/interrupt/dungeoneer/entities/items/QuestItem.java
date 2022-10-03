@@ -12,13 +12,14 @@ import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
 
 public class QuestItem extends Item {
-	
+
 	public QuestItem() {
 		super(0, 0, 59, ItemType.quest, StringManager.get("items.QuestItem.defaultNameText"));
 	}
@@ -26,7 +27,7 @@ public class QuestItem extends Item {
 	public QuestItem(float x, float y) {
 		super(x, y, 59, ItemType.quest, StringManager.get("items.QuestItem.defaultNameText"));
 	}
-	
+
 	@EditorProperty
 	private String ambientSoundFile = "ambient/orb_glow_loop.mp3";
 
@@ -35,15 +36,15 @@ public class QuestItem extends Item {
 
 	@EditorProperty
 	private boolean giveAchievement = false;
-	
+
 	private AmbientSound ambientSound = null;
-	
+
 	float hoverTimer = 0;
-	
+
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 		super.tick(level, delta);
-		
+
 		if(ambientSoundFile != null) {
 			try {
 				if(ambientSound == null) {
@@ -53,22 +54,22 @@ public class QuestItem extends Item {
 					ambientSound.x = x;
 					ambientSound.y = y;
 					ambientSound.z = z;
-					
+
 					ambientSound.tick(level, delta);
 				}
 			}
 			catch(Exception ex) { }
 		}
-		
+
 		if(isActive) {
 			// animate some
 			hoverTimer += delta;
 			yOffset = (float)Math.sin(hoverTimer * 0.08f) * 0.01f;
-			
+
 			// make a light, if not one already
 			if(attached == null) {
 				attached = new Array<Entity>();
-				
+
 				DynamicLight l = new DynamicLight();
 				l.lightColor.set(0.6f, 0, 0);
 				l.lightType = LightType.sin_slight;
@@ -77,11 +78,11 @@ public class QuestItem extends Item {
 			}
 		}
 	}
-	
+
 	protected void pickup(Player player)
-	{	
+	{
 		if(!isOnFloor) return;
-		
+
 		if(Game.instance.player.addToInventory(this))
 		{
 			isActive = false;
@@ -97,13 +98,13 @@ public class QuestItem extends Item {
 			Game.ShowMessage(StringManager.get("items.QuestItem.noRoomText"), 1);
 		}
 	}
-	
+
 	public void doQuestThing() {
 
 		if(Game.instance.player.isHoldingOrb) return;
 
 		Game.ShowMessage(MessageFormat.format(StringManager.get("items.QuestItem.gotItemText"), GetName()), 8, 1f);
-		
+
 		Game.message.clear();
 
 		if(showPickupMessage) {
@@ -119,20 +120,21 @@ public class QuestItem extends Item {
 		isOnFloor = false;
 		wasOnFloorLast = false;
 		resetTickCount();
-		
+
 		// make life difficult
 		Game.instance.player.isHoldingOrb = true;
-		
+
 		// quit ambient sound
 		if(ambientSound != null) ambientSound.onDispose();
-		
+
 		// shit just got real son
-		Audio.playMusic(Game.instance.level.actionMusic, Game.instance.level.loopMusic);
+        // FIXME: Music!
+		//Audio.playMusic(Game.instance.level.actionMusic, Game.instance.level.loopMusic);
 
 		if(giveAchievement)
 			SteamApi.api.achieve("ORB");
 	}
-	
+
 	public void onDispose() {
 		super.onDispose();
 		if(ambientSound != null) ambientSound.onDispose();

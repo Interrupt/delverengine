@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 
 public class BasicTrigger extends Entity {
     public enum TriggerStatus {WAITING, TRIGGERED, RESETTING, DESTROYED}
@@ -75,7 +76,7 @@ public class BasicTrigger extends Entity {
     }
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         if(Game.instance != null && Game.instance.player != null) {
             // Might need to despawn this during the endgame
             if(Game.instance.player.isHoldingOrb) {
@@ -87,7 +88,7 @@ public class BasicTrigger extends Entity {
     }
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         if (triggerStatus== Trigger.TriggerStatus.DESTROYED && selfDestructs){
             this.isActive=false;
         }

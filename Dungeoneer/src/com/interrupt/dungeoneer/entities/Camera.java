@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 
 public class Camera extends DirectionalEntity {
@@ -35,7 +36,7 @@ public class Camera extends DirectionalEntity {
     private Vector3 tVector1 = new Vector3();
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
 
         tickTime += delta;
 

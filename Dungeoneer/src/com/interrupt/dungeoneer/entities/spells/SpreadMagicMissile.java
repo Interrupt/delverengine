@@ -21,7 +21,7 @@ public class SpreadMagicMissile extends MagicMissile {
 
     @Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
-		
+
 		int dmg = doAttackRoll() / numProjectiles;
         if(dmg < 1) dmg = 1;
 
@@ -43,7 +43,7 @@ public class SpreadMagicMissile extends MagicMissile {
             projectile.ya = tempDir.z * speed;
 
             if (hitSound != null) projectile.hitSound = hitSound;
-            Game.GetLevel().entities.add(projectile);
+            Game.GetLevel().addEntity(projectile);
         }
 	}
 }

@@ -10,11 +10,8 @@ import com.interrupt.dungeoneer.collision.Collision.CollisionType;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.projectiles.Missile;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
-import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -269,7 +266,7 @@ public class Entity {
 	}
 
 	private transient Vector3 t_drawUpdateVector = null;
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		// wake up if moving again
 		if(physicsSleeping && Math.abs(xa) > 0.0001f || Math.abs(ya) > 0.0001f || Math.abs(za) > 0.0001f) physicsSleeping = false;
@@ -576,7 +573,7 @@ public class Entity {
 	}
 
 	protected static Array<Entity> attachedToRemove = new Array<Entity>();
-	public void tickAttached(Level level, float delta) {
+	public void tickAttached(LevelInterface level, float delta) {
 		if(attached != null) {
 
 			// let attachments preserve their offsets
@@ -654,7 +651,7 @@ public class Entity {
 	}
 
 	// only called in the editor
-	public void editorTick(Level level, float delta) {
+	public void editorTick(LevelInterface level, float delta) {
 		if (attached == null) {
 			return;
 		}
@@ -677,10 +674,10 @@ public class Entity {
 
 		attachmentTransform.set(x, y ,z);
 	}
-	public void editorStartPreview(Level level) { }
-	public void editorStopPreview(Level level) { }
+	public void editorStartPreview(LevelInterface level) { }
+	public void editorStopPreview(LevelInterface level) { }
 
-	protected void splash(Level level, float splashZ, boolean first, Tile tile)
+	protected void splash(LevelInterface level, float splashZ, boolean first, Tile tile)
 	{
 		if(tickcount - lastSplashTime < 30 && !first) return;
 		lastSplashTime = tickcount;
@@ -770,7 +767,7 @@ public class Entity {
 	}
 
 	// player is pushing
-	public void push(Player player, Level level, float delta, CollisionAxis collisionAxis)
+	public void push(Player player, LevelInterface level, float delta, CollisionAxis collisionAxis)
 	{
 		// Overload this
 	}
@@ -797,7 +794,7 @@ public class Entity {
 	}
 
 	// overload this to initialize on level start
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		updateDrawable();
 
 		if(isSolid && !isDynamic) {
@@ -952,7 +949,7 @@ public class Entity {
 		return false;
 	}
 
-	public void updateLight(Level level) {
+	public void updateLight(LevelInterface level) {
 		// override this to do something
 	}
 
@@ -964,7 +961,7 @@ public class Entity {
 		// override this to make smoother steps
 	}
 
-	public void sweepCollisionWorld(float nextX, float nextY, float nextZ, Level level, float delta) {
+	public void sweepCollisionWorld(float nextX, float nextY, float nextZ, LevelInterface level, float delta) {
 		// Calculate a previous good non-colliding position in case of point blank shots
 		float lastFreeX = x - xa * delta;
 		float lastFreeY = y - ya * delta;

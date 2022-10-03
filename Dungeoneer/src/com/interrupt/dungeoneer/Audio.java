@@ -17,12 +17,13 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.PositionedSound;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class Audio {
-	
+
 	public static Sound attack;
 	public static Sound hit;
 	public static Sound explode;
@@ -31,16 +32,16 @@ public class Audio {
 	public static Sound clang;
 	public static Sound splash;
 	public static Sound steps;
-	
+
 	public static Music music;
-	
+
 	private static String loadedMusic = "";
-	
+
 	private static ObjectMap<String, Sound> loadedSounds = new ObjectMap<String, Sound>();
-	
+
 	private static Array<PlayingSound> loopingSounds = new Array<PlayingSound>();
 	private static Array<AmbientSound> ambientSounds = new Array<AmbientSound>();
-	
+
 	private static ArrayMap<String, String[]> soundFileCache = new ArrayMap<String, String[]>();
 
     private static Array<String> musicTracks = new Array<String>();
@@ -60,33 +61,33 @@ public class Audio {
     private static ArrayMap<String, Float> ambientSoundStack = new ArrayMap<String, Float>();
 	private static ArrayMap<String, Float> ambientSoundStackPlayTime = new ArrayMap<String, Float>();
 	private static float ambientSoundChangeSpeed = 0.1f;
-	
+
 	static public void init() {
 		attack = loadSound("whoosh1.mp3");
 		explode = loadSound("explode.mp3");
 		spell = loadSound("spell-missile-2.mp3");
 		clang = loadSound("clang.mp3");
 		splash = loadSound("splash2.mp3");
-		
+
 		loadSound("hit.ogg");
 		loadSound("inventory/drop_item.ogg");
 		loadSound("pu_metal.ogg");
 		loadSound("pu_gen.ogg");
 		loadSound("pu_glass.ogg");
 		loadSound("pu_gold.ogg");
-		
+
 		if(Gdx.app.getType() != ApplicationType.Android && Gdx.app.getType() != ApplicationType.iOS) {
 			torch = loadSound("torch.mp3");
 			steps = loadSound("steps.mp3");
 		}
 	}
-	
+
 	static public Sound loadSound(String filename)
 	{
 		try {
 			// check if already loaded
 			if(loadedSounds.containsKey(filename)) return loadedSounds.get(filename);
-			
+
 			// load if not already
 			Sound loaded = Gdx.audio.newSound(Game.findInternalFileInMods("audio/" + filename.replaceAll(".ogg", ".mp3")));
 			if(loaded != null) loadedSounds.put(filename, loaded);
@@ -96,7 +97,7 @@ public class Audio {
 			return null;
 		}
 	}
-	
+
 	static public String[] getFileList(String filename) {
 		String[] cached = soundFileCache.get(filename);
 		if(cached == null) {
@@ -105,10 +106,10 @@ public class Audio {
 		}
 		return cached;
 	}
-	
+
 	static public void preload(String filename) {
 		if(filename == null) return;
-		
+
 		String[] files = getFileList(filename);
 		if(!Game.isMobile) {
 			for(int i = 0; i < files.length; i++) {
@@ -118,7 +119,7 @@ public class Audio {
 			loadSound(files[0]);
 		}
 	}
-	
+
 	static private Music loadMusic(String filename)
 	{
 		try {
@@ -131,7 +132,7 @@ public class Audio {
 		}
 	}
 
-    static public void tick(float delta, Player player, Level level) {
+    static public void tick(float delta, Player player, LevelInterface level) {
         // Lerp music volume changes over time
         musicMod = Interpolation.linear.apply(musicMod, musicTargetMod, musicLerpSpeed * delta);
         setMusicVolume(Math.max(musicMod, 0f));
@@ -249,7 +250,7 @@ public class Audio {
         ambientTileSoundsToStop.clear();
     }
 
-    static public float getTileAmbientSoundVolume(Tile t, int x, int y, Entity listening, Level level) {
+    static public float getTileAmbientSoundVolume(Tile t, int x, int y, Entity listening, LevelInterface level) {
         if(t.data != null) {
             // how far from this tile are we?
             float xDist = Math.abs(x + 0.5f - listening.x);
@@ -279,7 +280,7 @@ public class Audio {
 
         return 0;
     }
-	
+
 	static public void playMusic(String filename, final boolean loop)
 	{
 		try {
@@ -362,33 +363,33 @@ public class Audio {
         if(targetVolume < 0f) targetVolume = 0f;
         musicTargetMod = targetVolume;
     }
-	
+
 	static public void setMusicVolume(float volume) {
 		if(music != null && music.isPlaying()) {
             musicMod = volume;
 			music.setVolume((Options.instance.musicVolume * volume) * 0.5f);
 		}
 	}
-	
+
 	static public Music getPlayingMusic() {
 		return music;
 	}
-	
+
 	static public void playSound(Sound sfx, float volume) {
 		if(sfx != null) sfx.play(Options.instance.sfxVolume);
 	}
-	
+
 	static public void playSound(String filename, float volume) {
 		try {
 			if(filename == null || filename.equals("")) return;
 			String[] files = getFileList(filename);
 			String theFile = null;
-			
+
 			if(!Game.isMobile)
 				theFile = files[Game.rand.nextInt(files.length)];
 			else
 				theFile = files[0];
-			
+
 			Sound sfx = getSound(theFile);
 			if(sfx != null) {
 				sfx.play(volume * Options.instance.sfxVolume);
@@ -398,7 +399,7 @@ public class Audio {
 			Gdx.app.log("DelverAudio", "Couldn't play sound: " + filename);
 		}
 	}
-	
+
 	static public void playSound(String filename, float volume, float pitch) {
 		try {
 			if(filename == null || filename.equals("")) return;
@@ -408,7 +409,7 @@ public class Audio {
 				theFile = files[Game.rand.nextInt(files.length)];
 			else
 				theFile = files[0];
-			
+
 			Sound sfx = getSound(theFile);
 			if(sfx != null) {
 				Long id = sfx.play(volume * Options.instance.sfxVolume);
@@ -419,61 +420,61 @@ public class Audio {
 			Gdx.app.log("DelverAudio", "Couldn't play sound: " + filename);
 		}
 	}
-	
+
 	static public Sound getSound(String filename) {
 		if(filename == null || filename.equals("")) return null;
-		
+
 		Sound sfx = loadedSounds.get(filename);
 		if(sfx == null) sfx = loadSound(filename);
 		return sfx;
 	}
-	
+
 	static public void playPositionedSound(String filename, Vector3 pos, float volume, float range) {
 		if(filename == null || filename.equals("")) return;
 		if(volume < 0.005) return; // why bother?
-		
+
 		try {
 			String[] files = getFileList(filename);
 			String theFile = null;
-				
+
 			if(!Game.isMobile)
 				theFile = files[Game.rand.nextInt(files.length)];
 			else
 				theFile = files[0];
-			
+
 	 		Sound sfx = Audio.getSound(theFile);
 			if(sfx != null && Game.instance.level != null) {
 				PositionedSound p = new PositionedSound((float)pos.x, (float)pos.y, (float)pos.z, sfx, volume, range, 200);
-				Game.instance.level.non_collidable_entities.add(p);
+                Game.instance.level.addEntity(p);
 			}
 		} catch (Exception ex) {
 			Gdx.app.log("DelverAudio", "Couldn't play positioned sound: " + filename);
 		}
 	}
-	
+
 	static public void playPositionedSound(String filename, Vector3 pos, float volume, float pitch, float range) {
 		if(filename == null || filename.equals("")) return;
 		if(volume < 0.005) return; // why bother?
-		
+
 		try {
 			String[] files = getFileList(filename);
 			String theFile = null;
-				
+
 			if(!Game.isMobile)
 				theFile = files[Game.rand.nextInt(files.length)];
 			else
 				theFile = files[0];
-			
+
 	 		Sound sfx = Audio.getSound(theFile);
 			if(sfx != null && Game.instance.level != null) {
 				PositionedSound p = new PositionedSound((float)pos.x, (float)pos.y, (float)pos.z, sfx, volume, pitch, range, 200);
-				Game.instance.level.non_collidable_entities.add(p);
+				Game.instance.level.addEntity(p);
 			}
 		} catch (Exception ex) {
 			Gdx.app.log("DelverAudio", "Couldn't play positioned sound: " + filename);
 		}
 	}
-	
+
 	static public void disposeAudio(String ignore) {
 		try {
 			if(music != null) {
@@ -486,13 +487,13 @@ public class Audio {
 		catch(Exception ex) {
 			Gdx.app.log("DelverAudio", "Couldn't unload music");
 		}
-		
+
 		if(!Game.isMobile) {
 			for(Entry<String, Sound> sound : loadedSounds.entries()) {
 				try {
 					// don't unload level change sounds
 					if(ignore != null && ignore.contains(sound.key)) continue;
-					
+
 					Sound s = sound.value;
 					s.stop();
 					s.dispose();
@@ -506,7 +507,7 @@ public class Audio {
 			loopingSounds.clear();
 			ambientSounds.clear();
 			soundFileCache.clear();
-			
+
 			attack = null;
 			hit = null;
 			explode = null;
@@ -519,19 +520,19 @@ public class Audio {
 	}
 
 	public static PlayingSound playSound(String filename, float volume, float pitch, boolean loops) {
-		
+
 		// looping sounds aren't supported on mobile
 		if(loops && Game.isMobile) return null;
-		
+
 		if(filename == null || filename.equals("")) return null;
 		String[] files = getFileList(filename);
 		String theFile = null;
-			
+
 		if(!Game.isMobile)
 			theFile = files[Game.rand.nextInt(files.length)];
 		else
 			theFile = files[0];
-		
+
 		Sound sfx = getSound(theFile);
 		if(sfx != null) {
 			long id = sfx.play(volume * Options.instance.sfxVolume);
@@ -546,7 +547,7 @@ public class Audio {
 
             return s;
 		}
-		
+
 		return null;
 	}
 
@@ -559,7 +560,7 @@ public class Audio {
 	public static PlayingSound getAmbientSound() {
 		return ambientSound;
 	}
-	
+
 	public static void stopLoopingSounds() {
 		for(PlayingSound s : loopingSounds) {
 			if(s.sound != null)
@@ -570,7 +571,7 @@ public class Audio {
         ambientTileSounds.clear();
         ambientSoundStack.clear();
 		ambientSoundStackPlayTime.clear();
-		
+
 		if(Audio.torch != null) Audio.torch.stop();
 	}
 

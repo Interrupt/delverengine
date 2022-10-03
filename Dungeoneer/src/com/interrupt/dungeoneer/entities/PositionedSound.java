@@ -7,36 +7,37 @@ import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 
 public class PositionedSound extends Entity {
 	protected transient Long soundInstance = null;
-	
+
 	@EditorProperty
 	public float volume = 1f;
-	
+
 	@EditorProperty
 	public float radius = 12f;
-	
+
 	@EditorProperty
 	protected float pitch = 1f;
-	
+
 	protected float lifetime = 60f;
 	protected transient Sound sound;
 	protected transient Vector2 direction = new Vector2();
 
 	protected boolean isPaused = false;
-	
+
 	public PositionedSound()
 	{
 		artType = ArtType.hidden;
 		persists = false;
 	}
-	
+
 	public PositionedSound(float x, float y, float z, Sound sound, float volume, float radius, float lifetime)
 	{
 		artType = ArtType.hidden;
-		
+
 		this.volume = volume;
 		this.sound = sound;
 		this.radius = radius;
@@ -44,7 +45,7 @@ public class PositionedSound extends Entity {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		
+
 		try {
 			if(sound != null) {
 				float v = getPositionalVolume();
@@ -55,14 +56,14 @@ public class PositionedSound extends Entity {
 		} catch( Exception ex) {
 			isActive = false;
 		}
-		
+
 		persists = false;
 	}
-	
+
 	public PositionedSound(float x, float y, float z, Sound sound, float volume, float pitch, float radius, float lifetime)
 	{
 		artType = ArtType.hidden;
-		
+
 		this.volume = volume;
 		this.sound = sound;
 		this.radius = radius;
@@ -71,7 +72,7 @@ public class PositionedSound extends Entity {
 		this.y = y;
 		this.z = z;
 		this.pitch = pitch;
-		
+
 		try {
 			if(sound != null) {
 				float v = getPositionalVolume();
@@ -84,19 +85,19 @@ public class PositionedSound extends Entity {
 		} catch( Exception ex) {
 			isActive = false;
 		}
-		
+
 		persists = false;
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
-	{	
+	public void tick(LevelInterface level, float delta)
+	{
 		lifetime -= delta;
 		if(lifetime <= 0 && this.isActive)
 		{
 			stop();
 		}
-		
+
 		if(soundInstance == null) {
 			isActive = false;
 		}
@@ -104,19 +105,19 @@ public class PositionedSound extends Entity {
 
 		sound.setPan(soundInstance, getPositionalPan(), getPositionalVolume());
 	}
-	
+
 	private float getPositionalVolume()
 	{
 		Player player = GameManager.getGame().player;
-		
+
 		float distance = Math.max( Math.abs(x - player.x), Math.abs(y - player.y) );
 		float dmod = distance / radius;
 		if(dmod > 1) dmod = 1;
 		dmod = 1 - dmod;
-		
+
 		return (dmod * volume) * Options.instance.sfxVolume;
 	}
-	
+
 	public void stop()
 	{
 		if(soundInstance != null)
@@ -179,7 +180,7 @@ public class PositionedSound extends Entity {
 		if(!left) reduced *= -1;
 		return reduced;
 	}
-	
+
 	@Override
 	public void onDispose() {
 		stop();

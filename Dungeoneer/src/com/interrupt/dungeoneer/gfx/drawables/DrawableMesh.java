@@ -17,6 +17,7 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Breakable;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.managers.ShaderManager;
@@ -27,12 +28,12 @@ public class DrawableMesh extends Drawable {
 
 	/** Mesh texture filepath. */
 	public String textureFile = "meshes.png";
-	
+
 	public transient Mesh loadedMesh;
 	public transient Texture loadedTexture;
-	
+
 	public transient boolean couldLoad = true;
-	
+
 	private transient Matrix4 modelView = null;
 	private transient Matrix4 combined = new Matrix4();
 
@@ -55,7 +56,7 @@ public class DrawableMesh extends Drawable {
 
 	/** Rotation z-coordinate. */
 	public float rotZ = 0;
-	
+
 	public transient BoundingBox bbox = null;
 	private transient BoundingBox frustrumCheckBox = new BoundingBox();
 
@@ -81,11 +82,11 @@ public class DrawableMesh extends Drawable {
 		this.meshFile = meshFile;
 		this.textureFile = textureFile;
 	}
-	
+
 	public void draw (PerspectiveCamera camera, Color color, ShaderInfo shader, float fogStart, float fogEnd, Color fogColor, float time) {
-		
+
 		this.color = color;
-		
+
 		loadedTexture = Art.cachedTextures.get(textureFile);
 		if(loadedTexture == null) {
 			loadedTexture = Art.loadTexture(textureFile);
@@ -93,7 +94,7 @@ public class DrawableMesh extends Drawable {
 		if(loadedTexture != null) GlRenderer.bindTexture(loadedTexture);
 
 		if(bakeLighting && bakedMesh == null && Game.instance != null) {
-			bakedMesh = GlRenderer.bakeMesh(Game.instance.level, this);
+			bakedMesh = GlRenderer.bakeMesh((Level)Game.instance.level, this);
 			bakedRotation.set(rotX, rotY, rotZ);
 			bbox = bakedMesh.calculateBoundingBox();
 		}
@@ -143,19 +144,19 @@ public class DrawableMesh extends Drawable {
 			shader.end();
 		}
 	}
-	
+
 	public boolean isInFrustrum(PerspectiveCamera camera) {
-		
+
 		if(bbox != null) {
 			frustrumCheckBox.set(bbox);
 			frustrumCheckBox.mul(modelView);
-			
+
 			return camera.frustum.boundsInFrustum(frustrumCheckBox);
 		}
-		
+
 		return true;
 	}
-	
+
 	public void update(Entity e) {
 		x = e.x;
 		y = e.y;
@@ -166,7 +167,7 @@ public class DrawableMesh extends Drawable {
 		shader = e.getShader();
 		update();
 	}
-	
+
 	public void update() {
 
     	// Refresh everything
@@ -197,7 +198,7 @@ public class DrawableMesh extends Drawable {
 
 		if(scaleVector != null) modelView.scale(scaleVector.x, scaleVector.y, scaleVector.z);
 		else modelView.scale(scale, scale, scale);
-			
+
 		// load if not already
 		if(loadedMesh == null && couldLoad) {
 			try {
@@ -206,7 +207,7 @@ public class DrawableMesh extends Drawable {
 				if(loadedMesh != null) {
 					bbox = Art.getCachedMeshBounds(meshFile);
 				}
-				
+
 				loadedTexture = Art.loadTexture(textureFile);
 
 				// Uhoh!

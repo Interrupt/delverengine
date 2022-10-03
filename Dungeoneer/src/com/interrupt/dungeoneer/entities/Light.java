@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.LongMap;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
@@ -52,20 +53,20 @@ public class Light extends Entity {
 	/** Is Light on? */
 	@EditorProperty
 	public boolean on = true;
-	
+
 	public Light() { hidden = true; spriteAtlas = "editor"; tex = 12; isSolid = false; }
-	
+
 	private transient LongMap<Boolean> canSeeCache = new LongMap<Boolean>();
 	private transient LongMap<Float> canSeeHowMuchCache = new LongMap<Float>();
 	private transient LongMap<Color> colorVoxels = new LongMap<Color>();
-	
+
 	public Light(float x, float y, Color lightColor, float range) {
 		super(x, y, 0, false);
 		artType = ArtType.hidden;
 		this.lightColor = lightColor;
 		this.range = range;
 	}
-	
+
 	public Light(float x, float y, float z, Color lightColor, float range) {
 		super(x, y, 0, false);
 		this.z = z;
@@ -73,7 +74,7 @@ public class Light extends Entity {
 		this.lightColor = lightColor;
 		this.range = range;
 	}
-	
+
 	public Light(float x, float y, float z, Color lightColor, float range, boolean fullHeight) {
 		super(x, y, 0, false);
 		this.z = z;
@@ -92,12 +93,12 @@ public class Light extends Entity {
 		this.lightFullHeight = fullHeight;
 		this.shadowTiles = castShadows;
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 	}
-	
+
 	public boolean canSee(Level level, float x, float y, float z) {
 		if(shadowTiles) {
 			long key = getLightVoxelKey(x, y);
@@ -135,7 +136,7 @@ public class Light extends Entity {
 
 		return 1f;
 	}
-	
+
 	public void clearCanSee() {
 		canSeeCache.clear();
 		canSeeHowMuchCache.clear();

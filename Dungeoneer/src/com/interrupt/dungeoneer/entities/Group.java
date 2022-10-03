@@ -5,32 +5,33 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 
 import java.util.UUID;
 
 public class Group extends DirectionalEntity {
 	/** Array of grouped Entities. */
 	public Array<Entity> entities = new Array<Entity>();
-	
+
 	protected Vector3 lastRot = new Vector3();
 	protected Vector3 lastPosition = new Vector3();
-	
+
 	public transient Vector3 rotTemp = new Vector3();
 	public transient Vector3 posTemp = new Vector3();
 
     public boolean placed = false;
-	
+
 	public Group() { }
-	
+
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 		for(Entity e : entities) {
 			e.tick(level, delta);
 		}
 	}
 
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 
 		if(!isActive)
 			return;
@@ -68,10 +69,10 @@ public class Group extends DirectionalEntity {
 						e.za += this.za;
 					}
 
-					level.entities.add(e);
+					level.addEntity(e);
 				}
 				else {
-					level.static_entities.add(e);
+					level.addEntity(e);
 				}
 
                 e.init(level, source);
@@ -106,11 +107,11 @@ public class Group extends DirectionalEntity {
 	public void updateDrawable() {
 		setPosition(x,y,z);
 		setRotation(rotation.x, rotation.y, rotation.z);
-		
+
 		for(Entity e : entities) {
 			e.editorState = editorState;
 			e.setPosition(e.x, e.y, e.z);
-			
+
 			e.updateDrawable();
 		}
 	}
@@ -141,21 +142,21 @@ public class Group extends DirectionalEntity {
 			this.collision.z = Math.max(Math.max(Math.abs(maxZ), Math.abs(minZ)), this.collision.z);
 		}
 	}
-	
+
 	@Override
 	public void setRotation(float rotX, float rotY, float rotZ) {
-		
+
 		rotation.set(rotX, rotY, rotZ);
-		
+
 		lastRot.sub(rotation);
-		
+
 		if(lastRot.x != 0 || lastRot.y != 0 || lastRot.z != 0) {
 			for(Entity e : entities) {
 				rotTemp.set(e.x - x, e.y - y, e.z - z);
 				rotTemp.rotate(Vector3.X, lastRot.x);
 				rotTemp.rotate(Vector3.Y, lastRot.y);
 				rotTemp.rotate(Vector3.Z, lastRot.z);
-				
+
 				e.x = rotTemp.x + x;
 				e.y = rotTemp.y + y;
 				e.z = rotTemp.z + z;
@@ -163,10 +164,10 @@ public class Group extends DirectionalEntity {
                 e.rotate(lastRot.x, lastRot.y, -lastRot.z);
 			}
 		}
-		
+
 		lastRot.set(rotation);
 	}
-	
+
 	@Override
 	public void rotate90() {
 		if(isActive) {
@@ -186,7 +187,7 @@ public class Group extends DirectionalEntity {
                 e.z = rotTemp.z + z;
             }
 
-			for(Entity entity : entities) {	
+			for(Entity entity : entities) {
 				entity.rotate90();
 			}
 
@@ -251,20 +252,20 @@ public class Group extends DirectionalEntity {
 	public void setPosition(float x, float y, float z) {
 		posTemp.set(lastPosition);
 		posTemp.sub(x,y,z);
-		
+
 		for(Entity entity : entities) {
 			entity.setPosition(entity.x - posTemp.x, entity.y - posTemp.y, entity.z - posTemp.z);
 		}
-		
+
 		lastPosition.set(x,y,z);
-		
+
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	@Override
-	public void updateLight(Level level) {
+	public void updateLight(LevelInterface level) {
 		for(Entity e : entities) {
 			e.updateLight(level);
 		}

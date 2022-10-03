@@ -24,6 +24,7 @@ import com.interrupt.dungeoneer.entities.items.Key;
 import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.entities.triggers.ButtonDecal;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
+import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
@@ -49,7 +50,7 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Random;
 
-public class Level {
+public class Level implements LevelInterface {
 
     public enum DungeonTheme {
     	TEST,
@@ -1567,7 +1568,7 @@ public class Level {
 	private static Boolean checkIsValidLevel(Level tocheck, int dungeonlevel) {
 		if(tocheck == null) return false;
 
-		Array<Level> levels = Game.buildLevelLayout();
+		Array<LevelInterface> levels = Game.buildLevelLayout();
 		if(dungeonlevel < levels.size) {
 			// look for exit markers
 			for(EditorMarker m : tocheck.editorMarkers) {
@@ -3826,7 +3827,7 @@ public class Level {
 		Audio.playMusic(music, true);
 
 		if(ambientSound != null && !Game.isMobile)
-			Audio.playAmbientSound(ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
+			Audio.playAmbientSound(ambientSound, ambientSoundVolume, 0.1f);
 	}
 
 	public void clear() {
@@ -3835,4 +3836,131 @@ public class Level {
 		if (static_entities != null) static_entities.clear();
 		if (non_collidable_entities != null) non_collidable_entities.clear();
 	}
+
+    // New methods
+
+    @Override
+    public Vector3 getPlayerStartLocation() {
+        Vector3 playerStart = new Vector3();
+        if(playerStartX != null && playerStartY != null) {
+            playerStart.x = playerStartX + 0.5f;
+            playerStart.y = playerStartY + 0.5f;
+        }
+        else {
+            playerStart.x = 0;
+            playerStart.y = 0;
+        }
+
+        return playerStart;
+    }
+
+    @Override
+    public float getPlayerStartRotation() {
+        if(playerStartRot != null)
+            return (float)Math.toRadians(-(playerStartRot + 180f));
+
+        return 0;
+    }
+
+    @Override
+    public void makeLevelFromWarp(TriggeredWarp warp) {
+        generated = warp.generated;
+        levelFileName = warp.levelToLoad;
+        theme = warp.levelTheme;
+        fogColor.set(warp.fogColor);
+        ambientTileLighting = warp.ambientLightColor;
+        fogEnd = warp.fogEnd;
+        fogStart = warp.fogStart;
+        skyLightColor = new Color(warp.skyLightColor);
+        viewDistance = fogEnd + 2;
+        isDirty = true;
+        levelName = warp.levelName;
+        makeStairsDown = false;
+        spawnMonsters = warp.spawnMonsters;
+        objectivePrefab = warp.objectivePrefabToSpawn;
+        music = warp.music;
+        ambientSound = warp.ambientSound;
+    }
+
+    @Override
+    public void markRendererDirty() {
+        rendererDirty = true;
+    }
+
+    @Override
+    public void markDirty() {
+        isDirty = true;
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    @Override
+    public Stairs getStairs(Stairs.StairDirection stairDirection) {
+        if(stairDirection == StairDirection.up)
+            return up;
+
+        return down;
+    }
+
+    @Override
+    public boolean needsSaving() {
+        return needsSaving;
+    }
+
+    @Override
+    public void save(FileHandle file) {
+        KryoSerializer.saveLevel(file, this);
+    }
+
+    @Override
+    public Array<Entity> getEntitiesAt(float x, float y, float colSize) {
+        return spatialhash.getEntitiesAt(x, y, colSize);
+    }
+
+    @Override
+    public Array<Entity> getEntities() {
+        return entities;
+    }
+
+    @Override
+    public Array<Entity> getStaticEntities() { return static_entities; }
+
+    @Override
+    public Array<Entity> getNonCollidableEntities() { return non_collidable_entities; }
+
+    @Override
+    public String getLevelName() {
+        return levelName;
+    }
+
+    @Override
+    public String getLoadingScreenBackgroundFilename() {
+        return loadingScreenBackground;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public int getDifficulty() {
+        return dungeonLevel;
+    }
+
+    @Override
+    public String getTheme() {
+        return theme;
+    }
+
+    @Override
+    public void AddLight(Light e) { lightSpatialHash.AddLight(e); }
 }

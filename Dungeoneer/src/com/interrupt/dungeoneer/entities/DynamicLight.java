@@ -7,18 +7,19 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 
 public class DynamicLight extends Entity {
-	
+
 	public enum LightType { steady, fire, flicker_on, flicker_off, sin_slow, sin_fast, torch, sin_slight };
-	
+
 	@EditorProperty
 	public Vector3 lightColor = new Vector3(1,1,1);
-	
+
 	@EditorProperty
 	public float range = 3.2f;
-	
+
 	@EditorProperty
 	public LightType lightType = LightType.steady;
 
@@ -40,7 +41,7 @@ public class DynamicLight extends Entity {
 
 	@EditorProperty
 	public float haloSizeMod = 1f;
-	
+
 	private transient float time = 0f;
 	public transient Vector3 workColor = new Vector3();
 	private transient float workRange = range;
@@ -49,18 +50,18 @@ public class DynamicLight extends Entity {
 	public float lerpTimer = 0;
 	private float lerpTime = 0;
 	private Boolean killAfterLerp = null;
-	
+
 	private transient Vector3 workVector3 = new Vector3();
-	
+
 	public DynamicLight() { hidden = true; spriteAtlas = "editor"; tex = 12; isSolid = false; }
-	
+
 	public DynamicLight(float x, float y, float z, Vector3 lightColor) {
 		super(x, y, 0, false);
 		this.z = z;
 		artType = ArtType.hidden;
 		this.lightColor = lightColor;
 	}
-	
+
 	public DynamicLight(float x, float y, float z, float range, Vector3 lightColor) {
 		super(x, y, 0, false);
 		this.z = z;
@@ -68,10 +69,10 @@ public class DynamicLight extends Entity {
 		artType = ArtType.hidden;
 		this.lightColor = lightColor;
 	}
-	
+
 	public void updateLightColor(float delta) {
 		time += delta;
-		
+
 		workColor.set(lightColor);
 		workRange = range;
 
@@ -88,7 +89,7 @@ public class DynamicLight extends Entity {
 			if(toggleLerpTime > 1)
 				toggleLerpTime = 1;
 		}
-		
+
 		if(lightType == LightType.steady) {
 			// steady lights do nothing
 		}
@@ -96,7 +97,7 @@ public class DynamicLight extends Entity {
 			workColor.scl(1 - (float)Math.sin(time * 0.11f) * 0.1f);
 			workColor.scl(1 - (float)Math.sin(time * 0.147f) * 0.1f);
 			workColor.scl(1 - (float)Math.sin(time * 0.263f) * 0.1f);
-			
+
 			workRange *= 1 - (float)Math.sin(time * 0.111f) * 0.05f;
 			workRange *= 1 - (float)Math.sin(time * 0.1477f) * 0.05f;
 			workRange *= 1 - (float)Math.sin(time * 0.2631f) * 0.05f;
@@ -105,7 +106,7 @@ public class DynamicLight extends Entity {
 			workColor.scl(1 - (float)Math.sin(time * 0.11f) * 0.5f);
 			workColor.scl(1 - (float)Math.sin(time * 0.147f) * 0.5f);
 			workColor.scl(1 - (float)Math.sin(time * 0.263f) * 0.5f);
-			
+
 			workRange *= 1 - (float)Math.sin(time * 0.111f) * 0.05f;
 			workRange *= 1 - (float)Math.sin(time * 0.1477f) * 0.05f;
 			workRange *= 1 - (float)Math.sin(time * 0.2631f) * 0.05f;
@@ -129,18 +130,18 @@ public class DynamicLight extends Entity {
 		if(toggleLerpTime > 0 && toggleLerpTime < 1) {
 			workColor.scl(Interpolation.linear.apply(toggleLerpTime));
 		}
-		
+
 		if(colorLerpTarget != null) {
 			float lerpA = lerpTimer / lerpTime;
 			workColor.lerp(colorLerpTarget, lerpA);
 			workRange = Interpolation.linear.apply(range, rangeLerpTarget, lerpA);
 			lerpTimer += delta;
-			
+
 			if(lerpTimer >= lerpTime) {
 				workColor.set(colorLerpTarget);
-				
+
 				colorLerpTarget = null;
-				
+
 				if(killAfterLerp != null && killAfterLerp) isActive = false;
 			}
 		}
@@ -151,16 +152,16 @@ public class DynamicLight extends Entity {
 		haloSize *= Interpolation.circleOut.apply(workColor.len() * 0.4f);
 		haloSize *= haloSizeMod;
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		if (!GameManager.renderer.enableLighting) {
 			return;
 		}
 
 		updateLightColor(delta);
-		
+
 		if(isActive && (on || (toggleLerpTime > 0 && toggleLerpTime < 1))) {
 			if(Game.instance.camera == null || Game.instance.camera.frustum.sphereInFrustum(workVector3.set(x,z,y), range * 1.5f)) {
 				com.interrupt.dungeoneer.gfx.DynamicLight light = GlRenderer.getLight();
@@ -174,32 +175,32 @@ public class DynamicLight extends Entity {
 	}
 
 	@Override
-	public void editorTick(Level level, float delta) {
+	public void editorTick(LevelInterface level, float delta) {
 		super.editorTick(level, delta);
 		tick(level, delta);
 	}
-	
+
 	public DynamicLight startLerp(Vector3 endColor, float time, boolean killAfter)
 	{
 		colorLerpTarget = endColor;
 		rangeLerpTarget = range;
 		killAfterLerp = killAfter;
-		
+
 		lerpTime = time;
 		lerpTimer = 0f;
-		
+
 		return this;
 	}
-	
+
 	public DynamicLight startLerp(Vector3 endColor, float endRange, float time, boolean killAfter)
 	{
 		colorLerpTarget = endColor;
 		rangeLerpTarget = endRange;
 		killAfterLerp = killAfter;
-		
+
 		lerpTime = time;
 		lerpTimer = 0f;
-		
+
 		return this;
 	}
 
@@ -207,9 +208,9 @@ public class DynamicLight extends Entity {
 		this.haloMode = haloMode;
 		return this;
 	}
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		super.init(level, source);
 		time = Game.rand.nextFloat() * 5000f;
 

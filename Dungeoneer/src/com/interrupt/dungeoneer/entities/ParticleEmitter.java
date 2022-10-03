@@ -9,13 +9,14 @@ import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.serializers.hacks.BoundingBoxOld;
 
 public class ParticleEmitter extends Entity {
 	public ParticleEmitter() { hidden = true; spriteAtlas = "editor"; tex = 14; isSolid = false; }
-	
+
 	public enum StartMode { IMMEDIATELY, DELAYED }
- 	
+
 	@EditorProperty
 	public StartMode startMode = StartMode.IMMEDIATELY;
 
@@ -161,33 +162,33 @@ public class ParticleEmitter extends Entity {
 	/** Choose a random sprite between particleStartTex and particleEndTex for each particle? */
 	@EditorProperty( group="Particle Spawning" )
 	public boolean pickRandomSprite = false;
-	
+
 	private transient float spawntimer = 0f;
-	
+
 	private transient Vector3 position = new Vector3();
 	private transient Vector3 playerPosition = new Vector3();
 	private transient float playerDistance = 0f;
-	
+
 	private BoundingBoxOld visibleArea = null;
 	private float maxVisibleRadius = 1f;
-	
+
 	@Override
-	public void tick(Level level, float delta)
-	{	
+	public void tick(LevelInterface level, float delta)
+	{
 		if(!checkDetailLevel()) return;
 		if(startMode != StartMode.IMMEDIATELY) return;
 
 		if(particleAtlas == null) {
 			particleAtlas = particleArtType.toString();
 		}
-		
+
 		if(Game.instance != null) {
 			PerspectiveCamera camera = GameManager.renderer.camera;
 			playerPosition.set(camera.position.x, camera.position.z, camera.position.y);
 			position.set(x, y, z);
-			
+
 			playerDistance = position.sub(playerPosition).len();
-			
+
 			if(playerDistance > spawnDistance || !Game.camera.frustum.sphereInFrustum(position.set(x,z,y), maxVisibleRadius)) {
 				return;
 			}
@@ -195,15 +196,15 @@ public class ParticleEmitter extends Entity {
 		else {
 			playerDistance = 1f;
 		}
-		
+
 		spawntimer += delta * (1f - Math.min(playerDistance / spawnDistance, 1f));
-		
+
 		if(spawntimer >= particleSpawnInterval) {
 			spawntimer = Game.rand.nextFloat() * particleRandomSpawnInterval;
 
             int rand = 0;
             if(particleRandomSpawnCount > 0) rand = Game.rand.nextInt(particleRandomSpawnCount + 1);
-			
+
 			for(int i = 0; i < particleSpawnCount + rand; i++) {
 				Particle p = CachePools.getParticle();
 				p.artType = particleArtType;
@@ -227,25 +228,25 @@ public class ParticleEmitter extends Entity {
 				if(particleEndColor != null) {
 					p.endColor = particleEndColor;
 				}
-				
+
 				p.collision.set(particleCollisionSize);
-				
+
 				p.x = x + Game.rand.nextFloat() * particleSpread.x - particleSpread.x * 0.5f;
 				p.y = y + Game.rand.nextFloat() * particleSpread.y - particleSpread.y * 0.5f;
 				p.z = z + Game.rand.nextFloat() * particleSpread.z - particleSpread.z * 0.5f;
-				
+
 				p.xa = particleVelocity.x + Game.rand.nextFloat() * particleRandomVelocity.x - particleRandomVelocity.x * 0.5f;
 				p.ya = particleVelocity.y + Game.rand.nextFloat() * particleRandomVelocity.y - particleRandomVelocity.y * 0.5f;
 				p.za = particleVelocity.z + Game.rand.nextFloat() * particleRandomVelocity.z - particleRandomVelocity.z * 0.5f;
-				
+
 				if(owner != null && this.particlesMoveRelativeToParent) {
 					p.xa += owner.xa;
 					p.ya += owner.ya;
 					p.za += owner.za;
 				}
-				
+
 				p.persists = particlesPersist;
-				
+
 				p.scale = particleStartScale;
 				p.endScale = particleEndScale;
 
@@ -259,34 +260,34 @@ public class ParticleEmitter extends Entity {
 				else if(particleStartTex != particleEndTex) {
 					p.playAnimation(particleStartTex, particleEndTex, particleLifetime - 0.0001f);
 				}
-				
+
 				level.SpawnNonCollidingEntity(p);
 			}
-			
+
 			if(!particlesRepeat) startMode = StartMode.DELAYED;
 		}
 	}
-	
+
 	@Override
-	public void editorTick(Level level, float delta) {
+	public void editorTick(LevelInterface level, float delta) {
 		super.editorTick(level, delta);
 
 		// let the emitter make particles in the editor, just don't save them ever
 		Boolean persistValue = particlesPersist;
-		
+
 		particlesPersist = false;
 		tick(level, delta);
-		
+
 		particlesPersist = persistValue;
 	}
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		maxVisibleRadius = Math.max(particleSpread.x,Math.max(particleSpread.y,particleSpread.z));
 		if(maxVisibleRadius < 0.4f) maxVisibleRadius = 0.4f;
 		spawntimer = Game.rand.nextFloat() * particleSpawnInterval;
 	}
-	
+
 	@Override
 	public void rotate90() {
 		if(particleVelocity != null) {
@@ -294,20 +295,20 @@ public class ParticleEmitter extends Entity {
 			particleVelocity.x = particleVelocity.y;
 			particleVelocity.y = swap;
 		}
-		
+
 		if(particleRandomVelocity != null) {
 			float swap = particleRandomVelocity.x;
 			particleRandomVelocity.x = particleRandomVelocity.y;
 			particleRandomVelocity.y = swap;
 		}
-		
+
 		if(particleSpread != null) {
 			float swap = particleSpread.x;
 			particleSpread.x = particleSpread.y;
 			particleSpread.y = swap;
 		}
 	}
-	
+
 	@Override
 	public void onTrigger(Entity instigator, String value) {
 		if(startMode == StartMode.IMMEDIATELY) {

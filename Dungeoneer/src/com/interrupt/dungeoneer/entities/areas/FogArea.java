@@ -6,6 +6,7 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 
 public class FogArea extends Area {
@@ -43,15 +44,16 @@ public class FogArea extends Area {
 
     private Color workColor = new Color();
 
-    public void init(Level level, Level.Source source) {
-        levelFogStart = level.fogStart;
+    public void init(LevelInterface level, Level.Source source) {
+        // FIXME: Fog info!
+        /*levelFogStart = level.fogStart;
         levelFogEnd = level.fogEnd;
         levelFogColor.set(level.fogColor);
-        levelViewDistance = level.viewDistance;
+        levelViewDistance = level.viewDistance;*/
     }
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         if(Game.instance != null && Game.instance.player != null && Game.instance.level != null) {
             playerIsInZone = level.entitiesAreEncroaching(this, Game.instance.player);
         }

@@ -6,6 +6,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.managers.EntityManager;
 
 public class Prefab extends Group {
@@ -16,23 +17,23 @@ public class Prefab extends Group {
 	/** Prefab name. */
 	@EditorProperty
 	public String name = "NONE";
-	
+
 	public transient String loadedCategory = "NONE";
 	public transient String loadedName = "NONE";
-	
+
 	public Prefab() { artType = ArtType.hidden; }
 	public Prefab(String category, String name) { artType = ArtType.hidden; this.category = category; this.name = name; }
-	
+
 	protected String lastName = "";
-	
+
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 		// nothing!
 		artType = ArtType.hidden;
 	}
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		// Force a refresh
 		lastRot.set(0, 0, 0);
 		loadedCategory = "NONE";
@@ -46,14 +47,14 @@ public class Prefab extends Group {
 		return EntityManager.instance.getEntity(category, name);
 	}
 
-	public void SpawnEntity(Level level, Entity e) {
+	public void SpawnEntity(LevelInterface level, Entity e) {
 		if (e instanceof Monster) {
 			((Monster)e).Init(level, Game.instance.player.level);
 		}
 		level.addEntity(e);
 	}
 
-	public void spawnPrefab(Level level, Source source) {
+	public void spawnPrefab(LevelInterface level, Source source) {
 
 		if(!isActive)
 			return;
@@ -105,7 +106,7 @@ public class Prefab extends Group {
 			isActive = false;
 		}
 	}
-	
+
 	@Override
 	public void rotate90() {
 		updateDrawable();
@@ -117,21 +118,21 @@ public class Prefab extends Group {
 		updateDrawable();
 		super.rotate90Reversed();
 	}
-	
+
 	@Override
 	public void updateDrawable() {
 		if(!loadedCategory.equals(category) || !lastName.equals(name)) {
 			entities.clear();
-			
+
 			loadedCategory = category;
 			loadedName = name;
 			lastName = name;
-			
+
 			if (loadedName.contains(",")) {
 				String[] names = loadedName.split(",");
 				loadedName = names[Game.rand.nextInt(names.length)].trim();
 			}
-			
+
 			Entity copy = GetEntity(loadedCategory, loadedName);
 			if(copy != null)
 				entities.add(copy);
@@ -141,7 +142,7 @@ public class Prefab extends Group {
 				badSprite.spriteAtlas = "editor";
 				entities.add(badSprite);
 			}
-			
+
 			lastRot.set(0,0,0);
 			lastPosition.set(0,0,0);
 
@@ -150,12 +151,12 @@ public class Prefab extends Group {
 				copy.updateDrawable();
 			}
 		}
-		
+
 		super.updateDrawable();
 	}
 
 	@Override
-	public void editorTick(Level level, float delta) {
+	public void editorTick(LevelInterface level, float delta) {
 		if(entities != null) {
 			for(int ii = 0; ii < entities.size; ii++) {
 				Entity e = entities.get(ii);

@@ -8,6 +8,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
@@ -19,9 +20,9 @@ public class Foliage extends Sprite {
 	private transient Entity lastColliding = null;
 	private transient float collisionCheckTime = 0f;
 	private transient float rustleTime = 0f;
-	
+
 	public String rustleSound = "rustle/rustle_grass_01.mp3,rustle/rustle_grass_02.mp3,rustle/rustle_grass_03.mp3,rustle/rustle_grass_04.mp3,rustle/rustle_grass_05.mp3,rustle/rustle_grass_06.mp3,rustle/rustle_grass_07.mp3";
-	
+
 	public Foliage() { isStatic = true; }
 
     private Vector2 rotOffset = new Vector2();
@@ -34,7 +35,7 @@ public class Foliage extends Sprite {
     public float swayAmount = 4.5f;
 
     @Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		super.init(level, source);
 		collisionCheckTime = Game.rand.nextFloat() * 60f;
 

@@ -12,27 +12,28 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.entities.PositionedSound;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 
 public class TriggeredTeleportPlayer extends Trigger {
 	public TriggeredTeleportPlayer() { hidden = true; spriteAtlas = "editor"; tex = 11; }
-	
+
 	@EditorProperty
 	boolean doEffects=false;
-	
+
 	@EditorProperty
 	boolean useOffsets=false;
 
 	@EditorProperty
 	public String toWarpMarkerId = null;
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 		Player p = Game.instance.player;
 
 		float xTarget = 0;
 		float yTarget = 0;
-		
+
 		if (useOffsets){
 			xTarget = Math.round(p.x)-p.x;
 			yTarget = Math.round(p.y)-p.y;
@@ -47,19 +48,19 @@ public class TriggeredTeleportPlayer extends Trigger {
 		}
 
 		if (doEffects) doEffect(new Vector3((float)p.x+0.5f,(float)p.y+0.5f,(float)p.z), Game.GetLevel());
-		
+
 		p.x -= xTarget;
 		p.y -= yTarget;
-		
+
 		if (doEffects) doEffect(new Vector3((float)p.x+0.5f,(float)p.y+0.5f,(float)p.z), Game.GetLevel());
 	}
-	
-	public void doEffect(Vector3 pos, Level level) {
+
+	public void doEffect(Vector3 pos, LevelInterface level) {
 		Random r = Game.rand;
 		int particleCount = 3;
 		particleCount *= Options.instance.gfxQuality;
 		if(particleCount <= 0) particleCount = 1;
-		
+
 		for(int i = 0; i < particleCount; i++)
 		{
 			int speed = r.nextInt(35) + 20;
@@ -68,7 +69,7 @@ public class TriggeredTeleportPlayer extends Trigger {
 			part.playAnimation(8, 13, speed);
 			level.SpawnNonCollidingEntity(part);
 		}
-		
+
 		level.SpawnNonCollidingEntity( new DynamicLight(pos.x,pos.y,pos.z, new Vector3(Color.ORANGE.r * 2f, Color.ORANGE.g * 2f, Color.ORANGE.b * 2f)).startLerp(new Vector3(0,0,0), 40, true) );
 		level.SpawnNonCollidingEntity( new PositionedSound(pos.x, pos.y, pos.z, Audio.spell, 0.9f, 12f, 200));
 	}

@@ -7,10 +7,7 @@ import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.projectiles.Projectile;
-import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.game.*;
 
 import java.util.Random;
 
@@ -60,7 +57,7 @@ public class Critter extends AnimatedSprite {
     private transient boolean otherTick = false;
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         super.tick(level, delta);
 
         otherTick = !otherTick;
@@ -87,7 +84,7 @@ public class Critter extends AnimatedSprite {
 
             // scatter away from things!
             if(scatters && otherTick) {
-                Array<Entity> near = level.spatialhash.getEntitiesAt(x, y, 1f);
+                Array<Entity> near = level.getEntitiesAt(x, y, 1f);
                 for(int i = 0; i < near.size; i++) {
                     Entity e = near.get(i);
                     if(e instanceof Actor || e instanceof Projectile) {
@@ -133,7 +130,7 @@ public class Critter extends AnimatedSprite {
     }
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         super.init(level, source);
 
         if(source == Level.Source.LEVEL_START) {
@@ -158,9 +155,9 @@ public class Critter extends AnimatedSprite {
         }
     }
 
-    public boolean freeToMoveTo(float nx, float ny, float nz, Level level) {
+    public boolean freeToMoveTo(float nx, float ny, float nz, LevelInterface level) {
         if(scatters) {
-            Array<Entity> near = level.spatialhash.getEntitiesAt(nx, ny, 1f);
+            Array<Entity> near = level.getEntitiesAt(nx, ny, 1f);
             for(int i = 0; i < near.size; i++) {
                 Entity e = near.get(i);
                 if(e instanceof Actor || e instanceof Projectile) {
@@ -215,7 +212,7 @@ public class Critter extends AnimatedSprite {
             proj.start = 0.01f;
             proj.isOrtho = true;
 
-            Game.instance.level.entities.add(proj);
+            Game.instance.level.addEntity(proj);
         }
 
         if(dieSound != null) {

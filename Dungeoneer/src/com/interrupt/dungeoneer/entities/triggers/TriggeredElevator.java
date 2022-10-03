@@ -12,6 +12,7 @@ import com.interrupt.dungeoneer.entities.PathNode;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -69,7 +70,7 @@ public class TriggeredElevator extends Trigger {
 	private transient Entity squishing = null;
 
 	private transient AmbientSound movingAmbientSound = null;
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 		if(state == ElevatorState.NONE) {
@@ -93,7 +94,7 @@ public class TriggeredElevator extends Trigger {
 	}
 
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 		super.tick(level, delta);
 
 		// Do squish damage when there is something squishy
@@ -279,7 +280,7 @@ public class TriggeredElevator extends Trigger {
 		}
 	}
 
-	private void adjustWorldTiles(Level level, float thisMoveAmount) {
+	private void adjustWorldTiles(LevelInterface level, float thisMoveAmount) {
 		int minX = (int)Math.floor(x - collision.x);
 		int maxX = (int)Math.ceil(x + collision.x);
 		int minY = (int)Math.floor(y - collision.y);
@@ -312,7 +313,7 @@ public class TriggeredElevator extends Trigger {
 		}
 	}
 
-	private void markWorldAsDirty(Level level) {
+	private void markWorldAsDirty(LevelInterface level) {
 		// Mark this area as dirty to force world Tesselation here
 		int minX = (int)Math.floor(x - collision.x);
 		int maxX = (int)Math.ceil(x + collision.x);

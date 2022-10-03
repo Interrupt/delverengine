@@ -11,6 +11,7 @@ import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -106,7 +107,7 @@ public class Breakable extends Model {
 
 	// player is pushing
 	@Override
-	public void push(Player player, Level level, float delta, CollisionAxis collisionAxis)
+	public void push(Player player, LevelInterface level, float delta, CollisionAxis collisionAxis)
 	{
 		if(!canBePushed)
 			return;
@@ -177,7 +178,7 @@ public class Breakable extends Model {
 		if(!isActive) return;
 		isActive = false;
 
-		Level level = Game.instance.level;
+		LevelInterface level = Game.instance.level;
 			gib(level, new Vector3(projx * 0.04f, projy * 0.04f, 0));
 
 			if (this.spawns != null && this.spawns.size > 0) {
@@ -289,10 +290,12 @@ public class Breakable extends Model {
 		entityStandingOnUsCache.clear();
 	}
 
-	public void gib(Level level, Vector3 gibVel) {
+	public void gib(LevelInterface level, Vector3 gibVel) {
 		if (Game.instance == null) {
 			return;
 		}
+
+        Array<Entity> nonCollidableEntities = level.getNonCollidableEntities();
 
 		for(int i = 0; i < gibNum; i++) {
 			int range = gibSpriteTexEnd - gibSpriteTexStart;
@@ -312,7 +315,7 @@ public class Breakable extends Model {
 				p.tex = gibSpriteTexStart + Game.rand.nextInt(range);
 			}
 
-			level.non_collidable_entities.add(p);
+            nonCollidableEntities.add(p);
 		}
 
 		Audio.playPositionedSound(breakSound, new Vector3(x,y,z), 0.4f, 12);
@@ -359,7 +362,7 @@ public class Breakable extends Model {
 	}
 
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		stepHeight = 0;
 
 		super.init(level, source);
@@ -377,7 +380,7 @@ public class Breakable extends Model {
 	}
 
 	// effect to show when hit by a melee weapon
-	public void doHitEffect(float xLoc, float yLoc, float zLoc, Sword sword, Level lvl) {
+	public void doHitEffect(float xLoc, float yLoc, float zLoc, Sword sword, LevelInterface lvl) {
 		if(hp > 0) {
 			Audio.playPositionedSound(breakSound, new Vector3(x,y,z), 0.1f, Game.rand.nextFloat() * 0.1f + 0.95f, 12);
 		}
@@ -389,7 +392,7 @@ public class Breakable extends Model {
 			// make a light at this location
 			DynamicLight l = new DynamicLight(xLoc, yLoc, zLoc, new Vector3(hitColor.r * 0.85f, hitColor.g * 0.85f, hitColor.b * 0.85f));
 			l.startLerp(new Vector3(0,0,0), 20, true);
-			lvl.non_collidable_entities.add(l);
+			lvl.addEntity(l);
 		}
 
 		Random r = Game.rand;

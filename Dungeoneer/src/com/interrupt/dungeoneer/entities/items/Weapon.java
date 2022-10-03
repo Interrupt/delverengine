@@ -13,6 +13,7 @@ import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -242,10 +243,10 @@ public class Weapon extends Item {
     }
 
 	// override this
-	public void doAttack(Player p, Level lvl, float attackPower) { }
+	public void doAttack(Player p, LevelInterface lvl, float attackPower) { }
 
 	// and this
-	public void tickAttack(Player p, Level lvl, float time) { }
+	public void tickAttack(Player p, LevelInterface lvl, float time) { }
 
 	@Override
 	public Array<ItemModification> getEnchantments() {

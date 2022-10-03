@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
@@ -15,6 +16,7 @@ import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.managers.StringManager;
@@ -92,7 +94,7 @@ public class Gun extends Weapon {
     }
 
 	@Override
-	public void doAttack(Player p, Level lvl, float attackPower) {
+	public void doAttack(Player p, LevelInterface lvl, float attackPower) {
 
 	    boolean hasAmmo = useAmmo(p);
 
@@ -154,7 +156,7 @@ public class Gun extends Weapon {
         Audio.playSound(fireSound, 1f);
 	}
 
-    private void doProjectileFire(Player p, Level lvl) {
+    private void doProjectileFire(Player p, LevelInterface lvl) {
         for(int pi = 0; pi < projectileNum; pi++) {
             Projectile fire_projectile = (Projectile) EntityManager.instance.Copy(projectile);
             fire_projectile.x = x;
@@ -200,7 +202,7 @@ public class Gun extends Weapon {
         return rightDirection;
     }
 
-    private void doSpellFire(Player p, Level lvl) {
+    private void doSpellFire(Player p, LevelInterface lvl) {
         for(int pi = 0; pi < projectileNum; pi++) {
             Vector3 position = new Vector3(x, y, z);
             Vector3 crosshairDirection = getCrosshairDirection(-0.4f);
@@ -225,7 +227,7 @@ public class Gun extends Weapon {
         }
     }
 
-    private void doHitScanFire(Player p, Level lvl) {
+    private void doHitScanFire(Player p, LevelInterface lvl) {
         Vector3 levelIntersection = new Vector3();
         Vector3 testPos = new Vector3();
 
@@ -247,8 +249,9 @@ public class Gun extends Weapon {
             Vector3 hitEntityAt = new Vector3();
 
             Vector3 hitLocation = null;
-            for (int i = 0; i < lvl.entities.size; i++) {
-                Entity e = lvl.entities.get(i);
+            Array<Entity> dynamicEntities = lvl.getEntities();
+            for (int i = 0; i < dynamicEntities.size; i++) {
+                Entity e = dynamicEntities.get(i);
                 if (!(e instanceof Sprite || e instanceof Light) && e.isSolid) {
                     testPos.x = e.x;
                     testPos.z = e.y;
@@ -357,7 +360,7 @@ public class Gun extends Weapon {
     }
 
     @Override
-    public void tickEquipped(Player player, Level level, float delta, String equipLoc) {
+    public void tickEquipped(Player player, LevelInterface level, float delta, String equipLoc) {
 	    super.tickEquipped(player, level, delta, equipLoc);
 
         if(!canFire && automatic) {

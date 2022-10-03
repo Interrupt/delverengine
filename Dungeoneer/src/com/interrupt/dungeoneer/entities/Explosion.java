@@ -35,7 +35,7 @@ public class Explosion extends Entity {
 
     /** Particle sprite animation speed. */
     public float explosionAnimSpeed = 22f;
-	
+
 	// Physics
     /** Impulse range. */
 	public float impulseDistance = 1f;
@@ -82,7 +82,7 @@ public class Explosion extends Entity {
     @Deprecated
     public boolean hasHalo = true;
     public HaloMode haloMode = HaloMode.NONE;
-	
+
 	// Damage!
     /** Damage amount. */
 	public float damage = 0f;
@@ -115,7 +115,7 @@ public class Explosion extends Entity {
 
     /** Status effect. */
     public StatusEffect applyStatusEffect = null;
-	
+
 	public transient Entity owner = null;
 
 	public Explosion() {
@@ -139,7 +139,7 @@ public class Explosion extends Entity {
         this.impulseDistance = radius;
     }
 
-    public void explode(Level level, float particleAmountMod) {
+    public void explode(LevelInterface level, float particleAmountMod) {
 
 	    if(!isActive) return;
 
@@ -189,7 +189,7 @@ public class Explosion extends Entity {
         p.roll = (Game.rand.nextFloat() - 0.5f) * (randomRoll * 2f);
         p.collision.set(0.1f,0.1f,0.8f);
 
-        level.non_collidable_entities.add(p);
+        level.addEntity(p);
 
         // make a light at this location
         Vector3 explosionLight = new Vector3(this.color.r, this.color.g, this.color.b);
@@ -202,13 +202,13 @@ public class Explosion extends Entity {
         l.haloMode = HaloMode.BOTH;
         l.haloSizeMod = 3f;
         l.startLerp(new Vector3(this.explosionLightEndColor.r, this.explosionLightEndColor.g, this.explosionLightEndColor.b), 1, this.explosionLightLifetime, true);
-        level.non_collidable_entities.add(l);
+        level.addEntity(l);
 
 
         // apply inpulses to physics objects
         Vector3 temp1 = new Vector3(x,y,z);
         Vector3 temp2 = new Vector3();
-        Array<Entity> nearby = level.spatialhash.getEntitiesAt(x, y, impulseDistance);
+        Array<Entity> nearby = level.getEntitiesAt(x, y, impulseDistance);
         for(int i = 0; i < nearby.size; i++) {
             Entity n = nearby.get(i);
             if(n != owner) {
@@ -257,7 +257,7 @@ public class Explosion extends Entity {
         spawnStuff(level);
     }
 
-    public void makeDustRing(Level level) {
+    public void makeDustRing(LevelInterface level) {
         int amt = 16;
         float rotAmount = (3.14159f * 2f) / amt;
         float rot = 0;
@@ -316,7 +316,7 @@ public class Explosion extends Entity {
         }
     }
 
-    public void makeFlyAways(Level level) {
+    public void makeFlyAways(LevelInterface level) {
         int amt = 4;
         float rotAmount = (3.14159f * 2f) / amt;
         float rot = 0;
@@ -378,9 +378,9 @@ public class Explosion extends Entity {
             rot += rotAmount;
         }
     }
-	
+
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 	    if(explodeDelay == 0) {
             explode(level, 1f);
             isActive = false;
@@ -393,7 +393,7 @@ public class Explosion extends Entity {
             fuseTimer += delta;
         }
 	}
-	
+
 	public void makeDecal() {
 		if(hitDecal != null) {
             if (makeDustRing) {
@@ -415,7 +415,7 @@ public class Explosion extends Entity {
                     decal.roll = Game.rand.nextFloat() * 360f;
                     decal.end = hitDecal.decalWidth * 0.6f;
                     decal.start = 0.01f;
-                    Game.instance.level.entities.add(decal);
+                    Game.instance.level.addEntity(decal);
                 }
             }
             else {
@@ -427,12 +427,12 @@ public class Explosion extends Entity {
                 decal.roll = Game.rand.nextFloat() * 360f;
                 decal.end = hitDecal.decalWidth * 0.6f;
                 decal.start = 0.01f;
-                Game.instance.level.entities.add(decal);
+                Game.instance.level.addEntity(decal);
             }
         }
 	}
 
-	public void spawnStuff(Level level) {
+	public void spawnStuff(LevelInterface level) {
         if (this.spawns != null && this.spawns.size > 0) {
             for (int i = 0; i < this.spawnsCount; i++) {
                 // Grab a random spawn element to create

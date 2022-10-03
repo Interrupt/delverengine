@@ -354,7 +354,7 @@ public class Player extends Actor {
 	}
 
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
         setMusicVolume();
 		stepUpTick(delta);
 		calculatedStats.Recalculate(this);
@@ -696,7 +696,7 @@ public class Player extends Actor {
 		}
 	}
 
-	private void runPushCheck(Level level, float delta, CollisionAxis collisionAxis) {
+	private void runPushCheck(LevelInterface level, float delta, CollisionAxis collisionAxis) {
 
 		float checkX = x;
 		float checkY = y;
@@ -779,7 +779,7 @@ public class Player extends Actor {
 		tick(level, delta);
 	}
 
-	public void tick(Level level, float delta, GameInput input) {
+	public void tick(LevelInterface level, float delta, GameInput input) {
 
 		boolean isInOverlay = OverlayManager.instance.current() != null && OverlayManager.instance.current().catchInput;
 
@@ -1295,13 +1295,14 @@ public class Player extends Actor {
 
             // Debug stuff!
             if(Game.isDebugMode) {
+                // FIXME: Stairs!
             	try {
 					if (input.keyEvents.contains(Keys.K))
 						OverlayManager.instance.push(new DebugOverlay(this));
-					else if (input.keyEvents.contains(Keys.L))
+					/*else if (input.keyEvents.contains(Keys.L))
 						Game.instance.level.down.changeLevel(level);
 					else if (input.keyEvents.contains(Keys.J))
-						Game.instance.level.up.changeLevel(level);
+						Game.instance.level.up.changeLevel(level);*/
 				}
 				catch(Exception ex) {
             		Gdx.app.error("DelverDebug", ex.getMessage());
@@ -1400,7 +1401,7 @@ public class Player extends Actor {
 		}
 	}
 
-	private void updatePlayerLight(Level level, float delta) {
+	private void updatePlayerLight(LevelInterface level, float delta) {
     	if (this.originalTorchColor == null) {
     		this.originalTorchColor = new Color(this.torchColor);
 		}
@@ -1470,7 +1471,7 @@ public class Player extends Actor {
 		if(handAnimation == null) playIdleAnimation(w);
 	}
 
-	private Item pickItem(Level level, int pickX, int pickY, float maxDistance) {
+	private Item pickItem(LevelInterface level, int pickX, int pickY, float maxDistance) {
 		Entity picked = pickEntity(level,pickX,pickY,maxDistance);
 		if(picked != null && picked instanceof Item)
 			return (Item)picked;
@@ -1479,7 +1480,7 @@ public class Player extends Actor {
 
 	private static Vector3 pickEntityTemp1 = new Vector3();
     private static Vector3 pickEntityTemp2 = new Vector3();
-	private Entity pickEntity(Level level, int pickX, int pickY, float maxDistance) {
+	private Entity pickEntity(LevelInterface level, int pickX, int pickY, float maxDistance) {
 		if(Game.camera == null) return null;
 
 		Vector3 levelIntersection = tempVec1.set(Vector3.Zero);
@@ -1490,7 +1491,7 @@ public class Player extends Actor {
 		boolean hitLevel = Collidor.intersectRayTriangles(ray, GameManager.renderer.GetCollisionTrianglesAlong(ray,maxDistance), levelIntersection, null);
 		float worldHitDistance = tempVec4.set(ray.origin).sub(levelIntersection).len();
 
-		Array<Entity> toCheck = level.spatialhash.getEntitiesAt(x, y, maxDistance);
+		Array<Entity> toCheck = level.getEntitiesAt(x, y, maxDistance);
 		toCheck.removeValue(this, true);
 
 		for(int i = 0; i < toCheck.size; i++) {
@@ -1548,11 +1549,11 @@ public class Player extends Actor {
 		return found;
 	}
 
-	public void Use(Level level)
+	public void Use(LevelInterface level)
 	{
 		// try simple using first
 		if(Game.isMobile) {
-			Array<Entity> entities = Game.instance.level.entities;
+			Array<Entity> entities = Game.instance.level.getEntities();
 			for(int i = 0; i < entities.size; i++) {
 				Entity e = entities.get(i);
 				if(e instanceof Item || e instanceof Stairs) {
@@ -1628,7 +1629,7 @@ public class Player extends Actor {
 		}
 	}
 
-	private void Use(Level level, int touchX, int touchY) {
+	private void Use(LevelInterface level, int touchX, int touchY) {
 		// use the entity / wall hit by the camera ray
 		float usedist = 0.95f;
 		Entity near = null;
@@ -1688,7 +1689,7 @@ public class Player extends Actor {
         }
     }
 
-	private void Attack(Level lvl)
+	private void Attack(LevelInterface lvl)
 	{
 		hasAttacked = true;
 		float attackPower = attackCharge / attackChargeTime;
@@ -1722,7 +1723,7 @@ public class Player extends Actor {
 		visiblityMod = 1f;
 	}
 
-	public void tossHeldItem(Level level, float attackPower) {
+	public void tossHeldItem(LevelInterface level, float attackPower) {
 		Item held = GetHeldItem();
 		if(held == null) return;
 
@@ -1738,7 +1739,7 @@ public class Player extends Actor {
 		held.tossItem(level, attackPower);
 	}
 
-	public Item dropItem(Integer invLocation, Level level, float throwPower) {
+	public Item dropItem(Integer invLocation, LevelInterface level, float throwPower) {
 		if(invLocation == null || invLocation < 0 || invLocation >= inventory.size) return null;
 		Item itm = inventory.get(invLocation);
 		dropItem(itm, level, throwPower);
@@ -1747,7 +1748,7 @@ public class Player extends Actor {
 		return itm;
 	}
 
-	public void throwItem(Item itm, Level level, float throwPower, float xOffset) {
+	public void throwItem(Item itm, LevelInterface level, float throwPower, float xOffset) {
 		float projx = ( 0 * (float)Math.cos(rot) + 1 * (float)Math.sin(rot)) * 1;
 		float projy = (1 * (float)Math.cos(rot) - 0 * (float)Math.sin(rot)) * 1;
 
@@ -1771,7 +1772,7 @@ public class Player extends Actor {
 		itm.ya -= y_projy * xOffset;
 	}
 
-	public void dropItemFromInv(Integer invLocation, Level level, float throwPower, float xOffset) {
+	public void dropItemFromInv(Integer invLocation, LevelInterface level, float throwPower, float xOffset) {
 		Item itm = dropItem(invLocation, level, throwPower);
 		if(itm == null) return;
 
@@ -1790,7 +1791,7 @@ public class Player extends Actor {
 		itm.ignorePlayerCollision = true;
 	}
 
-	public void dropItem(Item itm, Level level, float throwPower) {
+	public void dropItem(Item itm, LevelInterface level, float throwPower) {
         if(itm == null) return;
 
 		float projx = (0 * (float)Math.cos(rot) + 1 * (float)Math.sin(rot)) * 1;
@@ -1812,7 +1813,7 @@ public class Player extends Actor {
 		removeFromInventory(itm);
 	}
 
-	private void splash(Level level, float splashZ, Tile tile)
+	private void splash(LevelInterface level, float splashZ, Tile tile)
 	{
 		if(tickcount - lastSplashTime < 30) return;
 		lastSplashTime = tickcount;
@@ -2167,7 +2168,7 @@ public class Player extends Actor {
 	}
 
 	@Override
-	public void hitEffect(Level level, DamageType inDamageType) {
+	public void hitEffect(LevelInterface level, DamageType inDamageType) {
 
 		Random r = new Random();
 		int particleCount = 8;
@@ -2429,7 +2430,7 @@ public class Player extends Actor {
 
     private transient float t_timeSinceEscapeEffect = 0;
 	private transient Color escapeFlashColor = new Color();
-	private void tickEscapeEffects(Level level, float delta) {
+	private void tickEscapeEffects(LevelInterface level, float delta) {
 		t_timeSinceEscapeEffect += delta;
 
 		if(t_timeSinceEscapeEffect > 300) {

@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.entities.triggers;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 
 public class ConditionalTrigger extends Trigger {
 	public enum CompareType {EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL};
@@ -25,7 +26,7 @@ public class ConditionalTrigger extends Trigger {
 
 	private int incrementValue = 0;
 	private boolean didTrigger = false;
-	
+
 	public void doTriggerEvent(String value){
 
 		if(incrementWhenTriggered) {
@@ -55,13 +56,13 @@ public class ConditionalTrigger extends Trigger {
 				break;
 		}
 	}
-	
+
 	// For other conditional types, try to parse the values to integers to check against
 	private void tryNumberCheck(String value, CompareType conditional) {
 		try {
 			Integer val = Integer.parseInt(value);
 			Integer testVal = Integer.parseInt(testValue);
-			
+
 			switch(conditional) {
 				case LESS:
 					if (val<testVal) {
@@ -96,7 +97,7 @@ public class ConditionalTrigger extends Trigger {
 					}
 					break;
 			}
-			
+
 		} catch (Exception ex) {
 			// not a number :(
 		}
@@ -113,7 +114,7 @@ public class ConditionalTrigger extends Trigger {
 	}
 
 	@Override
-	public void tick(Level level, float delta) {
+	public void tick(LevelInterface level, float delta) {
 		super.tick(level, delta);
 
 		if(!didTrigger && triggerStatus == TriggerStatus.DESTROYED) {

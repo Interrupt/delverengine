@@ -71,7 +71,7 @@ public class MagicMissileProjectile extends Projectile {
 
 	/** Projectile halo type. */
 	public HaloMode haloMode = HaloMode.BOTH;
-	
+
 	public MagicMissileProjectile() {
 		artType = ArtType.sprite;
 		collision.set(0.05f, 0.05f, 0.1f);
@@ -79,23 +79,23 @@ public class MagicMissileProjectile extends Projectile {
 		canStepUpOn = false;
 		dropSound = "";
 	}
-	
+
 	public MagicMissileProjectile(float x, float y, float z, float xa, float za, int damage, DamageType damageType, Color color, Entity owner) {
 		super(x, y, z, 8, xa, za, damage, damageType, owner);
 		this.z = z + 0.1f;
-		
+
 		isSolid = true;
 		floating = true;
 		fullbrite = true;
 		this.color = color;
-		
+
 		this.damageType = damageType;
-		
+
 		collision.set(0.05f, 0.05f, 0.1f);
 
 		canStepUpOn = false;
 	}
-	
+
 	@Override
 	public void onTick(float delta) {
 		color.a = 1f;
@@ -110,7 +110,7 @@ public class MagicMissileProjectile extends Projectile {
         }
 
 		int detailLevel = Options.instance.graphicsDetailLevel;
-		
+
 		if(leaveTrail) {
 			if(trailTimer > 0) trailTimer -= delta;
 			else {
@@ -142,7 +142,7 @@ public class MagicMissileProjectile extends Projectile {
 			animation.animate(delta, this);
 		}
 	}
-	
+
 	@Override
 	public void hitEffect()	{
 		if(!isActive) return;
@@ -163,10 +163,10 @@ public class MagicMissileProjectile extends Projectile {
         explosion.explode(Game.GetLevel(), makeHitParticles ? particleAmoundMod : 0);
 
 		isActive = false;
-		
+
 		makeHitDecal();
 	}
-	
+
 	@Override
 	public void hit(float xa, float ya, int damage, float force, DamageType damageType, Entity instigator) {
 		Game.instance.player.shake(4f, 4f, new Vector3(x,y,z));
@@ -196,7 +196,7 @@ public class MagicMissileProjectile extends Projectile {
 			ring.initialized = false;
 			ring.isDynamic = true;
 			ring.haloMode = HaloMode.CORONA_ONLY;
-			Game.instance.level.non_collidable_entities.add(ring);
+			Game.instance.level.SpawnNonCollidingEntity(ring);
 
 			// destroy!
 			if (this.explosion.damage == 0) {
@@ -224,7 +224,7 @@ public class MagicMissileProjectile extends Projectile {
 		animation.loop();
 		animation.randomizeTime();
 	}
-	
+
 	@Override
 	public void onDestroy() { }
 

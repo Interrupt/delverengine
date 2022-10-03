@@ -65,8 +65,8 @@ public class MapOverlay extends Overlay {
                 markerImage.setHeight(10);
                 Vector2 modified = mapImage.localToStageCoordinates(
                         new Vector2(
-                                mapImage.getWidth() * ((Game.instance.player.x + 0.5f) / (float) Game.instance.level.width),
-                                mapImage.getHeight() * (1 - ((Game.instance.player.y + 0.5f) / (float) Game.instance.level.height))));
+                                mapImage.getWidth() * ((Game.instance.player.x + 0.5f) / (float) Game.instance.level.getWidth()),
+                                mapImage.getHeight() * (1 - ((Game.instance.player.y + 0.5f) / (float) Game.instance.level.getHeight()))));
 
                 markerImage.setX(modified.x - markerImage.getWidth() / 2f);
                 markerImage.setY(modified.y - markerImage.getHeight() / 2f);

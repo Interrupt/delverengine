@@ -15,10 +15,7 @@ import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.items.ItemStack;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
 import com.interrupt.dungeoneer.entities.triggers.Trigger;
-import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.interfaces.Directional;
@@ -110,7 +107,7 @@ public class Missile extends Item implements Directional {
     }
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         if (this.initialSpeed != 0f) {
             this.dirWork.set(this.getDirection()).nor().scl(this.initialSpeed);
             this.xa = this.dirWork.x;
@@ -329,7 +326,7 @@ public class Missile extends Item implements Directional {
     private transient Vector3 currentPosition = new Vector3();
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         yOffset = -0.45f;
 
         if (bounceTimer > 0) bounceTimer -= delta;
@@ -508,7 +505,7 @@ public class Missile extends Item implements Directional {
         slideEffectTimer = 0;
 
         super.hitWorld(xa, ya, za);
-        Level lvl = Game.GetLevel();
+        LevelInterface lvl = Game.GetLevel();
 
         if (hitEffect == HitEffect.ARROW) {
             // TODO: Play audio break
@@ -720,7 +717,7 @@ public class Missile extends Item implements Directional {
         }
     }
 
-    public void doHitEffect(float xLoc, float yLoc, float zLoc, Level lvl) {
+    public void doHitEffect(float xLoc, float yLoc, float zLoc, LevelInterface lvl) {
         // TODO: Get sound effect for this
         //Audio.playSound(wallHitSound, 0.25f, Game.rand.nextFloat() * 0.1f + 0.95f);
 

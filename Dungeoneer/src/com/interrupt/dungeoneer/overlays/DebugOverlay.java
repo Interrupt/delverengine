@@ -14,10 +14,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Art;
-import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Item;
-import com.interrupt.dungeoneer.entities.Monster;
-import com.interrupt.dungeoneer.entities.Player;
+import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.items.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.managers.ItemManager;
@@ -171,7 +168,7 @@ public class DebugOverlay extends WindowOverlay {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				OverlayManager.instance.remove(thisOverlay);
-				Game.instance.level.down.changeLevel(Game.instance.level);
+				Game.instance.level.getStairs(Stairs.StairDirection.down).changeLevel(Game.instance.level);
 			}
 
 			@Override
@@ -467,7 +464,7 @@ public class DebugOverlay extends WindowOverlay {
 				//copy.hostile = false;
 				copy.Init(Game.instance.level, player.level);
 
-				Game.instance.level.entities.add(copy);
+				Game.instance.level.addEntity(copy);
 
 				OverlayManager.instance.remove(thisOverlay);
 			}

@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.entities;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.animation.SpriteAnimation;
 
 public class Npc extends Entity {
@@ -12,7 +13,7 @@ public class Npc extends Entity {
 	private SpriteAnimation playing = null;
 
 	private SpriteAnimation triggeredAnimation = null;
-	
+
 	private int animationsBetweenIdles = 2;
 	private int idleCounter = 0;
 
@@ -20,7 +21,7 @@ public class Npc extends Entity {
 	public boolean appearsDuringEndgame = true;
 
 	@Override
-	public void init(Level level, Level.Source source) {
+	public void init(LevelInterface level, Level.Source source) {
 		if(Game.instance != null && Game.instance.player != null) {
 			// Might need to despawn this during the endgame
 			if(Game.instance.player.isHoldingOrb) {
@@ -30,12 +31,12 @@ public class Npc extends Entity {
 			}
 		}
 	}
-	
+
 	@Override
-	public void tick(Level level, float delta) {
-		
+	public void tick(LevelInterface level, float delta) {
+
 		if(playing != null && playing.done) playing = null;
-		
+
 		if(playing == null) {
 			// sometimes, play an idle animation
 			if(idleAnimations != null && idleAnimations.length > 0 && Game.rand.nextFloat() < 0.8 && idleCounter > animationsBetweenIdles) {
@@ -44,14 +45,14 @@ public class Npc extends Entity {
 				idleCounter = 0;
 			}
 			else if(baseAnimation != null) playing = baseAnimation;
-			
+
 			if(playing != null) {
 				playing.play();
 				playing.done = false;
 				idleCounter++;
 			}
 		}
-		
+
 		if(playing != null) playing.animate(delta, this);
 	}
 

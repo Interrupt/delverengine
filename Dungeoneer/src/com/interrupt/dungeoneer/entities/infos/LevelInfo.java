@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 
 import java.util.Objects;
@@ -77,7 +78,7 @@ public class LevelInfo extends Entity {
     }
 
     @Override
-    public void init(Level level, Level.Source source) {
+    public void init(LevelInterface level, Level.Source source) {
         super.init(level, source);
 
         if (source != Level.Source.EDITOR) {
@@ -86,6 +87,8 @@ public class LevelInfo extends Entity {
             return;
         }
 
+        // FIXME: Level data!
+        /*
         levelName = level.levelName;
         ambientColor.set(level.ambientColor);
         viewDistance = level.viewDistance;
@@ -103,15 +106,17 @@ public class LevelInfo extends Entity {
         if (level.skybox != null) {
             skyboxMesh = level.skybox.meshFile;
             skyboxTexture = level.skybox.textureFile;
-        }
+        }*/
     }
 
     @Override
-    public void editorTick(Level level, float delta) {
+    public void editorTick(LevelInterface level, float delta) {
         super.editorTick(level, delta);
 
         if (!levelNeedsUpdated(level))  return;
 
+        // FIXME: Level data!
+        /*
         level.levelName = levelName;
         level.ambientColor.set(ambientColor);
         level.viewDistance = viewDistance;
@@ -134,11 +139,12 @@ public class LevelInfo extends Entity {
         level.skybox.textureFile = skyboxTexture;
         level.skybox.isDirty = true;
 
-        level.isDirty = true;
+        level.isDirty = true;*/
     }
 
-    private boolean levelNeedsUpdated(Level level) {
-        return level.fogStart != fogStart
+    private boolean levelNeedsUpdated(LevelInterface level) {
+        // FIXME
+        /*return level.fogStart != fogStart
             || level.fogEnd != fogEnd
             || !level.fogColor.equals(fogColor)
             || level.viewDistance != viewDistance
@@ -151,7 +157,8 @@ public class LevelInfo extends Entity {
             || !Objects.equals(level.loopMusic, loopMusic)
             || !Objects.equals(level.ambientSound, ambientSound)
             || !Objects.equals(level.ambientSoundVolume, ambientSoundVolume)
-            || !level.ambientColor.equals(ambientColor);
+            || !level.ambientColor.equals(ambientColor);*/
+        return false;
     }
 
     private boolean skyboxNeedsUpdated(Level level) {

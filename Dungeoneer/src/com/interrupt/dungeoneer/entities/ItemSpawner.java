@@ -4,6 +4,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.managers.ItemManager;
 
 public class ItemSpawner extends DirectionalEntity {
@@ -12,22 +13,22 @@ public class ItemSpawner extends DirectionalEntity {
 	public enum ItemType { melee, ranged, armor, wands, potions, scrolls, decorations, unique, junk, food }
 
 	public enum ItemPlacement { world, player_hotbar, player_inventory, player_equip }
-	
+
 	@EditorProperty(group = "Spawns") public ItemType itemType = ItemType.melee;
 	@EditorProperty(group = "Spawns") public Integer itemLevel = null;
 	@EditorProperty(group = "Spawns") public Item.ItemCondition itemCondition = Item.ItemCondition.normal;
 	@EditorProperty(group = "Spawns") public String itemName = null;
 	@EditorProperty(group = "Spawns") boolean waitForTrigger = false;
 	@EditorProperty(group = "Spawns") ItemPlacement placement = ItemPlacement.world;
-	
+
 	@Override
-	public void init(Level level, Source source) {
+	public void init(LevelInterface level, Source source) {
 		if(!waitForTrigger && (source == Source.LEVEL_START || source == Source.SPAWNED) && isActive) {
 			spawn(level);
 		}
 	}
 
-	public void spawn(Level level) {
+	public void spawn(LevelInterface level) {
 		if(isActive) {
 			Entity i = getItem();
 			if (i != null) {
@@ -38,7 +39,7 @@ public class ItemSpawner extends DirectionalEntity {
 
 				// Place in the world, or into player inventory
 				if(placement == ItemPlacement.world)
-					level.entities.add(i);
+					level.addEntity(i);
 				else
 					placeInInventory(i);
 			}

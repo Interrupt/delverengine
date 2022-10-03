@@ -13,10 +13,7 @@ import com.interrupt.dungeoneer.entities.items.Bow;
 import com.interrupt.dungeoneer.entities.items.ItemModification;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
-import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Colors;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
@@ -189,7 +186,7 @@ public class Item extends Entity {
 	}
 
 	@Override
-	public void init(Level level, Level.Source source) {
+	public void init(LevelInterface level, Level.Source source) {
 		super.init(level, source);
 
 		if(source == Level.Source.LEVEL_START) {
@@ -271,7 +268,7 @@ public class Item extends Entity {
         return false;
 	}
 
-	public void tossItem(Level level, float attackPower) {
+	public void tossItem(LevelInterface level, float attackPower) {
 		// Override this
 	}
 
@@ -356,7 +353,7 @@ public class Item extends Entity {
 	}
 
 	@Override
-	public void tick(Level level, float delta)
+	public void tick(LevelInterface level, float delta)
 	{
 		workVec.set(xa, ya, za);
 		collidesWith = (workVec.len() > 0.1f) ? CollidesWith.all : CollidesWith.nonActors;
@@ -422,7 +419,7 @@ public class Item extends Entity {
 		wasOnEntity = isOnEntity;
 	}
 
-	public void tickEquipped(Player player, Level level, float delta, String equipLoc) {
+	public void tickEquipped(Player player, LevelInterface level, float delta, String equipLoc) {
 		// only tick some attachments when held offhand, not all
 		if(attached != null) {
 

@@ -84,7 +84,8 @@ public class GameApplication extends Game {
 			Level endingLevel = gameData.endingLevel;
 
 			// Warp to the ending level, if we're not there already.
-			if(endingLevel != null && (GameManager.getGame().level.levelFileName == null || !GameManager.getGame().level.levelFileName.equals(endingLevel.levelFileName))) {
+            String levelName = GameManager.getGame().level.getLevelName();
+			if(endingLevel != null && (levelName == null || !levelName.equals(endingLevel.levelFileName))) {
 				// Make a warp for this ending level!
 				TriggeredWarp warp = new TriggeredWarp();
 				warp.generated = endingLevel.generated;

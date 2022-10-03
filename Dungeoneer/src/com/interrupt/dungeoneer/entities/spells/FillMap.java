@@ -8,6 +8,7 @@ import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.items.Potion;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -22,14 +23,16 @@ public class FillMap extends Spell {
 
         // mark all tiles as seen!
         if(owner instanceof Player) {
-            Level level = Game.instance.level;
+            LevelInterface level = Game.instance.level;
 
-            for(int mx = 0; mx < level.width; mx++) {
-                for(int my = 0; my < level.height; my++) {
+            for(int mx = 0; mx < level.getWidth(); mx++) {
+                for(int my = 0; my < level.getHeight(); my++) {
                     Tile t = level.getTileOrNull(mx, my);
                     if(t != null && !t.seen) {
                         t.seen = true;
-                        level.dirtyMapTiles.add(new Vector2(mx, my));
+
+                        // FIXME: Dirty map tiles
+                        //level.dirtyMapTiles.add(new Vector2(mx, my));
                     }
                 }
             }
@@ -37,7 +40,7 @@ public class FillMap extends Spell {
     }
 
     @Override
-    protected void doCastEffect(Vector3 pos, Level level, Entity owner) {
+    protected void doCastEffect(Vector3 pos, LevelInterface level, Entity owner) {
 
         Random r = Game.rand;
         int particleCount = 20;

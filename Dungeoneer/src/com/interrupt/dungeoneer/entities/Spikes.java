@@ -7,6 +7,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.helpers.AnimationHelper;
 
@@ -40,7 +41,7 @@ public class Spikes extends Model {
     public Spikes() { meshFile = "meshes/spikes.obj"; collision.set(0.5f, 0.5f, 0.5f); }
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
 
         if(spikeType != SpikeType.STATIC) {
             if (animation == null) {
@@ -149,7 +150,7 @@ public class Spikes extends Model {
         }
     }
 
-    public boolean entitiesNearby(Level level) {
+    public boolean entitiesNearby(LevelInterface level) {
         Array<Entity> colliding = level.getEntitiesColliding(x, y, z - proximitySensorSize.z * 0.5f, proximitySensorSize, this);
         for(Entity e : colliding) {
             if(e.isDynamic) {

@@ -9,23 +9,20 @@ import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Explosion;
 import com.interrupt.dungeoneer.entities.Particle;
 import com.interrupt.dungeoneer.entities.items.Weapon.DamageType;
-import com.interrupt.dungeoneer.game.CachePools;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableBeam;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
 
 public class BeamProjectile extends Projectile {
-	
+
 	private float trailTimer = 0;
-	
+
 	public float length = 10;
-	
+
 	public Vector3 startPos = new Vector3();
-	
+
 	public DamageType damageType;
 
 	public int startTex = 14;
@@ -34,29 +31,29 @@ public class BeamProjectile extends Projectile {
 	public float animateTimer = 0f;
 
 	public Explosion explosion = null;
-	
+
 	public BeamProjectile() { collision.set(0.05f, 0.05f, 0.1f); canStepUpOn = false; dropSound = ""; }
 
 	private transient DynamicLight light = null;
-	
+
 	public BeamProjectile(float x, float y, float z, float xa, float ya, float za, int damage, DamageType damageType, Color color, Entity owner) {
 		super(x, y, z, 10, xa, ya, damage, damageType, owner);
 		this.z = z + 0.1f;
 		this.za = za;
 
 		length = 10;
-		
+
 		floating = true;
 		fullbrite = true;
 		this.color = color;
-		
+
 		this.damageType = damageType;
-		
+
 		startPos.set(x, y, z);
-		
+
 		drawable = new DrawableBeam(15, ArtType.sprite);
 		((DrawableBeam)drawable).beamRenderMode = DrawableBeam.BeamRenderModes.LINE;
-		
+
 		// set rotation
 		if(drawable instanceof DrawableBeam) {
 			DrawableBeam drblb = (DrawableBeam)drawable;
@@ -64,19 +61,19 @@ public class BeamProjectile extends Projectile {
 		}
 		drawable.dir.set(xa, za, ya).nor();
 		drawable.color = this.color;
-		
+
 		this.tex = startTex;
-		
+
 		yOffset = 0.03f;
-		
+
 		destroyDelay = 30f;
 		destroyOnEntityHit = false;
-		
+
 		collision.set(0.05f, 0.05f, 0.1f);
 
 		canStepUpOn = false;
 	}
-	
+
 	@Override
 	public void onTick(float delta) {
 
@@ -99,14 +96,14 @@ public class BeamProjectile extends Projectile {
 			else
 				tex = startTex;
 		}
-		
+
 		if(drawable instanceof DrawableBeam) {
 			DrawableBeam drblb = (DrawableBeam)drawable;
 			drblb.size = startPos.cpy().add( -x, -y, -z).len();
 			drblb.size = Math.min(drblb.size, length);
 			drblb.rot += ((Game.rand.nextFloat() * 200) - 100) * delta;
 		}
-		
+
 		if(destroyTimer == null) {
 			if(trailTimer > 0) trailTimer -= delta;
 			else {
@@ -122,23 +119,23 @@ public class BeamProjectile extends Projectile {
 			}
 		} else {
 			float fadeScale = destroyTimer / destroyDelay;
-			
+
 			if(light != null) {
 				light.lightColor.x = 1.5f * color.r * fadeScale;
 				light.lightColor.y = 1.5f * color.g * fadeScale;
 				light.lightColor.z = 1.5f * color.b * fadeScale;
 			}
-			
+
 			if(drawable instanceof DrawableBeam) {
 				DrawableBeam drblb = (DrawableBeam)drawable;
 				drblb.size *= fadeScale;
 			}
 		}
-			
+
 		Vector3 dir2 = new Vector3(xa, za, ya).nor();
 		drawable.dir = dir2;
 	}
-	
+
 	@Override
 	public void hitEffect()	{
 		if(!isActive || destroyTimer != null) return;
@@ -159,14 +156,14 @@ public class BeamProjectile extends Projectile {
 			explosion.explode(Game.GetLevel(), 1f);
 			return;
 		}
-		
-		Level level = Game.GetLevel();
+
+		LevelInterface level = Game.GetLevel();
 		Random r = new Random();
 		int particleCount = 12;
 		particleCount *= Options.instance.gfxQuality;
 
 		int detailLevel = Options.instance.graphicsDetailLevel;
-		
+
 		for(int i = 0; i < particleCount; i++)
 		{
 			Particle p = CachePools.getParticle(x, y, z + 0.5f + yOffset, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * 0.02f - 0.01f, r.nextFloat() * 0.03f - 0.01f, 260 + r.nextInt(500), 1f, 0f, 0, color, fullbrite);
@@ -189,7 +186,7 @@ public class BeamProjectile extends Projectile {
 			level.SpawnNonCollidingEntity(p) ;
 		}
 	}
-	
+
 	@Override
 	public void hit(float xa, float ya, int damage, float force, DamageType damageType, Entity instigator) {
 		if(damageType != DamageType.PHYSICAL) {
@@ -216,12 +213,12 @@ public class BeamProjectile extends Projectile {
 			ring.isActive = true;
 			ring.initialized = false;
 			ring.isDynamic = true;
-			Game.instance.level.non_collidable_entities.add(ring);
+			Game.instance.level.SpawnNonCollidingEntity(ring);
 		}
-		
+
 		super.hit(xa, ya, damage, force, damageType, instigator);
 	}
-	
+
 	@Override
 	public void onDestroy() { }
 }

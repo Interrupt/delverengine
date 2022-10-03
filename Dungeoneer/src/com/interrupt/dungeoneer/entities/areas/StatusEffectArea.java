@@ -5,6 +5,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 
 public class StatusEffectArea extends Area {
@@ -35,7 +36,7 @@ public class StatusEffectArea extends Area {
     }
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         Array<Entity> es = level.getEntitiesEncroaching(this);
 
         // Entering area

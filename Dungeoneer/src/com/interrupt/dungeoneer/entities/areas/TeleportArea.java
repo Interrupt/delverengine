@@ -8,6 +8,7 @@ import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.LevelInterface;
 import com.interrupt.dungeoneer.game.Options;
 
 import java.util.Random;
@@ -30,7 +31,7 @@ public class TeleportArea extends Area {
     private final transient Vector3 t_vector3 = new Vector3();
 
     @Override
-    public void tick(Level level, float delta) {
+    public void tick(LevelInterface level, float delta) {
         Array<Entity> touching = level.getEntitiesEncroaching(this);
         for(int i = 0; i < touching.size; i++) {
             Entity e = touching.get(i);
@@ -46,7 +47,7 @@ public class TeleportArea extends Area {
      * @param e Target Entity to teleport
      * @param level Level containing target Entity
      */
-    private void teleportEntity(Entity e, Level level) {
+    private void teleportEntity(Entity e, LevelInterface level) {
         if(toWarpMarkerId == null || toWarpMarkerId.isEmpty()) {
             return;
         }
@@ -62,7 +63,7 @@ public class TeleportArea extends Area {
      * @param e Target Entity to teleport
      * @param level Level containing target Entity
      */
-    private void putEntityAtWarpMarker(Entity e, Level level) {
+    private void putEntityAtWarpMarker(Entity e, LevelInterface level) {
         Array<Entity> found = level.getEntitiesById(toWarpMarkerId);
 
         // Try a more fuzzy search, as a fallback
@@ -97,7 +98,7 @@ public class TeleportArea extends Area {
         }
     }
 
-    private void doEffect(Vector3 pos, Level level) {
+    private void doEffect(Vector3 pos, LevelInterface level) {
         if(!doTeleportEffect) return;
 
         Random r = Game.rand;
