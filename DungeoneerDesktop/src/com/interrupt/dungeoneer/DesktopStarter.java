@@ -31,7 +31,12 @@ public class DesktopStarter {
 
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setTitle("Delver Engine");
-        config.setWindowedMode(defaultMode.width, defaultMode.height);
+        config.setWindowedMode((int)(defaultMode.width * 0.8f), (int)(defaultMode.height * 0.8f));
+
+        if (Options.instance.fullScreen) {
+            config.setFullscreenMode(defaultMode);
+        }
+
         config.useVsync(Options.instance.vsyncEnabled);
         config.setBackBufferConfig(8,8,8,8,16,8,Options.instance.antiAliasingSamples);
         config.setForegroundFPS(Options.instance.fpsLimit);
