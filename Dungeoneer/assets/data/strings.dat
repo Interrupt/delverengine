@@ -110,6 +110,11 @@
         "localizedName": "Post Filter",
         "comment": "Text shown for the post processing filter label"
     },
+    "screens.OptionsScreen.renderingEngineLabel": {
+            "class": "com.interrupt.dungeoneer.game.LocalizedString",
+            "localizedName": "Renderer",
+            "comment": "Text shown for the select renderer label"
+        },
     "screens.OptionsScreen.postProcessingQualityLabel": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Post Processing Quality",
