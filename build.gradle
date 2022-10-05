@@ -18,7 +18,7 @@ allprojects {
         jamepadVersion = '2.0.14.2'
         roboVMVersion = '2.3.9'
         kryoVersion = '2.24.0'
-        reflectionsVersion = '0.9.12'
+        reflectionsVersion = '0.10.2'
         inkVersion = '1.0.0'
     }
 
