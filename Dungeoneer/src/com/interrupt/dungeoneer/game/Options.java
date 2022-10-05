@@ -100,11 +100,19 @@ public class Options {
     }
 
     public Options() {
+        // Set some per-platform defaults here in the initializer.
+
+        // Bump the default settings down for mobile for slower hardware
         if (OSUtils.isMobile()) {
             graphicsDetailLevel = 2;
             shadowsEnabled = false;
             postProcessingQuality = 0;
             fxaaEnabled = false;
+        }
+
+        // Mac is not well supported by OpenGL anymore, default to the Angle renderer
+        if(OSUtils.isMac()) {
+            renderingEngine = RenderingEngine.ANGLE;
         }
     }
 
