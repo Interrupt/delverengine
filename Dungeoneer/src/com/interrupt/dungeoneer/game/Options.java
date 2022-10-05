@@ -13,8 +13,8 @@ import com.interrupt.utils.OSUtils;
 /** Game options container class. */
 public class Options {
     public enum RenderingEngine {
+        ANGLE,
         OpenGL,
-        ANGLE
     }
 
     public static Options instance;
