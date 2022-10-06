@@ -133,6 +133,10 @@ public class SelectSaveSlotOverlay extends WindowOverlay {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     selectSaveButtonEvent(number, self);
+
+                    if (event instanceof GamepadEvent) {
+                        handlePlayButtonEvent(false);
+                    }
                 }
             });
 

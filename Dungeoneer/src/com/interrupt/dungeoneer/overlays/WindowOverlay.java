@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -32,6 +29,7 @@ import com.interrupt.dungeoneer.ui.SpinnerButton;
 import com.interrupt.dungeoneer.ui.UiSkin;
 
 public abstract class WindowOverlay extends Overlay {
+    public class GamepadEvent extends InputEvent {}
 
 	public float timer = 0;
 	public Table stageTable;
@@ -138,7 +136,7 @@ public abstract class WindowOverlay extends Overlay {
 			Actor button = buttonOrder.get(gamepadSelectionIndex);
 			for(EventListener listener : button.getListeners()) {
 				if(listener instanceof ClickListener) {
-					((ClickListener)listener).clicked(new InputEvent(), button.getX(), button.getY());
+					((ClickListener)listener).clicked(new GamepadEvent(), button.getX(), button.getY());
 				}
 			}
 		}

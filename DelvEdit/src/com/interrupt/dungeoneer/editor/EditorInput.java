@@ -125,6 +125,11 @@ public class EditorInput implements InputProcessor {
     }
 
     @Override
+    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
     public boolean touchDragged(int x, int y, int pointer) {
         for (InputProcessor listener : listeners) {
             boolean results = listener.touchDragged(x, y, pointer);
@@ -149,9 +154,9 @@ public class EditorInput implements InputProcessor {
     }
 
     @Override
-    public boolean scrolled(int amount) {
+    public boolean scrolled(float amountX, float amountY) {
         for (InputProcessor listener : listeners) {
-            boolean results = listener.scrolled(amount);
+            boolean results = listener.scrolled(amountX, amountY);
             if (results) {
                 return true;
             }
