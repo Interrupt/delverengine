@@ -17,6 +17,9 @@ public class DesktopStarter {
                 else if (arg.toLowerCase().endsWith("debug-collision=true")) {
                     Game.drawDebugBoxes = true;
                 }
+                else if (arg.toLowerCase().endsWith("skip-intro=true")) {
+                    Game.skipIntro = true;
+                }
                 else if (arg.toLowerCase().endsWith("version")){
                     System.out.println(Game.VERSION);
                     System.exit(0);
