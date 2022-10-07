@@ -12,7 +12,12 @@ import com.interrupt.utils.OSUtils;
 
 /** Game options container class. */
 public class Options {
-    transient public static Options instance;
+    public enum RenderingEngine {
+        ANGLE,
+        OpenGL,
+    }
+
+    public static Options instance;
 
     public boolean mouseInvert = false;
     public boolean enableMusic = true;
@@ -85,6 +90,9 @@ public class Options {
     public boolean enablePostProcessing = false;
     public int postProcessingQuality = 3;
     public String postProcessFilter;
+
+    // Angle has the best cross platform support, default to that.
+    public RenderingEngine renderingEngine = RenderingEngine.ANGLE;
 
     public boolean tutorialEnabled = true;
 

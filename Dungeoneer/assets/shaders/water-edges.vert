@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
 uniform mat4 u_projectionViewMatrix;
 uniform float u_fogStart;
 uniform float u_fogEnd;

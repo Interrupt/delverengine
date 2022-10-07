@@ -89,23 +89,40 @@ public class Level {
 	/** Unused. */
 	public float darkness = 1;
 
+    private static final float defaultFogStart = 0f;
+
 	/** Starting distance of fog. */
-	public float fogStart;
+	public float fogStart = defaultFogStart;
+
+    private static final float defaultFogEnd = 15f;
 
 	/** Ending distance of fog. */
-	public float fogEnd;
+	public float fogEnd = defaultFogEnd;
+
+    private static final Color defaultFogColor = new Color(0, 0, 0, 1);
 
 	/** Color of fog. */
-	public Color fogColor = new Color(0,0,0,1);
+	public Color fogColor = new Color(defaultFogColor);
+
+    private static final Color defaultAmbientColor = new Color(0, 0, 0, 1);
+
+    /** Color of ambient light. */
+    public Color ambientColor = new Color(defaultAmbientColor);
+
+    private static final float defaultViewDistance = 15f;
 
 	/** Camera far draw distance. */
-	public float viewDistance = 15;
+	public float viewDistance = defaultViewDistance;
+
+    private static final Color defaultSkyLightColor = new Color(0.5f,0.5f,0.5f,0);
 
 	/** Color from skybox. */
-	public Color skyLightColor = new Color(0.5f,0.5f,0.5f,0);
+	public Color skyLightColor = new Color(defaultSkyLightColor);
+
+    private static final Color defaultShadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
 
 	/** Color of shadows. */
-	public Color shadowColor = new Color(0.5f, 0.4f, 0.85f, 1f);
+	public Color shadowColor = new Color(defaultShadowColor);
 
 	public boolean isLoaded = false;
 	public boolean needsSaving = true;
@@ -128,8 +145,10 @@ public class Level {
 	/** Ambient sound filepath. */
 	public String ambientSound = null;
 
+    private static final float defaultAmbientSoundVolume = 0.5f;
+
 	/** Ambient sound volume. */
-	public Float ambientSoundVolume = 0.5f;
+	public Float ambientSoundVolume = defaultAmbientSoundVolume;
 
 	/** Array of additional themes to pull monsters from. */
 	public Array<String> alternateMonsterThemes = null;
@@ -192,9 +211,6 @@ public class Level {
 	public Array<EditorMarker> editorMarkers = new Array<EditorMarker>();
 
 	public transient boolean rendererDirty = true;
-
-	public static transient Color ambientColor 			= new Color(0f, 0f, 0f, 0.0f);
-
 	public transient boolean isDirty = false;
 	public transient Array<Vector2> dirtyMapTiles = new Array<Vector2>();
 
@@ -293,10 +309,6 @@ public class Level {
 	public void loadFromEditor() {
 		needsSaving = false;
 		spawnMonsters = false;
-
-		fogStart = 10f;
-		fogEnd = 20f;
-		viewDistance = 20f;
 
 		Array<Entity> copyEntities = new Array<>(100);
 		Array<Entity> copyNonCollidableEntities = new Array<>(100);
@@ -465,6 +477,7 @@ public class Level {
 	public void load(Source source) {
 		needsSaving = true;
 		isLoaded = true;
+		Random levelRand = new Random();
 
 		entities = new Array<Entity>();
 		non_collidable_entities = new Array<Entity>();
@@ -489,10 +502,63 @@ public class Level {
 			editorMarkers = openLevel.editorMarkers;
 			genTheme = DungeonGenerator.GetGenData(theme);
 
-			if(source == Source.EDITOR) {
-				fogColor = openLevel.fogColor;
-				skyLightColor = openLevel.skyLightColor;
-			}
+            // Only set the following fields if the current values are the default.
+            if (levelName == null || levelName.isEmpty()) {
+                levelName = openLevel.levelName;
+            }
+
+            if (ambientColor.equals(defaultAmbientColor)) {
+                ambientColor.set(openLevel.ambientColor);
+            }
+
+            if (fogColor.equals(defaultFogColor)) {
+                fogColor.set(openLevel.fogColor);
+            }
+
+            if (fogStart == 0) {
+                fogStart = openLevel.fogStart;
+            }
+
+            if (fogEnd == 0) {
+                fogEnd = openLevel.fogEnd;
+            }
+
+            if (skyLightColor.equals(defaultSkyLightColor)) {
+                skyLightColor.set(openLevel.skyLightColor);
+            }
+
+            if (shadowColor.equals(defaultShadowColor)) {
+                shadowColor.set(openLevel.shadowColor);
+            }
+
+            if (openLevel.skybox != null && skybox == null) {
+                skybox = new DrawableMesh();
+                skybox.meshFile = openLevel.skybox.meshFile;
+                skybox.textureFile = openLevel.skybox.textureFile;
+                skybox.isDirty = true;
+            }
+
+            if (music == null || music.isEmpty()) {
+                music = openLevel.music;
+            }
+
+            if (actionMusic == null || actionMusic.isEmpty()) {
+                actionMusic = openLevel.actionMusic;
+            }
+
+            loopMusic |= openLevel.loopMusic;
+
+            if (ambientSound == null || ambientSound.isEmpty()) {
+                ambientSound = openLevel.ambientSound;
+            }
+
+            if (ambientSoundVolume == defaultAmbientSoundVolume) {
+                ambientSoundVolume = openLevel.ambientSoundVolume;
+            }
+
+            if (viewDistance == defaultViewDistance) {
+                viewDistance = openLevel.viewDistance;
+            }
 
 			for(int i = 0; i < openLevel.entities.size; i++) {
 				Entity copy = openLevel.entities.get(i);
@@ -568,26 +634,26 @@ public class Level {
 			}
 		}
 
-		loadSurprises(genTheme);
+        loadSurprises(genTheme);
 
-		Tile.solidWall.wallTex = (byte) defaultWallTex;
-		Tile.solidWall.wallBottomTex = (byte) defaultWallTex;
-		Tile.solidWall.ceilTex = (byte) defaultCeilTex;
-		Tile.solidWall.floorTex = (byte) defaultFloorTex;
+        Tile.solidWall.wallTex = (byte) defaultWallTex;
+        Tile.solidWall.wallBottomTex = (byte) defaultWallTex;
+        Tile.solidWall.ceilTex = (byte) defaultCeilTex;
+        Tile.solidWall.floorTex = (byte) defaultFloorTex;
 
-		initPrefabs(Source.LEVEL_START);
+        initPrefabs(Source.LEVEL_START);
 
-		decorateLevel();
-		addEntitiesFromMarkers(editorMarkers, 0, 0);
+        decorateLevel();
+        addEntitiesFromMarkers(editorMarkers, 0, 0);
         init(source);
 
-		// done with the theme stuff
-		genTheme = null;
+        // done with the theme stuff
+        genTheme = null;
 
-		if(source != Source.EDITOR) {
-			editorMarkers.clear();
-			GameManager.renderer.makeMapTextureForLevel(this);
-		}
+        if(source != Source.EDITOR) {
+            editorMarkers.clear();
+            GameManager.renderer.makeMapTextureForLevel(this);
+        }
 	}
 
 	private boolean adjacentToOpenSpace(int x, int y) {
@@ -1645,7 +1711,7 @@ public class Level {
 	public Color calculateLightColorAt(float x, float y, float z, Color c)
 	{
 		Vector3 pos = t_light_Calc_pos.set(x,y,z);
-		c.set(Level.ambientColor);
+		c.set(ambientColor);
 
 		// light markers
 		for(int i = 0; i < editorMarkers.size; i++) {

@@ -254,7 +254,7 @@ public class OptionsOverlay extends WindowOverlay {
                     }
                     else {
                         Graphics.DisplayMode desktopMode = Gdx.app.getGraphics().getDisplayMode(Gdx.graphics.getMonitor());
-                        Gdx.app.getGraphics().setWindowedMode(desktopMode.width, desktopMode.height);
+                        Gdx.app.getGraphics().setWindowedMode((int)(desktopMode.width * 0.8f), (int)(desktopMode.height * 0.8f));
                     }
                 }
             });

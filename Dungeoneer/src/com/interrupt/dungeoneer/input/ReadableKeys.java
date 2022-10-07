@@ -53,6 +53,7 @@ public class ReadableKeys {
         keyNames.put(65, StringManager.get("input.ReadableKeys.keyNames.ENVELOPE"));
         keyNames.put(70, StringManager.get("input.ReadableKeys.keyNames.EQUALS"));
         keyNames.put(131, StringManager.get("input.ReadableKeys.keyNames.ESCAPE"));
+        keyNames.put(111, StringManager.get("input.ReadableKeys.keyNames.ESCAPE"));
         keyNames.put(64, StringManager.get("input.ReadableKeys.keyNames.EXPLORER"));
         keyNames.put(34, StringManager.get("input.ReadableKeys.keyNames.F"));
         keyNames.put(244, StringManager.get("input.ReadableKeys.keyNames.F1"));

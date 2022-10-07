@@ -786,7 +786,7 @@ public class GlRenderer {
     }
 
 	public void updateShaderAttributes() {
-		Color ambientColor = Color.BLACK;
+		Color ambientColor = loadedLevel.ambientColor;
 		if(loadedLevel instanceof OverworldLevel) {
 			ambientColor = ((OverworldLevel)loadedLevel).timeOfDayAmbientLightColor;
 		}
@@ -1015,7 +1015,7 @@ public class GlRenderer {
 	public void renderWorld(Level loadedLvl) {
 		Tesselate(loadedLvl);
 
-		Color ambientColor = Color.BLACK;
+		Color ambientColor = loadedLvl.ambientColor;
 		if(loadedLvl instanceof OverworldLevel) {
 			ambientColor = ((OverworldLevel)loadedLvl).timeOfDayAmbientLightColor;
 		}
@@ -1139,7 +1139,7 @@ public class GlRenderer {
 
 	public void renderEntities(Level level) {
 
-		Color ambientColor = Color.BLACK;
+		Color ambientColor = level.ambientColor;
 		if(level instanceof OverworldLevel) {
 			ambientColor = ((OverworldLevel)level).timeOfDayAmbientLightColor;
 		}

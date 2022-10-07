@@ -89,6 +89,7 @@ public class Game {
 	public static boolean drawDebugBoxes = false;
 	public static boolean ignoreEscape = false;
 	public static boolean inEditor = false;
+    public static boolean skipIntro = false;
 
 	// UI stuff
 	public static Tooltip tooltip = new Tooltip();
@@ -633,7 +634,7 @@ public class Game {
 			level.generated = warp.generated;
 			level.levelFileName = warp.levelToLoad;
 			level.theme = warp.levelTheme;
-			level.fogColor = warp.fogColor;
+			level.fogColor.set(warp.fogColor);
 			level.ambientTileLighting = warp.ambientLightColor;
 			level.fogEnd = warp.fogEnd;
 			level.fogStart = warp.fogStart;

@@ -14,9 +14,9 @@ public class Editor {
 	        return;
         }
 
-        Editor.app = new EditorApplication();
         Editor.options = EditorOptions.fromLocalFiles();
         Editor.selection = new EditorSelection();
+        Editor.app = new EditorApplication();
     }
 
     public static void dispose() {

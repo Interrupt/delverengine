@@ -50,6 +50,11 @@
                 "class": "com.interrupt.dungeoneer.entities.Camera"
             }
         },
+        "Infos": {
+            "Level Info": {
+                "class": "com.interrupt.dungeoneer.entities.infos.LevelInfo"
+            }
+        },
         "Lights": {
             "Ambient": {
                 "class": "com.interrupt.dungeoneer.entities.Light",

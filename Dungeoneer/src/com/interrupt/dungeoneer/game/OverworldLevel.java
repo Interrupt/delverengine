@@ -9,7 +9,6 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.editor.EditorMarker;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.terrain.OverworldTerrainGenerator;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.partitioning.LightSpatialHash;
@@ -48,7 +47,7 @@ public class OverworldLevel extends Level {
 		fogEnd = 50;
 		viewDistance = 100;
 		darkness = 1;
-		fogColor = new Color(231f / 255f, 213f / 255f, 86f / 255f,1);
+		fogColor.set(231f / 255f, 213f / 255f, 86f / 255f, 1f);
 
 		lightSpatialHash = new LightSpatialHash(1);
 
@@ -72,7 +71,7 @@ public class OverworldLevel extends Level {
 		fogEnd = 50;
 		viewDistance = 100;
 		darkness = 1;
-		fogColor = new Color(231f / 255f, 213f / 255f, 86f / 255f,1);
+		fogColor.set(231f / 255f, 213f / 255f, 86f / 255f, 1f);
 		skyLightColor = new Color(Color.WHITE);
 
 		defaultWallTex = 36;
