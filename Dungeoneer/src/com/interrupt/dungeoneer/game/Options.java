@@ -91,7 +91,8 @@ public class Options {
     public int postProcessingQuality = 3;
     public String postProcessFilter;
 
-    public RenderingEngine renderingEngine;
+    // Angle has the best cross platform support, default to that.
+    public RenderingEngine renderingEngine = RenderingEngine.ANGLE;
 
     public boolean tutorialEnabled = true;
 
