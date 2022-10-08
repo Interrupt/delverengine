@@ -1528,17 +1528,6 @@ public class Game {
 		min = (int) (min * 10f);
 		min = (min / 10f);
 
-		// Responsive design! :D
-		if(Gdx.graphics.getWidth() <= 720) {
-			min *= 2f;
-		}
-		else if(Gdx.graphics.getWidth() <= 1024) {
-			min *= 1.25f;
-		}
-		else {
-			min *= 1f;
-		}
-
 		return min;
 	}
 

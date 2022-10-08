@@ -96,6 +96,8 @@ public class Options {
 
     public boolean tutorialEnabled = true;
 
+    public int selectedSaveSlot = 0;
+
     static {
         instance = new Options();
     }

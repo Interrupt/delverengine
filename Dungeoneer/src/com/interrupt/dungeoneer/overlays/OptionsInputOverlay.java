@@ -229,6 +229,11 @@ public class OptionsInputOverlay extends WindowOverlay {
         super.tick(delta);
     }
 
+    @Override
+    public void back() {
+        saveAndClose();
+    }
+
     public void saveAndClose() {
         saveOptions();
         OverlayManager.instance.replaceCurrent(new OptionsOverlay(dimScreen, showBackground));

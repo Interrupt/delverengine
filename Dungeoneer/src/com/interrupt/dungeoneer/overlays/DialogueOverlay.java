@@ -1,13 +1,9 @@
 package com.interrupt.dungeoneer.overlays;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -26,7 +22,6 @@ import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
 
 public class DialogueOverlay extends MessageOverlay {
-
     public DialogueOverlay(String inkFile, NinePatchDrawable background, Color textColor) {
         super(new Array<String>(), background, textColor);
 
@@ -281,6 +276,7 @@ public class DialogueOverlay extends MessageOverlay {
         }
     }
 
+    @Override
     protected void close() {
         Audio.playSound("/ui/ui_dialogue_close.mp3", 0.35f);
         if(afterAction != null) afterAction.act(0f);

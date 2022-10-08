@@ -165,35 +165,41 @@ public class GamepadManager implements ControllerListener {
                 else if(action == Actions.Action.INVENTORY) {
                     controllerState.inventory = pressed;
 
-                    if(value > 0.25f) {
-                        controllerState.menuButtonEvents.add(ControllerState.MenuButtons.CANCEL);
+						if(value > 0.25f) {
+							controllerState.menuButtonEvents.add(ControllerState.MenuButtons.CANCEL);
+						}
+					}
+					else if(action == Actions.Action.FORWARD) {
+						controllerState.rawMove.y = value * mod;
+					}
+					else if(action == Actions.Action.BACKWARD) {
+						controllerState.rawMove.y = value * mod;
+					}
+					else if(action == Actions.Action.STRAFE_LEFT) {
+						controllerState.rawMove.x = value * mod;
+					}
+					else if(action == Actions.Action.STRAFE_RIGHT) {
+						controllerState.rawMove.x = value * mod;
+					}
+					else if(action == Actions.Action.TURN_LEFT) {
+						controllerState.rawLook.x = -value * mod;
+					}
+					else if(action == Actions.Action.TURN_RIGHT) {
+						controllerState.rawLook.x = -value * mod;
+					}
+					else if(action == Actions.Action.LOOK_UP) {
+						controllerState.rawLook.y = -value * mod;
+					}
+					else if(action == Actions.Action.LOOK_DOWN) {
+						controllerState.rawLook.y = -value * mod;
+					}
+                    else if(action == Actions.Action.MENU_SELECT) {
+                        if (value > 0.25f) controllerState.menuButtonEvents.add(ControllerState.MenuButtons.SELECT);
                     }
-                }
-                else if(action == Actions.Action.FORWARD) {
-                    controllerState.rawMove.y = value * mod;
-                }
-                else if(action == Actions.Action.BACKWARD) {
-                    controllerState.rawMove.y = value * mod;
-                }
-                else if(action == Actions.Action.STRAFE_LEFT) {
-                    controllerState.rawMove.x = value * mod;
-                }
-                else if(action == Actions.Action.STRAFE_RIGHT) {
-                    controllerState.rawMove.x = value * mod;
-                }
-                else if(action == Actions.Action.TURN_LEFT) {
-                    controllerState.rawLook.x = -value * mod;
-                }
-                else if(action == Actions.Action.TURN_RIGHT) {
-                    controllerState.rawLook.x = -value * mod;
-                }
-                else if(action == Actions.Action.LOOK_UP) {
-                    controllerState.rawLook.y = -value * mod;
-                }
-                else if(action == Actions.Action.LOOK_DOWN) {
-                    controllerState.rawLook.y = -value * mod;
-                }
-            }
+                    else if(action == Actions.Action.MENU_CANCEL) {
+                        if (value > 0.25f) controllerState.menuButtonEvents.add(ControllerState.MenuButtons.CANCEL);
+                    }
+				}
             else if(binding.number == index && binding.type == type) {
                 if(action == Actions.Action.ATTACK) {
                     controllerState.attack = false;
@@ -214,10 +220,10 @@ public class GamepadManager implements ControllerListener {
                     controllerState.inventory = false;
                 }
             }
-		}
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 	@Override
 	public boolean buttonDown (Controller controller, int buttonIndex) {
