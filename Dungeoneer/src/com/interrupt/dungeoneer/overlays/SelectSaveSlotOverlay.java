@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
+import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
@@ -164,7 +166,7 @@ public class SelectSaveSlotOverlay extends WindowOverlay {
 
     private final Color fadeColor = new Color(Color.BLACK);
     private boolean fadingOut = false;
-    private float fadeFactor = 1f;
+    private float fadeFactor = 0f;
 
     @Override
     public Table makeContent() {
@@ -262,6 +264,16 @@ public class SelectSaveSlotOverlay extends WindowOverlay {
         }
     }
 
+    @Override
+    public void draw(float delta) {
+        super.draw(delta);
+
+        if (fadeFactor > 0f) {
+            renderer = GameManager.renderer;
+            renderer.drawFlashOverlay(fadeColor.set(0f, 0f, 0f, fadeFactor));
+        }
+    }
+
     public void selectSaveButtonEvent(int saveLoc, Table selected) {
         gamepadSelectionIndex = saveLoc;
 
@@ -326,6 +338,12 @@ public class SelectSaveSlotOverlay extends WindowOverlay {
                     public boolean act(float v) {
                         fadingOut = true;
                         return true;
+                    }
+                }),
+                Actions.addAction(new TemporalAction(1.75f) {
+                    @Override
+                    protected void update(float percent) {
+                        fadeFactor = percent;
                     }
                 }),
                 Actions.delay(1.75f),
