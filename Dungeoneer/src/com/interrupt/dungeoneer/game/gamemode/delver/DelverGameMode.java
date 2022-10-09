@@ -117,6 +117,57 @@ public class DelverGameMode implements GameModeInterface {
             if (deadMonster.givesExp) {
                 Game.instance.player.addExperience(3 + died.level);
             }
+
+            // Spawn loot for this monster!
+            spawnMonsterLoot(deadMonster, Game.instance.level);
+        }
+    }
+
+    public void spawnMonsterLoot(Monster monster, Level level) {
+        Array<Item> toSpawn = new Array<Item>();
+
+        // Random loot, 50% chance of spawning something
+        if(monster.spawnsLoot && Game.rand.nextBoolean()) {
+            Item loot = Game.GetItemManager().GetMonsterLoot(monster.level + 1, monster.lootCanBeGold);
+            if (loot != null) {
+                toSpawn.add(loot);
+            }
+        }
+
+        // Predefined loot
+        if (monster.loot != null) {
+            for(Item i : monster.loot) {
+                toSpawn.add(i);
+            }
+        }
+
+        // drop items around the monster
+        for(Item itm : toSpawn) {
+            // pick a random direction to drop the item in
+            float rot = Game.rand.nextFloat() * 15f;
+            float throwPower = 0.03f;
+            float projx = 0;
+            float projy = 0;
+
+            // if spawning more than one, spawn in a ring
+            if(toSpawn.size > 1) {
+                projx = (0 * (float) Math.cos(rot) + 1 * (float) Math.sin(rot)) * 1;
+                projy = (1 * (float) Math.cos(rot) - 0 * (float) Math.sin(rot)) * 1;
+            }
+
+            itm.isActive = true;
+            itm.isDynamic = true;
+            itm.z = monster.z + 0.3f;
+            itm.xa = projx * (throwPower * 0.4f);
+            itm.ya = projy * (throwPower * 0.4f);
+            itm.za = throwPower * 0.05f;
+            itm.ignorePlayerCollision = true;
+            itm.isSolid = false;
+
+            level.SpawnEntity(itm);
+
+            itm.x = (monster.x + projx * 0.1f);
+            itm.y = (monster.y + projy * 0.1f);
         }
     }
 
