@@ -406,6 +406,8 @@ public class Monster extends Actor implements Directional {
 			if (rangedAttackAnimation != null) rangedAttackAnimation.playing = false;
 			if (hurtAnimation != null) hurtAnimation.play();
 		}
+
+        GameManager.getGameMode().onMonsterTookDamage(this, tookDamage, damageType, instigator);
 		return tookDamage;
 	}
 

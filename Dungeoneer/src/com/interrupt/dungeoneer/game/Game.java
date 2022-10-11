@@ -127,7 +127,7 @@ public class Game {
     protected GameModeInterface gameMode = new DelverGameMode();
 
 	public Game(int saveLoc) {
-		instance = this;
+		SetInstance(this);
 		Start(saveLoc);
 	}
 
@@ -179,9 +179,15 @@ public class Game {
         loadHUDManager(modManager);
 	}
 
+    // Set the static game instance
+    public void SetInstance(Game game) {
+        instance = game;
+        GameManager.instance.setGame(game);
+    }
+
 	/** Create game for editor usage. */
 	public Game(Level levelToStart) {
-		instance = this;
+		SetInstance(this);
 		level = levelToStart;
 
 		// we're in the editor
@@ -252,8 +258,18 @@ public class Game {
 		GameScreen.resetDelta = true;
 	}
 
+    public static Level getLevel(int levelNumber) {
+        Array<Level> levelLayout = GameManager.getGameMode().getGameLevelLayout();
+        Level found = levelLayout.get(levelNumber);
+        if(found == null)
+            return null;
+
+        // Return a copy, don't let anyone muck with our level definition
+        return (Level)KryoSerializer.copyObject(found);
+    }
+
 	// build the list of levels using a predefined dungeon layout
-	private static Array<Level> loadDataLevels() {
+	public static Array<Level> loadDataLevels() {
 		FileHandle dungeonFile = Game.findInternalFileInMods("data/dungeons.dat");
 		if(!dungeonFile.exists()) return null;
 
@@ -336,62 +352,6 @@ public class Game {
 		return files;
 	}
 
-	// build the list of levels
-	public static Array<Level> buildLevelLayout() {
-
-	    Gdx.app.log("Delver", "Building Dungeon Layout");
-
-	    FileHandle dungeonsFile = Game.modManager.findFile("data/dungeons.dat");
-	    if(dungeonsFile != null && dungeonsFile.exists()) {
-            return loadDataLevels();
-        }
-
-        // No predefined dungeon layout, build one by searching for sections
-	    // find all the dungeon sections we can
-        ArrayMap<String, SectionDefinition> sections = new ArrayMap<String, SectionDefinition>();
-
-        for(String folder : Game.modManager.modsFound) {
-            Gdx.app.debug("Delver", "Looking in " + folder);
-
-            FileHandle generatorFolder = getInternal(folder + "/generator");
-
-            Gdx.app.debug("Delver", "Looking for files in " + generatorFolder.path());
-            for(FileHandle g : listDirectory(generatorFolder)) {
-                if(g.exists()) {
-                    FileHandle sectionFile = g.child("section.dat");
-                    if(sectionFile.exists()) {
-                        Gdx.app.debug("Delver", "Found section file: " + sectionFile.path());
-                        SectionDefinition d = JsonUtil.fromJson(SectionDefinition.class, sectionFile);
-                        sections.put(g.name(), d);
-                    }
-                }
-            }
-        }
-
-        // Build the final array
-		Array<SectionDefinition> sectionsFound = new Array<SectionDefinition>();
-        for(SectionDefinition s : sections.values()) {
-			sectionsFound.add(s);
-		}
-
-        sectionsFound.sort(new Comparator<SectionDefinition>() {
-            @Override
-            public int compare(SectionDefinition o1, SectionDefinition o2) {
-                if(o1.sortOrder > o2.sortOrder) return 1;
-                if(o1.sortOrder < o2.sortOrder) return -1;
-                return 0;
-            }
-        });
-
-        Array<Level> levels = new Array<Level>();
-        for(SectionDefinition s : sectionsFound) {
-            Gdx.app.log("Delver", " Adding section " + s.name);
-            levels.addAll(s.buildLevels());
-        }
-
-        return levels;
-    }
-
 	public void Start(int saveLoc)
 	{
 		loadManagers();
@@ -409,9 +369,6 @@ public class Game {
 
 		hudManager.backpack.visible = false;
 
-		// Load the levels data file, keep the levels array null for now (try loading from save first)
-		Array<Level> dataLevels = buildLevelLayout();
-
 		// load the game progress
 		progression = loadProgression(saveLoc);
 		progression.trackMods();
@@ -428,6 +385,7 @@ public class Game {
 		}
 
         gameMode.loadGameState(saveLoc);
+        GameApplication.SetLevelChangeScreen(gameMode.getLevelChangeScreen());
 
 		if(!didLoad) {
 			Game.flashTimer = 100;
@@ -457,7 +415,7 @@ public class Game {
 
 			// Set the initial level to load. The Game Mode onGameStart can override this.
 			levelNum = 0;
-            level = dataLevels.get(levelNum);
+            level = getLevel(levelNum);
             gameMode.onGameStart(this);
 
 			// Keep track of what engine version we're playing on
@@ -797,8 +755,8 @@ public class Game {
 		else
 			levelNum--;
 
-		Array<Level> levels = buildLevelLayout();
-
+        // Make sure this new level number is in range
+		Array<Level> levels = GameManager.getGameMode().getGameLevelLayout();
 		if(levelNum < 0) levelNum = 0;
 		if(levelNum > levels.size - 1) levelNum = levels.size - 1;
 
@@ -1022,10 +980,8 @@ public class Game {
 		FileHandle file = getFile(levelDir + levelNumber + ".dat");
 		FileHandle kryofile = getFile(levelDir + levelNumber + ".bin");
 
-		Array<Level> dataLevels = buildLevelLayout();
-
 		if(kryofile.exists()) {
-			if(travelPathKey == null && levelNumber >= 0 && dataLevels.get(levelNumber) instanceof OverworldLevel) {
+			if(travelPathKey == null && levelNumber >= 0 && getLevel(levelNumber) instanceof OverworldLevel) {
 				level = KryoSerializer.loadOverworldLevel(kryofile);
 				level.init(Source.LEVEL_LOAD);
 				Gdx.app.log("DelverLifeCycle", "Loading level " + levelNumber + " from " + file.path());
@@ -1044,7 +1000,7 @@ public class Game {
 		}
 		else {
 			if(levelNumber < 0) levelNumber = 0;
-			level = dataLevels.get(levelNumber);
+			level = getLevel(levelNumber);
 			level.load();
 		}
 
@@ -1441,7 +1397,7 @@ public class Game {
 	}
 
 	public String getLevelName(int num) {
-		Array<Level> dungeonData = buildLevelLayout();
+		Array<Level> dungeonData = GameManager.getGameMode().getGameLevelLayout();
 		Level l = dungeonData.get(num);
 		if(l != null) return l.levelName;
 

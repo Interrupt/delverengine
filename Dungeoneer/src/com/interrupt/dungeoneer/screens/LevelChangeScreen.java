@@ -25,8 +25,6 @@ public class LevelChangeScreen extends BaseScreen {
 
 	public String text = StringManager.get("screens.LoadingScreen.loadingLabel");
 
-	protected GameManager dungeoneerComponent;
-    
     private int hasDrawn = 0;
     private boolean hasLoaded = false;
 
@@ -37,9 +35,8 @@ public class LevelChangeScreen extends BaseScreen {
 	public String backgroundTextureFile = "splash/DungeonLoadingScreen.png";
 
 	private boolean didDisposeArt = false;
-	
-	public LevelChangeScreen(GameManager dungeoneerComponent) {
-		this.dungeoneerComponent = dungeoneerComponent;
+
+	public LevelChangeScreen() {
 		useBackgroundLevel = false;
 		showMouse = false;
 	}
@@ -87,11 +84,9 @@ public class LevelChangeScreen extends BaseScreen {
 
 	public void setInfoFromLevel() {
 		if(stair != null) {
-			Array<Level> levels = Game.buildLevelLayout();
-
 			Level l = null;
 			try {
-				l = levels.get(levelNum - 1);
+				l = Game.getLevel(levelNum - 1);
 			}
 			catch(Exception ex) {
 				Gdx.app.error("Delver", ex.getMessage());
@@ -159,7 +154,7 @@ public class LevelChangeScreen extends BaseScreen {
 
 		hasDrawn++;
 	}
-	
+
 	public void tick(float delta) {
 		if(hasDrawn > 4 && !hasLoaded) {
 			hasLoaded = true;

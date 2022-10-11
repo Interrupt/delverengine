@@ -28,7 +28,7 @@ public class GameApplication extends Game {
     public static GameApplication instance;
     public static boolean editorRunning = false;
 
-	@Override
+    @Override
 	public void create() {
 		instance = this;
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create");
@@ -41,7 +41,7 @@ public class GameApplication extends Game {
 
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(gameManager, input);
-        levelChangeScreen = new LevelChangeScreen(gameManager);
+        levelChangeScreen = new LevelChangeScreen();
 
         if (com.interrupt.dungeoneer.game.Game.skipIntro)
         {
@@ -63,7 +63,7 @@ public class GameApplication extends Game {
 		com.interrupt.dungeoneer.game.Game.inEditor = true;
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(level, gameManager, input);
-        levelChangeScreen = new LevelChangeScreen(gameManager);
+        levelChangeScreen = new LevelChangeScreen();
 
         setScreen(mainScreen);
 	}
@@ -126,7 +126,7 @@ public class GameApplication extends Game {
 	}
 
 	public static void ShowLevelChangeScreen(Stairs stair) {
-		instance.levelChangeScreen.stair = stair;
+        instance.levelChangeScreen.stair = stair;
 		instance.levelChangeScreen.triggeredWarp = null;
 		instance.mainScreen.saveOnPause = false;
 
@@ -134,7 +134,7 @@ public class GameApplication extends Game {
 	}
 
 	public static void ShowLevelChangeScreen(TriggeredWarp warp) {
-		instance.levelChangeScreen.triggeredWarp = warp;
+        instance.levelChangeScreen.triggeredWarp = warp;
 		instance.levelChangeScreen.stair = null;
 		instance.mainScreen.saveOnPause = false;
 
@@ -153,4 +153,10 @@ public class GameApplication extends Game {
 		instance.mainScreen.didStart = false;
 		instance.setScreen(new MainMenuScreen());
 	}
+
+    public static void SetLevelChangeScreen(LevelChangeScreen newLevelChangeScreen) {
+        // Letting the Game Mode override the Level Change Screen
+        if(newLevelChangeScreen != null)
+            instance.levelChangeScreen = newLevelChangeScreen;
+    }
 }

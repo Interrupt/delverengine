@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
@@ -23,18 +24,21 @@ import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
 import com.interrupt.dungeoneer.game.gamemode.GameStateInterface;
 import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.generator.GenTheme;
+import com.interrupt.dungeoneer.generator.SectionDefinition;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.overlays.DebugOverlay;
 import com.interrupt.dungeoneer.overlays.LevelUpOverlay;
 import com.interrupt.dungeoneer.overlays.MapOverlay;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.screens.GameOverScreen;
+import com.interrupt.dungeoneer.screens.LevelChangeScreen;
 import com.interrupt.dungeoneer.screens.WinScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.managers.EntityManager;
 import com.interrupt.utils.JsonUtil;
 
+import java.util.Comparator;
 import java.util.Random;
 
 import static com.interrupt.dungeoneer.game.Game.rand;
@@ -46,6 +50,8 @@ import static com.interrupt.dungeoneer.game.Game.rand;
 public class DelverGameMode implements GameModeInterface {
 
     protected DelverGameState gameState = new DelverGameState();
+
+    Array<Level> cachedLevelLayout;
 
     @Override
     public void onGameStart(Game game) {
@@ -123,6 +129,11 @@ public class DelverGameMode implements GameModeInterface {
         }
     }
 
+    @Override
+    public void onMonsterTookDamage(Actor monster, int damage, Weapon.DamageType damageType, Entity instigator) {
+        // Nothing special to do here
+    }
+
     public void spawnMonsterLoot(Monster monster, Level level) {
         Array<Item> toSpawn = new Array<Item>();
 
@@ -178,6 +189,11 @@ public class DelverGameMode implements GameModeInterface {
             Game.flash(Colors.HEAL_FLASH, 20);
         else
             Game.flash(Colors.HURT_FLASH, 20);
+    }
+
+    @Override
+    public LevelChangeScreen getLevelChangeScreen() {
+        return new LevelChangeScreen();
     }
 
     @Override
@@ -843,5 +859,67 @@ public class DelverGameMode implements GameModeInterface {
         } catch (Exception e) {
             Gdx.app.error("DelverGameState", e.getMessage());
         }
+    }
+
+    // Build and return the list of levels
+    public Array<Level> getGameLevelLayout() {
+
+        // If the level layout has been built before, just return that.
+        if(cachedLevelLayout != null)
+            return cachedLevelLayout;
+
+        Gdx.app.log("DelverGameState", "Building Dungeon Layout");
+
+        FileHandle dungeonsFile = Game.modManager.findFile("data/dungeons.dat");
+        if(dungeonsFile != null && dungeonsFile.exists()) {
+            cachedLevelLayout = Game.loadDataLevels();
+            return cachedLevelLayout;
+        }
+
+        // No predefined dungeon layout, build one by searching for sections
+        // find all the dungeon sections we can
+        ArrayMap<String, SectionDefinition> sections = new ArrayMap<String, SectionDefinition>();
+
+        for(String folder : Game.modManager.modsFound) {
+            Gdx.app.debug("DelverGameState", "Looking in " + folder);
+
+            FileHandle generatorFolder = Game.getInternal(folder + "/generator");
+
+            Gdx.app.debug("DelverGameState", "Looking for files in " + generatorFolder.path());
+            for(FileHandle g : Game.listDirectory(generatorFolder)) {
+                if(g.exists()) {
+                    FileHandle sectionFile = g.child("section.dat");
+                    if(sectionFile.exists()) {
+                        Gdx.app.debug("DelverGameState", "Found section file: " + sectionFile.path());
+                        SectionDefinition d = JsonUtil.fromJson(SectionDefinition.class, sectionFile);
+                        sections.put(g.name(), d);
+                    }
+                }
+            }
+        }
+
+        // Build the final array
+        Array<SectionDefinition> sectionsFound = new Array<SectionDefinition>();
+        for(SectionDefinition s : sections.values()) {
+            sectionsFound.add(s);
+        }
+
+        sectionsFound.sort(new Comparator<SectionDefinition>() {
+            @Override
+            public int compare(SectionDefinition o1, SectionDefinition o2) {
+                if(o1.sortOrder > o2.sortOrder) return 1;
+                if(o1.sortOrder < o2.sortOrder) return -1;
+                return 0;
+            }
+        });
+
+        Array<Level> levels = new Array<Level>();
+        for(SectionDefinition s : sectionsFound) {
+            Gdx.app.log("DelverGameState", " Adding section " + s.name);
+            levels.addAll(s.buildLevels());
+        }
+
+        cachedLevelLayout = levels;
+        return cachedLevelLayout;
     }
 }

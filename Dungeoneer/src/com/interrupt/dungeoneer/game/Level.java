@@ -1125,7 +1125,7 @@ public class Level {
 	private static Boolean checkIsValidLevel(Level tocheck, int dungeonlevel) {
 		if(tocheck == null) return false;
 
-		Array<Level> levels = Game.buildLevelLayout();
+		Array<Level> levels = GameManager.getGameMode().getGameLevelLayout();
 		if(dungeonlevel < levels.size) {
 			// look for exit markers
 			for(EditorMarker m : tocheck.editorMarkers) {

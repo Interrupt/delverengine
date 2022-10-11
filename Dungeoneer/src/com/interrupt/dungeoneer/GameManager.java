@@ -67,6 +67,10 @@ public class GameManager {
 		Options.instance.uiSize = 0.8f;
 	}
 
+    public void setGame(Game newGame) {
+        this.game = newGame;
+    }
+
 	private float time_since_last_tick = 0f;
 	public void tick(float delta) {
 		try {
