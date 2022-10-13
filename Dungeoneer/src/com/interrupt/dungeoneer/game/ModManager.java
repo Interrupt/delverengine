@@ -83,6 +83,17 @@ public class ModManager {
         findMods();
         filterMods();
         loadExcludesList();
+
+        // Find which path should be the base
+        String baseAssetPath = getBaseAssetPath();
+
+        // If the base path is just the prepackaged data, stop here
+        if(baseAssetPath.equals("."))
+            return;
+
+        // Make sure the new base path is only in once, at the beginning
+        modsFound.removeValue(baseAssetPath, false);
+        modsFound.set(0, baseAssetPath);
     }
 
     private String getBaseAssetPath() {
@@ -105,8 +116,8 @@ public class ModManager {
         // reset
         allMods.clear();
 
-        // add the default search path
-        allMods.add(getBaseAssetPath());
+        // add the baked in data path
+        allMods.add(".");
 
         FileHandle fh = Game.getInternal("mods");
         for(FileHandle h : fh.list()) {
