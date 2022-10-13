@@ -26,6 +26,10 @@ public class GameData {
     /** Is player allowed to jump? */
     public boolean playerJumpEnabled = false;
 
+    /** Whether the mod including this should override the packaged game data.
+     * Setting this to true makes the mod basically the Delver version of an iWad in Doom. */
+    public boolean overrideBaseGame = false;
+
     public void merge(GameData modData) {
         tutorialLevel = modData.tutorialLevel;
         endingLevel = modData.endingLevel;

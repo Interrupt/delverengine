@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.api.steam.workshop.WorkshopModData;
 import com.interrupt.dungeoneer.entities.Door;
@@ -84,16 +85,38 @@ public class ModManager {
         loadExcludesList();
     }
 
+    private String getBaseAssetPath() {
+        // Check if any of the game data files override the baked in assets. Use the first found.
+        ArrayMap<String, GameData> foundGameData = findAllGameData();
+        for(ObjectMap.Entry<String, GameData> mapPair : foundGameData) {
+            // Ignore this entry if it is actually the packaged game
+            if(mapPair.key.equals("."))
+                continue;
+
+            if(mapPair.value.overrideBaseGame)
+                return mapPair.key;
+        }
+
+        // Default to the internally packaged data.
+        return ".";
+    }
+
     private void findMods() {
         // reset
         allMods.clear();
 
-        // add the default search paths
-        allMods.add(".");
+        // add the default search path
+        allMods.add(getBaseAssetPath());
 
         FileHandle fh = Game.getInternal("mods");
         for(FileHandle h : fh.list()) {
-            if(h.isDirectory()) allMods.add("mods/" + h.name());
+            if(h.isDirectory()) {
+                String modPath = "mods/" + h.name();
+
+                // Ensure mod paths only get added once
+                if(!allMods.contains(modPath, false))
+                    allMods.add(modPath);
+            }
         }
 
         // add any mods subscribed in Steam Workshop
@@ -316,19 +339,34 @@ public class ModManager {
         return combinedLocalizedStrings;
     }
 
-    public GameData loadGameData() {
-        GameData gameData = new GameData();
+    public ArrayMap<String, GameData> findAllGameData() {
+        ArrayMap<String, GameData> foundGameData = new ArrayMap<>();
 
         for(String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/game.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/game.dat")) {
                     GameData modData = JsonUtil.fromJson(GameData.class, modFile);
-                    gameData.merge(modData);
+                    foundGameData.put(path, modData);
                 }
             }
             catch(Exception ex) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/game.dat");
+                Gdx.app.error("Delver", "Error loading game data file " + path + "/data/game.dat");
+                Logger.logExceptionToFile(ex);
+            }
+        }
+
+        return foundGameData;
+    }
+
+    public GameData loadGameData() {
+        GameData gameData = new GameData();
+
+        for(GameData modData : findAllGameData().values()) {
+            try {
+                gameData.merge(modData);
+            } catch(Exception ex) {
+                Gdx.app.error("Delver", ex.getMessage());
                 Logger.logExceptionToFile(ex);
             }
         }
