@@ -23,6 +23,7 @@ import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.overlays.ModsOverlay;
 import com.interrupt.dungeoneer.overlays.OptionsOverlay;
+import com.interrupt.dungeoneer.overlays.PickCampaignOverlay;
 import com.interrupt.dungeoneer.overlays.SelectSaveSlotOverlay;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
@@ -310,6 +311,13 @@ public class MainMenuScreen extends BaseScreen {
 
     /** Handles the event when the play button is clicked. */
 	private void handlePlayButtonEvent() {
+        if(Game.modManager != null) {
+            if(Game.modManager.findCampaigns().size > 0) {
+                GameApplication.SetScreen(new OverlayWrapperScreen(new PickCampaignOverlay()));
+                return;
+            }
+        }
+
         GameApplication.SetScreen(new OverlayWrapperScreen(new SelectSaveSlotOverlay()));
 	}
 

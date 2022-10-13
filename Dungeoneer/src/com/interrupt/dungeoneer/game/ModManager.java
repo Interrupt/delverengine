@@ -31,6 +31,12 @@ public class ModManager {
 
     private transient Array<String> excludeFiles = new Array<String>();
 
+    private String pickedCampaignId = "";
+
+    // Cache for found campaigns. Campaigns are defined in the 'gamedata.dat' file.
+    private Array<GameCampaign> foundCampaigns = new Array<>();
+    private Array<String> excludedPathsForPickedCampaign = new Array<>();
+
     // Disabling custom scripting for now. Additional info can be found:
     // https://github.com/Interrupt/delverengine/issues/267
     private static ScriptingApi scriptingApi = null;
@@ -84,11 +90,27 @@ public class ModManager {
         loadExcludesList();
     }
 
+    // Call refresh after picking a new campaign
+    public void pickCampaign(String newPickedCampaignId) {
+        pickedCampaignId = newPickedCampaignId;
+
+        // Keep track of the mod paths not to include for this campaign
+        excludedPathsForPickedCampaign.clear();
+        for(GameCampaign campaign : foundCampaigns) {
+            if(!campaign.campaignId.equals(pickedCampaignId))
+                excludedPathsForPickedCampaign.add(campaign.getModPath());
+        }
+    }
+
+    public Array<GameCampaign> getFoundCampaigns() {
+        return foundCampaigns;
+    }
+
     private void findMods() {
         // reset
         allMods.clear();
 
-        // add the default search paths
+        // add the default search paths, if we can.
         allMods.add(".");
 
         FileHandle fh = Game.getInternal("mods");
@@ -104,10 +126,10 @@ public class ModManager {
         // reset
         modsFound.clear();
 
-        // add all enabled mods
+        // add all enabled mods that work for this campaign
         for(String mod : allMods) {
             boolean enabled = checkIfModIsEnabled(mod);
-            if(enabled) {
+            if(enabled && !excludedPathsForPickedCampaign.contains(mod, false)) {
                 modsFound.add(mod);
             }
         }
@@ -316,19 +338,60 @@ public class ModManager {
         return combinedLocalizedStrings;
     }
 
-    public GameData loadGameData() {
-        GameData gameData = new GameData();
+    public Array<GameData> findAllGameDataFiles() {
+        Array<GameData> foundGameData = new Array<>();
 
         for(String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/game.dat");
                 if(modFile.exists() && !pathIsExcluded(path + "/data/game.dat")) {
                     GameData modData = JsonUtil.fromJson(GameData.class, modFile);
-                    gameData.merge(modData);
+
+                    // If this game data includes a campaign, keep track of the mod path for it
+                    if(modData.campaign != null)
+                        modData.campaign.setModPath(path);
+
+                    foundGameData.add(modData);
                 }
             }
             catch(Exception ex) {
                 Gdx.app.error("Delver", "Error loading mod file " + path + "/data/game.dat");
+                Logger.logExceptionToFile(ex);
+            }
+        }
+
+        return foundGameData;
+    }
+
+    public Array<GameCampaign> findCampaigns() {
+        Array<GameData> allGameData = findAllGameDataFiles();
+        foundCampaigns.clear();
+
+        for(GameData data : allGameData) {
+            if(data.campaign != null)
+                foundCampaigns.add(data.campaign);
+        }
+
+        GameCampaign testOne = new GameCampaign();
+        testOne.displayName = "Delver";
+        testOne.campaignId = "delver_game";
+        testOne.setModPath(".");
+
+        foundCampaigns.add(testOne);
+
+        return foundCampaigns;
+    }
+
+    public GameData loadGameData() {
+        GameData gameData = new GameData();
+
+        Array<GameData> allGameData = findAllGameDataFiles();
+        for(GameData modData : allGameData) {
+            try {
+                gameData.merge(modData);
+            }
+            catch(Exception ex) {
+                Gdx.app.error("Delver", "Error merging mod file.");
                 Logger.logExceptionToFile(ex);
             }
         }
@@ -442,6 +505,12 @@ public class ModManager {
         if(modsEnabled == null)
             return true;
 
+        // Check if the campaign matches
+        WorkshopModData data = getDataForMod(mod);
+        if(data != null && data.campaignId != null && !data.campaignId.isEmpty())
+            return data.campaignId.equals(pickedCampaignId);
+
+        // Campaign matches, now check if it is enabled
         Boolean enabled = modsEnabled.get(mod);
         return enabled == null || enabled;
     }

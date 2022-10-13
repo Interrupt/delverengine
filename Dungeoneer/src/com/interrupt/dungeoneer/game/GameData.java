@@ -1,5 +1,7 @@
 package com.interrupt.dungeoneer.game;
 
+import com.badlogic.gdx.utils.Array;
+
 public class GameData {
     public GameData() { }
     /** Tutorial level. Shown when starting a new save slot. */
@@ -25,6 +27,9 @@ public class GameData {
 
     /** Is player allowed to jump? */
     public boolean playerJumpEnabled = false;
+
+    /** The campaign data for this Game */
+    public GameCampaign campaign;
 
     public void merge(GameData modData) {
         tutorialLevel = modData.tutorialLevel;
