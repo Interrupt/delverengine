@@ -1,10 +1,11 @@
 package com.interrupt.dungeoneer.game.gamemode;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.editor.EditorMarker;
 import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -13,14 +14,14 @@ import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.screens.LevelChangeScreen;
+import com.interrupt.utils.JsonUtil;
 
 /**
  * Game mode that does nothing but the very basics.
  */
-public class NullGameMode implements GameModeInterface {
-    protected GameStateInterface gameState = new NullGameState();
-
+public class GameModeAdapter implements GameModeInterface {
     @Override
     public void tickGame(Level level, float delta, GameInput input) {
 
@@ -81,12 +82,12 @@ public class NullGameMode implements GameModeInterface {
 
     @Override
     public void loadGameState(int saveSlot) {
-
+        // Could override this to load custom game state info
     }
 
     @Override
     public void saveGameState(int saveSlot) {
-
+        // Could override this to save custom game state info
     }
 
     @Override
