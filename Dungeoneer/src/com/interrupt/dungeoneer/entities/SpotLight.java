@@ -22,6 +22,9 @@ public class SpotLight extends Light implements Directional {
     @EditorProperty
     public float hotSpotIntensity = 0.5f;
 
+    @EditorProperty
+    public float hotSpotRangeFactor = 0.75f;
+
     // Directional interface. Keep track of both the rotation and direction to avoid recalcs
     protected Vector3 rotation = new Vector3(0f,90f,0f);
     private transient boolean rotationIsDirty = true;
@@ -106,7 +109,8 @@ public class SpotLight extends Light implements Directional {
 
         // Only do the check in the level if this point is actually in the spotlight
         // This should cut down drastically on the number of checks required
-        if(angleFromSpotlight < spotLightWidth) {
+        final float maxSpotLightWidth = Math.max(spotLightWidth, spotLightWidth * hotSpotWidthFactor);
+        if(angleFromSpotlight < maxSpotLightWidth) {
             canSeeHowMuch = level.canSeeHowMuch(this.x, this.y, x, y);
 
             boolean canSee = canSeeHowMuch >= 1f;
@@ -135,17 +139,31 @@ public class SpotLight extends Light implements Directional {
         attenuateLightColor(baseLighting, x2, y2, z2, spotLightWidth);
 
         // Now add in the hot spot
-        if(hotSpotWidthFactor > 0 && hotSpotIntensity > 0) {
+        if(hotSpotWidthFactor > 0 && hotSpotIntensity > 0 && hotSpotRangeFactor > 0) {
+            // Fake out attenuateLightColor by changing the range out from underneath it
+            float savedRange = range;
+            range *= hotSpotRangeFactor;
+
+            // Find the light values for the hotspot
             attenuateLightColor(hotSpotLighting, x2, y2, z2, spotLightWidth * hotSpotWidthFactor);
-            hotSpotLighting.clamp();
+            hotSpotLighting.mul(hotSpotIntensity);
+
+            // Switch the range back to what it was
+            range = savedRange;
         }
 
-        hotSpotLighting.mul(hotSpotIntensity);
-        t_attenuateLightCalcColor.set(baseLighting).add(hotSpotLighting).clamp();
+        // Mix the base spot light with the hot spot
+        t_attenuateLightCalcColor.set(baseLighting).add(hotSpotLighting);
         return t_attenuateLightCalcColor;
     }
 
     private void attenuateLightColor(Color outColor, float x2, float y2, float z2, float lightFov) {
+        // An FOV > 360.0f is really just an area light, so early out
+        if(lightFov >= 360.f) {
+            outColor.set(super.attenuateLightColor(x2, y2, z2));
+            return;
+        }
+
         final float lightRayAngle = angleFromSpotlight(x2, y2, z2);
 
         // Easy case, not in the spot light at all
@@ -159,5 +177,9 @@ public class SpotLight extends Light implements Directional {
         float diff = lightFov - lightRayAngle;
         diff /= lightFov;
         outColor.mul(diff);
+
+        // Don't darken the light more after attenuating, but do brighten it
+        if(lightIntensity > 1.0f);
+            outColor.mul(lightIntensity);
     }
 }
