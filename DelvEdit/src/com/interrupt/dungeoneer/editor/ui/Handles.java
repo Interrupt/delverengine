@@ -42,6 +42,12 @@ public class Handles {
         end();
     }
 
+    public static void drawWireCone(Vector3 position, Vector3 axis, float radius, float height) {
+        begin();
+        drawWireConeInternal(position, axis, radius, height);
+        end();
+    }
+
     private static void begin() {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glLineWidth(1f);
@@ -176,5 +182,32 @@ public class Handles {
 
 			renderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
 		}
+    }
+
+    private static void drawWireConeInternal(Vector3 position, Vector3 axis, float radius, float height) {
+        drawWireDiscInternal(position, axis, radius);
+
+        Vector3 o = new Vector3(axis).nor().scl(height).add(position);
+        Vector3 r = new Vector3(Vector3.Z);
+        r.crs(axis).nor().scl(radius);
+        Vector3 s = new Vector3(r);
+        s.add(position);
+
+        renderer.line(o.x, o.y, o.z, s.x, s.y, s.z);
+
+        s.set(r).scl(-1);
+        s.add(position);
+
+        renderer.line(o.x, o.y, o.z, s.x, s.y, s.z);
+
+        r.nor().crs(axis).scl(radius);
+        s.set(r).add(position);
+
+        renderer.line(o.x, o.y, o.z, s.x, s.y, s.z);
+
+        s.set(r).scl(-1);
+        s.add(position);
+
+        renderer.line(o.x, o.y, o.z, s.x, s.y, s.z);
     }
 }
