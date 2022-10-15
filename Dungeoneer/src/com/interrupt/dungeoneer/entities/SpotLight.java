@@ -31,7 +31,7 @@ public class SpotLight extends Light implements Directional {
     public float coronaFadeFactor = 0.7f;
 
     // Directional interface. Keep track of both the rotation and direction to avoid recalcs
-    protected Vector3 rotation = new Vector3(0.0001f,90f,0.0001f);
+    protected Vector3 rotation = new Vector3(0.001f,90f,0.001f);
     private transient boolean rotationIsDirty = true;
     private transient Vector3 direction = new Vector3(1, 0, 0);
     private transient Vector3 dirWork = new Vector3(1, 0, 0);
