@@ -1,9 +1,9 @@
 package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.utils.LongMap;
 import com.interrupt.dungeoneer.GameManager;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
@@ -215,5 +215,10 @@ public class Light extends Entity {
         }
 
         return c;
+    }
+
+    public float getCoronaAlpha(PerspectiveCamera camera) {
+        // Most lights should just return a static alpha
+        return 0.75f;
     }
 }

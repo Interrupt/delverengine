@@ -1285,16 +1285,19 @@ public class GlRenderer {
 
 		float offset = 0.1f + e.yOffset + (e.collision.z * 0.5f);
 		float size = 0.5f * e.scale;
+        float haloAlpha = 0.75f;
 		Color color = e.color;
 
 		float perlinMod = 1f;
 
 		boolean animateHalo = true;
 		if(e instanceof Light) {
-			offset = ((Light) e).haloOffset;
-			size = ((Light) e).haloSize;
-			color = ((Light) e).getColor();
-			animateHalo = ((Light) e).animateHalo;
+            Light l = (Light)e;
+			offset = l.haloOffset;
+			size = l.haloSize;
+			color = l.getColor();
+			animateHalo = l.animateHalo;
+            haloAlpha = l.getCoronaAlpha(camera);
 		}
 		else if(e instanceof com.interrupt.dungeoneer.entities.DynamicLight) {
 			offset = ((com.interrupt.dungeoneer.entities.DynamicLight) e).haloOffset;
@@ -1369,16 +1372,16 @@ public class GlRenderer {
 			if(haloMode == haloMode.CORONA_ONLY || haloMode == haloMode.BOTH) {
 				if (e instanceof Light && ((Light) e).corona != null) {
 					Light l = (Light) e;
-					addHaloSprite(e.x + perlinOffsetXY, e.y + perlinOffsetXY, e.z + offset + perlinOffsetZ - 0.5f, size * (1.5f + perlinScale), l.corona.tex, l.corona.texAtlas, color);
+					addHaloSprite(e.x + perlinOffsetXY, e.y + perlinOffsetXY, e.z + offset + perlinOffsetZ - 0.5f, size * (1.5f + perlinScale), l.corona.tex, l.corona.texAtlas, color, haloAlpha);
 				} else {
-					addHaloSprite(e.x + perlinOffsetXY, e.y + perlinOffsetXY, e.z + offset + perlinOffsetZ - 0.5f, size * (1.5f + perlinScale), (byte) 0, "fog_sprites", color);
+					addHaloSprite(e.x + perlinOffsetXY, e.y + perlinOffsetXY, e.z + offset + perlinOffsetZ - 0.5f, size * (1.5f + perlinScale), (byte) 0, "fog_sprites", color, haloAlpha);
 				}
 			}
 		}
 	}
 
 	FogSprite t_fogSprite = new FogSprite();
-	public void addHaloSprite(float x, float y, float z, float size, byte tex, String atlas, Color color) {
+	public void addHaloSprite(float x, float y, float z, float size, byte tex, String atlas, Color color, float alpha) {
 		FogSprite fogSprite = t_fogSprite;
 		fogSprite.x = x;
 		fogSprite.y = y;
@@ -1391,7 +1394,7 @@ public class GlRenderer {
 		fogSprite.scale = size * 1f;
 		fogSprite.updateDrawable();
 		fogSprite.drawable.color.set(color).mul(color).mul(1.7f);
-		fogSprite.drawable.color.a = 0.75f;
+		fogSprite.drawable.color.a = alpha;
 		fogSprite.blendMode = Entity.BlendMode.ADD;
 		fogSprite.yOffset = 0;
 

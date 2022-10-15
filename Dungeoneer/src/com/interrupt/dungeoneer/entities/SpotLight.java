@@ -1,29 +1,34 @@
 package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Frustum;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.LongMap;
-import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
-import com.interrupt.dungeoneer.gfx.Material;
 import com.interrupt.dungeoneer.interfaces.Directional;
 
 public class SpotLight extends Light implements Directional {
-	/** Field of view of the SpotLight, in degrees. */
-	@EditorProperty
-	public float spotLightWidth = 45.0f;
+    /** Field of view of the SpotLight, in degrees. */
+    @EditorProperty
+    public float spotLightWidth = 45.0f;
 
     /** How much of the spotlight should be the hotspot */
     @EditorProperty
     public float hotSpotWidthFactor = 0.5f;
 
+    /** The brightness modifier of the hotspot */
     @EditorProperty
     public float hotSpotIntensity = 0.5f;
 
+    /** How far the hotspot should extend, relative to the overall width */
     @EditorProperty
     public float hotSpotRangeFactor = 0.75f;
+
+    /** Controls how much the corona fades away when the camera is in the spotlight */
+    @EditorProperty
+    public float coronaFadeFactor = 0.7f;
 
     // Directional interface. Keep track of both the rotation and direction to avoid recalcs
     protected Vector3 rotation = new Vector3(0f,90f,0f);
@@ -31,12 +36,15 @@ public class SpotLight extends Light implements Directional {
     private transient Vector3 direction = new Vector3(1, 0, 0);
     private transient Vector3 dirWork = new Vector3(1, 0, 0);
 
-	public SpotLight() { super(); range = 9.0f; }
+    // Used for calculating bounds, and checking what is in the spotlight
+    private transient Frustum spotlightFrustum = new Frustum();
 
-	@Override
-	public void tick(Level level, float delta)
-	{
-	}
+    public SpotLight() { super(); range = 9.0f; }
+
+    @Override
+    public void tick(Level level, float delta)
+    {
+    }
 
     @Override
     public void rotate90() {
@@ -97,7 +105,7 @@ public class SpotLight extends Light implements Directional {
         if(!shadowTiles)
             return 1f;
 
-        long key = getLightVoxelKey(x, y);
+        long key = getLightVoxelKey((int)x, (int)y);
 
         if (canSeeHowMuchCache.containsKey(key)) {
             return canSeeHowMuchCache.get(key);
@@ -180,6 +188,46 @@ public class SpotLight extends Light implements Directional {
 
         // Don't darken the light more after attenuating, but do brighten it
         if(lightIntensity > 1.0f);
-            outColor.mul(lightIntensity);
+        outColor.mul(lightIntensity);
+    }
+
+    public float getCoronaAlpha(PerspectiveCamera camera) {
+        // Fade the corona based on angle to the camera
+        final float defaultAlpha = 0.8f;
+        float angle = angleFromSpotlight(camera.position.x, camera.position.z, camera.position.y);
+        if(angle < spotLightWidth)
+            return defaultAlpha;
+
+        float fadeLerp = spotLightWidth * coronaFadeFactor;
+        float alpha = (fadeLerp - (angle - spotLightWidth)) / fadeLerp;
+            return Math.max(alpha * defaultAlpha, 0f);
+    }
+
+    private transient Matrix4 t_calcFrustumMatrix1 = new Matrix4();
+    private transient Matrix4 t_calcFrustumMatrix2 = new Matrix4();
+    private transient Matrix4 t_calcFrustumMatrix3 = new Matrix4();
+    private transient Matrix4 t_calcFrustumMatrix4 = new Matrix4();
+    private transient Vector3 t_calcFrustumVec1 = new Vector3();
+    private transient Vector3 t_calcFrustumVec2 = new Vector3();
+    public Frustum getFrustum() {
+        // Some temp values
+        Vector3 position = t_calcFrustumVec1.set(x, y, z);
+        Vector3 tmp = t_calcFrustumVec2;
+
+        // Make the frustum!
+        Matrix4 spotlightMatrix = t_calcFrustumMatrix1;
+        Matrix4 spotlightView = t_calcFrustumMatrix2;
+        spotlightMatrix.setToProjection(Math.abs(0.001f), range, spotLightWidth, 1.0f);
+        spotlightView.setToLookAt(position, tmp.set(position).add(getDirection()), Vector3.Z);
+
+        Matrix4 combined = t_calcFrustumMatrix3.set(spotlightMatrix);
+        Matrix4.mul(combined.val, spotlightView.val);
+        Matrix4 invProjectionView = t_calcFrustumMatrix4;
+
+        invProjectionView.set(combined);
+        Matrix4.inv(invProjectionView.val);
+        spotlightFrustum.update(invProjectionView);
+
+        return spotlightFrustum;
     }
 }
