@@ -54,6 +54,12 @@ public class Light extends Entity {
 	@EditorProperty
 	public HaloMode haloMode = HaloMode.NONE;
 
+    /** Controls the falloff calculation of the light */
+    @EditorProperty
+    public LightFalloffMode falloffMode = LightFalloffMode.SQUARED;
+
+    public enum LightFalloffMode { SQUARED, LINEAR, CONSTANT }
+
 	/** Is Light on? */
 	@EditorProperty
 	public boolean on = true;
@@ -196,23 +202,30 @@ public class Light extends Entity {
         float zd = (float)Math.pow(z - z2, 2);
         float dist = GlRenderer.FastSqrt(xd + yd + zd);
 
-        if(dist < range)
-        {
-            short lum = (short)(255 - (dist / range) * 255);
-            float lmod = lum / 255.0f;
-            if(lmod > 1) lmod = 1;
+        if(dist > range)
+            return c;
 
-            // light falloff (n^2)
+        // Constant light falloff
+        if(falloffMode == LightFalloffMode.CONSTANT)
+            return c.set(lightColor).mul(lightIntensity);
+
+        // Light falloff (n^2)
+        short lum = (short)(255 - (dist / range) * 255);
+        float lmod = lum / 255.0f;
+        if(lmod > 1) lmod = 1;
+
+        if(falloffMode == LightFalloffMode.SQUARED) {
             lum *= lmod;
-            lum *= 2;	// brighten things up
-
-            if(lum > 255) lum = 255;
-            float b = lum / 255.0f;
-
-            final Color finalLightColor = getColor();
-            c.set(b * finalLightColor.r, b * finalLightColor.g, b * finalLightColor.b, b * finalLightColor.a);
-            c.mul(lightIntensity);
         }
+
+        lum *= 2;    // brighten things up
+
+        if(lum > 255) lum = 255;
+        float b = lum / 255.0f;
+
+        final Color finalLightColor = getColor();
+        c.set(b * finalLightColor.r, b * finalLightColor.g, b * finalLightColor.b, b * finalLightColor.a);
+        c.mul(lightIntensity);
 
         return c;
     }

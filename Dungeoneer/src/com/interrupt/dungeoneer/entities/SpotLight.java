@@ -182,9 +182,11 @@ public class SpotLight extends Light implements Directional {
         outColor.set(super.attenuateLightColor(x2, y2, z2));
 
         // Now multiply based on spot light angle
-        float diff = lightFov - lightRayAngle;
-        diff /= lightFov;
-        outColor.mul(diff);
+        if(falloffMode != LightFalloffMode.CONSTANT) {
+            float diff = lightFov - lightRayAngle;
+            diff /= lightFov;
+            outColor.mul(diff);
+        }
 
         // Don't darken the light more after attenuating, but do brighten it
         if(lightIntensity > 1.0f);
