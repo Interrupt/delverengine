@@ -261,6 +261,9 @@ public class GlRenderer {
 	public IntMap<Entity> entitiesForPicking = null;
 	public Color entityPickColor = new Color();
 
+	// The world is partitioned into chunks, this is the main control for how fine grained that is
+	public final static int WORLD_CHUNK_SIZE = 8;
+
 	public void initTextures() {
 
 		needToInit = false;
@@ -2778,14 +2781,14 @@ public class GlRenderer {
 	}
 
 	public void refreshChunksNear(float xPos, float yPos, float range) {
-		int startX = ((int)xPos - (int)range) / 17;
-		int startY = ((int)yPos - (int)range) / 17;
-		int endX = ((int)xPos + (int)range) / 17;
-		int endY = ((int)yPos + (int)range) / 17;
+		int startX = ((int)xPos - (int)range) / WORLD_CHUNK_SIZE;
+		int startY = ((int)yPos - (int)range) / WORLD_CHUNK_SIZE;
+		int endX = ((int)xPos + (int)range) / WORLD_CHUNK_SIZE;
+		int endY = ((int)yPos + (int)range) / WORLD_CHUNK_SIZE;
 
 		for(int x = startX; x <= endX; x++) {
 			for(int y = startY; y <= endY; y++) {
-				WorldChunk chunk = GetWorldChunkAt(x * 17, y * 17);
+				WorldChunk chunk = GetWorldChunkAt(x * WORLD_CHUNK_SIZE, y * WORLD_CHUNK_SIZE);
 				if(chunk != null) {
 					chunk.refresh();
 				}
@@ -2827,16 +2830,16 @@ public class GlRenderer {
 			chunks = new Array<WorldChunk>();
 			triangleSpatialHash.Flush();
 
-			int xChunks = (int)Math.ceil(level.width / 17f);
-			int yChunks = (int)Math.ceil(level.height / 17f);
+			int xChunks = (int)Math.ceil(level.width / (float)WORLD_CHUNK_SIZE);
+			int yChunks = (int)Math.ceil(level.height / (float)WORLD_CHUNK_SIZE);
 
 			boolean isOverworld = level instanceof OverworldLevel;
 			if(!isOverworld) {
 				for(int x = 0; x < xChunks; x++) {
 					for(int y = 0; y < yChunks; y++) {
 						WorldChunk c = new WorldChunk(this);
-						c.setOffset(x * 17, y * 17);
-						c.setSize(17, 17);
+						c.setOffset(x * WORLD_CHUNK_SIZE, y * WORLD_CHUNK_SIZE);
+						c.setSize(WORLD_CHUNK_SIZE, WORLD_CHUNK_SIZE);
 
 						c.Tesselate(level, this);
 

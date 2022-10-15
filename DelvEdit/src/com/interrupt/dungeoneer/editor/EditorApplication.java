@@ -2793,20 +2793,20 @@ public class EditorApplication implements ApplicationListener {
 	}
 
 	public void markWorldAsDirty(int xPos, int yPos, int radius) {
-		int startX = (xPos - radius) / 17;
-		int startY = (yPos - radius) / 17;
-		int endX = (xPos + radius) / 17;
-		int endY = (yPos + radius) / 17;
+		int startX = (xPos - radius) / GlRenderer.WORLD_CHUNK_SIZE;
+		int startY = (yPos - radius) / GlRenderer.WORLD_CHUNK_SIZE;
+		int endX = (xPos + radius) / GlRenderer.WORLD_CHUNK_SIZE;
+		int endY = (yPos + radius) / GlRenderer.WORLD_CHUNK_SIZE;
 
 		for(int x = startX; x <= endX; x++) {
 			for(int y = startY; y <= endY; y++) {
-				WorldChunk chunk = renderer.GetWorldChunkAt(x * 17, y * 17);
+				WorldChunk chunk = renderer.GetWorldChunkAt(x * GlRenderer.WORLD_CHUNK_SIZE, y * GlRenderer.WORLD_CHUNK_SIZE);
 
 				if(chunk == null) {
 					// No chunk here yet, so make one
 					chunk = new WorldChunk(renderer);
-					chunk.setOffset(x * 17, y * 17);
-					chunk.setSize(17, 17);
+					chunk.setOffset(x * GlRenderer.WORLD_CHUNK_SIZE, y * GlRenderer.WORLD_CHUNK_SIZE);
+					chunk.setSize(GlRenderer.WORLD_CHUNK_SIZE, GlRenderer.WORLD_CHUNK_SIZE);
 					renderer.chunks.add(chunk);
 				}
 
