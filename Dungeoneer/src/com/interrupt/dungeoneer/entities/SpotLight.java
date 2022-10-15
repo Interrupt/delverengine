@@ -31,7 +31,7 @@ public class SpotLight extends Light implements Directional {
     public float coronaFadeFactor = 0.7f;
 
     // Directional interface. Keep track of both the rotation and direction to avoid recalcs
-    protected Vector3 rotation = new Vector3(0f,90f,0f);
+    protected Vector3 rotation = new Vector3(0.0001f,90f,0.0001f);
     private transient boolean rotationIsDirty = true;
     private transient Vector3 direction = new Vector3(1, 0, 0);
     private transient Vector3 dirWork = new Vector3(1, 0, 0);
@@ -39,7 +39,7 @@ public class SpotLight extends Light implements Directional {
     // Used for calculating bounds, and checking what is in the spotlight
     private transient Frustum spotlightFrustum = new Frustum();
 
-    public SpotLight() { super(); range = 9.0f; }
+    public SpotLight() { super(); range = 6.0f; }
 
     @Override
     public void tick(Level level, float delta)
