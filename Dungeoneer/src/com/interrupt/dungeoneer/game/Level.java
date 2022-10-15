@@ -220,7 +220,7 @@ public class Level {
 
 	public transient SpatialHash spatialhash = new SpatialHash(2);
 	public transient SpatialHash staticSpatialhash = new SpatialHash(2);
-	public transient LightSpatialHash lightSpatialHash = new LightSpatialHash(1);
+	public transient LightSpatialHash lightSpatialHash = new LightSpatialHash(2);
 
 	public transient GenTheme genTheme = null;
 

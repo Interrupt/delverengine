@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.LongMap;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
@@ -69,6 +70,9 @@ public class Light extends Entity {
 	protected transient LongMap<Boolean> canSeeCache = new LongMap<Boolean>();
     protected transient LongMap<Float> canSeeHowMuchCache = new LongMap<Float>();
     protected transient LongMap<Color> colorVoxels = new LongMap<Color>();
+
+    // Keep track of which cells this light is in, so that we can clean up later
+    public transient IntArray lightSpatialHashCellKeys = new IntArray();
 
 	public Light(float x, float y, Color lightColor, float range) {
 		super(x, y, 0, false);

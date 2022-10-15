@@ -1,15 +1,15 @@
 package com.interrupt.dungeoneer.partitioning;
 
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.FrustumShapeBuilder;
 import com.badlogic.gdx.math.Frustum;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
+import com.interrupt.dungeoneer.GameApplication;
+import com.interrupt.dungeoneer.GameManager;
+import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Light;
 import com.interrupt.dungeoneer.entities.SpotLight;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 
 public class LightSpatialHash {
@@ -38,7 +38,7 @@ public class LightSpatialHash {
 
 		for(int xx = minX; xx <= maxX; xx++) {
 			for(int yy = minY; yy <= maxY; yy++) {
-				int key = getKey(xx,yy);
+				int key = getKey(xx * cellSize,yy * cellSize);
 				if(!cellKeys.contains(key)) cellKeys.add(key);
 			}
 		}
@@ -62,7 +62,7 @@ public class LightSpatialHash {
 
         for(int xx = minX; xx <= maxX; xx++) {
             for(int yy = minY; yy <= maxY; yy++) {
-                int key = getKey(xx,yy);
+                int key = getKey(xx * cellSize,yy * cellSize);
                 if(!cellKeys.contains(key)) cellKeys.add(key);
             }
         }
@@ -82,6 +82,21 @@ public class LightSpatialHash {
 			if(!eList.contains(e, true))
 				eList.add(e);
 		}
+
+        // Keep track of this for cleaning up later in the editor
+		if(GameManager.renderer.editorIsRendering)
+			e.lightSpatialHashCellKeys.add(key);
+	}
+
+	// Remove a light from the map, and re-add it
+	public void RefreshLight(Light l) {
+		for(int i = 0; i < l.lightSpatialHashCellKeys.size; i++) {
+			int cellKey = l.lightSpatialHashCellKeys.get(i);
+			if(hash.containsKey(cellKey))
+				hash.get(cellKey).removeValue(l, true);
+		}
+		l.lightSpatialHashCellKeys.clear();
+		AddLight(l);
 	}
 
 	public synchronized void AddLight(Light e) {
