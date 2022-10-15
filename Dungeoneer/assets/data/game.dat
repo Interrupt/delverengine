@@ -1,5 +1,6 @@
 {
     "$schema":"http://delverengine.com/jsonschema/current/dungeoneer/game/GameData.schema.json",
+    "gameMode": { "class": "com.interrupt.dungeoneer.game.gamemode.delver.DelverGameMode" },
     "entityDataFiles": ["entities.dat"],
     "monsterDataFiles": ["monsters.dat"],
     "itemDataFiles": ["items.dat"],

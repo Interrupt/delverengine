@@ -24,6 +24,9 @@ import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.gamemode.delver.DelverGameMode;
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.game.gamemode.GameStateInterface;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
@@ -33,11 +36,7 @@ import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
-import com.interrupt.managers.EntityManager;
-import com.interrupt.managers.HUDManager;
-import com.interrupt.managers.ItemManager;
-import com.interrupt.managers.MonsterManager;
-import com.interrupt.managers.StringManager;
+import com.interrupt.managers.*;
 import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.Logger;
 import com.interrupt.utils.OSUtils;
@@ -125,13 +124,19 @@ public class Game {
 
     public static Pathfinding pathfinding = new Pathfinding();
 
+    protected GameModeInterface gameMode = new DelverGameMode();
+
 	public Game(int saveLoc) {
-		instance = this;
+		SetInstance(this);
 		Start(saveLoc);
 	}
 
 	public void loadManagers() {
 		modManager = Game.getModManager();
+
+		// Set the game mode, if one was given
+        if(gameData.gameMode != null)
+            gameMode = gameData.gameMode;
 
 		// Load item data
 		ItemManager im = modManager.loadItemManager(gameData.itemDataFiles);
@@ -174,9 +179,15 @@ public class Game {
         loadHUDManager(modManager);
 	}
 
+    // Set the static game instance
+    public void SetInstance(Game game) {
+        instance = game;
+        GameManager.instance.setGame(game);
+    }
+
 	/** Create game for editor usage. */
 	public Game(Level levelToStart) {
-		instance = this;
+		SetInstance(this);
 		level = levelToStart;
 
 		// we're in the editor
@@ -198,7 +209,9 @@ public class Game {
 
 		// load the game progress
 		progression = loadProgression(saveLoc);
+        gameMode.loadGameState(saveLoc);
 
+        // init some of the UI
 		isMobile = false;
 		Gdx.input.setCursorCatched(true);
 		hud = new Hud();
@@ -245,8 +258,18 @@ public class Game {
 		GameScreen.resetDelta = true;
 	}
 
+    public static Level getLevel(int levelNumber) {
+        Array<Level> levelLayout = GameManager.getGameMode().getGameLevelLayout();
+        Level found = levelLayout.get(levelNumber);
+        if(found == null)
+            return null;
+
+        // Return a copy, don't let anyone muck with our level definition
+        return (Level)KryoSerializer.copyObject(found);
+    }
+
 	// build the list of levels using a predefined dungeon layout
-	private static Array<Level> loadDataLevels() {
+	public static Array<Level> loadDataLevels() {
 		FileHandle dungeonFile = Game.findInternalFileInMods("data/dungeons.dat");
 		if(!dungeonFile.exists()) return null;
 
@@ -329,62 +352,6 @@ public class Game {
 		return files;
 	}
 
-	// build the list of levels
-	public static Array<Level> buildLevelLayout() {
-
-	    Gdx.app.log("Delver", "Building Dungeon Layout");
-
-	    FileHandle dungeonsFile = Game.modManager.findFile("data/dungeons.dat");
-	    if(dungeonsFile != null && dungeonsFile.exists()) {
-            return loadDataLevels();
-        }
-
-        // No predefined dungeon layout, build one by searching for sections
-	    // find all the dungeon sections we can
-        ArrayMap<String, SectionDefinition> sections = new ArrayMap<String, SectionDefinition>();
-
-        for(String folder : Game.modManager.modsFound) {
-            Gdx.app.debug("Delver", "Looking in " + folder);
-
-            FileHandle generatorFolder = getInternal(folder + "/generator");
-
-            Gdx.app.debug("Delver", "Looking for files in " + generatorFolder.path());
-            for(FileHandle g : listDirectory(generatorFolder)) {
-                if(g.exists()) {
-                    FileHandle sectionFile = g.child("section.dat");
-                    if(sectionFile.exists()) {
-                        Gdx.app.debug("Delver", "Found section file: " + sectionFile.path());
-                        SectionDefinition d = JsonUtil.fromJson(SectionDefinition.class, sectionFile);
-                        sections.put(g.name(), d);
-                    }
-                }
-            }
-        }
-
-        // Build the final array
-		Array<SectionDefinition> sectionsFound = new Array<SectionDefinition>();
-        for(SectionDefinition s : sections.values()) {
-			sectionsFound.add(s);
-		}
-
-        sectionsFound.sort(new Comparator<SectionDefinition>() {
-            @Override
-            public int compare(SectionDefinition o1, SectionDefinition o2) {
-                if(o1.sortOrder > o2.sortOrder) return 1;
-                if(o1.sortOrder < o2.sortOrder) return -1;
-                return 0;
-            }
-        });
-
-        Array<Level> levels = new Array<Level>();
-        for(SectionDefinition s : sectionsFound) {
-            Gdx.app.log("Delver", " Adding section " + s.name);
-            levels.addAll(s.buildLevels());
-        }
-
-        return levels;
-    }
-
 	public void Start(int saveLoc)
 	{
 		loadManagers();
@@ -402,9 +369,6 @@ public class Game {
 
 		hudManager.backpack.visible = false;
 
-		// Load the levels data file, keep the levels array null for now (try loading from save first)
-		Array<Level> dataLevels = buildLevelLayout();
-
 		// load the game progress
 		progression = loadProgression(saveLoc);
 		progression.trackMods();
@@ -412,7 +376,6 @@ public class Game {
 		boolean didLoad = load();
 
 		isMobile = Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS;
-		//isMobile = true;
 
 		if(!isMobile) {
 			Gdx.input.setCursorCatched(true);
@@ -420,6 +383,9 @@ public class Game {
 		} else {
 			hud = new MobileHud();
 		}
+
+        gameMode.loadGameState(saveLoc);
+        GameApplication.SetLevelChangeScreen(gameMode.getLevelChangeScreen());
 
 		if(!didLoad) {
 			Game.flashTimer = 100;
@@ -447,22 +413,10 @@ public class Game {
 			progression.won = false;
 			progression.newRunStarted();
 
-			// load the level
+			// Set the initial level to load. The Game Mode onGameStart can override this.
 			levelNum = 0;
-
-			if (progression.sawTutorial || gameData.tutorialLevel == null) {
-				level = dataLevels.get(levelNum);
-			} else {
-				levelNum = -1;
-				player = new Player(this);
-				player.level = 2;
-				player.gold = progression.gold;
-				player.maxHp = 12;
-				player.hp = player.maxHp;
-				player.randomSeed = rand.nextInt();
-				level = gameData.tutorialLevel;
-				progression.sawTutorial = true;
-			}
+            level = getLevel(levelNum);
+            gameMode.onGameStart(this);
 
 			// Keep track of what engine version we're playing on
 			player.saveVersion = SAVE_VERSION;
@@ -541,6 +495,9 @@ public class Game {
 
         if (gameOver) return;
 
+        // Tick the game mode
+        gameMode.tickGame(level, delta, input);
+
         // Entities should update using the time modified delta
 		level.tick(timeModifiedDelta);
 		player.tick(level, delta * player.actorTimeScale, input);
@@ -592,6 +549,11 @@ public class Game {
 			GameApplication.ShowLevelChangeScreen(stair);
 		}
 	}
+
+	public void setLevel(Level newLevel, int newLevelNumber) {
+	    levelNum = newLevelNumber;
+	    level = newLevel;
+    }
 
 	public void warpToLevel(String newTravelPathId, TriggeredWarp warp) {
 		Gdx.app.log("DelverLifeCycle", "Warping to: " + warp.levelToLoad);
@@ -793,8 +755,8 @@ public class Game {
 		else
 			levelNum--;
 
-		Array<Level> levels = buildLevelLayout();
-
+        // Make sure this new level number is in range
+		Array<Level> levels = GameManager.getGameMode().getGameLevelLayout();
 		if(levelNum < 0) levelNum = 0;
 		if(levelNum > levels.size - 1) levelNum = levels.size - 1;
 
@@ -806,11 +768,8 @@ public class Game {
 		}
 		level.setPlayer(player);
 
-		// TODO: Generate levels!
 		if(!level.isLoaded)
 			level.load();
-		else
-			level.init(Source.LEVEL_LOAD);
 
 		player.spawnX = player.x;
 		player.spawnY = player.y;
@@ -901,9 +860,7 @@ public class Game {
 		if(Audio.torch != null)
 			Audio.torch.stop();
 
-		// goodbye saves!
-		Gdx.app.log("DelverLifeCycle", "Game over!");
-		GameApplication.ShowGameOverScreen(false);
+		gameMode.onGameOver(this);
 	}
 
 	// Save all the levels!
@@ -911,20 +868,6 @@ public class Game {
 	{
 		String saveDir = getSaveDir();
 		String levelDir = saveDir + "/levels/";
-
-		if(gameOver)
-		{
-			FileHandle dir = getFile(saveDir);
-			if(dir.exists()) {
-				Gdx.app.log("DelverLifeCycle", "Sorry man, deleting saves");
-				dir.deleteDirectory();
-			}
-
-            // Unload the current level
-            if(level != null) level.preSaveCleanup();
-
-			return;
-		}
 
 		String travelPathKey = player.getCurrentTravelKey();
 		if(travelPathKey != null) {
@@ -970,6 +913,7 @@ public class Game {
 
 		// save progress!
 		saveProgression(progression, Game.instance.getSaveSlot());
+		gameMode.saveGameState(saveLoc);
 	}
 
 	// Save a level
@@ -1036,10 +980,8 @@ public class Game {
 		FileHandle file = getFile(levelDir + levelNumber + ".dat");
 		FileHandle kryofile = getFile(levelDir + levelNumber + ".bin");
 
-		Array<Level> dataLevels = buildLevelLayout();
-
 		if(kryofile.exists()) {
-			if(travelPathKey == null && levelNumber >= 0 && dataLevels.get(levelNumber) instanceof OverworldLevel) {
+			if(travelPathKey == null && levelNumber >= 0 && getLevel(levelNumber) instanceof OverworldLevel) {
 				level = KryoSerializer.loadOverworldLevel(kryofile);
 				level.init(Source.LEVEL_LOAD);
 				Gdx.app.log("DelverLifeCycle", "Loading level " + levelNumber + " from " + file.path());
@@ -1058,7 +1000,7 @@ public class Game {
 		}
 		else {
 			if(levelNumber < 0) levelNumber = 0;
-			level = dataLevels.get(levelNumber);
+			level = getLevel(levelNumber);
 			level.load();
 		}
 
@@ -1297,13 +1239,12 @@ public class Game {
 		return DragAndDropResult.drop;
 	}
 
-	private String getSaveDir() {
+	public String getSaveDir() {
 		return "save/" + saveLoc + "/";
 	}
 
 	public static Progression loadProgression(Integer saveSlot) {
 		try {
-			//FileHandle modFile = Game.getInternal(path + "/data/items.dat");
 			FileHandle progressionFile = getFile(Options.getOptionsDir() + "game_" + saveSlot + ".dat");
 			return JsonUtil.fromJson(Progression.class, progressionFile);
 		} catch (Exception e) {
@@ -1316,8 +1257,8 @@ public class Game {
 	public static void saveProgression(Progression progression, Integer saveSlot) {
 		try {
 			if(progression != null) {
-
-				// Ensure that the directory exists first
+                // Ensure that the base save directory exists first. Don't put this in the save slot folder as that is
+                // deleted from run to run.
 				String optionsDirString = Options.getOptionsDir();
 				FileHandle optionsDir = getFile(optionsDirString);
 
@@ -1456,7 +1397,7 @@ public class Game {
 	}
 
 	public String getLevelName(int num) {
-		Array<Level> dungeonData = buildLevelLayout();
+		Array<Level> dungeonData = GameManager.getGameMode().getGameLevelLayout();
 		Level l = dungeonData.get(num);
 		if(l != null) return l.levelName;
 
@@ -1538,5 +1479,9 @@ public class Game {
             hudManager = new HUDManager();
             ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
         }
+    }
+
+    public GameModeInterface getGameMode() {
+        return gameMode;
     }
 }

@@ -24,16 +24,16 @@ import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
 
 public class GameOverScreen extends StatsScreen {
-	
+
 	protected GameManager dungeoneerComponent;
 	private int curWidth;
     private int curHeight;
-    public boolean gameOver = false;
+    public boolean gameOver = true;
 
     protected float tickTime = 0f;
     protected float shownTime = 0;
     protected float uiScale = 3.75f;
-    
+
     private int gameOverProgress = 0;
     private float gameOverTimer = 0;
 
@@ -49,7 +49,7 @@ public class GameOverScreen extends StatsScreen {
     private boolean firstDeath = false;
 
     private boolean dealtAchievements = false;
-    
+
     private String[] winTexts = {
             StringManager.get("screens.GameOverScreen.win_text_0"),
             StringManager.get("screens.GameOverScreen.win_text_1"),
@@ -64,10 +64,10 @@ public class GameOverScreen extends StatsScreen {
     private String pickedWinText = "";
 
     public GameOverScreen() { }
-	
+
 	public GameOverScreen(GameManager dungeoneerComponent) {
 		this.dungeoneerComponent = dungeoneerComponent;
-		
+
 		skin = UiSkin.getSkin();
 		ui = new Stage(getViewport(Gdx.graphics.getWidth() / uiScale, Gdx.graphics.getHeight() / uiScale));
 
@@ -96,7 +96,7 @@ public class GameOverScreen extends StatsScreen {
     @Override
     public void draw(float delta) {
 		GlRenderer renderer = GameManager.renderer;
-		
+
 		if(gameOver) {
             backgroundColor.set(0.6f, 0, 0, 1);
 		} else {
@@ -143,7 +143,7 @@ public class GameOverScreen extends StatsScreen {
 		}
 
 		renderer.uiBatch.end();
-		
+
 		if(gameOverProgress >= 0) {
 			ui.draw();
 		}
@@ -227,7 +227,7 @@ public class GameOverScreen extends StatsScreen {
 
 		Gdx.input.setCursorCatched(true);
 		running = true;
-		
+
 		gameOverProgress = 0;
         statNumber = 0;
 
@@ -280,7 +280,7 @@ public class GameOverScreen extends StatsScreen {
 
         ui.act(0.0001f);
     }
-	
+
 	public void makeStats(Integer progress, boolean doFade) {
 	    if(firstDeath) {
 	        fadingOut = true;

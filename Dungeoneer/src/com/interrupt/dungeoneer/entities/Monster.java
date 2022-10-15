@@ -180,11 +180,11 @@ public class Monster extends Actor implements Directional {
 
 	/** Does monster have a chance to spawn random loot when it dies? */
 	@EditorProperty(group = "Loot")
-	private boolean spawnsLoot = true;
+    public boolean spawnsLoot = true;
 
 	/** Can dropped loot potentially be gold? */
 	@EditorProperty(group = "Loot")
-	private boolean lootCanBeGold = true;
+    public boolean lootCanBeGold = true;
 
 	/** Percent chance to play pain animation when monster takes damage. */
 	@EditorProperty
@@ -406,6 +406,8 @@ public class Monster extends Actor implements Directional {
 			if (rangedAttackAnimation != null) rangedAttackAnimation.playing = false;
 			if (hurtAnimation != null) hurtAnimation.play();
 		}
+
+        GameManager.getGameMode().onMonsterTookDamage(this, tookDamage, damageType, instigator);
 		return tookDamage;
 	}
 
@@ -1003,54 +1005,6 @@ public class Monster extends Actor implements Directional {
 		}
 	}
 
-	public void spawnLoot(Level level) {
-		Array<Item> toSpawn = new Array<Item>();
-
-		// Random loot, 50% chance of spawning something
-        if(spawnsLoot && random.nextBoolean()) {
-            Item loot = Game.GetItemManager().GetMonsterLoot(this.level + 1, lootCanBeGold);
-            if (loot != null) {
-                toSpawn.add(loot);
-            }
-        }
-
-		// Predefined loot
-		if (this.loot != null) {
-			for(Item i : this.loot) {
-				toSpawn.add(i);
-			}
-		}
-
-		// drop items around the monster
-		for(Item itm : toSpawn) {
-			// pick a random direction to drop the item in
-			float rot = Game.rand.nextFloat() * 15f;
-			float throwPower = 0.03f;
-			float projx = 0;
-			float projy = 0;
-
-			// if spawning more than one, spawn in a ring
-			if(toSpawn.size > 1) {
-				projx = (0 * (float) Math.cos(rot) + 1 * (float) Math.sin(rot)) * 1;
-				projy = (1 * (float) Math.cos(rot) - 0 * (float) Math.sin(rot)) * 1;
-			}
-
-			itm.isActive = true;
-			itm.isDynamic = true;
-			itm.z = z + 0.3f;
-			itm.xa = projx * (throwPower * 0.4f);
-			itm.ya = projy * (throwPower * 0.4f);
-			itm.za = throwPower * 0.05f;
-			itm.ignorePlayerCollision = true;
-			itm.isSolid = false;
-
-			level.SpawnEntity(itm);
-
-			itm.x = (x + projx * 0.1f);
-			itm.y = (y + projy * 0.1f);
-		}
-	}
-
 	public void spawnEntities(Level level) {
 		if (this.spawns != null && this.spawns.size > 0) {
 			for (int i = 0; i < this.spawnsCount; i++) {
@@ -1087,14 +1041,10 @@ public class Monster extends Actor implements Directional {
 		this.clearStatusEffects();
 
 		Game.instance.player.history.addMonsterKill(this);
-		if (this.givesExp) {
-			Game.instance.player.addExperience(3 + this.level);
-		}
 
 		dieEffect(level);
 
 		if(!splattered) {
-			spawnLoot(level);
 			spawnEntities(level);
 
 			if (bloodPoolDecal != null && bloodPoolDecal.isActive) {
@@ -1131,6 +1081,8 @@ public class Monster extends Actor implements Directional {
 		if(triggersOnDeath != null && !triggersOnDeath.isEmpty()) {
 			level.trigger(this, triggersOnDeath, name);
 		}
+
+		GameManager.getGameMode().onMonsterDeath(this);
 	}
 
 	public void bleed(Level level)

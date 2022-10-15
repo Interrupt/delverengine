@@ -448,6 +448,7 @@ public class EditorApplication implements ApplicationListener {
 	/** Creates an empty level with given `width` and `height`. */
 	public void createEmptyLevel(int width, int height) {
 		level = new Level(width, height);
+		level.init(Source.EDITOR);
 
 		Tile t = new Tile();
 		t.floorHeight = -0.5f;

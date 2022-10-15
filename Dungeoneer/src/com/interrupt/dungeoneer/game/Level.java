@@ -19,11 +19,8 @@ import com.interrupt.dungeoneer.entities.Door.DoorState;
 import com.interrupt.dungeoneer.entities.Entity.CollidesWith;
 import com.interrupt.dungeoneer.entities.Entity.EntityType;
 import com.interrupt.dungeoneer.entities.Stairs.StairDirection;
-import com.interrupt.dungeoneer.entities.items.Gold;
-import com.interrupt.dungeoneer.entities.items.Key;
-import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.entities.triggers.ButtonDecal;
-import com.interrupt.dungeoneer.entities.triggers.Trigger;
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
@@ -214,7 +211,6 @@ public class Level {
 	public Array<EditorMarker> editorMarkers = new Array<EditorMarker>();
 
 	public transient boolean rendererDirty = true;
-
 	public transient boolean isDirty = false;
 	public transient Array<Vector2> dirtyMapTiles = new Array<Vector2>();
 
@@ -248,7 +244,6 @@ public class Level {
 	}
 
 	public Level(int width, int height) {
-		// make a blank level for the editor
 		this.width = width;
 		this.height = height;
 
@@ -260,7 +255,6 @@ public class Level {
 		static_entities = new Array<Entity>();
 
 		isLoaded=true;
-		init(Source.LEVEL_START);
 	}
 
 	public Level(int dungeonLevel, DungeonTheme theme, String levelFileName, String levelHeightFile, float darkness, Game game, float fogStart, float fogEnd) {
@@ -343,7 +337,7 @@ public class Level {
 
 		initPrefabs(Source.LEVEL_START);
 
-		addEntitiesFromMarkers(editorMarkers, new Array<>(), new Boolean[width * height], new Array<>(), genTheme, 0, 0);
+		addEntitiesFromMarkers(editorMarkers, 0, 0);
 		decorateLevel();
 
 		init(Source.LEVEL_START);
@@ -355,13 +349,11 @@ public class Level {
 	}
 
 	public void generate(Source source) {
-		Random levelRand = new Random();
-
 		entities = new Array<>();
 		non_collidable_entities = new Array<>();
 		static_entities = new Array<>();
 
-		// Generate level
+		// Generate a level for verification in the editor
 		Boolean isValid = false;
 
 		while(isValid == false) {
@@ -409,69 +401,12 @@ public class Level {
 			entities = generatedLevel.entities;
 		}
 
-		// when generating, keep track of where the possible stair locations are
-		Array<Vector2> stairLocations = new Array<Vector2>();
-
 		Tile.solidWall.wallTex = (byte) defaultWallTex;
 		Tile.solidWall.wallBottomTex = (byte) defaultWallTex;
 		Tile.solidWall.ceilTex = (byte) defaultCeilTex;
 		Tile.solidWall.floorTex = (byte) defaultFloorTex;
 
-		// mark some locations as trap-free
-		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
-
 		initPrefabs(Source.EDITOR);
-
-		// keep a list of places to avoid when making traps
-		Boolean canMakeTrap[] = new Boolean[width * height];
-		for(int i = 0; i < width * height; i++) canMakeTrap[i] = true;
-
-		if(stairLocations != null && stairLocations.size > 0) {
-			trapAvoidLocs.addAll(stairLocations);
-		}
-
-		// place stairs if needed, need to know their locations before generating entities
-		if(stairLocations.size > 0 && generated && source != Source.EDITOR) {
-			if(makeStairsDown) {
-				// if this is the first floor, only add the stairs down. Otherwise make up and down
-				Vector2 downLoc = stairLocations.get(levelRand.nextInt(stairLocations.size));
-				stairLocations.removeValue(downLoc, true);
-
-				// stairs down
-				Tile downTile = getTile((int) downLoc.x, (int) downLoc.y);
-			}
-		}
-
-		for(int x = 0; x < width; x++) {
-			for(int y = 0; y < width; y++) {
-				Tile c = getTileOrNull(x,y);
-
-				// make traps on empty and flat areas
-				if(c != null && canMakeTrap[x + y * width] && c.CanSpawnHere() && c.isFlat()) {
-
-					boolean makeTrap = levelRand.nextFloat() <= 0.012f;
-
-					if(makeTrap) {
-
-						boolean canMake = true;
-						for(Vector2 avoidLoc : trapAvoidLocs) {
-							if( Math.abs(x - avoidLoc.x) < 6 && Math.abs(y - avoidLoc.y) < 6 ) {
-								canMake = false;
-							}
-						}
-
-						if(canMake && traps != null && traps.length > 0) {
-							Prefab p = new Prefab("Traps", traps[levelRand.nextInt(traps.length)]);
-							p.x = x + 0.5f;
-							p.y = y + 0.5f;
-							p.z = c.getFloorHeight(x, y) + 0.5f;
-							entities.add(p);
-							p.init(this, source);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	private void overrideTileTextures(Tile cur) {
@@ -542,7 +477,6 @@ public class Level {
 	public void load(Source source) {
 		needsSaving = true;
 		isLoaded = true;
-
 		Random levelRand = new Random();
 
 		entities = new Array<Entity>();
@@ -700,142 +634,26 @@ public class Level {
 			}
 		}
 
-		loadSurprises(genTheme);
+        loadSurprises(genTheme);
 
-		// when generating, keep track of where the possible stair locations are
-		Array<Vector2> stairLocations = new Array<Vector2>();
+        Tile.solidWall.wallTex = (byte) defaultWallTex;
+        Tile.solidWall.wallBottomTex = (byte) defaultWallTex;
+        Tile.solidWall.ceilTex = (byte) defaultCeilTex;
+        Tile.solidWall.floorTex = (byte) defaultFloorTex;
 
-		Tile.solidWall.wallTex = (byte) defaultWallTex;
-		Tile.solidWall.wallBottomTex = (byte) defaultWallTex;
-		Tile.solidWall.ceilTex = (byte) defaultCeilTex;
-		Tile.solidWall.floorTex = (byte) defaultFloorTex;
+        initPrefabs(Source.LEVEL_START);
 
-		// mark some locations as trap-free
-		Array<Vector2> trapAvoidLocs = new Array<Vector2>();
+        decorateLevel();
+        addEntitiesFromMarkers(editorMarkers, 0, 0);
+        init(source);
 
-		initPrefabs(Source.LEVEL_START);
+        // done with the theme stuff
+        genTheme = null;
 
-		decorateLevel();
-
-		// keep a list of places to avoid when making traps
-		Boolean canMakeTrap[] = new Boolean[width * height];
-		for(int i = 0; i < width * height; i++) canMakeTrap[i] = true;
-
-		addEntitiesFromMarkers(editorMarkers, trapAvoidLocs, canMakeTrap, stairLocations, genTheme, 0, 0);
-
-		// second pass - make stairs and traps
-		if(generated) {
-
-			if(stairLocations != null && stairLocations.size > 0) {
-				trapAvoidLocs.addAll(stairLocations);
-			}
-
-			// place stairs if needed, need to know their locations before generating entities
-			if(stairLocations.size > 0 && generated && source != Source.EDITOR) {
-
-				if(makeStairsDown) {
-					// if this is the first floor, only add the stairs down. Otherwise make up and down
-					Vector2 downLoc = stairLocations.get(levelRand.nextInt(stairLocations.size));
-					stairLocations.removeValue(downLoc, true);
-
-					// stairs down
-					Tile downTile = getTile((int) downLoc.x, (int) downLoc.y);
-					down = spawnStairs(StairDirection.down, (int) downLoc.x, (int) downLoc.y, downTile.floorHeight);
-				}
-
-				for(int i = 0; i< stairLocations.size; i++) {
-					if(objectivePrefab != null && !objectivePrefab.isEmpty()) {
-						// We have an objective to try to spawn on this level!
-						try {
-							String[] prefabInfo = objectivePrefab.split("/+");
-							Entity objective = EntityManager.instance.getEntity(prefabInfo[0], prefabInfo[1]);
-							if(objective != null) {
-								objective.x = stairLocations.get(i).x + 0.5f;
-								objective.y = stairLocations.get(i).y + 0.5f;
-								entities.add(objective);
-							}
-						}
-						catch(Exception ex) {
-							Gdx.app.error("Delver", "Could not spawn objective item: " + objectivePrefab);
-						}
-
-						objectivePrefab = null;
-					}
-					else {
-						// Make good loot!
-						int num = levelRand.nextInt(5);
-						Item itm = null;
-
-						if (num == 0) {
-							itm = Game.GetItemManager().GetRandomArmor(Game.instance.player.level + levelRand.nextInt(2));
-						} else if (num == 1) {
-							itm = Game.GetItemManager().GetRandomWeapon(Game.instance.player.level + levelRand.nextInt(2));
-						} else if (num == 2) {
-							itm = Game.GetItemManager().GetRandomWand();
-						} else if (num == 3) {
-							itm = Game.GetItemManager().GetRandomPotion();
-						} else if (num == 4) {
-							itm = Game.GetItemManager().GetRandomRangedWeapon(Game.instance.player.level + levelRand.nextInt(2));
-						}
-
-						if (itm != null) {
-							itm.x = stairLocations.get(i).x + 0.5f;
-							itm.y = stairLocations.get(i).y + 0.5f;
-							entities.add(itm);
-						}
-					}
-				}
-			}
-
-			init(source);
-
-			for(int x = 0; x < width; x++) {
-				for(int y = 0; y < width; y++) {
-					Tile c = getTileOrNull(x,y);
-
-					// make traps on empty and flat areas
-					if(c != null && canMakeTrap[x + y * width] && c.CanSpawnHere() && c.isFlat()) {
-
-						boolean makeTrap = levelRand.nextFloat() <= 0.012f;
-
-						if(makeTrap) {
-
-							boolean canMake = true;
-							for(Vector2 avoidLoc : trapAvoidLocs) {
-								if( Math.abs(x - avoidLoc.x) < 6 && Math.abs(y - avoidLoc.y) < 6 ) {
-									canMake = false;
-								}
-							}
-
-							if(canMake && traps != null && traps.length > 0) {
-								Prefab p = new Prefab("Traps", traps[levelRand.nextInt(traps.length)]);
-								p.x = x + 0.5f;
-								p.y = y + 0.5f;
-								p.z = c.getFloorHeight(x, y) + 0.5f;
-								p.collision.set(0.49f, 0.49f, 0.5f);
-
-								// Make sure there is actually room to do this
-								if(checkEntityCollision(p.x, p.y, p.z, p.collision, null) == null) {
-									entities.add(p);
-									p.init(this, source);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		else {
-			init(source);
-		}
-
-		// done with the theme stuff
-		genTheme = null;
-
-		if(source != Source.EDITOR) {
-			editorMarkers.clear();
-			GameManager.renderer.makeMapTextureForLevel(this);
-		}
+        if(source != Source.EDITOR) {
+            editorMarkers.clear();
+            GameManager.renderer.makeMapTextureForLevel(this);
+        }
 	}
 
 	private boolean adjacentToOpenSpace(int x, int y) {
@@ -1254,12 +1072,15 @@ public class Level {
 		EntityManager.instance.surprises = theme.surprises;
 	}
 
-	protected void addEntitiesFromMarkers(Array<EditorMarker> markers, Array<Vector2> trapAvoidLocs, Boolean[] canMakeTrap, Array<Vector2> stairLocations, GenTheme genTheme, int xOffset, int yOffset) {
+	protected void addEntitiesFromMarkers(Array<EditorMarker> markers, int xOffset, int yOffset) {
 
 		updateSpatialHash(null);
 		updateStaticSpatialHash();
 
 		if(spawnRates == null) spawnRates = new SpawnRate();
+
+        Vector2 levelOffsetTemp = new Vector2();
+        Vector2 tileOffsetTemp = new Vector2();
 
 		// add entities from markers
 		if(markers != null && markers.size > 0) {
@@ -1268,297 +1089,34 @@ public class Level {
 				int x = marker.x + xOffset;
 				int y = marker.y + yOffset;
 
-				Vector2 offset = new Vector2(0, 0);
 				Tile atTile = this.getTileOrNull(x, y);
-				float floorPos = atTile != null ? atTile.getFloorHeight(marker.x + xOffset, marker.y + yOffset) : 0;
-				float ceilPos = atTile != null ? atTile.ceilHeight : 0;
-
 				if(atTile != null) {
 					if(atTile.tileSpaceType == TileSpaceType.OPEN_NE) {
-						offset.set(0.3f, -0.3f);
+                        tileOffsetTemp.set(0.3f, -0.3f);
 					}
 					else if(atTile.tileSpaceType == TileSpaceType.OPEN_NW) {
-						offset.set(-0.3f, -0.3f);
+                        tileOffsetTemp.set(-0.3f, -0.3f);
 					}
 					else if(atTile.tileSpaceType == TileSpaceType.OPEN_SE) {
-						offset.set(0.3f, 0.3f);
+                        tileOffsetTemp.set(0.3f, 0.3f);
 					}
 					else if(atTile.tileSpaceType == TileSpaceType.OPEN_SW) {
-						offset.set(-0.3f, 0.3f);
+                        tileOffsetTemp.set(-0.3f, 0.3f);
 					}
+					else {
+                        tileOffsetTemp.set(0f, 0f);
+                    }
 				}
 
+				GameModeInterface gameMode = GameManager.getGameMode();
+				if(gameMode != null)
+                    gameMode.handleEditorMarker(this, marker, levelOffsetTemp.set(xOffset, yOffset), tileOffsetTemp);
+
+                // Handle some generic marker logic
 				if(marker.type == Markers.playerStart) {
 					playerStartX = x;
 					playerStartY = y;
 					playerStartRot = marker.rot;
-					trapAvoidLocs.add(new Vector2(x,y));
-				}
-				else if(marker.type == Markers.torch) {
-					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.lights) continue;
-
-					Entity t = null;
-					if(genTheme != null && genTheme.spawnLights != null && genTheme.spawnLights.size > 0) {
-						Entity light = genTheme.spawnLights.get(Game.rand.nextInt(genTheme.spawnLights.size));
-						t = (Light) KryoSerializer.copyObject(light);
-					}
-					else {
-						Entity torch = EntityManager.instance.getEntity("Lights", "Torch");
-						if(torch != null) {
-							t = torch;
-						}
-						else {
-							// orange default torch
-							t = new Torch(x + 0.5f + offset.x, y + 0.5f + offset.y, 4, new Color(1f, 0.8f, 0.4f, 1f));
-						}
-					}
-
-					if(t != null) {
-						t.x = x + 0.5f + offset.x;
-						t.y = y + 0.5f + offset.y;
-						t.z = floorPos + 0.5f;
-
-						Entity light = decorateWallWith(t, false, true);
-						if(light != null && light.isActive) {
-							SpawnNonCollidingEntity(light);
-						}
-					}
-				}
-				else if(marker.type == Markers.stairDown) {
-					down = spawnStairs(StairDirection.down, x, y, floorPos);
-					trapAvoidLocs.add(new Vector2(x,y));
-				}
-				else if(marker.type == Markers.stairUp) {
-					up = spawnStairs(StairDirection.up, x, y, ceilPos);
-					trapAvoidLocs.add(new Vector2(x,y));
-				}
-				else if(marker.type == Markers.boss) {
-					// make the boss and the orb
-					Item orb = new QuestItem(x + 0.5f + offset.x, y + 0.5f + offset.y);
-					orb.z = floorPos + 0.5f;
-					entities.add(orb);
-
-					// grab a monster from the BOSS category
-					Monster m = Game.GetMonsterManager().GetRandomMonster("BOSS");
-					if(m != null) {
-						m.x = x + 0.5f;
-						m.y = y + 0.5f;
-						m.z = floorPos + 0.5f;
-						m.Init(this, 20);
-						SpawnEntity(m);
-					}
-
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
-					}
-				}
-				else if(marker.type == Markers.door) {
-					Door door = null;
-
-					if(genTheme != null && genTheme.doors != null && genTheme.doors.size > 0) {
-						door = new Door(genTheme.doors.get(Game.rand.nextInt(genTheme.doors.size)));
-					}
-
-					if(door == null) {
-						door = new Door(x + 0.5f, y + 0.5f, 10);
-					}
-
-					door.x = x + 0.5f;
-					door.y = y + 0.5f;
-					door.z = floorPos + 0.5f;
-
-					SpawnEntity(door);
-					door.placeFromPrefab(this);
-
-					// Make sure traps cannot spawn around door locations.
-					if(canMakeTrap != null && x >= 0 && x < width && y >= 0 && y < height) {
-						canMakeTrap[x + y * width] = false;
-					}
-				}
-				else if(marker.type == Markers.decor || (marker.type == Markers.decorPile && genTheme != null && genTheme.decorations != null)) {
-					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.decor) continue;
-
-					// try to pull a decoration from the genTheme, or just make one from the item list
-					Entity d = null;
-
-					if(genTheme != null && genTheme.decorations != null) {
-						if(genTheme.decorations.size > 0)
-							d = EntityManager.instance.Copy(genTheme.decorations.get(Game.rand.nextInt(genTheme.decorations.size)));
-					}
-					else {
-						d = Game.GetItemManager().GetRandomDecoration();
-					}
-
-					if( d != null ) {
-						float rx = (Game.rand.nextFloat() * (1 - d.collision.x * 2f)) - (1 - d.collision.x * 2f) / 2f;
-						float ry = (Game.rand.nextFloat() * (1 - d.collision.y * 2f)) - (1 - d.collision.y * 2f) / 2f;
-						d.x = x + rx + 0.5f + offset.x;
-						d.y = y + ry + 0.5f + offset.y;
-						d.z = atTile.getFloorHeight(d.x, d.y) + 0.5f;
-
-						SpawnEntity(d);
-					}
-
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
-					}
-				}
-				else if(marker.type == Markers.decorPile) {
-					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.decor) continue;
-
-					int num = Game.rand.nextInt(3) + 1;
-					for(int i = 0; i < num; i++)
-					{
-						Entity d = Game.GetItemManager().GetRandomDecoration();
-						if( d != null ) {
-							float rx = (Game.rand.nextFloat() * (1 - d.collision.x * 2f)) - (1 - d.collision.x * 2f) / 2f;
-							float ry = (Game.rand.nextFloat() * (1 - d.collision.y * 2f)) - (1 - d.collision.y * 2f) / 2f;
-							d.x = x + rx + 0.5f + offset.x;
-							d.y = y + ry + 0.5f + offset.y;
-							d.z = atTile.getFloorHeight(d.x, d.y) + 0.5f;
-
-							SpawnEntity(d);
-						}
-					}
-
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
-					}
-				}
-				else if(marker.type == Markers.monster) {
-
-					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.monsters) continue;
-					String levelTheme = theme;
-
-					// Rarely, grab monsters from another theme if set
-					if(alternateMonsterThemes != null && alternateMonsterThemes.size > 0) {
-						if(Game.rand.nextFloat() < 0.1f) {
-							levelTheme = alternateMonsterThemes.random();
-						}
-					}
-
-					Monster m = Game.GetMonsterManager().GetRandomMonster(levelTheme);
-
-					if(m != null)
-					{
-						m.x = x + 0.5f + offset.x;
-						m.y = y + 0.5f + offset.y;
-						m.z = floorPos + 0.5f;
-						m.Init(this, Game.instance.player.level);
-						SpawnEntity(m);
-					}
-
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
-					}
-				}
-				else if(marker.type == Markers.key)
-				{
-					// make a key
-					Key key = new Key(x + 0.5f + offset.x, y + 0.5f + offset.y);
-					key.z = floorPos + 0.5f;
-					SpawnEntity(key);
-
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
-
-						trapAvoidLocs.add(new Vector2(x, y));
-					}
-				}
-				else if(marker.type == Markers.loot)
-				{
-					if(spawnRates != null && Game.rand.nextFloat() > spawnRates.loot) continue;
-
-					// loot!
-					Item itm = Game.GetItemManager().GetLevelLoot(Game.instance.player.level);
-
-					if(itm != null) {
-						itm.x = x + 0.5f + offset.x;
-						itm.y = y + 0.5f + offset.y;
-						itm.z = floorPos + 0.5f;
-
-						SpawnEntity(itm);
-					}
-
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
-					}
-				}
-				else if(marker.type == Markers.exitLocation)
-				{
-					if(generated) stairLocations.add(new Vector2(x,y));
-				}
-				else if(marker.type == Markers.secret)
-				{
-
-					Item itm = null;
-					if(Game.rand.nextBoolean()) {
-						itm = new Gold(Game.rand.nextInt((dungeonLevel * 3) + 1) + 10);
-					}
-					else {
-						// Make good loot!
-						int num = Game.rand.nextInt(5);
-
-						if (num == 0) {
-							itm = Game.GetItemManager().GetRandomArmor(Game.instance.player.level + Game.rand.nextInt(2));
-						} else if (num == 1) {
-							itm = Game.GetItemManager().GetRandomWeapon(Game.instance.player.level + Game.rand.nextInt(2));
-						} else if (num == 2) {
-							itm = Game.GetItemManager().GetRandomWand();
-						} else if (num == 3) {
-							itm = Game.GetItemManager().GetRandomPotion();
-						} else if (num == 4) {
-							itm = Game.GetItemManager().GetRandomRangedWeapon(Game.instance.player.level + Game.rand.nextInt(2));
-						}
-					}
-
-					if(itm != null) {
-						itm.x = x + 0.5f + offset.x;
-						itm.y = y + 0.5f + offset.y;
-						itm.z = floorPos + 0.5f;
-						SpawnEntity(itm);
-					}
-
-					// Add the secret trigger
-					Trigger secretTrigger = new Trigger();
-					secretTrigger.message = "A secret has been revealed!";
-					secretTrigger.x = x + 0.5f + offset.x;
-					secretTrigger.y = y + 0.5f + offset.y;
-					secretTrigger.z = floorPos + 0.5f;
-					secretTrigger.collision.x = 0.65f;
-					secretTrigger.collision.y = 0.65f;
-					secretTrigger.collision.z = 1f;
-					secretTrigger.triggerType = Trigger.TriggerType.PLAYER_TOUCHED;
-					secretTrigger.triggerResets = false;
-					secretTrigger.messageTime = 2f;
-					secretTrigger.triggerSound = "ui/ui_secret_found.mp3";
-					secretTrigger.isSecret = true;
-					SpawnEntity(secretTrigger);
-
-					// Add a monster, rarely
-					if(Game.rand.nextFloat() > 0.85f) {
-						Monster m = Game.GetMonsterManager().GetRandomMonster(theme);
-
-						if(m != null)
-						{
-							m.x = x + 0.5f + offset.x;
-							m.y = y + 0.5f + offset.y;
-							m.z = floorPos + 0.5f;
-							m.Init(this, Game.instance.player.level);
-							SpawnEntity(m);
-						}
-					}
-
-					if(canMakeTrap != null) {
-						if (x >= 0 && x < width && y >= 0 && y < height)
-							canMakeTrap[x + y * width] = false;
-					}
 				}
 			}
 		}
@@ -1567,7 +1125,7 @@ public class Level {
 	private static Boolean checkIsValidLevel(Level tocheck, int dungeonlevel) {
 		if(tocheck == null) return false;
 
-		Array<Level> levels = Game.buildLevelLayout();
+		Array<Level> levels = GameManager.getGameMode().getGameLevelLayout();
 		if(dungeonlevel < levels.size) {
 			// look for exit markers
 			for(EditorMarker m : tocheck.editorMarkers) {
@@ -1616,6 +1174,10 @@ public class Level {
 	public void init(Source source) {
 		// can't init until loaded
 		if(!isLoaded) return;
+
+        GameModeInterface gameMode = GameManager.getGameMode();
+		if(gameMode != null)
+            gameMode.preLevelInit(source, this);
 
 		Tile.solidWall.wallTex = 0;
 

@@ -221,7 +221,7 @@ public class Player extends Actor {
     public transient float strafeCameraAngleMod = 0f;
 
     /** Does player level up? */
-    private boolean canLevelUp = true;
+    public boolean canLevelUp = true;
 
     private Array<TravelInfo> travelPath = new Array<TravelInfo>();
     public String levelName = "UNKNOWN";
@@ -744,6 +744,8 @@ public class Player extends Actor {
     public void die() {
         Gdx.app.log("DelverGame", "Oh noes :( Player is dying!");
         Array<LerpFrame> deathFrames = new Array<LerpFrame>();
+
+        GameManager.getGameMode().onPlayerDeath(this);
 
         floating = false;
 
@@ -1270,18 +1272,6 @@ public class Player extends Actor {
             if(input.doUseAction() ||
                     controllerState.buttonEvents.contains(Action.USE, true)) Use(level);
 
-            // inventory actions
-            if(input.keyEvents.contains(Input.Keys.NUM_1)) DoHotbarAction(1);
-            if(input.keyEvents.contains(Input.Keys.NUM_2)) DoHotbarAction(2);
-            if(input.keyEvents.contains(Input.Keys.NUM_3)) DoHotbarAction(3);
-            if(input.keyEvents.contains(Input.Keys.NUM_4)) DoHotbarAction(4);
-            if(input.keyEvents.contains(Input.Keys.NUM_5)) DoHotbarAction(5);
-            if(input.keyEvents.contains(Input.Keys.NUM_6)) DoHotbarAction(6);
-			if(input.keyEvents.contains(Input.Keys.NUM_7)) DoHotbarAction(7);
-			if(input.keyEvents.contains(Input.Keys.NUM_8)) DoHotbarAction(8);
-			if(input.keyEvents.contains(Input.Keys.NUM_9)) DoHotbarAction(9);
-			if(input.keyEvents.contains(Input.Keys.NUM_0)) DoHotbarAction(10);
-
             if(input.isDropPressed() && Game.instance.menuMode == Game.MenuMode.Hidden) {
                 chargeDrop(delta);
             }
@@ -1292,91 +1282,7 @@ public class Player extends Actor {
 					tossPower = 0f;
 				}
 			}
-
-            // Debug stuff!
-            if(Game.isDebugMode) {
-            	try {
-					if (input.keyEvents.contains(Keys.K))
-						OverlayManager.instance.push(new DebugOverlay(this));
-					else if (input.keyEvents.contains(Keys.L))
-						Game.instance.level.down.changeLevel(level);
-					else if (input.keyEvents.contains(Keys.J))
-						Game.instance.level.up.changeLevel(level);
-				}
-				catch(Exception ex) {
-            		Gdx.app.error("DelverDebug", ex.getMessage());
-				}
-            }
-
-            // gamepad menu input
-			/*
-            if(controllerState.buttonEvents.contains(ControllerState.Buttons.HOTBAR_RIGHT, true)) {
-                if(Game.hotbar.gamepadPosition == null) Game.hotbar.gamepadPosition = 0;
-                else Game.hotbar.gamepadPosition = (Game.hotbar.gamepadPosition + 1) % 6;
-            }
-            else if(controllerState.buttonEvents.contains(ControllerState.Buttons.HOTBAR_LEFT, true)) {
-                if(Game.hotbar.gamepadPosition == null) Game.hotbar.gamepadPosition = 5;
-                else {
-                    Game.hotbar.gamepadPosition -= 1;
-                    if(Game.hotbar.gamepadPosition < 0) Game.hotbar.gamepadPosition = 6 - Game.hotbar.gamepadPosition - 2;
-                }
-            }
-            */
-
-            if(input.doInventoryAction()) {
-                Game.instance.toggleInventory();
-            }
-            else if (Game.instance.menuMode != Game.MenuMode.Hidden && Game.gamepadManager.controllerState.menuButtonEvents.contains(ControllerState.MenuButtons.CANCEL, true)) {
-            	if (Game.instance.menuMode == Game.MenuMode.Inventory) {
-            		Game.instance.toggleInventory();
-				}
-				else {
-            		Game.instance.toggleCharacterScreen();
-				}
-
-            	Game.gamepadManager.controllerState.clearEvents();
-            	Game.gamepadManager.controllerState.resetState();
-			}
-
-			if (input.keyEvents.contains(Keys.C)) {
-				Game.instance.toggleCharacterScreen();
-			}
-
-            if (input.doNextItemAction()) {
-                wieldNextHotbarItem();
-            }
-
-            if (input.doPreviousItemAction()) {
-                wieldPreviousHotbarItem();
-            }
-
-            if (input.doMapAction()) {
-
-            	// toggle map!
-            	if(OverlayManager.instance.current() == null)
-                	OverlayManager.instance.push(new MapOverlay());
-				else
-					OverlayManager.instance.clear();
-
-                if (GameManager.renderer.showMap && Game.instance.getShowingMenu()) {
-                    Game.instance.toggleInventory();
-                }
-
-                if (GameManager.renderer.showMap) Audio.playSound("/ui/ui_map_open.mp3", 0.3f);
-                else Audio.playSound("/ui/ui_map_close.mp3", 0.3f);
-            }
-
-            if (input.doBackAction()) {
-                if (Game.instance.getShowingMenu())
-                    Game.instance.toggleInventory();
-                else if (Game.instance.getInteractMode())
-                    Game.instance.toggleInteractMode();
-            }
         }
-
-		if(isHoldingOrb && makeEscapeEffects) {
-			tickEscapeEffects(level, delta);
-		}
 
         updatePlayerLight(level, delta);
         tickAttached(level, delta);
@@ -2123,12 +2029,6 @@ public class Player extends Actor {
 		}
 	}
 
-	public void DoHotbarAction(final int hotbarSlot) {
-		int location = hotbarSlot - 1;
-		if(location < 0 || location >= inventory.size || location + 1 > Game.hudManager.quickSlots.columns) return;
-		UseInventoryItem(location);
-	}
-
 	public String GetAttackText() {
 		Item held = GetHeldItem();
 		if(held != null) {
@@ -2149,21 +2049,6 @@ public class Player extends Actor {
 		}
 
 		return "0";
-	}
-
-	@Override
-	public void addExperience(int e)
-	{
-		exp += e;
-
-		// ding?
-		if(!isDead && exp >= getNextLevel() && canLevelUp)
-		{
-			level++; // ding!
-			hp = getMaxHp();
-
-			OverlayManager.instance.push(new LevelUpOverlay(this));
-		}
 	}
 
 	@Override
@@ -2197,11 +2082,8 @@ public class Player extends Actor {
         if(!isDead && !godMode) {
 			int tookDamage = super.takeDamage(damage, damageType, instigator);
 
-			if(tookDamage < 0)
-				Game.flash(Colors.HEAL_FLASH, 20);
-			else
-				Game.flash(Colors.HURT_FLASH, 20);
-
+			// Move game logic for this to the game mode
+            GameManager.getGameMode().onPlayerTookDamage(this, tookDamage, damageType, instigator);
 			history.tookDamage(damage);
 
 			return tookDamage;
@@ -2426,103 +2308,6 @@ public class Player extends Actor {
 		if(drunkMod == 0) return 0;
 		return (float)Math.sin(GlRenderer.time) * drunkMod;
     }
-
-    private transient float t_timeSinceEscapeEffect = 0;
-	private transient Color escapeFlashColor = new Color();
-	private void tickEscapeEffects(Level level, float delta) {
-		t_timeSinceEscapeEffect += delta;
-
-		if(t_timeSinceEscapeEffect > 300) {
-			t_timeSinceEscapeEffect = 0 - Game.rand.nextInt(150);
-
-			float mod = Game.rand.nextFloat();
-
-			boolean bigShake = Game.rand.nextBoolean();
-
-			// flash
-			if(bigShake) {
-				mod += 0.25f;
-				escapeFlashColor.set(Color.PURPLE);
-				escapeFlashColor.a = 0.3f + mod * 0.5f;
-				if(escapeFlashColor.a > 0.75f)
-					escapeFlashColor.a = 0.75f;
-				Game.flash(escapeFlashColor, 20 + (int) (50 * mod));
-			}
-			else {
-				mod *= 0.5f;
-				t_timeSinceEscapeEffect *= 0.5f;
-			}
-
-			// play a sound
-			Audio.playSound("break/earthquake1.mp3,break/earthquake2.mp3", mod * 0.2f + 0.1f);
-
-			// shakey shake
-			shake(2 + 4 * mod);
-
-			// make dust!
-			int dustRadius = 9;
-			for(int dustX = (int)x - dustRadius; dustX < (int)x + dustRadius; dustX++ ) {
-				for(int dustY = (int)y - dustRadius; dustY < (int)y + dustRadius; dustY++ ) {
-					float particleX = dustX + Game.rand.nextFloat();
-					float particleY = dustY + Game.rand.nextFloat();
-
-					Tile t = level.getTileOrNull((int)particleX, (int)particleY);
-					if(t != null && !t.blockMotion) {
-						float particleZ = t.getCeilHeight(particleX, particleY);
-
-						// only make particles that are in places we can see
-						if(bigShake || Game.rand.nextFloat() < mod) {
-							if (GameManager.renderer.camera.frustum.pointInFrustum(particleX, particleZ - 0.8f, particleY)) {
-								Particle p = CachePools.getParticle(particleX, particleY, particleZ, 0, 0, 0, Game.rand.nextInt(3), Color.WHITE, false);
-
-								p.checkCollision = false;
-								p.floating = true;
-								p.lifetime = (int) (200 * Game.rand.nextFloat()) + 40;
-								p.shader = "dust";
-								p.spriteAtlas = "dust_puffs";
-								p.startScale = 1f + (0.5f * Game.rand.nextFloat() - 0.25f);
-								p.endScale = 1f + (0.5f * Game.rand.nextFloat() - 0.25f);
-								p.endColor = new Color(1f, 1f, 1f, 0f);
-								p.scale = 0.5f;
-
-								p.xa = 0;
-								p.ya = 0;
-								p.za = -0.005f + Game.rand.nextFloat() * -0.02f;
-
-								Game.GetLevel().SpawnNonCollidingEntity(p);
-							}
-						}
-
-						if(Game.rand.nextFloat() < 0.035f * mod) {
-							BeamProjectile beam = new BeamProjectile(particleX, particleY, particleZ, 0, 0.0001f, -0.2f - Game.rand.nextFloat() * 0.1f, 4, DamageType.MAGIC, Color.PURPLE, this);
-							beam.hitSound = "magic/mg_fwoosh.mp3";
-
-							if(Game.rand.nextBoolean()) {
-								Explosion e = new Explosion();
-
-								e.spawns = new Array<Entity>();
-								Fire f = new Fire();
-								f.color = new Color(Color.PURPLE);
-								f.scaleMod = 0;
-								f.particleEffect = "Magic Fire Effect";
-								f.lifeTime = 100 + Game.rand.nextInt(400);
-								f.z = 0.3f;
-
-								e.spawns.add(f);
-								e.color = null;
-
-								e.explodeSound = "magic/mg_fwoosh.mp3";
-
-								beam.explosion = e;
-							}
-
-							Game.GetLevel().SpawnEntity(beam);
-						}
-					}
-				}
-			}
-		}
-	}
 
 	public void updatePlaytime(float delta) {
 		if(playtime >= 0) {
