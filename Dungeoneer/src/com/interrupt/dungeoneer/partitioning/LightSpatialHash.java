@@ -101,7 +101,7 @@ public class LightSpatialHash {
 
 	public synchronized void AddLight(Light e) {
 		IntArray near = cellKeys;
-        if(e instanceof SpotLight) {
+        if(e instanceof SpotLight && ((SpotLight) e).spotLightWidth < 180f) {
             near = getCellsInFrustrum(((SpotLight)e).getFrustum());
         }
         else {
