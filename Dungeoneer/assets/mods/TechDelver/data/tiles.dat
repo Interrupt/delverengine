@@ -37,9 +37,7 @@
                     "r": 0,
                     "g": 1,
                     "b": 0
-                },
-                "ambientSound": "ambient/env_lava.mp3",
-                "ambientSoundRadius": 9
+                }
             }
         }
     }
