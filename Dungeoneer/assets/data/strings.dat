@@ -489,5 +489,30 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "SECRETS FOUND: ",
         "comment": ""
+    },
+    "overlays.ModsOverlay.backButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Back",
+        "comment": "Text for the back button mod manager."
+    },
+    "overlays.PauseOverlay.backButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Resume",
+        "comment": "Text for the back button on the pause screen. Goes back to playing the game."
+    },
+    "overlays.PauseOverlay.quitButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Quit",
+        "comment": "Text for the quit button on the pause screen. Returns to the main menu."
+    },
+    "overlays.PauseOverlay.optionsButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Options",
+        "comment": "Text for the options button on the pause screen. Goes to the options menu."
+    },
+    "overlays.PauseOverlay.pauseHeader": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Paused",
+        "comment": "Header text shown on the pause menu."
     }
 }
