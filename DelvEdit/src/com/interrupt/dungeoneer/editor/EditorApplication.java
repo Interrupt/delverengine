@@ -138,6 +138,9 @@ public class EditorApplication implements ApplicationListener {
     	public TileSurface tileSurface;
     	public boolean isPicked = false;
     	Vector3 position = new Vector3();
+
+        public FloatTuple ceilingPoints = new FloatTuple();
+        public FloatTuple floorPoints = new FloatTuple();
 	}
 
 	public PickedSurface pickedSurface = new PickedSurface();
@@ -3092,7 +3095,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 	}
 
-	SurfacePickerDecal surfacePickerDecal = null;
+	public SurfacePickerDecal surfacePickerDecal = null;
 	public void renderPickedSurface() {
 		if(surfacePickerDecal == null) {
 			surfacePickerDecal = SurfacePickerDecal.newDecal(1f, 1f, editorSprites[17]);
@@ -3213,6 +3216,10 @@ public class EditorApplication implements ApplicationListener {
 			surface.setTopRightOffset(0, ceilPair.val1 - 0.5f, 0);
 			surface.setBottomLeftOffset(0, floorPair.val2 + 0.5f, 0);
 			surface.setBottomRightOffset(0, floorPair.val1 + 0.5f, 0);
+
+            // Keep track of these points for later
+            pickedSurface.ceilingPoints.set(ceilPair);
+            pickedSurface.floorPoints.set(floorPair);
 		}
 	}
 

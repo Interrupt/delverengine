@@ -3,8 +3,10 @@ package com.interrupt.dungeoneer.editor.selection;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.EditorApplication;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.helpers.FloatTuple;
 
 import java.util.Iterator;
 
@@ -152,6 +154,17 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         // Reset bounds, to update the internal size.
         bounds.set(bounds.min, bounds.max);
 
+        return bounds;
+    }
+
+    public BoundingBox getBounds(FloatTuple floorPoints, FloatTuple ceilPoints) {
+        getBounds();
+
+        bounds.max.z = ceilPoints.max();
+        bounds.min.z = floorPoints.min();
+
+        // Reset bounds, to update the internal size.
+        bounds.set(bounds.min, bounds.max);
         return bounds;
     }
 
