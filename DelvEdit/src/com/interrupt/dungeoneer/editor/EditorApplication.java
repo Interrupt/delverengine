@@ -36,6 +36,10 @@ import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
+import com.interrupt.dungeoneer.editor.modes.CarveMode;
+import com.interrupt.dungeoneer.editor.modes.EditorMode;
+import com.interrupt.dungeoneer.editor.modes.EntityPickedMode;
+import com.interrupt.dungeoneer.editor.modes.PaintMode;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
@@ -92,8 +96,9 @@ public class EditorApplication implements ApplicationListener {
 	public GlRenderer renderer = null;
 	public EditorFile file = null;
 
-	public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
-	public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
+    public ArrayMap<EditorMode.EditorModes, EditorMode> editorModes = new ArrayMap<>();
+    public EditorMode.EditorModes currentEditorMode = EditorMode.EditorModes.CARVE;
+
 	public enum DragMode { NONE, XY, X, Y, Z }
 	public enum MoveMode { NONE, DRAG, ROTATE }
 
@@ -148,74 +153,6 @@ public class EditorApplication implements ApplicationListener {
 	int lastInputX = -1;
 	int lastInputY = -1;
 
-	private class ControlPointVertex {
-		Tile tile;
-		ControlVertex vertex = ControlVertex.slopeNE;
-
-		public ControlPointVertex(Tile tile, ControlVertex vertex) {
-			this.tile = tile;
-			this.vertex = vertex;
-		}
-	}
-
-	private class ControlPoint {
-		public Vector3 point;
-		public ControlPointType controlPointType;
-
-		public Array<ControlPointVertex> vertices = new Array<ControlPointVertex>();
-
-		public ControlPoint(Vector3 point, ControlPointType type) {
-			this.point = point;
-			controlPointType = type;
-		}
-
-		public ControlPoint(Vector3 point, ControlPointVertex vertex) {
-			this.point = point;
-			controlPointType = ControlPointType.vertex;
-			vertices.add(vertex);
-		}
-
-		public boolean isCeiling() {
-			return controlPointType == ControlPointType.northCeil || controlPointType == ControlPointType.eastCeil || controlPointType == ControlPointType.southCeil || controlPointType == ControlPointType.westCeil;
-		}
-
-		public boolean isFloor() {
-			return controlPointType == ControlPointType.northFloor || controlPointType == ControlPointType.eastFloor || controlPointType == ControlPointType.southFloor || controlPointType == ControlPointType.westFloor;
-		}
-
-		public boolean isNorthCeiling() {
-			return controlPointType == ControlPointType.northCeil || controlPointType == ControlPointType.ceiling;
-		}
-
-		public boolean isSouthCeiling() {
-			return controlPointType == ControlPointType.southCeil || controlPointType == ControlPointType.ceiling;
-		}
-
-		public boolean isEastCeiling() {
-			return controlPointType == ControlPointType.eastCeil || controlPointType == ControlPointType.ceiling;
-		}
-
-		public boolean isWestCeiling() {
-			return controlPointType == ControlPointType.westCeil || controlPointType == ControlPointType.ceiling;
-		}
-
-		public boolean isNorthFloor() {
-			return controlPointType == ControlPointType.northFloor || controlPointType == ControlPointType.floor;
-		}
-
-		public boolean isSouthFloor() {
-			return controlPointType == ControlPointType.southFloor || controlPointType == ControlPointType.floor;
-		}
-
-		public boolean isEastFloor() {
-			return controlPointType == ControlPointType.eastFloor || controlPointType == ControlPointType.floor;
-		}
-
-		public boolean isWestFloor() {
-			return controlPointType == ControlPointType.westFloor || controlPointType == ControlPointType.floor;
-		}
-	}
-
 	private GameInput input;
     public EditorInput editorInput;
     private InputMultiplexer inputMultiplexer;
@@ -229,7 +166,7 @@ public class EditorApplication implements ApplicationListener {
     protected Texture selectionTex;
     protected Texture walltex;
     protected TextureRegion wallTextures[];
-    protected TextureRegion editorSprites[];
+    public TextureRegion[] editorSprites;
     protected Texture meshtex;
 
     protected HashMap<Entity.ArtType, TextureRegion[]> spriteAtlases = new HashMap<Entity.ArtType, TextureRegion[]>();
@@ -252,14 +189,14 @@ public class EditorApplication implements ApplicationListener {
 
     public float time = 0;
 
-	protected DecalBatch spriteBatch;
+	public DecalBatch spriteBatch;
     protected DecalBatch pointBatch;
 
     Image wallPickerButton = null;
     Image bottomWallPickerButton = null;
     Image ceilPickerButton = null;
     Image floorPickerButton = null;
-    CheckBox paintAdjacent;
+    public CheckBox paintAdjacent;
 
     protected Pool<Decal> decalPool = new Pool<Decal>(128) {
     	@Override
@@ -293,7 +230,7 @@ public class EditorApplication implements ApplicationListener {
 
     private ShapeRenderer lineRenderer;
     private ShapeRenderer pointRenderer;
-    private ShapeRenderer boxRenderer;
+    public ShapeRenderer boxRenderer;
 
     private boolean showGizmos = false;
 
@@ -305,8 +242,8 @@ public class EditorApplication implements ApplicationListener {
 
 	DrawableSprite unknownEntityMarker = new DrawableSprite();
 
-	Array<ControlPoint> controlPoints = new Array<ControlPoint>();
-	ControlPoint pickedControlPoint = null;
+	public Array<ControlPoint> controlPoints = new Array<ControlPoint>();
+	public ControlPoint pickedControlPoint = null;
 	public boolean movingControlPoint = false;
 
 	Vector3 xGridStart = new Vector3();
@@ -421,6 +358,11 @@ public class EditorApplication implements ApplicationListener {
 		TextureAtlas.cachedRepeatingAtlases.firstKey();
 
 		createEmptyLevel(17, 17);
+
+        // Setup the different editor modes
+        editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode(this));
+        editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode(this));
+        editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode(this));
 	}
 
 	/** Load entity templates */
@@ -629,8 +571,12 @@ public class EditorApplication implements ApplicationListener {
 	Array<Entity> selectedEntities = new Array<Entity>();
 
 	// Track the starting point of the selection area.
-	int selStartX = 0;
-	int selStartY = 0;
+    public int selStartX = 0;
+	public int selStartY = 0;
+
+    public EditorMode getCurrentEditorMode() {
+        return editorModes.get(currentEditorMode);
+    }
 
 	public void draw() {
 		GL20 gl = renderer.getGL();
@@ -827,8 +773,10 @@ public class EditorApplication implements ApplicationListener {
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		Gdx.gl.glDisable(GL20.GL_ALPHA);
 
+        // Draw the current editor mode
+        getCurrentEditorMode().draw();
 
-		boolean shouldDrawBox = !pickedSurface.isPicked;
+		/*boolean shouldDrawBox = !pickedSurface.isPicked;
 		if(pickedSurface.isPicked && editorInput.isButtonPressed(Input.Buttons.LEFT) && !ui.isShowingMenuOrModal()) {
 			shouldDrawBox = true;
 		}
@@ -872,10 +820,10 @@ public class EditorApplication implements ApplicationListener {
 					Tile pTile = level.getTile((int)intpos.x, (int)intpos.z);
 
 					if(pickedSurface.tileSurface == TileSurface.Floor) {
-						pickedControlPoint = new ControlPoint(new Vector3(intpos.x, pTile.getFloorHeight(0.5f, 0.5f), intpos.z), ControlPointType.floor);
+						pickedControlPoint = new ControlPoint(new Vector3(intpos.x, pTile.getFloorHeight(0.5f, 0.5f), intpos.z), ControlPoint.ControlPointType.floor);
 					}
 					else if(pickedSurface.tileSurface == TileSurface.Ceiling) {
-						pickedControlPoint = new ControlPoint(new Vector3(intpos.x, pTile.getCeilHeight(0.5f, 0.5f), intpos.z), ControlPointType.ceiling);
+						pickedControlPoint = new ControlPoint(new Vector3(intpos.x, pTile.getCeilHeight(0.5f, 0.5f), intpos.z), ControlPoint.ControlPointType.ceiling);
 					}
 
 					selected = true;
@@ -935,7 +883,7 @@ public class EditorApplication implements ApplicationListener {
 
 				boxRenderer.end();
 			}
-		}
+		}*/
 
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
@@ -1004,7 +952,7 @@ public class EditorApplication implements ApplicationListener {
 		}
 
 		// drag tile
-		if(selected && (!readLeftClick || movingControlPoint)) {
+		/*if(selected && (!readLeftClick || movingControlPoint)) {
 			int selX = Editor.selection.tiles.x;
 			int selY = Editor.selection.tiles.y;
 			int selWidth = Editor.selection.tiles.width;
@@ -1017,8 +965,8 @@ public class EditorApplication implements ApplicationListener {
 
 				if(!vertexSelectionMode) {
 					// floor and ceiling control points
-					controlPoints.add(new ControlPoint(new Vector3(selX + (selWidth / 2f), startTile.floorHeight, selY + (selHeight / 2f)), ControlPointType.floor));
-					controlPoints.add(new ControlPoint(new Vector3(selX + (selWidth / 2f), startTile.ceilHeight, selY + (selHeight / 2f)), ControlPointType.ceiling));
+					controlPoints.add(new ControlPoint(new Vector3(selX + (selWidth / 2f), startTile.floorHeight, selY + (selHeight / 2f)), ControlPoint.ControlPointType.floor));
+					controlPoints.add(new ControlPoint(new Vector3(selX + (selWidth / 2f), startTile.ceilHeight, selY + (selHeight / 2f)), ControlPoint.ControlPointType.ceiling));
 
 					// ceiling edges
 					Vector3 northEdgeCeil = new Vector3(selX + (selWidth / 2f), startTile.ceilHeight, selY);
@@ -1026,10 +974,10 @@ public class EditorApplication implements ApplicationListener {
 					Vector3 westEdgeCeil = new Vector3(selX, startTile.ceilHeight, selY + (selHeight / 2f));
 					Vector3 eastEdgeCeil = new Vector3(selX + selWidth, startTile.ceilHeight, selY + (selHeight / 2f));
 
-					controlPoints.add(new ControlPoint(northEdgeCeil, ControlPointType.northCeil));
-					controlPoints.add(new ControlPoint(southEdgeCeil, ControlPointType.southCeil));
-					controlPoints.add(new ControlPoint(westEdgeCeil, ControlPointType.westCeil));
-					controlPoints.add(new ControlPoint(eastEdgeCeil, ControlPointType.eastCeil));
+					controlPoints.add(new ControlPoint(northEdgeCeil, ControlPoint.ControlPointType.northCeil));
+					controlPoints.add(new ControlPoint(southEdgeCeil, ControlPoint.ControlPointType.southCeil));
+					controlPoints.add(new ControlPoint(westEdgeCeil, ControlPoint.ControlPointType.westCeil));
+					controlPoints.add(new ControlPoint(eastEdgeCeil, ControlPoint.ControlPointType.eastCeil));
 
 					// floor edges
 					Vector3 northEdgeFloor = new Vector3(selX + (selWidth / 2f), startTile.floorHeight, selY);
@@ -1037,10 +985,10 @@ public class EditorApplication implements ApplicationListener {
 					Vector3 westEdgeFloor = new Vector3(selX, startTile.floorHeight, selY + (selHeight / 2f));
 					Vector3 eastEdgeFloor = new Vector3(selX + selWidth, startTile.floorHeight, selY + (selHeight / 2f));
 
-					controlPoints.add(new ControlPoint(northEdgeFloor, ControlPointType.northFloor));
-					controlPoints.add(new ControlPoint(southEdgeFloor, ControlPointType.southFloor));
-					controlPoints.add(new ControlPoint(westEdgeFloor, ControlPointType.westFloor));
-					controlPoints.add(new ControlPoint(eastEdgeFloor, ControlPointType.eastFloor));
+					controlPoints.add(new ControlPoint(northEdgeFloor, ControlPoint.ControlPointType.northFloor));
+					controlPoints.add(new ControlPoint(southEdgeFloor, ControlPoint.ControlPointType.southFloor));
+					controlPoints.add(new ControlPoint(westEdgeFloor, ControlPoint.ControlPointType.westFloor));
+					controlPoints.add(new ControlPoint(eastEdgeFloor, ControlPoint.ControlPointType.eastFloor));
 				}
 				else {
                     for (TileSelectionInfo info : Editor.selection.tiles) {
@@ -1048,23 +996,23 @@ public class EditorApplication implements ApplicationListener {
 
                         if(current != null && !current.renderSolid) {
                             if(current.tileSpaceType != TileSpaceType.OPEN_SE) {
-                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.ceilHeight + current.ceilSlopeNE, info.y), new ControlPointVertex(current,ControlVertex.ceilNE)));
-                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.floorHeight + current.slopeNE, info.y), new ControlPointVertex(current,ControlVertex.slopeNE)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.ceilHeight + current.ceilSlopeNE, info.y), new ControlPointVertex(current, ControlPointVertex.ControlVertex.ceilNE)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.floorHeight + current.slopeNE, info.y), new ControlPointVertex(current, ControlPointVertex.ControlVertex.slopeNE)));
                             }
 
                             if(current.tileSpaceType != TileSpaceType.OPEN_SW) {
-                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.ceilHeight + current.ceilSlopeNW, info.y), new ControlPointVertex(current,ControlVertex.ceilNW)));
-                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.floorHeight + current.slopeNW, info.y), new ControlPointVertex(current,ControlVertex.slopeNW)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.ceilHeight + current.ceilSlopeNW, info.y), new ControlPointVertex(current, ControlPointVertex.ControlVertex.ceilNW)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.floorHeight + current.slopeNW, info.y), new ControlPointVertex(current, ControlPointVertex.ControlVertex.slopeNW)));
                             }
 
                             if(current.tileSpaceType != TileSpaceType.OPEN_NE) {
-                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.ceilHeight + current.ceilSlopeSE, info.y + 1), new ControlPointVertex(current,ControlVertex.ceilSE)));
-                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.floorHeight + current.slopeSE, info.y + 1), new ControlPointVertex(current,ControlVertex.slopeSE)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.ceilHeight + current.ceilSlopeSE, info.y + 1), new ControlPointVertex(current, ControlPointVertex.ControlVertex.ceilSE)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x, current.floorHeight + current.slopeSE, info.y + 1), new ControlPointVertex(current, ControlPointVertex.ControlVertex.slopeSE)));
                             }
 
                             if(current.tileSpaceType != TileSpaceType.OPEN_NW) {
-                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.ceilHeight + current.ceilSlopeSW, info.y + 1), new ControlPointVertex(current,ControlVertex.ceilSW)));
-                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.floorHeight + current.slopeSW, info.y + 1), new ControlPointVertex(current,ControlVertex.slopeSW)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.ceilHeight + current.ceilSlopeSW, info.y + 1), new ControlPointVertex(current, ControlPointVertex.ControlVertex.ceilSW)));
+                                controlPoints.add(new ControlPoint(new Vector3(info.x + 1, current.floorHeight + current.slopeSW, info.y + 1), new ControlPointVertex(current, ControlPointVertex.ControlVertex.slopeSW)));
                             }
 						}
 					}
@@ -1180,7 +1128,7 @@ public class EditorApplication implements ApplicationListener {
                         continue;
                     }
 
-                    if(pickedControlPoint.controlPointType == ControlPointType.floor) {
+                    if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.floor) {
                         t.floorHeight -= dragOffset.y;
                         t.packHeights();
 
@@ -1188,7 +1136,7 @@ public class EditorApplication implements ApplicationListener {
                             t.compressFloorAndCeiling(true);
                         }
                     }
-                    else if(pickedControlPoint.controlPointType == ControlPointType.ceiling) {
+                    else if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.ceiling) {
                         t.ceilHeight -= dragOffset.y;
                         t.packHeights();
 
@@ -1196,10 +1144,10 @@ public class EditorApplication implements ApplicationListener {
                             t.compressFloorAndCeiling(false);
                         }
                     }
-                    else if(pickedControlPoint.controlPointType == ControlPointType.northCeil || pickedControlPoint.controlPointType == ControlPointType.northFloor) {
+                    else if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.northCeil || pickedControlPoint.controlPointType == ControlPoint.ControlPointType.northFloor) {
 
                         float mod = 1 - ((float)info.y - (float)selY) / (float)selHeight;
-                        if(pickedControlPoint.controlPointType == ControlPointType.northCeil) {
+                        if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.northCeil) {
                             t.ceilSlopeNE -= dragOffset.y * mod;
                             t.ceilSlopeNW -= dragOffset.y * mod;
                         }
@@ -1210,7 +1158,7 @@ public class EditorApplication implements ApplicationListener {
 
                         if(selHeight > 1) {
                             mod = 1 - ((float)info.y - (float)selY + 1f) / (float)selHeight;
-                            if(pickedControlPoint.controlPointType == ControlPointType.northCeil) {
+                            if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.northCeil) {
                                 t.ceilSlopeSE -= dragOffset.y * mod;
                                 t.ceilSlopeSW -= dragOffset.y * mod;
                             }
@@ -1221,10 +1169,10 @@ public class EditorApplication implements ApplicationListener {
                         }
                         t.packHeights();
                     }
-                    else if(pickedControlPoint.controlPointType == ControlPointType.southCeil || pickedControlPoint.controlPointType == ControlPointType.southFloor) {
+                    else if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.southCeil || pickedControlPoint.controlPointType == ControlPoint.ControlPointType.southFloor) {
 
                         float mod = ((float)info.y - (float)selY + 1) / (float)selHeight;
-                        if(pickedControlPoint.controlPointType == ControlPointType.southCeil) {
+                        if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.southCeil) {
                             t.ceilSlopeSE -= dragOffset.y * mod;
                             t.ceilSlopeSW -= dragOffset.y * mod;
                         }
@@ -1235,7 +1183,7 @@ public class EditorApplication implements ApplicationListener {
 
                         if(selHeight > 1) {
                             mod = ((float)info.y - (float)selY) / (float)selHeight;
-                            if(pickedControlPoint.controlPointType == ControlPointType.southCeil) {
+                            if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.southCeil) {
                                 t.ceilSlopeNE -= dragOffset.y * mod;
                                 t.ceilSlopeNW -= dragOffset.y * mod;
                             }
@@ -1246,10 +1194,10 @@ public class EditorApplication implements ApplicationListener {
                         }
                         t.packHeights();
                     }
-                    else if(pickedControlPoint.controlPointType == ControlPointType.westCeil || pickedControlPoint.controlPointType == ControlPointType.westFloor) {
+                    else if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.westCeil || pickedControlPoint.controlPointType == ControlPoint.ControlPointType.westFloor) {
 
                         float mod = 1 - ((float)info.x - (float)selX) / (float)selWidth;
-                        if(pickedControlPoint.controlPointType == ControlPointType.westCeil) {
+                        if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.westCeil) {
                             t.ceilSlopeNE -= dragOffset.y * mod;
                             t.ceilSlopeSE -= dragOffset.y * mod;
                         }
@@ -1260,7 +1208,7 @@ public class EditorApplication implements ApplicationListener {
 
                         if(selWidth > 1) {
                             mod = 1 - ((float)info.x - (float)selX + 1f) / (float)selWidth;
-                            if(pickedControlPoint.controlPointType == ControlPointType.westCeil) {
+                            if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.westCeil) {
                                 t.ceilSlopeNW -= dragOffset.y * mod;
                                 t.ceilSlopeSW -= dragOffset.y * mod;
                             }
@@ -1271,10 +1219,10 @@ public class EditorApplication implements ApplicationListener {
                         }
                         t.packHeights();
                     }
-                    else if(pickedControlPoint.controlPointType == ControlPointType.eastCeil || pickedControlPoint.controlPointType == ControlPointType.eastFloor) {
+                    else if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.eastCeil || pickedControlPoint.controlPointType == ControlPoint.ControlPointType.eastFloor) {
 
                         float mod = ((float)info.x - (float)selX + 1) / (float)selWidth;
-                        if(pickedControlPoint.controlPointType == ControlPointType.eastCeil) {
+                        if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.eastCeil) {
                             t.ceilSlopeNW -= dragOffset.y * mod;
                             t.ceilSlopeSW -= dragOffset.y * mod;
                         }
@@ -1285,7 +1233,7 @@ public class EditorApplication implements ApplicationListener {
 
                         if(selWidth > 1) {
                             mod = ((float)info.x - (float)selX) / (float)selWidth;
-                            if(pickedControlPoint.controlPointType == ControlPointType.eastCeil) {
+                            if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.eastCeil) {
                                 t.ceilSlopeNE -= dragOffset.y * mod;
                                 t.ceilSlopeSE -= dragOffset.y * mod;
                             }
@@ -1298,32 +1246,32 @@ public class EditorApplication implements ApplicationListener {
                     }
 				}
 
-				if(pickedControlPoint.controlPointType == ControlPointType.vertex) {
+				if(pickedControlPoint.controlPointType == ControlPoint.ControlPointType.vertex) {
 					for(ControlPointVertex v : pickedControlPoint.vertices) {
 						Tile t = v.tile;
 
-						if(v.vertex == ControlVertex.ceilNE) {
+						if(v.vertex == ControlPointVertex.ControlVertex.ceilNE) {
 							t.ceilSlopeNE = pickedControlPoint.point.y - t.ceilHeight;
 						}
-						else if(v.vertex == ControlVertex.ceilSE) {
+						else if(v.vertex == ControlPointVertex.ControlVertex.ceilSE) {
 							t.ceilSlopeSE = pickedControlPoint.point.y - t.ceilHeight;
 						}
-						else if(v.vertex == ControlVertex.ceilNW) {
+						else if(v.vertex == ControlPointVertex.ControlVertex.ceilNW) {
 							t.ceilSlopeNW = pickedControlPoint.point.y - t.ceilHeight;
 						}
-						else if(v.vertex == ControlVertex.ceilSW) {
+						else if(v.vertex == ControlPointVertex.ControlVertex.ceilSW) {
 							t.ceilSlopeSW = pickedControlPoint.point.y - t.ceilHeight;
 						}
-						else if(v.vertex == ControlVertex.slopeNE) {
+						else if(v.vertex == ControlPointVertex.ControlVertex.slopeNE) {
 							t.slopeNE = pickedControlPoint.point.y - t.floorHeight;
 						}
-						else if(v.vertex == ControlVertex.slopeSE) {
+						else if(v.vertex == ControlPointVertex.ControlVertex.slopeSE) {
 							t.slopeSE = pickedControlPoint.point.y - t.floorHeight;
 						}
-						else if(v.vertex == ControlVertex.slopeNW) {
+						else if(v.vertex == ControlPointVertex.ControlVertex.slopeNW) {
 							t.slopeNW = pickedControlPoint.point.y - t.floorHeight;
 						}
-						else if(v.vertex == ControlVertex.slopeSW) {
+						else if(v.vertex == ControlPointVertex.ControlVertex.slopeSW) {
 							t.slopeSW = pickedControlPoint.point.y - t.floorHeight;
 						}
 						t.packHeights();
@@ -1541,7 +1489,7 @@ public class EditorApplication implements ApplicationListener {
 		if(!selected) {
 			pickedControlPoint = null;
 			controlPoints.clear();
-		}
+		}*/
 
 		Gdx.gl.glDisable( GL20.GL_ALPHA );
 		Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -2049,7 +1997,10 @@ public class EditorApplication implements ApplicationListener {
 		if(ui.isShowingMenuOrModal())
 			return;
 
-		// get picked entity
+        getCurrentEditorMode().tick();
+
+        // FIXME: CC Testing!
+        /*
 		Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
 
 		// get plane intersection
@@ -2127,6 +2078,7 @@ public class EditorApplication implements ApplicationListener {
 				pickTextureAtSurface();
 			}
 		}
+         */
 
 		if(player != null) {
 			player.inEditor = true;
@@ -2201,6 +2153,9 @@ public class EditorApplication implements ApplicationListener {
     }
 
     public void clearSelection() {
+        // Reset the current editor mode
+        getCurrentEditorMode().reset();
+
         if(slopePointMode || slopeEdgeMode) {
             slopePointMode = false;
             slopeEdgeMode = false;
@@ -3098,7 +3053,8 @@ public class EditorApplication implements ApplicationListener {
 	Vector3 t_pickerVector = new Vector3();
 	public void updatePickedSurface() {
 		if (Collidor.intersectRayForwardFacingTriangles(camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), camera, GlRenderer.triangleSpatialHash.getAllTriangles(), t_pickerVector, intersectNormal)) {
-			t_pickerVector.add(intersectTemp.x * 0.0001f, intersectTemp.y * 0.0001f, intersectTemp.z * 0.0001f);
+			//t_pickerVector.add(intersectTemp.x * 0.0001f, intersectTemp.y * 0.0001f, intersectTemp.z * 0.0001f);
+            t_pickerVector.sub(intersectNormal.x * 0.0001f, intersectNormal.y * 0.0001f, intersectNormal.z * 0.0001f);
 			pickedSurface.position.set(t_pickerVector);
 			pickedSurface.isPicked = true;
 
@@ -3111,11 +3067,12 @@ public class EditorApplication implements ApplicationListener {
 				floorHeight += 0.4f;
 			}
 
-			if(t_pickerVector.x % 1.0 < 0.001f) pickedSurface.edge = TileEdges.East;
-			if(t_pickerVector.x % 1.0 > 0.999f) pickedSurface.edge = TileEdges.West;
-			if(t_pickerVector.z % 1.0 > 0.999f) pickedSurface.edge = TileEdges.South;
-			if(t_pickerVector.z % 1.0 < 0.001f) pickedSurface.edge = TileEdges.North;
-			boolean isLowerWall = intpos.y <= floorHeight && !t.blockMotion;
+            // Walls are easy, check hits by comparing the surface normal.
+			if(intersectNormal.epsilonEquals(-1, 0, 0)) pickedSurface.edge = TileEdges.East;
+			else if(intersectNormal.epsilonEquals(1, 0, 0)) pickedSurface.edge = TileEdges.West;
+			else if(intersectNormal.epsilonEquals(0, 0, 1)) pickedSurface.edge = TileEdges.South;
+			else if(intersectNormal.epsilonEquals(0, 0, -1)) pickedSurface.edge = TileEdges.North;
+			boolean isLowerWall = t_pickerVector.y <= floorHeight && !t.blockMotion;
 
 			if(Math.abs(floorHeight - pickedSurface.position.y) < 0.015f) {
 				pickedSurface.tileSurface = TileSurface.Floor;
@@ -3584,6 +3541,10 @@ public class EditorApplication implements ApplicationListener {
 	}
 
 	public void doCarve() {
+        // FIXME: Never carving here!
+        if(1==1)
+            return;
+
         if(Editor.selection.picked != null) return;
 
 		Tile t = new Tile();

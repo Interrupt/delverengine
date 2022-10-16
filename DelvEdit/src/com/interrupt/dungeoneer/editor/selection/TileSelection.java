@@ -162,4 +162,24 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
 
         return tileBounds;
     }
+
+    // Always make that the lowest corner is the start so that the selection size is positive
+    // this makes it easier to iterate through the list in a for loop
+    public void fixup(float dragDistanceX, float dragDistanceY) {
+        float selectionWidth = 1.5f + Math.abs(dragDistanceX);
+        float selectionHeight = 1.5f + Math.abs(dragDistanceY);
+
+        if(dragDistanceX < -0.5f)
+            x = startX - (int)selectionWidth + 1;
+        else
+            x = startX;
+
+        if(dragDistanceY < -0.5f)
+            y = startY - (int)selectionHeight + 1;
+        else
+            y = startY;
+
+        width = (int)selectionWidth;
+        height = (int)selectionHeight;
+    }
 }
