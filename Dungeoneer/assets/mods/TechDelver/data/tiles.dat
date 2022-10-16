@@ -1,0 +1,46 @@
+{
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/tiles.dat",
+    "tileData": {
+        "tech": {
+            "11": {
+                "class": "com.interrupt.dungeoneer.tiles.TileData",
+                "isWater": false,
+                "lightColor": {
+                    "r": 1,
+                    "g": 0,
+                    "b": 0
+                },
+                "ambientSoundVolume": 0.05,
+                "ambientSoundRadius": 8
+            },
+            "16": {
+                "class": "com.interrupt.dungeoneer.tiles.TileData",
+                "isWater": true,
+                "lightColor": {
+                    "r": 0,
+                    "g": 0.5,
+                    "b": 0
+                },
+                "mapColor": {
+                    "r": 0,
+                    "g": 1,
+                    "b": 0
+                },
+                "hurts": 1,
+                "damageType": "POISON",
+                "particleTex": 25,
+                "particleFullbrite": true,
+                "flowTex": 17,
+                "edgeTex": 18,
+                "flowEdgeTex": 19,
+                "particleColor": {
+                    "r": 0,
+                    "g": 1,
+                    "b": 0
+                },
+                "ambientSound": "ambient/env_lava.mp3",
+                "ambientSoundRadius": 9
+            }
+        }
+    }
+}
