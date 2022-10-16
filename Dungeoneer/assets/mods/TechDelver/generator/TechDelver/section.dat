@@ -14,6 +14,8 @@
 			"ambientColor": { "r": 0.025, "g": 0, "b": 0.075 },
 			"generated": false,
 			"levelFileName": "levels/test-level.bin",
+			"ambientSound": "env_indoor.mp3",
+			"ambientSoundVolume": 0.15,
 			"traps": []
 		}
 	]
