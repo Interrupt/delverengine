@@ -128,6 +128,18 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
 
     private final BoundingBox bounds = new BoundingBox();
     public BoundingBox getBounds() {
+        // Always recalculate by default
+        return getBounds(true);
+    }
+
+    public BoundingBox getBounds(boolean recalculate) {
+        // Only update the bounds when asked
+        if(!recalculate) {
+            // Reset bounds, to update the internal size.
+            bounds.set(bounds.min, bounds.max);
+            return bounds;
+        }
+
         TileSelectionInfo first = null;
 
         for (TileSelectionInfo info : this) {

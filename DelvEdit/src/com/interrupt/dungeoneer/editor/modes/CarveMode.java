@@ -60,7 +60,7 @@ public class CarveMode extends EditorMode {
     Vector2 tileToCopyPos = new Vector2();
     public void tickStateStart() {
         Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-        intersectPlane.set(0, 1, 0, -0.5f);
+        intersectPlane.set(0, 1, 0, 0.5f);
 
         // Start with a simple plane intersection
         Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
@@ -81,7 +81,11 @@ public class CarveMode extends EditorMode {
         // The actual copy we want to copy is the one on the other side of a wall collision, keep track of that
         tileToCopyPos.set(intersectPoint.x + intersectNormal.x * 0.1f, intersectPoint.z + intersectNormal.z * 0.1f);
 
-        // Also keep track of which surface was being extruded, if any
+        // Recalculate tile selection bounds!
+        tileSelection.getBounds();
+
+        // Keep track of the hovered Pick Surface
+        didPickSurface = false;
         if(editor.pickedSurface != null && editor.pickedSurface.isPicked) {
             didPickSurface = editor.pickedSurface.tileSurface == EditorApplication.TileSurface.UpperWall ||
                 editor.pickedSurface.tileSurface == EditorApplication.TileSurface.LowerWall;
@@ -100,17 +104,18 @@ public class CarveMode extends EditorMode {
         selectionStart.set(intersectPoint.x, intersectPoint.y, intersectPoint.z);
         intersectNormalPicked.set(intersectNormal);
 
-        // Save the surface being extruded
+        // Save the surface being extruded, or default to the floor
         if(editor.pickedSurface != null && editor.pickedSurface.isPicked) {
             extrudeFromSurface = editor.pickedSurface.tileSurface;
-        } else {
-            extrudeFromSurface = EditorApplication.TileSurface.Floor;
         }
     }
 
     public void tickStateDraggingSelection() {
         Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
         intersectPlane.set(0, 1, 0, -selectionStart.y);
+
+        // Recalculate tile selection bounds!
+        tileSelection.getBounds();
 
         // Get the intersection position
         Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
@@ -164,7 +169,7 @@ public class CarveMode extends EditorMode {
 
     private boolean getPointerOverCeilingPlane() {
         // Try picking the ceiling
-        intersectPlane.set(0, 1, 0, -tileSelection.getBounds().max.z);
+        intersectPlane.set(0, 1, 0, -tileSelection.getBounds(false).max.z);
         intersectNormal.set(0, 1, 0);
 
         Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
@@ -188,7 +193,7 @@ public class CarveMode extends EditorMode {
 
     private boolean getPointerOverFloorPlane() {
         // Try picking the ceiling
-        intersectPlane.set(0, 1, 0, -tileSelection.getBounds().min.z);
+        intersectPlane.set(0, 1, 0, -tileSelection.getBounds(false).min.z);
         intersectNormal.set(0, 1, 0);
 
         Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
@@ -213,14 +218,17 @@ public class CarveMode extends EditorMode {
     private void tryPickingControlPoint() {
         if(getPointerOverCeilingPlane()) {
             pickedControlPoint = new ControlPoint(new Vector3(intersectPoint), ControlPoint.ControlPointType.ceiling);
+            pickedSurfaceCeilingPoints.set(intersectPoint.y, intersectPoint.y);
         } else if(getPointerOverFloorPlane()) {
             pickedControlPoint = new ControlPoint(new Vector3(intersectPoint), ControlPoint.ControlPointType.floor);
+            pickedSurfaceFloorPoints.set(intersectPoint.y, intersectPoint.y);
         } else {
             return;
         }
 
         // Switch to the moving control point state
         didStartDrag = false;
+        didPickSurface = false;
         state = CarveModeState.SELECTED_CONTROL_POINT;
     }
 
@@ -231,7 +239,7 @@ public class CarveMode extends EditorMode {
         editor.boxRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         BoundingBox bounds = didPickSurface ? tileSelection.getBounds(pickedSurfaceFloorPoints, pickedSurfaceCeilingPoints) :
-            tileSelection.getBounds();
+            tileSelection.getBounds(false);
 
         editor.boxRenderer.box(
             bounds.min.x,
@@ -258,6 +266,8 @@ public class CarveMode extends EditorMode {
         state = CarveModeState.START;
         pickedControlPoint = null;
         didStartDrag = false;
+        didPickSurface = false;
+        extrudeFromSurface = EditorApplication.TileSurface.Floor;
     }
 
     public void doCarve() {
@@ -275,12 +285,15 @@ public class CarveMode extends EditorMode {
         t.tileSpaceType = Tile.TileSpaceType.EMPTY;
         t.renderSolid = t.blockMotion;
 
-        Tile selectedTile = editor.level.getTile((int)tileToCopyPos.x, (int)tileToCopyPos.y);
-        t.floorHeight = selectedTile.floorHeight;
-        t.ceilHeight = selectedTile.ceilHeight;
+        BoundingBox tileBounds = tileSelection.getBounds(false);
+        t.floorHeight = tileBounds.min.z;
+        t.ceilHeight = tileBounds.max.z;
 
         // Now go set the tiles
         setTiles(t);
+
+        // Reset the extrude surface
+        extrudeFromSurface = EditorApplication.TileSurface.Floor;
 
         // Save the history for undo
         editor.history.saveState(editor.level);
@@ -316,17 +329,16 @@ public class CarveMode extends EditorMode {
     }
 
     protected void setTiles(Tile tocopy) {
+        // Are we extruding along an upper or lower wall?
+        boolean isExtruding = extrudeFromSurface == EditorApplication.TileSurface.LowerWall ||
+            extrudeFromSurface == EditorApplication.TileSurface.UpperWall;
+
         // Carve out selected tiles
         for (TileSelectionInfo info : tileSelection) {
             Tile t = info.tile;
             if (t == null) {
                 t = new Tile();
             }
-
-            boolean isExtruding = extrudeFromSurface == EditorApplication.TileSurface.LowerWall ||
-                extrudeFromSurface == EditorApplication.TileSurface.UpperWall;
-
-            Tile selectedTile = tileSelection.first();
 
             Tile existing = editor.level.getTileOrNull(info.x, info.y);
             if(!isExtruding) {
@@ -383,9 +395,6 @@ public class CarveMode extends EditorMode {
                     existing.blockMotion = false;
                 }
             }
-
-            //t.eastTex = t.westTex = t.northTex = t.southTex = null;
-            //t.bottomEastTex = t.bottomWestTex = t.bottomNorthTex = t.bottomSouthTex = null;
         }
 
         // Now mark everything as dirty
@@ -454,9 +463,9 @@ public class CarveMode extends EditorMode {
 
         // Pick a vertical height
         SurfacePickerDecal d = surfacePickerDecal;
-        float verticalHeight = tileSelection.getBounds().min.z + 0.0001f;
+        float verticalHeight = tileSelection.getBounds(false).min.z + 0.0001f;
         if(isCeiling)
-            verticalHeight = tileSelection.getBounds().max.z - 0.0001f;
+            verticalHeight = tileSelection.getBounds(false).max.z - 0.0001f;
 
         d.setPosition(selection.x + 0.25f, verticalHeight, selection.y + 0.25f);
         d.setRotation(Vector3.Y, Vector3.Y);
@@ -505,6 +514,12 @@ public class CarveMode extends EditorMode {
         // Round the intersect position a bit
         dragPlaneIntersectPos.y = (int)(dragPlaneIntersectPos.y * 16) / 16f;
         Vector3 dragOffset = new Vector3(dragStart.x - dragPlaneIntersectPos.x,dragStart.y - dragPlaneIntersectPos.y,dragStart.z - dragPlaneIntersectPos.z);
+
+        if (pickedControlPoint.controlPointType == ControlPoint.ControlPointType.floor) {
+            tileSelection.getBounds(false).min.z -= dragOffset.y;
+        } else if (pickedControlPoint.controlPointType == ControlPoint.ControlPointType.ceiling) {
+            tileSelection.getBounds(false).max.z -= dragOffset.y;
+        }
 
         for (TileSelectionInfo info : tileSelection) {
             Tile t = info.tile;

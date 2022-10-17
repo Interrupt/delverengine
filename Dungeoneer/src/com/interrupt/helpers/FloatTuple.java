@@ -46,4 +46,14 @@ public class FloatTuple {
     public float min() {
         return Math.min(val1, val2);
     }
+
+    public void add(float v) {
+        val1 += v;
+        val2 += v;
+    }
+
+    public void sub(float v) {
+        val1 -= v;
+        val2 -= v;
+    }
 }
