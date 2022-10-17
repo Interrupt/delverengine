@@ -365,6 +365,8 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode(this));
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode(this));
         editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode(this));
+        editorModes.put(EditorMode.EditorModes.DOME, new DomeMode(this));
+        editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode(this));
 	}
 
 	/** Load entity templates */
