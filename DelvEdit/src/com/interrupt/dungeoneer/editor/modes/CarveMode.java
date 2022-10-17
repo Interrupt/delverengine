@@ -23,6 +23,10 @@ public class CarveMode extends EditorMode {
         super(inEditor);
     }
 
+    // Some controls that subclasses can override as needed
+    protected boolean canCarve = true;
+    protected boolean canExtrude = true;
+
     Vector3 selectionStart = new Vector3();
 
     Plane intersectPlane = new Plane();
@@ -74,8 +78,13 @@ public class CarveMode extends EditorMode {
         // Tile selection indicator
         tileSelection.width = 1;
         tileSelection.height = 1;
-        tileSelection.x = (int)(intersectPoint.x - intersectNormal.x * 0.5f);
-        tileSelection.y = (int)(intersectPoint.z - intersectNormal.z * 0.5f);
+        if(canExtrude) {
+            tileSelection.x = (int) (intersectPoint.x - intersectNormal.x * 0.5f);
+            tileSelection.y = (int) (intersectPoint.z - intersectNormal.z * 0.5f);
+        } else {
+            tileSelection.x = (int) (intersectPoint.x + intersectNormal.x * 0.5f);
+            tileSelection.y = (int) (intersectPoint.z + intersectNormal.z * 0.5f);
+        }
         tileSelection.startX = tileSelection.x;
         tileSelection.startY = tileSelection.y;
 
@@ -87,7 +96,7 @@ public class CarveMode extends EditorMode {
 
         // Keep track of the hovered Pick Surface
         didPickSurface = false;
-        if(editor.pickedSurface != null && editor.pickedSurface.isPicked) {
+        if(canExtrude && editor.pickedSurface != null && editor.pickedSurface.isPicked) {
             didPickSurface = editor.pickedSurface.tileSurface == EditorApplication.TileSurface.UpperWall ||
                 editor.pickedSurface.tileSurface == EditorApplication.TileSurface.LowerWall;
 
@@ -106,7 +115,7 @@ public class CarveMode extends EditorMode {
         intersectNormalPicked.set(intersectNormal);
 
         // Save the surface being extruded, or default to the floor
-        if(editor.pickedSurface != null && editor.pickedSurface.isPicked) {
+        if(canExtrude && editor.pickedSurface != null && editor.pickedSurface.isPicked) {
             extrudeFromSurface = editor.pickedSurface.tileSurface;
         }
     }
@@ -237,6 +246,10 @@ public class CarveMode extends EditorMode {
     public void draw() {
         // Draw selection
         editor.boxRenderer.setColor(0.75f, 0.75f, 0.75f, 0.5f);
+
+        if(state.ordinal() >= CarveModeState.SELECTED_TILES.ordinal())
+            editor.boxRenderer.setColor(1.0f, 0.25f, 0.25f, 0.75f);
+
         editor.boxRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         BoundingBox bounds = didPickSurface ? tileSelection.getBounds(pickedSurfaceFloorPoints, pickedSurfaceCeilingPoints) :
@@ -283,6 +296,9 @@ public class CarveMode extends EditorMode {
     }
 
     public void doCarve() {
+        if(!canCarve)
+            return;
+
         // Set the default tile to use when carving
         Tile t = new Tile();
         t.wallTex = (byte)editor.pickedWallTexture;
@@ -471,7 +487,11 @@ public class CarveMode extends EditorMode {
         surfacePickerDecal.setBlending(1, 1);
         surfacePickerDecal.setScale(1f, 1f);
         surfacePickerDecal.setTextureRegion(editor.renderer.flashRegion);
-        surfacePickerDecal.setColor(1f, 0f, 0f, 0.25f);
+
+        if(isCeiling)
+            surfacePickerDecal.setColor(0f, 1f, 0f, 0.25f);
+        else
+            surfacePickerDecal.setColor(0f, 0f, 1f, 0.4f);
 
         // Pick a vertical height
         SurfacePickerDecal d = surfacePickerDecal;
@@ -525,8 +545,12 @@ public class CarveMode extends EditorMode {
 
         // Clamp the dragging to a sub grid. Controls how much to divide a whole tile
         int clampHeightModifier = 16;
+        if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+            clampHeightModifier = 8;
         if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
             clampHeightModifier = 2;
+        if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+            clampHeightModifier = 4;
 
         // Round the intersect position a bit
         dragPlaneIntersectPos.y = (int)(dragPlaneIntersectPos.y * clampHeightModifier) / (float)clampHeightModifier;

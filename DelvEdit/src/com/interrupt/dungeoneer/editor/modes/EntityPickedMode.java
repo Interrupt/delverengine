@@ -152,11 +152,8 @@ public class EntityPickedMode extends EditorMode {
             return;
         }
 
-        if(!isMoving)
-            isMoving = true;
-
         // Make a copy when Alt is pressed
-        if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
+        if(!isMoving && Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
             // Make a copy
             Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
             editor.level.entities.add(copy);
@@ -174,6 +171,10 @@ public class EntityPickedMode extends EditorMode {
             Editor.selection.selected.addAll(copies);
             editor.ui.showEntityPropertiesMenu(true);
         }
+
+        // We're underway!
+        if(!isMoving)
+            isMoving = true;
 
         if(moveMode == MoveMode.DRAG && Intersector.intersectRayPlane(editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, intPos)) {
             if(dragOffset == null) {
