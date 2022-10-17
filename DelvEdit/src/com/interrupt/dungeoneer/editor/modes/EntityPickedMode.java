@@ -106,7 +106,6 @@ public class EntityPickedMode extends EditorMode {
     @Override
     public void reset() {
         // Switch back to the carve mode when done here
-        Editor.app.setCurrentEditorMode(EditorModes.CARVE);
 
         entityDragStart = null;
         planeIntersectionStart = null;
