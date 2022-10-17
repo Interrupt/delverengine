@@ -36,10 +36,7 @@ import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.gizmos.Gizmo;
 import com.interrupt.dungeoneer.editor.gizmos.GizmoProvider;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
-import com.interrupt.dungeoneer.editor.modes.CarveMode;
-import com.interrupt.dungeoneer.editor.modes.EditorMode;
-import com.interrupt.dungeoneer.editor.modes.EntityPickedMode;
-import com.interrupt.dungeoneer.editor.modes.PaintMode;
+import com.interrupt.dungeoneer.editor.modes.*;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
@@ -367,6 +364,7 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode(this));
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode(this));
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode(this));
+        editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode(this));
 	}
 
 	/** Load entity templates */

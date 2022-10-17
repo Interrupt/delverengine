@@ -515,12 +515,12 @@ public class CarveMode extends EditorMode {
     }
 
     boolean didStartDrag = false;
+    Plane dragPlane = new Plane();
     Vector3 dragStart = new Vector3();
     Vector3 dragPlaneIntersectPos = new Vector3();
+    Vector3 t_dragOffset = new Vector3();
+    Vector3 t_dragVector = new Vector3();
     public void dragControlPoint(ControlPoint pickedControlPoint) {
-        Plane dragPlane = new Plane();
-        Vector3 t_dragVector = new Vector3();
-
         if(pickedControlPoint == null)
             return;
 
@@ -554,7 +554,7 @@ public class CarveMode extends EditorMode {
 
         // Round the intersect position a bit
         dragPlaneIntersectPos.y = (int)(dragPlaneIntersectPos.y * clampHeightModifier) / (float)clampHeightModifier;
-        Vector3 dragOffset = new Vector3(dragStart.x - dragPlaneIntersectPos.x,dragStart.y - dragPlaneIntersectPos.y,dragStart.z - dragPlaneIntersectPos.z);
+        Vector3 dragOffset = t_dragOffset.set(dragStart.x - dragPlaneIntersectPos.x,dragStart.y - dragPlaneIntersectPos.y,dragStart.z - dragPlaneIntersectPos.z);
 
         if (pickedControlPoint.controlPointType == ControlPoint.ControlPointType.floor) {
             tileSelection.getBounds(false).min.z -= dragOffset.y;
@@ -562,28 +562,7 @@ public class CarveMode extends EditorMode {
             tileSelection.getBounds(false).max.z -= dragOffset.y;
         }
 
-        for (TileSelectionInfo info : tileSelection) {
-            Tile t = info.tile;
-            if (t == null) {
-                continue;
-            }
-
-            if (pickedControlPoint.controlPointType == ControlPoint.ControlPointType.floor) {
-                t.floorHeight -= dragOffset.y;
-                t.packHeights();
-
-                if (t.getMinOpenHeight() < 0f) {
-                    t.compressFloorAndCeiling(true);
-                }
-            } else if (pickedControlPoint.controlPointType == ControlPoint.ControlPointType.ceiling) {
-                t.ceilHeight -= dragOffset.y;
-                t.packHeights();
-
-                if (t.getMinOpenHeight() < 0f) {
-                    t.compressFloorAndCeiling(false);
-                }
-            }
-        }
+        adjustTileHeights(dragStart, dragOffset, pickedControlPoint.controlPointType == ControlPoint.ControlPointType.ceiling);
 
         // Now move the control point for next time
         pickedControlPoint.point.y -= dragOffset.y;
@@ -593,6 +572,32 @@ public class CarveMode extends EditorMode {
         // FIXME: Just do this once, not per tile!
         for (TileSelectionInfo info : tileSelection) {
             editor.markWorldAsDirty(info.x, info.y, 1);
+        }
+    }
+
+    // Override this for different behaviors when adjusting the tile ceiling heights
+    public void adjustTileHeights(Vector3 dragStart, Vector3 dragOffset, boolean isCeiling) {
+        for (TileSelectionInfo info : tileSelection) {
+            Tile t = info.tile;
+            if (t == null) {
+                continue;
+            }
+
+            if (!isCeiling) {
+                t.floorHeight -= dragOffset.y;
+                t.packHeights();
+
+                if (t.getMinOpenHeight() < 0f) {
+                    t.compressFloorAndCeiling(true);
+                }
+            } else if (isCeiling) {
+                t.ceilHeight -= dragOffset.y;
+                t.packHeights();
+
+                if (t.getMinOpenHeight() < 0f) {
+                    t.compressFloorAndCeiling(false);
+                }
+            }
         }
     }
 }
