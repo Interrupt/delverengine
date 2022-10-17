@@ -588,7 +588,10 @@ public class EditorApplication implements ApplicationListener {
         EditorMode oldMode = getCurrentEditorMode();
         currentEditorMode = newMode;
 
-        // Reset the state of the old mode
+        // Start the new mode
+        getCurrentEditorMode().start();
+
+        // And reset the old mode
         oldMode.reset();
     }
 
@@ -1658,7 +1661,7 @@ public class EditorApplication implements ApplicationListener {
 		GlRenderer.triangleSpatialHash.Flush();
 	}
 
-	protected void refreshEntity(Entity theEntity) {
+	public void refreshEntity(Entity theEntity) {
 		if(theEntity instanceof Light && showLights) {
 			markWorldAsDirty((int)theEntity.x, (int)theEntity.y, (int)((Light)theEntity).range + 1);
 			((Light)theEntity).clearCanSee();

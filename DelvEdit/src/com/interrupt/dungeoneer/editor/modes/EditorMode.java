@@ -22,6 +22,11 @@ public class EditorMode {
 
     }
 
+    // Override this to run logic when being switched to
+    public void start() {
+
+    }
+
     // Override this to reset the state
     public void reset() {
 
