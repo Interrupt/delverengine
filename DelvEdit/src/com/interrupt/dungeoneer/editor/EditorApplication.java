@@ -581,6 +581,17 @@ public class EditorApplication implements ApplicationListener {
         return editorModes.get(currentEditorMode);
     }
 
+    public void setCurrentEditorMode(EditorMode.EditorModes newMode) {
+        if(newMode == currentEditorMode)
+            return;
+
+        EditorMode oldMode = getCurrentEditorMode();
+        currentEditorMode = newMode;
+
+        // Reset the state of the old mode
+        oldMode.reset();
+    }
+
 	public void draw() {
 		GL20 gl = renderer.getGL();
         GlRenderer.clearBoundTexture();
@@ -2082,6 +2093,31 @@ public class EditorApplication implements ApplicationListener {
 			}
 		}
          */
+
+        // Try to pick an entity
+        if(pickedControlPoint == null && !tileDragging && !Gdx.input.isKeyPressed(Keys.TAB)) {
+            if(Gdx.input.getX() != lastInputX || Gdx.input.getY() != lastInputY) {
+                lastInputX = Gdx.input.getX();
+                lastInputY = Gdx.input.getY();
+                RenderEntitiesForPicking();
+                GlPickEntity();
+            }
+        }
+
+        if(editorInput.isButtonPressed(Input.Buttons.LEFT)) {
+            if(!readLeftClick) {
+                if(Editor.selection.picked != null && Editor.selection.hovered != null && Editor.selection.hovered != Editor.selection.picked && !Editor.selection.isSelected(Editor.selection.hovered) && (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT))) {
+                    pickAdditionalEntity(Editor.selection.hovered);
+                }
+                else if(Editor.selection.picked != null && Editor.selection.picked == Editor.selection.hovered || Editor.selection.isSelected(Editor.selection.hovered)) {
+                    movingEntity = true;
+                }
+                else {
+                    clearEntitySelection();
+                    pickEntity(Editor.selection.hovered);
+                }
+            }
+        }
 
 		if(player != null) {
 			player.inEditor = true;
@@ -3737,6 +3773,12 @@ public class EditorApplication implements ApplicationListener {
     public void pickEntity(Entity entity) {
         Editor.selection.picked = entity;
         ui.showEntityPropertiesMenu(true);
+
+        if(entity == null)
+            return;
+
+        // Make sure we end up in the Picked mode
+        setCurrentEditorMode(EditorMode.EditorModes.ENTITY_PICKED);
     }
 
     public void pickAdditionalEntity(Entity entity) {
