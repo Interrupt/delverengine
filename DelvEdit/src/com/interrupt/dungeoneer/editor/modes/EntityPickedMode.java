@@ -36,6 +36,9 @@ public class EntityPickedMode extends EditorMode {
         super(inEditor);
     }
 
+    // Sets to true on the tick where a mouse up was detected
+    boolean leftClickIsDown = false;
+
     public MoveMode getMoveMode() {
         return moveMode;
     }
@@ -108,6 +111,11 @@ public class EntityPickedMode extends EditorMode {
         entityDragStart = null;
         planeIntersectionStart = null;
         dragOffset = null;
+
+        // Save the movement state when we are done moving
+        if (isMoving)
+            editor.history.saveState(editor.level);
+        isMoving = false;
     }
 
     @Override
@@ -134,26 +142,37 @@ public class EntityPickedMode extends EditorMode {
             setMoveMode(MoveMode.ROTATE);
         }
 
+        // Keep track of the mouse click state
+        boolean leftClickWasDown = leftClickIsDown;
+        leftClickIsDown = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+        if(leftClickWasDown && !leftClickIsDown) {
+            onMouseUp();
+        }
+
+        // In some drag modes, you don't need to hold the mouse button
+        boolean shouldMoveEntity = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+        shouldMoveEntity |= dragMode.ordinal() > DragMode.XY.ordinal();
+
         // Drag entities around
-        if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+        if(!shouldMoveEntity) {
             dragOffset = null;
             entityDragStart = null;
             planeIntersectionStart = null;
 
             // Save the movement state when we are done moving
-            if(isMoving)
+            if (isMoving)
                 editor.history.saveState(editor.level);
             isMoving = false;
+
             return;
         }
 
         if(Editor.selection.picked == null) {
-            reset();
             return;
         }
 
         // Make a copy when Alt is pressed
-        if(!isMoving && Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
+        if(!isMoving && !leftClickWasDown && Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
             // Make a copy
             Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
             editor.level.entities.add(copy);
@@ -233,16 +252,11 @@ public class EntityPickedMode extends EditorMode {
                 editor.refreshEntity(selected);
             }
         }
+    }
 
-        /*
-        dragOffset = null;
-        dragStart = null;
-        dragPlane = null;
-
+    public void onMouseUp() {
         if(Editor.selection.picked == null) {
-            dragPlane = null;
-            dragMode = DragMode.NONE;
-            moveMode = MoveMode.DRAG;
-        }*/
+            reset();
+        }
     }
 }

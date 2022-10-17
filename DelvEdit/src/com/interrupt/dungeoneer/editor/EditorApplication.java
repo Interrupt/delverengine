@@ -98,6 +98,7 @@ public class EditorApplication implements ApplicationListener {
 
     public ArrayMap<EditorMode.EditorModes, EditorMode> editorModes = new ArrayMap<>();
     public EditorMode.EditorModes currentEditorMode = EditorMode.EditorModes.CARVE;
+    public EditorMode.EditorModes switchingToEditorMode = currentEditorMode;
 
 	public enum DragMode { NONE, XY, X, Y, Z }
 	public enum MoveMode { NONE, DRAG, ROTATE }
@@ -582,19 +583,13 @@ public class EditorApplication implements ApplicationListener {
     }
 
     public void setCurrentEditorMode(EditorMode.EditorModes newMode) {
+        // Don't switch if this is the same mode, but do call start again
         if(newMode == currentEditorMode) {
             getCurrentEditorMode().start();
             return;
         }
 
-        EditorMode oldMode = getCurrentEditorMode();
-        currentEditorMode = newMode;
-
-        // Start the new mode
-        getCurrentEditorMode().start();
-
-        // And reset the old mode
-        oldMode.reset();
+        switchingToEditorMode = newMode;
     }
 
 	public void draw() {
@@ -2016,7 +2011,12 @@ public class EditorApplication implements ApplicationListener {
 		if(ui.isShowingMenuOrModal())
 			return;
 
-        getCurrentEditorMode().tick();
+        // Handle editor mode switching
+        if(switchingToEditorMode != currentEditorMode) {
+            getCurrentEditorMode().reset();
+            currentEditorMode = switchingToEditorMode;
+            getCurrentEditorMode().start();
+        }
 
         // FIXME: CC Testing!
         /*
@@ -2123,6 +2123,8 @@ public class EditorApplication implements ApplicationListener {
                 }
             }
         }
+
+        getCurrentEditorMode().tick();
 
 		if(player != null) {
 			player.inEditor = true;
