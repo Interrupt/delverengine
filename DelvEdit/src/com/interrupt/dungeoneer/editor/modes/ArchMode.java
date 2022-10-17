@@ -31,16 +31,15 @@ public class ArchMode extends CarveMode {
             boolean xMode = tileSelection.width > tileSelection.height;
             float pickedArchMod = xMode ? widthMod : heightMod;
 
-            if (!isCeiling) {
-                t.floorHeight -= dragOffset.y * pickedArchMod;
-            } else if (isCeiling) {
+            if (isCeiling) {
                 t.ceilHeight -= dragOffset.y * pickedArchMod;
+            } else {
+                t.floorHeight -= dragOffset.y * pickedArchMod;
             }
 
             t.packHeights();
-
             if (t.getMinOpenHeight() < 0f) {
-                t.compressFloorAndCeiling(true);
+                t.compressFloorAndCeiling(!isCeiling);
             }
         }
     }

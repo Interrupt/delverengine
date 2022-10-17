@@ -583,20 +583,15 @@ public class CarveMode extends EditorMode {
                 continue;
             }
 
-            if (!isCeiling) {
-                t.floorHeight -= dragOffset.y;
-                t.packHeights();
-
-                if (t.getMinOpenHeight() < 0f) {
-                    t.compressFloorAndCeiling(true);
-                }
-            } else if (isCeiling) {
+            if (isCeiling) {
                 t.ceilHeight -= dragOffset.y;
-                t.packHeights();
+            } else {
+                t.floorHeight -= dragOffset.y;
+            }
 
-                if (t.getMinOpenHeight() < 0f) {
-                    t.compressFloorAndCeiling(false);
-                }
+            t.packHeights();
+            if (t.getMinOpenHeight() < 0f) {
+                t.compressFloorAndCeiling(!isCeiling);
             }
         }
     }
