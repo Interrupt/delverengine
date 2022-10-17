@@ -306,6 +306,11 @@ public class EditorUi {
         mainTable.setZIndex(1000);
         mainTable.add(menuBar);
 
+        mainTable.row();
+
+        ToolMenuBar toolMenuBar = new ToolMenuBar();
+        mainTable.add(toolMenuBar).align(Align.left);
+
         stage.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
