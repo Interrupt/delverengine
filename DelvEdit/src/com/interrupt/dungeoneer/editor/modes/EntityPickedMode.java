@@ -30,6 +30,8 @@ public class EntityPickedMode extends EditorMode {
 
     Plane dragPlane = new Plane();
 
+    boolean isMoving = false;
+
     public EntityPickedMode(EditorApplication inEditor) {
         super(inEditor);
     }
@@ -74,7 +76,7 @@ public class EntityPickedMode extends EditorMode {
             t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
             Plane vert = t_dragPlane;
 
-            float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z - 0.5f, Editor.selection.picked.y));
+            float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
             dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
         } else {
             Vector3 vertDir = t_dragVector.set(editor.camera.direction);
@@ -133,10 +135,25 @@ public class EntityPickedMode extends EditorMode {
         }
 
         // Drag entities around
+        if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            dragOffset = null;
+            entityDragStart = null;
+            planeIntersectionStart = null;
+
+            // Save the movement state when we are done moving
+            if(isMoving)
+                editor.history.saveState(editor.level);
+            isMoving = false;
+            return;
+        }
+
         if(Editor.selection.picked == null) {
             reset();
             return;
         }
+
+        if(!isMoving)
+            isMoving = true;
 
         // Make a copy when Alt is pressed
         if(Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {

@@ -582,8 +582,10 @@ public class EditorApplication implements ApplicationListener {
     }
 
     public void setCurrentEditorMode(EditorMode.EditorModes newMode) {
-        if(newMode == currentEditorMode)
+        if(newMode == currentEditorMode) {
+            getCurrentEditorMode().start();
             return;
+        }
 
         EditorMode oldMode = getCurrentEditorMode();
         currentEditorMode = newMode;
