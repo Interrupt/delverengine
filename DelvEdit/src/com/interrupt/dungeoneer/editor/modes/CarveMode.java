@@ -61,13 +61,14 @@ public class CarveMode extends EditorMode {
     public void tickStateStart() {
         Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
         intersectPlane.set(0, 1, 0, 0.5f);
+        intersectNormal.set(0, 1, 0);
 
         // Start with a simple plane intersection
         Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
 
         // But try to get a world intersection
         if (Collidor.intersectRayForwardFacingTriangles(ray, editor.camera, GlRenderer.triangleSpatialHash.getAllTriangles(), intersectPoint, intersectNormal)) {
-            temp1.set(intersectPoint).sub(editor.camera.position).nor();
+            // Got an intersection!
         }
 
         // Tile selection indicator
@@ -259,6 +260,17 @@ public class CarveMode extends EditorMode {
             renderSurfaceControlPoint(tileSelection, true);
         else if(getPointerOverFloorPlane())
             renderSurfaceControlPoint(tileSelection, false);
+    }
+
+    @Override
+    public void start() {
+        state = CarveModeState.START;
+        pickedControlPoint = null;
+        didStartDrag = false;
+        didPickSurface = false;
+        extrudeFromSurface = EditorApplication.TileSurface.Floor;
+
+        intersectPlane.set(0, 1, 0, 0.5f);
     }
 
     @Override

@@ -3793,6 +3793,24 @@ public class EditorApplication implements ApplicationListener {
 
     public Level getLevel() { return level; }
 
+    public Vector3 getEditorIntersection() {
+        Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+        Vector3 intersectPoint = new Vector3();
+
+        Plane intersectPlane = new Plane();
+        intersectPlane.set(0f, 1f, 0f, 0.5f);
+
+        // Start with a simple plane intersection
+        Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
+
+        // But try to get a world intersection
+        if (Collidor.intersectRayForwardFacingTriangles(ray, camera, GlRenderer.triangleSpatialHash.getAllTriangles(), intersectPoint, intersectNormal)) {
+            // We got a hit!
+        }
+
+        return intersectPoint;
+    }
+
 	public Vector3 getIntersection() {
 		if(pickedSurface.isPicked)
 			return new Vector3(intpos);

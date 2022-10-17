@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -520,11 +521,13 @@ public class EditorUi {
                 }
             } else {
                 Editor.app.setSelected(true);
+
+                Vector3 worldIntersection = Editor.app.getEditorIntersection();
                 showContextMenu(x, y, new EditorRightClickEntitiesMenu(smallSkin,
-                        Editor.app.getIntersection().x,
-                        Editor.app.getIntersection().z,
-                        Editor.app.getIntersection().y,
-                        Editor.app.getLevel()));
+                    worldIntersection.x,
+                    worldIntersection.z,
+                    worldIntersection.y,
+                    Editor.app.getLevel()));
             }
         }
     }
