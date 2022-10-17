@@ -6,8 +6,8 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class DomeMode extends CarveMode {
-    public DomeMode(EditorApplication inEditor) {
-        super(inEditor);
+    public DomeMode() {
+        super(EditorModes.DOME);
         canCarve = false;
         canExtrude = false;
     }

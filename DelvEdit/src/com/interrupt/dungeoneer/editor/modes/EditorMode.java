@@ -6,10 +6,10 @@ import com.interrupt.dungeoneer.editor.EditorApplication;
 public class EditorMode {
     public enum EditorModes { ENTITY_PICKED, CARVE, PAINT, ARCH, DOME, STAIRS }
 
-    public EditorApplication editor;
+    public EditorModes mode;
 
-    public EditorMode(EditorApplication inEditor) {
-        editor = inEditor;
+    public EditorMode(EditorModes mode) {
+        this.mode = mode;
     }
 
     // Override this to draw any editor mode gizmos

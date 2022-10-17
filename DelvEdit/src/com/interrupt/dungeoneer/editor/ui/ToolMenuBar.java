@@ -1,9 +1,11 @@
 package com.interrupt.dungeoneer.editor.ui;
 
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.modes.EditorMode;
 
@@ -47,5 +49,32 @@ public class ToolMenuBar extends Container<Actor> {
                 }
             }
         });
+
+        addAction(new Action() {
+            @Override
+            public boolean act(float delta) {
+                EditorMode.EditorModes current = Editor.app.getCurrentEditorMode().mode;
+                setChecked(current);
+                return false;
+            }
+        });
+    }
+
+    public void setChecked(EditorMode.EditorModes mode) {
+        Array<Button> buttons = buttonGroup.getButtons();
+        buttonGroup.uncheckAll();
+
+        for (Button b : buttons) {
+            if (!(b instanceof TextButton)) continue;
+
+            TextButton textButton = (TextButton)b;
+
+            String text = textButton.getText().toString();
+
+            if (text.equals(mode.toString())) {
+                textButton.setChecked(true);
+                return;
+            }
+        }
     }
 }

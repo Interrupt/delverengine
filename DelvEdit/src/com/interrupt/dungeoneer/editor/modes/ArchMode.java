@@ -6,8 +6,8 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class ArchMode extends CarveMode {
-    public ArchMode(EditorApplication inEditor) {
-        super(inEditor);
+    public ArchMode() {
+        super(EditorModes.ARCH);
         canCarve = false;
         canExtrude = false;
     }

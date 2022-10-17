@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.ControlPoint;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorApplication;
 import com.interrupt.dungeoneer.editor.gfx.SurfacePickerDecal;
 import com.interrupt.dungeoneer.editor.selection.AdjacentTileSelectionInfo;
@@ -19,8 +20,12 @@ import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.FloatTuple;
 
 public class CarveMode extends EditorMode {
-    public CarveMode(EditorApplication inEditor) {
-        super(inEditor);
+    public CarveMode() {
+        super(EditorModes.CARVE);
+    }
+
+    public CarveMode(EditorModes mode) {
+        super(mode);
     }
 
     // Some controls that subclasses can override as needed
@@ -63,7 +68,7 @@ public class CarveMode extends EditorMode {
 
     Vector2 tileToCopyPos = new Vector2();
     public void tickStateStart() {
-        Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
         intersectPlane.set(0, 1, 0, 0.5f);
         intersectNormal.set(0, 1, 0);
 
@@ -71,7 +76,7 @@ public class CarveMode extends EditorMode {
         Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
 
         // But try to get a world intersection
-        if (Collidor.intersectRayForwardFacingTriangles(ray, editor.camera, GlRenderer.triangleSpatialHash.getAllTriangles(), intersectPoint, intersectNormal)) {
+        if (Collidor.intersectRayForwardFacingTriangles(ray, Editor.app.camera, GlRenderer.triangleSpatialHash.getAllTriangles(), intersectPoint, intersectNormal)) {
             // Got an intersection!
         }
 
@@ -96,15 +101,15 @@ public class CarveMode extends EditorMode {
 
         // Keep track of the hovered Pick Surface
         didPickSurface = false;
-        if(canExtrude && editor.pickedSurface != null && editor.pickedSurface.isPicked) {
-            didPickSurface = editor.pickedSurface.tileSurface == EditorApplication.TileSurface.UpperWall ||
-                editor.pickedSurface.tileSurface == EditorApplication.TileSurface.LowerWall;
+        if(canExtrude && Editor.app.pickedSurface != null && Editor.app.pickedSurface.isPicked) {
+            didPickSurface = Editor.app.pickedSurface.tileSurface == EditorApplication.TileSurface.UpperWall ||
+                Editor.app.pickedSurface.tileSurface == EditorApplication.TileSurface.LowerWall;
 
-            pickedSurfaceFloorPoints.set(editor.pickedSurface.floorPoints);
-            pickedSurfaceCeilingPoints.set(editor.pickedSurface.ceilingPoints);
+            pickedSurfaceFloorPoints.set(Editor.app.pickedSurface.floorPoints);
+            pickedSurfaceCeilingPoints.set(Editor.app.pickedSurface.ceilingPoints);
         }
 
-        if(!editor.editorInput.isButtonPressed(Input.Buttons.LEFT))
+        if(!Editor.app.editorInput.isButtonPressed(Input.Buttons.LEFT))
             return;
 
         // Switch to the dragging state
@@ -115,13 +120,13 @@ public class CarveMode extends EditorMode {
         intersectNormalPicked.set(intersectNormal);
 
         // Save the surface being extruded, or default to the floor
-        if(canExtrude && editor.pickedSurface != null && editor.pickedSurface.isPicked) {
-            extrudeFromSurface = editor.pickedSurface.tileSurface;
+        if(canExtrude && Editor.app.pickedSurface != null && Editor.app.pickedSurface.isPicked) {
+            extrudeFromSurface = Editor.app.pickedSurface.tileSurface;
         }
     }
 
     public void tickStateDraggingSelection() {
-        Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
         intersectPlane.set(0, 1, 0, -selectionStart.y);
 
         // Recalculate tile selection bounds!
@@ -137,14 +142,14 @@ public class CarveMode extends EditorMode {
         tileSelection.fixup(dragDistanceX, dragDistanceY);
 
         // Quit here if we are still dragging
-        if(editor.editorInput.isButtonPressed(Input.Buttons.LEFT))
+        if(Editor.app.editorInput.isButtonPressed(Input.Buttons.LEFT))
             return;
 
         // Switch to the selected state when done dragging
         state = CarveModeState.SELECTED_TILES;
 
         // Carve automatically, unless shift is being held
-        if(editor.editorInput.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+        if(Editor.app.editorInput.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
             return;
         }
         doCarve();
@@ -174,7 +179,7 @@ public class CarveMode extends EditorMode {
             return;
 
         state = CarveModeState.SELECTED_TILES;
-        editor.history.saveState(editor.level);
+        Editor.app.history.saveState(Editor.app.level);
     }
 
     private boolean getPointerOverCeilingPlane() {
@@ -182,7 +187,7 @@ public class CarveMode extends EditorMode {
         intersectPlane.set(0, 1, 0, -tileSelection.getBounds(false).max.z);
         intersectNormal.set(0, 1, 0);
 
-        Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
         boolean hitPlane = Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
 
         if (!hitPlane)
@@ -206,7 +211,7 @@ public class CarveMode extends EditorMode {
         intersectPlane.set(0, 1, 0, -tileSelection.getBounds(false).min.z);
         intersectNormal.set(0, 1, 0);
 
-        Ray ray = editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
         boolean hitPlane = Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
 
         if (!hitPlane)
@@ -245,17 +250,17 @@ public class CarveMode extends EditorMode {
     @Override
     public void draw() {
         // Draw selection
-        editor.boxRenderer.setColor(0.75f, 0.75f, 0.75f, 0.5f);
+        Editor.app.boxRenderer.setColor(0.75f, 0.75f, 0.75f, 0.5f);
 
         if(state.ordinal() >= CarveModeState.SELECTED_TILES.ordinal())
-            editor.boxRenderer.setColor(1.0f, 0.25f, 0.25f, 0.75f);
+            Editor.app.boxRenderer.setColor(1.0f, 0.25f, 0.25f, 0.75f);
 
-        editor.boxRenderer.begin(ShapeRenderer.ShapeType.Line);
+        Editor.app.boxRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         BoundingBox bounds = didPickSurface ? tileSelection.getBounds(pickedSurfaceFloorPoints, pickedSurfaceCeilingPoints) :
             tileSelection.getBounds(false);
 
-        editor.boxRenderer.box(
+        Editor.app.boxRenderer.box(
             bounds.min.x,
             bounds.min.z,
             bounds.min.y,
@@ -263,7 +268,7 @@ public class CarveMode extends EditorMode {
             bounds.getDepth(),
             -bounds.getHeight()
         );
-        editor.boxRenderer.end();
+        Editor.app.boxRenderer.end();
 
         // Can quit here unless we are in ceiling or floor move modes
         if(state.ordinal() < CarveModeState.SELECTED_TILES.ordinal())
@@ -301,14 +306,14 @@ public class CarveMode extends EditorMode {
 
         // Set the default tile to use when carving
         Tile t = new Tile();
-        t.wallTex = (byte)editor.pickedWallTexture;
-        t.wallTexAtlas = editor.pickedWallTextureAtlas;
-        t.floorTex = (byte)editor.pickedFloorTexture;
-        t.floorTexAtlas = editor.pickedFloorTextureAtlas;
-        t.ceilTex = (byte)editor.pickedCeilingTexture;
-        t.ceilTexAtlas = editor.pickedCeilingTextureAtlas;
-        t.wallBottomTex = (byte)editor.pickedWallBottomTexture;
-        t.wallBottomTexAtlas = editor.pickedWallBottomTextureAtlas;
+        t.wallTex = (byte)Editor.app.pickedWallTexture;
+        t.wallTexAtlas = Editor.app.pickedWallTextureAtlas;
+        t.floorTex = (byte)Editor.app.pickedFloorTexture;
+        t.floorTexAtlas = Editor.app.pickedFloorTextureAtlas;
+        t.ceilTex = (byte)Editor.app.pickedCeilingTexture;
+        t.ceilTexAtlas = Editor.app.pickedCeilingTextureAtlas;
+        t.wallBottomTex = (byte)Editor.app.pickedWallBottomTexture;
+        t.wallBottomTexAtlas = Editor.app.pickedWallBottomTextureAtlas;
         t.blockMotion = false;
         t.tileSpaceType = Tile.TileSpaceType.EMPTY;
         t.renderSolid = t.blockMotion;
@@ -324,11 +329,11 @@ public class CarveMode extends EditorMode {
         extrudeFromSurface = EditorApplication.TileSurface.Floor;
 
         // Save the history for undo
-        editor.history.saveState(editor.level);
+        Editor.app.history.saveState(Editor.app.level);
     }
 
     public void doErase() {
-        Level level = editor.level;
+        Level level = Editor.app.level;
         for (TileSelectionInfo info : tileSelection) {
             Tile n = level.getTile(info.x, info.y - 1);
             Tile s = level.getTile(info.x, info.y + 1);
@@ -340,8 +345,8 @@ public class CarveMode extends EditorMode {
             }
             else {
                 Tile t = Tile.NewSolidTile();
-                t.wallTex = (byte)editor.pickedWallTexture;
-                t.wallTexAtlas = editor.pickedWallTextureAtlas;
+                t.wallTex = (byte)Editor.app.pickedWallTexture;
+                t.wallTexAtlas = Editor.app.pickedWallTextureAtlas;
                 level.setTile(info.x, info.y, t);
             }
         }
@@ -349,11 +354,11 @@ public class CarveMode extends EditorMode {
         // Now mark everything as dirty
         // FIXME: Just do this once, not per tile!
         for (TileSelectionInfo info : tileSelection) {
-            editor.markWorldAsDirty(info.x, info.y, 1);
+            Editor.app.markWorldAsDirty(info.x, info.y, 1);
         }
 
         // Save the history for undo
-        editor.history.saveState(editor.level);
+        Editor.app.history.saveState(Editor.app.level);
     }
 
     protected void setTiles(Tile tocopy) {
@@ -368,11 +373,11 @@ public class CarveMode extends EditorMode {
                 t = new Tile();
             }
 
-            Tile existing = editor.level.getTileOrNull(info.x, info.y);
+            Tile existing = Editor.app.level.getTileOrNull(info.x, info.y);
             if(!isExtruding) {
                 // Simple case, just copy the whole tile
                 Tile.copy(tocopy, t);
-                editor.level.setTile(info.x, info.y, t);
+                Editor.app.level.setTile(info.x, info.y, t);
             }
             else if(existing == null) {
                 // Harder case, need a new tile but different floor/ceil heights
@@ -387,7 +392,7 @@ public class CarveMode extends EditorMode {
                 t.slopeNE = t.slopeNW = t.slopeSE = t.slopeSW = 0;
                 t.ceilSlopeNE = t.ceilSlopeNW = t.ceilSlopeSE = t.ceilSlopeSW = 0;
 
-                editor.level.setTile(info.x, info.y, t);
+                Editor.app.level.setTile(info.x, info.y, t);
             } else {
                 // More complicated case, extruding the upper or lower walls
                 if(extrudeFromSurface == EditorApplication.TileSurface.LowerWall) {
@@ -428,10 +433,10 @@ public class CarveMode extends EditorMode {
         // Now mark everything as dirty
         // FIXME: Just do this once, not per tile!
         for (TileSelectionInfo info : tileSelection) {
-            editor.markWorldAsDirty(info.x, info.y, 1);
+            Editor.app.markWorldAsDirty(info.x, info.y, 1);
         }
 
-        if(!editor.paintAdjacent.isChecked()) {
+        if(!Editor.app.paintAdjacent.isChecked()) {
             return;
         }
 
@@ -442,7 +447,7 @@ public class CarveMode extends EditorMode {
                 t = new Tile();
                 t.blockMotion = true;
                 t.renderSolid = true;
-                editor.level.setTile(info.x, info.y, t);
+                Editor.app.level.setTile(info.x, info.y, t);
             }
 
             switch (info.dir) {
@@ -481,12 +486,12 @@ public class CarveMode extends EditorMode {
     public void renderSurfaceControlPoint(TileSelection selection, boolean isCeiling) {
         // Make the surface picker when needed
         if(surfacePickerDecal == null) {
-            surfacePickerDecal = SurfacePickerDecal.newDecal(1f, 1f, editor.editorSprites[17]);
+            surfacePickerDecal = SurfacePickerDecal.newDecal(1f, 1f, Editor.app.editorSprites[17]);
         }
 
         surfacePickerDecal.setBlending(1, 1);
         surfacePickerDecal.setScale(1f, 1f);
-        surfacePickerDecal.setTextureRegion(editor.renderer.flashRegion);
+        surfacePickerDecal.setTextureRegion(Editor.app.renderer.flashRegion);
 
         if(isCeiling)
             surfacePickerDecal.setColor(0f, 1f, 0f, 0.25f);
@@ -510,8 +515,8 @@ public class CarveMode extends EditorMode {
         d.setBottomLeftOffset(0, -drawHeight, 0);
         d.setBottomRightOffset(drawWidth, -drawHeight, 0);
 
-        editor.spriteBatch.add(d);
-        editor.spriteBatch.flush();
+        Editor.app.spriteBatch.add(d);
+        Editor.app.spriteBatch.flush();
     }
 
     boolean didStartDrag = false;
@@ -525,7 +530,7 @@ public class CarveMode extends EditorMode {
             return;
 
         // Get a vertical drag plane
-        Vector3 vertDir = t_dragVector.set(editor.camera.direction);
+        Vector3 vertDir = t_dragVector.set(Editor.app.camera.direction);
         vertDir.y = 0;
         vertDir.nor();
 
@@ -533,7 +538,7 @@ public class CarveMode extends EditorMode {
         float len = dragPlane.distance(pickedControlPoint.point);
         dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
 
-        boolean didIntersect = Intersector.intersectRayPlane(editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, dragPlaneIntersectPos);
+        boolean didIntersect = Intersector.intersectRayPlane(Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, dragPlaneIntersectPos);
         if(!didIntersect)
             return;
 
@@ -571,7 +576,7 @@ public class CarveMode extends EditorMode {
         // Now mark everything as dirty
         // FIXME: Just do this once, not per tile!
         for (TileSelectionInfo info : tileSelection) {
-            editor.markWorldAsDirty(info.x, info.y, 1);
+            Editor.app.markWorldAsDirty(info.x, info.y, 1);
         }
     }
 

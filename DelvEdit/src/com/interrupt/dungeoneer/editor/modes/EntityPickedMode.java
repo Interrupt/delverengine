@@ -32,8 +32,8 @@ public class EntityPickedMode extends EditorMode {
 
     boolean isMoving = false;
 
-    public EntityPickedMode(EditorApplication inEditor) {
-        super(inEditor);
+    public EntityPickedMode() {
+        super(EditorModes.ENTITY_PICKED);
     }
 
     // Sets to true on the tick where a mouse up was detected
@@ -66,7 +66,7 @@ public class EntityPickedMode extends EditorMode {
             dragPlane = new Plane(vertDir, -len);
         }
         else if(dragMode == DragMode.Z) {
-            Vector3 vertDir = new Vector3(editor.camera.direction);
+            Vector3 vertDir = new Vector3(Editor.app.camera.direction);
             vertDir.y = 0;
 
             Plane vert = new Plane(vertDir, 0);
@@ -82,7 +82,7 @@ public class EntityPickedMode extends EditorMode {
             float len = vert.distance(t_dragVector2.set(Editor.selection.picked.x, Editor.selection.picked.z, Editor.selection.picked.y));
             dragPlane.set(vertDir.x, vertDir.y, vertDir.z, -len);
         } else {
-            Vector3 vertDir = t_dragVector.set(editor.camera.direction);
+            Vector3 vertDir = t_dragVector.set(Editor.app.camera.direction);
 
             t_dragPlane.set(vertDir.x, vertDir.y, vertDir.z, 0);
             Plane vert = t_dragPlane;
@@ -106,7 +106,7 @@ public class EntityPickedMode extends EditorMode {
     @Override
     public void reset() {
         // Switch back to the carve mode when done here
-        editor.setCurrentEditorMode(EditorModes.CARVE);
+        Editor.app.setCurrentEditorMode(EditorModes.CARVE);
 
         entityDragStart = null;
         planeIntersectionStart = null;
@@ -114,7 +114,7 @@ public class EntityPickedMode extends EditorMode {
 
         // Save the movement state when we are done moving
         if (isMoving)
-            editor.history.saveState(editor.level);
+            Editor.app.history.saveState(Editor.app.level);
         isMoving = false;
     }
 
@@ -161,7 +161,7 @@ public class EntityPickedMode extends EditorMode {
 
             // Save the movement state when we are done moving
             if (isMoving)
-                editor.history.saveState(editor.level);
+                Editor.app.history.saveState(Editor.app.level);
             isMoving = false;
 
             return;
@@ -175,27 +175,27 @@ public class EntityPickedMode extends EditorMode {
         if(!isMoving && !leftClickWasDown && Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) {
             // Make a copy
             Entity copy = JsonUtil.fromJson(Editor.selection.picked.getClass(), JsonUtil.toJson(Editor.selection.picked));
-            editor.level.entities.add(copy);
+            Editor.app.level.entities.add(copy);
 
-            editor.pickEntity(copy);
+            Editor.app.pickEntity(copy);
 
             Array<Entity> copies = new Array<>();
             for(Entity selected : Editor.selection.selected) {
                 Entity newCopy = JsonUtil.fromJson(selected.getClass(), JsonUtil.toJson(selected));
-                editor.level.entities.add(newCopy);
+                Editor.app.level.entities.add(newCopy);
                 copies.add(newCopy);
             }
 
             Editor.selection.selected.clear();
             Editor.selection.selected.addAll(copies);
-            editor.ui.showEntityPropertiesMenu(true);
+            Editor.app.ui.showEntityPropertiesMenu(true);
         }
 
         // We're underway!
         if(!isMoving)
             isMoving = true;
 
-        if(moveMode == MoveMode.DRAG && Intersector.intersectRayPlane(editor.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, intPos)) {
+        if(moveMode == MoveMode.DRAG && Intersector.intersectRayPlane(Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY()), dragPlane, intPos)) {
             if(dragOffset == null) {
                 dragOffset = t_dragOffset.set(Editor.selection.picked.x - intPos.x, Editor.selection.picked.y - intPos.z, Editor.selection.picked.z - intPos.y);
             }
@@ -247,9 +247,9 @@ public class EntityPickedMode extends EditorMode {
                 selected.z -= movedZ;
             }
 
-            editor.refreshEntity(Editor.selection.picked);
+            Editor.app.refreshEntity(Editor.selection.picked);
             for(Entity selected : Editor.selection.selected) {
-                editor.refreshEntity(selected);
+                Editor.app.refreshEntity(selected);
             }
         }
     }

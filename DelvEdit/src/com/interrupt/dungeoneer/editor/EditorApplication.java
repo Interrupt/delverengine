@@ -361,12 +361,12 @@ public class EditorApplication implements ApplicationListener {
 		createEmptyLevel(17, 17);
 
         // Setup the different editor modes
-        editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode(this));
-        editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode(this));
-        editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode(this));
-        editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode(this));
-        editorModes.put(EditorMode.EditorModes.DOME, new DomeMode(this));
-        editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode(this));
+        editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode());
+        editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
+        editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
+        editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode());
+        editorModes.put(EditorMode.EditorModes.DOME, new DomeMode());
+        editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode());
 	}
 
 	/** Load entity templates */
@@ -585,7 +585,7 @@ public class EditorApplication implements ApplicationListener {
     public void setCurrentEditorMode(EditorMode.EditorModes newMode) {
         // Don't switch if this is the same mode, but do call start again
         if(newMode == currentEditorMode) {
-            getCurrentEditorMode().start();
+            //getCurrentEditorMode().start();
             return;
         }
 

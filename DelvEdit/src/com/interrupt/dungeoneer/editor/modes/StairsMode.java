@@ -6,8 +6,8 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class StairsMode extends CarveMode {
-    public StairsMode(EditorApplication inEditor) {
-        super(inEditor);
+    public StairsMode() {
+        super(EditorModes.STAIRS);
         canCarve = false;
         canExtrude = false;
     }
