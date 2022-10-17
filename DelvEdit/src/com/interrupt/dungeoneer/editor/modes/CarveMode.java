@@ -511,8 +511,13 @@ public class CarveMode extends EditorMode {
             dragStart.set(dragPlaneIntersectPos);
         }
 
+        // Clamp the dragging to a sub grid. Controls how much to divide a whole tile
+        int clampHeightModifier = 16;
+        if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            clampHeightModifier = 2;
+
         // Round the intersect position a bit
-        dragPlaneIntersectPos.y = (int)(dragPlaneIntersectPos.y * 16) / 16f;
+        dragPlaneIntersectPos.y = (int)(dragPlaneIntersectPos.y * clampHeightModifier) / (float)clampHeightModifier;
         Vector3 dragOffset = new Vector3(dragStart.x - dragPlaneIntersectPos.x,dragStart.y - dragPlaneIntersectPos.y,dragStart.z - dragPlaneIntersectPos.z);
 
         if (pickedControlPoint.controlPointType == ControlPoint.ControlPointType.floor) {
