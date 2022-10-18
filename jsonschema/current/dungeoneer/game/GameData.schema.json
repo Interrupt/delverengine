@@ -57,6 +57,11 @@
             "type": "boolean",
             "default": false,
             "description": "Is player allowed to jump."
+        },
+        "overrideBaseGame": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the mod including this should override the packaged game data."
         }
     },
     "required": [
