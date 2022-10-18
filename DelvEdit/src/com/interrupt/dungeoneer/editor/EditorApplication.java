@@ -364,6 +364,8 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode());
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
+        editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
+        editorModes.put(EditorMode.EditorModes.ERASE, new EraseMode());
         editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode());
         editorModes.put(EditorMode.EditorModes.DOME, new DomeMode());
         editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode());

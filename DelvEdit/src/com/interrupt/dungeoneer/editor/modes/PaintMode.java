@@ -1,9 +1,10 @@
 package com.interrupt.dungeoneer.editor.modes;
 
-import com.interrupt.dungeoneer.editor.EditorApplication;
-
-public class PaintMode extends EditorMode {
+public class PaintMode extends DrawMode {
     public PaintMode() {
         super(EditorModes.PAINT);
+
+        // Don't carve out new tiles or modify tile heights
+        lockTiles = true;
     }
 }
