@@ -368,6 +368,7 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.DOME, new DomeMode());
         editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode());
         editorModes.put(EditorMode.EditorModes.RAMP, new RampMode());
+        editorModes.put(EditorMode.EditorModes.NOISE, new NoiseMode());
 	}
 
 	/** Load entity templates */
