@@ -12,11 +12,12 @@ public class NoiseMode extends CarveMode {
     public NoiseMode() {
         super(EditorModes.NOISE);
         canCarve = true;
+        carveAutomatically = false;
         canExtrude = false;
         tileSelectionSettings.boundsUseTileHeights = true;
     }
 
-    PerlinNoise perlinNoise = new PerlinNoise(1, 1, 0.5, 9, 8);
+    PerlinNoise perlinNoise = new PerlinNoise(1, 1, 0.5, 1, 8);
 
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, boolean isCeiling) {
@@ -26,12 +27,22 @@ public class NoiseMode extends CarveMode {
                 continue;
             }
 
+            // Offset the floor and ceiling noise by different amounts
+            int noiseOffset = 400;
+            if(isCeiling)
+                noiseOffset += 75;
+
             // Perlin noise based randomness
             float noiseAmt = (float)perlinNoise.getHeight(
-                info.x * 0.1f + 400 + selection.x,
-                info.y * 0.1f + 400 + selection.y);
+                info.x * 0.1f + noiseOffset + selection.x,
+                info.y * 0.1f + noiseOffset + selection.y);
 
-            noiseAmt = Math.abs(noiseAmt) * 0.1f;
+            noiseAmt /= perlinNoise.getAmplitude();
+            noiseAmt += 1f;
+            noiseAmt *= 0.5f;
+
+            if(noiseAmt < 0)
+                noiseAmt = 0;
 
             if (isCeiling) {
                 t.ceilHeight -= dragOffset.y * noiseAmt;
@@ -53,10 +64,12 @@ public class NoiseMode extends CarveMode {
             info.x * 0.1f + 400 + selection.x,
             info.y * 0.1f + 400 + selection.y);
 
-        noiseAmt = Math.abs(noiseAmt);
+        noiseAmt /= perlinNoise.getAmplitude();
+        noiseAmt += 1f;
+        noiseAmt *= 0.5f;
 
         // Only allow carving / deleting of high perlin noise areas
-        if(noiseAmt > 4f)
+        if(noiseAmt > 0.7f)
             return true;
 
         return false;

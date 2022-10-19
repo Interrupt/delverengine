@@ -32,6 +32,7 @@ public class CarveMode extends EditorMode {
     // Some controls that subclasses can override as needed
     protected boolean canCarve = true;
     protected boolean canExtrude = true;
+    protected boolean carveAutomatically = true;
     protected TileSelection tileSelectionSettings = new TileSelection();
 
     Vector3 selectionStart = new Vector3();
@@ -169,7 +170,8 @@ public class CarveMode extends EditorMode {
         }
 
         // Simple case, carve automatically
-        doCarve();
+        if(carveAutomatically)
+            doCarve();
     }
 
     public void tickStateSelectedTiles() {
