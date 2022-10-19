@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -9,21 +10,21 @@ public class RampMode extends CarveMode {
         super(EditorModes.RAMP);
         canCarve = false;
         canExtrude = false;
-        tileSelection.boundsUseTileHeights = true;
+        tileSelectionSettings.boundsUseTileHeights = true;
     }
 
     @Override
-    public void adjustTileHeights(Vector3 dragStart, Vector3 dragOffset, boolean isCeiling) {
-        for (TileSelectionInfo info : tileSelection) {
+    public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, boolean isCeiling) {
+        for (TileSelectionInfo info : selection) {
             Tile t = info.tile;
             if (t == null) {
                 continue;
             }
 
             // TODO: Pick direction based on closest edge to dragStart
-            int selY = tileSelection.y + tileSelection.height;
+            int selY = selection.y + selection.height;
 
-            float mod = ((float)info.y - (float)selY) / (float)tileSelection.height;
+            float mod = ((float)info.y - (float)selY) / (float)selection.height;
             if(isCeiling) {
                 t.ceilSlopeNE += dragOffset.y * mod;
                 t.ceilSlopeNW += dragOffset.y * mod;
@@ -32,8 +33,8 @@ public class RampMode extends CarveMode {
                 t.slopeNW += dragOffset.y * mod;
             }
 
-            if(tileSelection.height > 1) {
-                mod = ((float)info.y - (float)selY + 1f) / (float)tileSelection.height;
+            if(selection.height > 1) {
+                mod = ((float)info.y - (float)selY + 1f) / (float)selection.height;
                 if(isCeiling) {
                     t.ceilSlopeSE += dragOffset.y * mod;
                     t.ceilSlopeSW += dragOffset.y * mod;

@@ -1,19 +1,8 @@
 package com.interrupt.dungeoneer.editor.modes;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Ray;
-import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.Editor;
-import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class EraseMode extends DrawMode {

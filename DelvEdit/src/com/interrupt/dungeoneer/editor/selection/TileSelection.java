@@ -211,4 +211,17 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         width = (int)selectionWidth;
         height = (int)selectionHeight;
     }
+
+    public TileSelection copy() {
+        TileSelection copy = new TileSelection();
+        copy.x = x;
+        copy.y = y;
+        copy.startX = startX;
+        copy.startY = startY;
+        copy.width = width;
+        copy.height = height;
+        copy.boundsUseTileHeights = boundsUseTileHeights;
+        copy.bounds.set(bounds);
+        return copy;
+    }
 }
