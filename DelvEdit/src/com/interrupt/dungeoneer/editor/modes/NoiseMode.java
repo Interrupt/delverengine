@@ -10,6 +10,7 @@ public class NoiseMode extends CarveMode {
         super(EditorModes.NOISE);
         canCarve = false;
         canExtrude = false;
+        tileSelection.boundsUseTileHeights = true;
     }
 
     PerlinNoise perlinNoise = new PerlinNoise(1, 1, 0.5, 9, 8);

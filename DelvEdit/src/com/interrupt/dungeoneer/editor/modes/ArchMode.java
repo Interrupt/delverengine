@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.editor.EditorApplication;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -10,6 +9,7 @@ public class ArchMode extends CarveMode {
         super(EditorModes.ARCH);
         canCarve = false;
         canExtrude = false;
+        tileSelection.boundsUseTileHeights = true;
     }
 
     @Override

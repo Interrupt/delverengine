@@ -9,6 +9,7 @@ public class RampMode extends CarveMode {
         super(EditorModes.RAMP);
         canCarve = false;
         canExtrude = false;
+        tileSelection.boundsUseTileHeights = true;
     }
 
     @Override

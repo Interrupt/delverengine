@@ -20,6 +20,8 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
     public int startX;
     public int startY;
 
+    public boolean boundsUseTileHeights = false;
+
     /** A collection of tiles that are adjacent to the selection. */
     public Iterable<AdjacentTileSelectionInfo> adjacent;
 
@@ -159,9 +161,11 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         }
 
         // Clamp tile selection bounds to the floor / ceiling heights of the first tile
-        Tile firstTile = first();
-        bounds.min.z = firstTile.floorHeight;
-        bounds.max.z = firstTile.ceilHeight;
+        if(!boundsUseTileHeights) {
+            Tile firstTile = first();
+            bounds.min.z = firstTile.floorHeight;
+            bounds.max.z = firstTile.ceilHeight;
+        }
 
         // Reset bounds, to update the internal size.
         bounds.set(bounds.min, bounds.max);

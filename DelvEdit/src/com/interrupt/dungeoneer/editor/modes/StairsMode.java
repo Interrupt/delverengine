@@ -10,6 +10,7 @@ public class StairsMode extends CarveMode {
         super(EditorModes.STAIRS);
         canCarve = false;
         canExtrude = false;
+        tileSelection.boundsUseTileHeights = true;
     }
 
     @Override

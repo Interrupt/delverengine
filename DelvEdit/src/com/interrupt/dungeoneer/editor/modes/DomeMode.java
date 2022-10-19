@@ -11,6 +11,7 @@ public class DomeMode extends CarveMode {
         super(EditorModes.DOME);
         canCarve = false;
         canExtrude = false;
+        tileSelection.boundsUseTileHeights = true;
     }
 
     PerlinNoise perlinNoise = new PerlinNoise(1, 1, 0.5, 9, 8);
