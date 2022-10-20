@@ -2017,9 +2017,16 @@ public class EditorApplication implements ApplicationListener {
 
         // Handle editor mode switching
         if(switchingToEditorMode != currentEditorMode) {
-            getCurrentEditorMode().reset();
+            EditorMode curMode = getCurrentEditorMode();
+            EditorMode nextMode = editorModes.get(switchingToEditorMode);
+
+            // Switch to the new mode
             currentEditorMode = switchingToEditorMode;
-            getCurrentEditorMode().start();
+            nextMode.start();
+
+            // Clean up the old mode
+            curMode.onSwitchTo(nextMode);
+            curMode.reset();
         }
 
         // FIXME: CC Testing!

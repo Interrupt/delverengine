@@ -31,4 +31,9 @@ public class EditorMode {
     public void reset() {
 
     }
+
+    // Override this to take action when the state changes to another mode
+    public void onSwitchTo(EditorMode newMode) {
+
+    }
 }

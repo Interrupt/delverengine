@@ -683,4 +683,15 @@ public class CarveMode extends EditorMode {
             }
         }
     }
+
+    @Override
+    public void onSwitchTo(EditorMode newMode) {
+        if(!(newMode instanceof CarveMode))
+            return;
+
+        // Copy our picked tile selections into the new mode
+        CarveMode newCarveMode = (CarveMode) newMode;
+        newCarveMode.pickedTileSelections.addAll(pickedTileSelections);
+        newCarveMode.state = CarveModeState.SELECTED_TILES;
+    }
 }
