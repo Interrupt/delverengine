@@ -203,7 +203,7 @@ public class CarveMode extends EditorMode {
         Editor.app.history.saveState(Editor.app.level);
     }
 
-    private boolean getPointerOverCeilingPlane(TileSelection selection) {
+    protected boolean getPointerOverCeilingPlane(TileSelection selection) {
         // Try picking the ceiling
         intersectPlane.set(0, 1, 0, -selection.getBounds(false).max.z);
         intersectNormal.set(0, 1, 0);
@@ -227,7 +227,7 @@ public class CarveMode extends EditorMode {
         return true;
     }
 
-    private boolean getPointerOverFloorPlane(TileSelection selection) {
+    protected boolean getPointerOverFloorPlane(TileSelection selection) {
         // Try picking the ceiling
         intersectPlane.set(0, 1, 0, -selection.getBounds(false).min.z);
         intersectNormal.set(0, 1, 0);
@@ -251,7 +251,7 @@ public class CarveMode extends EditorMode {
         return true;
     }
 
-    private void tryPickingControlPoint(TileSelection selection) {
+    protected void tryPickingControlPoint(TileSelection selection) {
         if(getPointerOverCeilingPlane(selection)) {
             pickedControlPoint = new ControlPoint(new Vector3(intersectPoint), ControlPoint.ControlPointType.ceiling);
             pickedSurfaceCeilingPoints.set(intersectPoint.y, intersectPoint.y);
@@ -648,7 +648,7 @@ public class CarveMode extends EditorMode {
                 selection.getBounds(false).max.z -= dragOffset.y;
             }
 
-            adjustTileHeights(selection, dragStart, dragOffset, pickedControlPoint.controlPointType == ControlPoint.ControlPointType.ceiling);
+            adjustTileHeights(selection, dragStart, dragOffset, pickedControlPoint.controlPointType);
         }
 
         // FIXME: Just do this once for the whole box, not per tile!
@@ -664,7 +664,8 @@ public class CarveMode extends EditorMode {
     }
 
     // Override this for different behaviors when adjusting the tile ceiling heights
-    public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, boolean isCeiling) {
+    public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
+        boolean isCeiling = controlPointType == ControlPoint.ControlPointType.ceiling;
         for (TileSelectionInfo info : selection) {
             Tile t = info.tile;
             if (t == null) {

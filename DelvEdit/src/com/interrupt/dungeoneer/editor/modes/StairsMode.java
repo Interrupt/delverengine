@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.editor.ControlPoint;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -14,7 +15,8 @@ public class StairsMode extends CarveMode {
     }
 
     @Override
-    public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, boolean isCeiling) {
+    public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
+        boolean isCeiling = controlPointType == ControlPoint.ControlPointType.ceiling;
         for (TileSelectionInfo info : selection) {
             Tile t = info.tile;
             if (t == null) {
