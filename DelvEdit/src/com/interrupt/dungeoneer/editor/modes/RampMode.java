@@ -5,6 +5,7 @@ import com.interrupt.dungeoneer.editor.ControlPoint;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.helpers.TileEdges;
 
 public class RampMode extends CarveMode {
     public RampMode() {
@@ -16,14 +17,14 @@ public class RampMode extends CarveMode {
 
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
-        boolean isCeiling = controlPointType == ControlPoint.ControlPointType.northCeil;
+        boolean isCeiling = isControlPointOnCeiling(controlPointType);
         for (TileSelectionInfo info : selection) {
             Tile t = info.tile;
             if (t == null) {
                 continue;
             }
 
-            if(controlPointType != ControlPoint.ControlPointType.northFloor && controlPointType != ControlPoint.ControlPointType.northCeil)
+            if(getTileEdgeFromControlPointType(controlPointType) != TileEdges.North)
                 continue;
 
             int selY = selection.y + selection.height;
@@ -98,5 +99,31 @@ public class RampMode extends CarveMode {
         didStartDrag = false;
         didPickSurface = false;
         state = CarveModeState.SELECTED_CONTROL_POINT;
+    }
+
+    protected static boolean isControlPointOnCeiling(ControlPoint.ControlPointType c) {
+        if(c.ordinal() < ControlPoint.ControlPointType.ceiling.ordinal())
+            return false;
+
+        if(c == ControlPoint.ControlPointType.ceiling)
+            return true;
+
+        if(c == ControlPoint.ControlPointType.vertex)
+            return false;
+
+        // Even enums that are left are ceilings
+        return c.ordinal() % 2 == 0;
+    }
+
+    protected static TileEdges getTileEdgeFromControlPointType(ControlPoint.ControlPointType c) {
+        if(c == ControlPoint.ControlPointType.northCeil || c == ControlPoint.ControlPointType.northFloor)
+            return TileEdges.North;
+        if(c == ControlPoint.ControlPointType.eastCeil || c == ControlPoint.ControlPointType.eastFloor)
+            return TileEdges.East;
+        if(c == ControlPoint.ControlPointType.southCeil || c == ControlPoint.ControlPointType.southFloor)
+            return TileEdges.South;
+
+        // Only one left!
+        return TileEdges.West;
     }
 }
