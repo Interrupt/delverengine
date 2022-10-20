@@ -15,6 +15,7 @@ public class RampMode extends CarveMode {
         tileSelectionSettings.boundsUseTileHeights = true;
     }
 
+    private Vector3 t_adjustHeights = new Vector3();
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
         boolean isCeiling = isControlPointOnCeiling(controlPointType);
@@ -24,28 +25,62 @@ public class RampMode extends CarveMode {
                 continue;
             }
 
-            if(getTileEdgeFromControlPointType(controlPointType) != TileEdges.North)
-                continue;
+            Vector3 dragAmount = t_adjustHeights.set(dragOffset);
+            int selX = -1;
+            int selY = -1;
 
-            int selY = selection.y + selection.height;
-
-            float mod = ((float)info.y - (float)selY) / (float)selection.height;
-            if(isCeiling) {
-                t.ceilSlopeNE += dragOffset.y * mod;
-                t.ceilSlopeNW += dragOffset.y * mod;
-            } else {
-                t.slopeNE += dragOffset.y * mod;
-                t.slopeNW += dragOffset.y * mod;
+            if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.North) {
+                selY = selection.y + selection.height;
+            }
+            else if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.South) {
+                selY = selection.y;
+                dragAmount.y *= -1;
+            }
+            else if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.West) {
+                selX = selection.x + selection.width;
+            }
+            else if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.East) {
+                selX = selection.x;
+                dragAmount.y *= -1;
             }
 
-            if(selection.height > 1) {
-                mod = ((float)info.y - (float)selY + 1f) / (float)selection.height;
-                if(isCeiling) {
-                    t.ceilSlopeSE += dragOffset.y * mod;
-                    t.ceilSlopeSW += dragOffset.y * mod;
-                } else {
-                    t.slopeSE += dragOffset.y * mod;
-                    t.slopeSW += dragOffset.y * mod;
+            // First set of verts
+            float modX = ((float)info.x - (float)selX) / (float)selection.width;
+            float modY = ((float)info.y - (float)selY) / (float)selection.height;
+
+            // Second set of verts
+            float modXNext = ((float)info.x - (float)selX + 1f) / (float)selection.width;
+            float modYNext = ((float)info.y - (float)selY + 1f) / (float)selection.height;
+
+            if(isCeiling) {
+                if(selX != -1) {
+                    t.ceilSlopeNE += dragAmount.y * modX;
+                    t.ceilSlopeSE += dragAmount.y * modX;
+
+                    t.ceilSlopeNW += dragAmount.y * modXNext;
+                    t.ceilSlopeSW += dragAmount.y * modXNext;
+                }
+                if(selY != -1) {
+                    t.ceilSlopeNE += dragAmount.y * modY;
+                    t.ceilSlopeNW += dragAmount.y * modY;
+
+                    t.ceilSlopeSE += dragAmount.y * modYNext;
+                    t.ceilSlopeSW += dragAmount.y * modYNext;
+                }
+            } else {
+                if(selX != -1) {
+                    t.slopeNE += dragAmount.y * modX;
+                    t.slopeSE += dragAmount.y * modX;
+
+                    t.slopeNW += dragAmount.y * modXNext;
+                    t.slopeSW += dragAmount.y * modXNext;
+                }
+                if(selY != -1) {
+                    t.slopeNE += dragAmount.y * modY;
+                    t.slopeNW += dragAmount.y * modY;
+
+                    t.slopeSE += dragAmount.y * modYNext;
+                    t.slopeSW += dragAmount.y * modYNext;
                 }
             }
 
