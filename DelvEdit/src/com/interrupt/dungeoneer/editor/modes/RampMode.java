@@ -1,7 +1,15 @@
 package com.interrupt.dungeoneer.editor.modes;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
+import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.ControlPoint;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -15,10 +23,93 @@ public class RampMode extends CarveMode {
         tileSelectionSettings.boundsUseTileHeights = true;
     }
 
+    @Override
+    public void draw() {
+        // Draw the tile selections as bounding boxes
+        Editor.app.boxRenderer.setColor(0.75f, 0.75f, 0.75f, 0.5f);
+
+        if(state.ordinal() >= CarveModeState.SELECTED_TILES.ordinal())
+            Editor.app.boxRenderer.setColor(1.0f, 0.25f, 0.25f, 0.75f);
+
+        Editor.app.boxRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        // Don't draw the hover indicator box when not hovering or dragging
+        if(state.ordinal() <= CarveModeState.DRAGGING_SELECTION.ordinal()) {
+            BoundingBox hoverBounds = didPickSurface ? hoverSelection.getBounds(pickedSurfaceFloorPoints, pickedSurfaceCeilingPoints) :
+                hoverSelection.getBounds(false);
+
+            Editor.app.boxRenderer.box(
+                hoverBounds.min.x,
+                hoverBounds.min.z,
+                hoverBounds.min.y,
+                hoverBounds.getWidth(),
+                hoverBounds.getDepth(),
+                -hoverBounds.getHeight()
+            );
+        }
+
+        // Draw all the picked selection bounding boxes
+        for(int i = 0; i < pickedTileSelections.size; i++) {
+            TileSelection selection = pickedTileSelections.get(i);
+            BoundingBox bounds = selection.getBounds();
+
+            Editor.app.boxRenderer.box(
+                bounds.min.x,
+                bounds.min.z,
+                bounds.min.y,
+                bounds.getWidth(),
+                bounds.getDepth(),
+                -bounds.getHeight()
+            );
+
+            // Also ensure we have world chunks to draw
+            selection.initWorldChunks();
+        }
+
+        Editor.app.boxRenderer.end();
+
+        // Can quit here unless we are in ceiling or floor move modes
+        if(state.ordinal() < CarveModeState.SELECTED_TILES.ordinal())
+            return;
+
+        boolean isOverACeilingPlane = false;
+        boolean isOverAFloorPlane = false;
+
+        // Check if the mouse is over a selection floor or ceiling
+        for(TileSelection selection : pickedTileSelections) {
+            isOverACeilingPlane |= getPointerOverCeilingPlane(selection);
+            isOverAFloorPlane |= getPointerOverFloorPlane(selection);
+
+            if(isOverACeilingPlane || isOverAFloorPlane)
+                break;
+        }
+
+        Gdx.gl20.glEnable(GL20.GL_BLEND);
+        Gdx.gl20.glDisable(GL20.GL_DEPTH_TEST);
+
+        // Check if the mouse is over a selection floor or ceiling
+        for(TileSelection selection : pickedTileSelections) {
+            if(isOverACeilingPlane)
+                selection.ceilWorldChunk.renderAllForEditorPicker();
+            else if(isOverAFloorPlane)
+                selection.floorWorldChunk.renderAllForEditorPicker();
+        }
+
+        Gdx.gl20.glDisable(GL20.GL_BLEND);
+        Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+    }
+
     private Vector3 t_adjustHeights = new Vector3();
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
         boolean isCeiling = isControlPointOnCeiling(controlPointType);
+
+        boolean hasMatchingTileEdge = controlPointTypeHasMatchingTileEdge(controlPointType);
+        if(!hasMatchingTileEdge)
+            return;
+
+        TileEdges tileEdge = getTileEdgeFromControlPointType(controlPointType);
+
         for (TileSelectionInfo info : selection) {
             Tile t = info.tile;
             if (t == null) {
@@ -29,17 +120,17 @@ public class RampMode extends CarveMode {
             int selX = -1;
             int selY = -1;
 
-            if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.North) {
+            if(tileEdge == TileEdges.North) {
                 selY = selection.y + selection.height;
             }
-            else if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.South) {
+            else if(tileEdge == TileEdges.South) {
                 selY = selection.y;
                 dragAmount.y *= -1;
             }
-            else if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.West) {
+            else if(tileEdge == TileEdges.West) {
                 selX = selection.x + selection.width;
             }
-            else if(getTileEdgeFromControlPointType(controlPointType) == TileEdges.East) {
+            else if(tileEdge == TileEdges.East) {
                 selX = selection.x;
                 dragAmount.y *= -1;
             }
@@ -85,13 +176,16 @@ public class RampMode extends CarveMode {
             }
 
             t.packHeights();
+
+            // Retesselate!
+            selection.refreshWorldChunks();
         }
+
+        selection.getBounds();
     }
 
     @Override
     protected void tryPickingControlPoint(TileSelection selection) {
-        float edgeHitDistance = 0.25f;
-
         if(getPointerOverCeilingPlane(selection)) {
             pickedControlPoint = new ControlPoint(new Vector3(intersectPoint), ControlPoint.ControlPointType.ceiling);
             pickedSurfaceCeilingPoints.set(intersectPoint.y, intersectPoint.y);
@@ -104,27 +198,46 @@ public class RampMode extends CarveMode {
 
         // Keep track of this hit being on the floor or ceiling
         boolean isHitOnFloor = pickedControlPoint.controlPointType == ControlPoint.ControlPointType.floor;
-        boolean hitEdge = false;
 
-        // Pick an edge!
-        if(intersectPoint.x < selection.x + edgeHitDistance) {
-            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.westCeil;
-            hitEdge = true;
+        float northDistance = Intersector.distanceLinePoint(
+            selection.x, selection.y,
+            selection.x + selection.width, selection.y,
+            intersectPoint.x, intersectPoint.z);
+
+        float eastDistance = Intersector.distanceLinePoint(
+            selection.x + selection.width, selection.y,
+            selection.x + selection.width, selection.y + selection.height,
+            intersectPoint.x, intersectPoint.z);
+
+        float southDistance = Intersector.distanceLinePoint(
+            selection.x, selection.y + selection.height,
+            selection.x + selection.width, selection.y + selection.height,
+            intersectPoint.x, intersectPoint.z);
+
+        float westDistance = Intersector.distanceLinePoint(
+            selection.x, selection.y,
+            selection.x, selection.y + selection.height,
+            intersectPoint.x, intersectPoint.z);
+
+        // Find smallest!
+        float minDistance = Math.min(northDistance, eastDistance);
+        minDistance = Math.min(minDistance, southDistance);
+        minDistance = Math.min(minDistance, westDistance);
+
+        if(minDistance == northDistance) {
+            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.northFloor;
         }
-        if(intersectPoint.x > selection.x + selection.width - edgeHitDistance) {
-            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.eastCeil;
-            hitEdge = true;
+        if(minDistance == eastDistance) {
+            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.eastFloor;
         }
-        if(intersectPoint.z < selection.y + edgeHitDistance) {
-            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.northCeil;
-            hitEdge = true;
+        if(minDistance == southDistance) {
+            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.southFloor;
         }
-        if(intersectPoint.z > selection.y + selection.height - edgeHitDistance) {
-            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.southCeil;
-            hitEdge = true;
+        if(minDistance == westDistance) {
+            pickedControlPoint.controlPointType = ControlPoint.ControlPointType.westFloor;
         }
 
-        if(isHitOnFloor && hitEdge) {
+        if(!isHitOnFloor) {
             // Floor edge enums are all always one above the ceiling enums
             int idx = pickedControlPoint.controlPointType.ordinal();
             pickedControlPoint.controlPointType = ControlPoint.ControlPointType.values()[idx + 1];
@@ -137,17 +250,22 @@ public class RampMode extends CarveMode {
     }
 
     protected static boolean isControlPointOnCeiling(ControlPoint.ControlPointType c) {
-        if(c.ordinal() < ControlPoint.ControlPointType.ceiling.ordinal())
-            return false;
-
-        if(c == ControlPoint.ControlPointType.ceiling)
-            return true;
-
         if(c == ControlPoint.ControlPointType.vertex)
             return false;
 
-        // Even enums that are left are ceilings
-        return c.ordinal() % 2 == 0;
+        // Even numbers are floors, odd are ceilings
+        return c.ordinal() % 2 != 0;
+    }
+
+    protected static boolean controlPointTypeHasMatchingTileEdge(ControlPoint.ControlPointType c) {
+        if(c == ControlPoint.ControlPointType.ceiling)
+            return false;
+        if(c == ControlPoint.ControlPointType.floor)
+            return false;
+        if(c == ControlPoint.ControlPointType.vertex)
+            return false;
+
+        return true;
     }
 
     protected static TileEdges getTileEdgeFromControlPointType(ControlPoint.ControlPointType c) {
@@ -160,5 +278,23 @@ public class RampMode extends CarveMode {
 
         // Only one left!
         return TileEdges.West;
+    }
+
+    @Override
+    protected boolean getPointerOverCeilingPlane(TileSelection selection) {
+        if(selection.ceilWorldChunk == null)
+            return false;
+
+        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+        return Collidor.intersectRayTriangles(ray, selection.ceilCollisionTriangles.getAllTriangles(), intersectPoint, intersectNormal);
+    }
+
+    @Override
+    protected boolean getPointerOverFloorPlane(TileSelection selection) {
+        if(selection.floorWorldChunk == null)
+            return false;
+
+        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+        return Collidor.intersectRayTriangles(ray, selection.floorCollisionTriangles.getAllTriangles(), intersectPoint, intersectNormal);
     }
 }

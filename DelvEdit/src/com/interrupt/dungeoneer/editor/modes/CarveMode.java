@@ -42,8 +42,8 @@ public class CarveMode extends EditorMode {
     Vector3 intersectNormal = new Vector3();
     Vector3 intersectNormalPicked = new Vector3();
 
-    private TileSelection hoverSelection;
-    private Array<TileSelection> pickedTileSelections = new Array<>();
+    protected TileSelection hoverSelection;
+    protected Array<TileSelection> pickedTileSelections = new Array<>();
 
     boolean didPickSurface = false;
     EditorApplication.TileSurface extrudeFromSurface;

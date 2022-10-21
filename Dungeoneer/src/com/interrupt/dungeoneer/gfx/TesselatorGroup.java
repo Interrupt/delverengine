@@ -14,6 +14,7 @@ public class TesselatorGroup {
     private ArrayMap<String, Tesselator> tesselators = new ArrayMap<String, Tesselator>();
     private BoundingBox bounds = new BoundingBox();
     private ShaderInfo defaultShader;
+    private boolean useShadersFromTextureAtlas = true;
 
     public TesselatorGroup(ShaderInfo defaultShader) {
         this.defaultShader = defaultShader;
@@ -22,7 +23,7 @@ public class TesselatorGroup {
     public boolean needsTesselation() {
         if(tesselators.size == 0)
             return true;
-        
+
         for(int i = 0; i < tesselators.size; i++) {
             Tesselator tesselator = tesselators.getValueAt(i);
             if(!tesselator.HasBuilt())
@@ -59,7 +60,7 @@ public class TesselatorGroup {
 
             // Bind the atlas for drawing
             TextureAtlas atlas = TextureAtlas.bindRepeatingTextureAtlasByIndex(tesselators.getKeyAt(i));
-            if(atlas != null)
+            if(atlas != null && useShadersFromTextureAtlas)
                 shader = atlas.getShader();
 
             // If there's no custom shader set, use the default one
@@ -152,5 +153,11 @@ public class TesselatorGroup {
                                 collisionType));
             }
         }
+    }
+
+    // Set a shader to use instead of the data driven ones
+    public void setShaderOverride(ShaderInfo shader) {
+        defaultShader = shader;
+        useShadersFromTextureAtlas = false;
     }
 }

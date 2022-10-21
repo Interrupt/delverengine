@@ -2,11 +2,19 @@ package com.interrupt.dungeoneer.editor.selection;
 
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
+import com.interrupt.dungeoneer.editor.ControlPoint;
+import com.interrupt.dungeoneer.editor.ControlPointVertex;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorApplication;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.WorldChunk;
+import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.FloatTuple;
+import com.interrupt.helpers.TileEdges;
+import com.interrupt.managers.ShaderManager;
 
 import java.util.Iterator;
 
@@ -21,6 +29,13 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
     public int startY;
 
     public boolean boundsUseTileHeights = false;
+
+    // Used for drawing the floors and ceilings of this selection
+    public WorldChunk floorWorldChunk;
+    public WorldChunk ceilWorldChunk;
+
+    public TriangleSpatialHash floorCollisionTriangles = new TriangleSpatialHash(1);
+    public TriangleSpatialHash ceilCollisionTriangles = new TriangleSpatialHash(1);
 
     /** A collection of tiles that are adjacent to the selection. */
     public Iterable<AdjacentTileSelectionInfo> adjacent;
@@ -223,5 +238,47 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         copy.boundsUseTileHeights = boundsUseTileHeights;
         copy.bounds.set(bounds);
         return copy;
+    }
+
+    public void initWorldChunks() {
+        if(floorWorldChunk != null && ceilWorldChunk != null)
+            return;
+
+        floorWorldChunk = new WorldChunk(Editor.app.renderer);
+        floorWorldChunk.setOffset(x, y);
+        floorWorldChunk.setSize(width, height);
+        floorWorldChunk.makeWalls = false;
+        floorWorldChunk.makeUpperWalls = false;
+        floorWorldChunk.makeCeilings = false;
+
+        ceilWorldChunk = new WorldChunk(Editor.app.renderer);
+        ceilWorldChunk.setOffset(x, y);
+        ceilWorldChunk.setSize(width, height);
+        ceilWorldChunk.makeWalls = false;
+        ceilWorldChunk.makeLowerWalls = false;
+        ceilWorldChunk.makeFloors = false;
+
+        // Set to use a custom shader
+        floorWorldChunk.getTesselators().setShaderOverride(ShaderManager.getShaderManager().getCompiledShader("editor-picked-floor"));
+        ceilWorldChunk.getTesselators().setShaderOverride(ShaderManager.getShaderManager().getCompiledShader("editor-picked-ceiling"));
+
+        // tesselate for the first time
+        refreshWorldChunks();
+    }
+
+    public void refreshWorldChunks() {
+        floorCollisionTriangles.Flush();
+        ceilCollisionTriangles.Flush();
+
+        if(floorWorldChunk != null) {
+            floorWorldChunk.refresh();
+            floorWorldChunk.Tesselate(Editor.app.level, Editor.app.renderer, false);
+            floorWorldChunk.getTesselators().addCollisionTriangles(floorCollisionTriangles);
+        }
+        if(ceilWorldChunk != null) {
+            ceilWorldChunk.refresh();
+            ceilWorldChunk.Tesselate(Editor.app.level, Editor.app.renderer, false);
+            ceilWorldChunk.getTesselators().addCollisionTriangles(ceilCollisionTriangles);
+        }
     }
 }

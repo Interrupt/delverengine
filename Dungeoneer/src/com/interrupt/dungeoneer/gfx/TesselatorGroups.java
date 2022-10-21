@@ -1,5 +1,8 @@
 package com.interrupt.dungeoneer.gfx;
 
+import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
+import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
+
 public class TesselatorGroups {
     public TesselatorGroup world;
     public TesselatorGroup water;
@@ -45,5 +48,17 @@ public class TesselatorGroups {
 
     public void render() {
 
+    }
+
+    public void addCollisionTriangles(TriangleSpatialHash spatialHash) {
+        world.addCollisionTriangles(spatialHash);
+        water.addCollisionTriangles(spatialHash);
+        waterfall.addCollisionTriangles(spatialHash);
+    }
+
+    public void setShaderOverride(ShaderInfo shader) {
+        world.setShaderOverride(shader);
+        water.setShaderOverride(shader);
+        waterfall.setShaderOverride(shader);
     }
 }

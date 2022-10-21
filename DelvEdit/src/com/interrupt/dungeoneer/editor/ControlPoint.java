@@ -7,7 +7,7 @@ public class ControlPoint {
     public Vector3 point;
     public ControlPointType controlPointType;
 
-    public enum ControlPointType { floor, ceiling, northCeil, northFloor, eastCeil, eastFloor, southCeil, southFloor, westCeil, westFloor, vertex };
+    public enum ControlPointType { floor, ceiling, northFloor, northCeil, eastFloor, eastCeil, southFloor, southCeil, westFloor, westCeil, vertex };
 
     public Array<ControlPointVertex> vertices = new Array<>();
 
