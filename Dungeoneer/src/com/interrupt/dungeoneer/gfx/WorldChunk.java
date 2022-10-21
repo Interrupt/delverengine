@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.gfx;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -10,19 +9,15 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
-import com.badlogic.gdx.utils.Triangle;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.GameManager;
-import com.interrupt.dungeoneer.collision.CollisionTriangle;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Group;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.OverworldChunk;
 import com.interrupt.dungeoneer.game.OverworldLevel;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
-import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.screens.GameScreen;
 
 import java.util.ArrayList;

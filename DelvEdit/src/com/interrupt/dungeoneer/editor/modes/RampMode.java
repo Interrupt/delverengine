@@ -1,15 +1,8 @@
 package com.interrupt.dungeoneer.editor.modes;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Ray;
-import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.editor.ControlPoint;
-import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -20,86 +13,12 @@ public class RampMode extends CarveMode {
         super(EditorModes.RAMP);
         canCarve = false;
         canExtrude = false;
+        usePlanePicking = false;
+        useCollisionTrianglePicking = true;
         tileSelectionSettings.boundsUseTileHeights = true;
     }
 
-    @Override
-    public void draw() {
-        // Draw the tile selections as bounding boxes
-        Editor.app.boxRenderer.setColor(0.75f, 0.75f, 0.75f, 0.5f);
-
-        if(state.ordinal() >= CarveModeState.SELECTED_TILES.ordinal())
-            Editor.app.boxRenderer.setColor(1.0f, 0.25f, 0.25f, 0.75f);
-
-        Editor.app.boxRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-        // Don't draw the hover indicator box when not hovering or dragging
-        if(state.ordinal() <= CarveModeState.DRAGGING_SELECTION.ordinal()) {
-            BoundingBox hoverBounds = didPickSurface ? hoverSelection.getBounds(pickedSurfaceFloorPoints, pickedSurfaceCeilingPoints) :
-                hoverSelection.getBounds(false);
-
-            Editor.app.boxRenderer.box(
-                hoverBounds.min.x,
-                hoverBounds.min.z,
-                hoverBounds.min.y,
-                hoverBounds.getWidth(),
-                hoverBounds.getDepth(),
-                -hoverBounds.getHeight()
-            );
-        }
-
-        // Draw all the picked selection bounding boxes
-        for(int i = 0; i < pickedTileSelections.size; i++) {
-            TileSelection selection = pickedTileSelections.get(i);
-            BoundingBox bounds = selection.getBounds();
-
-            Editor.app.boxRenderer.box(
-                bounds.min.x,
-                bounds.min.z,
-                bounds.min.y,
-                bounds.getWidth(),
-                bounds.getDepth(),
-                -bounds.getHeight()
-            );
-
-            // Also ensure we have world chunks to draw
-            selection.initWorldChunks();
-        }
-
-        Editor.app.boxRenderer.end();
-
-        // Can quit here unless we are in ceiling or floor move modes
-        if(state.ordinal() < CarveModeState.SELECTED_TILES.ordinal())
-            return;
-
-        boolean isOverACeilingPlane = false;
-        boolean isOverAFloorPlane = false;
-
-        // Check if the mouse is over a selection floor or ceiling
-        for(TileSelection selection : pickedTileSelections) {
-            isOverACeilingPlane |= getPointerOverCeilingPlane(selection);
-            isOverAFloorPlane |= getPointerOverFloorPlane(selection);
-
-            if(isOverACeilingPlane || isOverAFloorPlane)
-                break;
-        }
-
-        Gdx.gl20.glEnable(GL20.GL_BLEND);
-        Gdx.gl20.glDisable(GL20.GL_DEPTH_TEST);
-
-        // Check if the mouse is over a selection floor or ceiling
-        for(TileSelection selection : pickedTileSelections) {
-            if(isOverACeilingPlane)
-                selection.ceilWorldChunk.renderAllForEditorPicker();
-            else if(isOverAFloorPlane)
-                selection.floorWorldChunk.renderAllForEditorPicker();
-        }
-
-        Gdx.gl20.glDisable(GL20.GL_BLEND);
-        Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-    }
-
-    private Vector3 t_adjustHeights = new Vector3();
+    protected Vector3 t_adjustHeights = new Vector3();
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
         boolean isCeiling = isControlPointOnCeiling(controlPointType);
@@ -176,9 +95,6 @@ public class RampMode extends CarveMode {
             }
 
             t.packHeights();
-
-            // Retesselate!
-            selection.refreshWorldChunks();
         }
 
         selection.getBounds();
@@ -278,23 +194,5 @@ public class RampMode extends CarveMode {
 
         // Only one left!
         return TileEdges.West;
-    }
-
-    @Override
-    protected boolean getPointerOverCeilingPlane(TileSelection selection) {
-        if(selection.ceilWorldChunk == null)
-            return false;
-
-        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-        return Collidor.intersectRayTriangles(ray, selection.ceilCollisionTriangles.getAllTriangles(), intersectPoint, intersectNormal);
-    }
-
-    @Override
-    protected boolean getPointerOverFloorPlane(TileSelection selection) {
-        if(selection.floorWorldChunk == null)
-            return false;
-
-        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-        return Collidor.intersectRayTriangles(ray, selection.floorCollisionTriangles.getAllTriangles(), intersectPoint, intersectNormal);
     }
 }

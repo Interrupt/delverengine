@@ -5,18 +5,24 @@ import com.interrupt.dungeoneer.editor.ControlPoint;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.helpers.TileEdges;
 
-public class ArchMode extends CarveMode {
+public class ArchMode extends RampMode {
     public ArchMode() {
-        super(EditorModes.ARCH);
-        canCarve = false;
-        canExtrude = false;
-        tileSelectionSettings.boundsUseTileHeights = true;
+        super();
+        mode = EditorModes.ARCH;
     }
 
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
-        boolean isCeiling = controlPointType == ControlPoint.ControlPointType.ceiling;
+        boolean isCeiling = isControlPointOnCeiling(controlPointType);
+
+        boolean hasMatchingTileEdge = controlPointTypeHasMatchingTileEdge(controlPointType);
+        if(!hasMatchingTileEdge)
+            return;
+
+        TileEdges tileEdge = getTileEdgeFromControlPointType(controlPointType);
+
         for (TileSelectionInfo info : selection) {
             Tile t = info.tile;
             if (t == null) {
@@ -31,8 +37,8 @@ public class ArchMode extends CarveMode {
             heightMod = (float)Math.sin(heightMod * Math.PI);
 
             // Pick our arch direction based on selection differences
-            boolean xMode = selection.width > selection.height;
-            float pickedArchMod = xMode ? widthMod : heightMod;
+            boolean xMode = tileEdge == TileEdges.East || tileEdge == TileEdges.West;
+            float pickedArchMod = xMode ? heightMod : widthMod;
 
             if (isCeiling) {
                 t.ceilHeight -= dragOffset.y * pickedArchMod;

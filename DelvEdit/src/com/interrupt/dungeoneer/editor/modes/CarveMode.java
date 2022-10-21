@@ -2,6 +2,8 @@ package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -19,6 +21,7 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.FloatTuple;
+import com.interrupt.helpers.TileEdges;
 
 public class CarveMode extends EditorMode {
     public CarveMode() {
@@ -33,6 +36,8 @@ public class CarveMode extends EditorMode {
     protected boolean canCarve = true;
     protected boolean canExtrude = true;
     protected boolean carveAutomatically = true;
+    protected boolean useCollisionTrianglePicking = false;
+    protected boolean usePlanePicking = true;
     protected TileSelection tileSelectionSettings = new TileSelection();
 
     Vector3 selectionStart = new Vector3();
@@ -54,6 +59,10 @@ public class CarveMode extends EditorMode {
 
     protected enum CarveModeState { START, DRAGGING_SELECTION, SELECTED_TILES, SELECTED_CONTROL_POINT }
     CarveModeState state = CarveModeState.START;
+
+
+    private static Color ceilingPickColor = new Color(0.2f, 1.0f, 0.2f, 1.0f);
+    private static Color floorPickColor = new Color(0.3f, 0.3f, 1.0f, 1.0f);
 
     @Override
     public void tick() {
@@ -205,50 +214,72 @@ public class CarveMode extends EditorMode {
 
     protected boolean getPointerOverCeilingPlane(TileSelection selection) {
         // Try picking the ceiling
-        intersectPlane.set(0, 1, 0, -selection.getBounds(false).max.z);
-        intersectNormal.set(0, 1, 0);
+        if(useCollisionTrianglePicking && selection.ceilWorldChunk != null) {
+            Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+            if(Collidor.intersectRayTriangles(ray, selection.ceilCollisionTriangles.getAllTriangles(), intersectPoint, intersectNormal)) {
+                return true;
+            }
+        }
 
-        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-        boolean hitPlane = Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
+        if(usePlanePicking) {
+            intersectPlane.set(0, 1, 0, -selection.getBounds(false).max.z);
+            intersectNormal.set(0, 1, 0);
 
-        if (!hitPlane)
-            return false;
+            Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+            boolean hitPlane = Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
 
-        // Now check if the intersection is in the bounds
-        if(intersectPoint.x < selection.x)
-            return false;
-        if(intersectPoint.x > selection.x + selection.width)
-            return false;
-        if(intersectPoint.z < selection.y)
-            return false;
-        if(intersectPoint.z > selection.y + selection.height)
-            return false;
+            if (!hitPlane)
+                return false;
 
-        return true;
+            // Now check if the intersection is in the bounds
+            if (intersectPoint.x < selection.x)
+                return false;
+            if (intersectPoint.x > selection.x + selection.width)
+                return false;
+            if (intersectPoint.z < selection.y)
+                return false;
+            if (intersectPoint.z > selection.y + selection.height)
+                return false;
+
+            return true;
+        }
+
+        return false;
     }
 
     protected boolean getPointerOverFloorPlane(TileSelection selection) {
         // Try picking the ceiling
-        intersectPlane.set(0, 1, 0, -selection.getBounds(false).min.z);
-        intersectNormal.set(0, 1, 0);
+        if(useCollisionTrianglePicking && selection.floorWorldChunk != null) {
+            Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+            if(Collidor.intersectRayTriangles(ray, selection.floorCollisionTriangles.getAllTriangles(), intersectPoint, intersectNormal)) {
+                return true;
+            }
+        }
 
-        Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-        boolean hitPlane = Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
+        if(usePlanePicking) {
+            intersectPlane.set(0, 1, 0, -selection.getBounds(false).min.z);
+            intersectNormal.set(0, 1, 0);
 
-        if (!hitPlane)
-            return false;
+            Ray ray = Editor.app.camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+            boolean hitPlane = Intersector.intersectRayPlane(ray, intersectPlane, intersectPoint);
 
-        // Now check if the intersection is in the bounds
-        if(intersectPoint.x < selection.x)
-            return false;
-        if(intersectPoint.x > selection.x + selection.width)
-            return false;
-        if(intersectPoint.z < selection.y)
-            return false;
-        if(intersectPoint.z > selection.y + selection.height)
-            return false;
+            if (!hitPlane)
+                return false;
 
-        return true;
+            // Now check if the intersection is in the bounds
+            if (intersectPoint.x < selection.x)
+                return false;
+            if (intersectPoint.x > selection.x + selection.width)
+                return false;
+            if (intersectPoint.z < selection.y)
+                return false;
+            if (intersectPoint.z > selection.y + selection.height)
+                return false;
+
+            return true;
+        }
+
+        return false;
     }
 
     protected void tryPickingControlPoint(TileSelection selection) {
@@ -306,6 +337,10 @@ public class CarveMode extends EditorMode {
                 bounds.getDepth(),
                 -bounds.getHeight()
             );
+
+            // Also ensure we have world chunks to draw in collision triangle mode
+            if(useCollisionTrianglePicking)
+                selection.initWorldChunks();
         }
 
         Editor.app.boxRenderer.end();
@@ -326,12 +361,53 @@ public class CarveMode extends EditorMode {
                 break;
         }
 
-        // Check if the mouse is over a selection floor or ceiling
-        for(TileSelection selection : pickedTileSelections) {
-            if(isOverACeilingPlane)
-                renderSurfaceControlPoint(selection, true);
-            else if(isOverAFloorPlane)
-                renderSurfaceControlPoint(selection, false);
+        // Render any picked planes
+        if(usePlanePicking) {
+            for (TileSelection selection : pickedTileSelections) {
+                if (isOverACeilingPlane)
+                    renderSurfaceControlPoint(selection, true);
+                else if (isOverAFloorPlane)
+                    renderSurfaceControlPoint(selection, false);
+            }
+        }
+
+        // Also render any picked Tiles
+        if(useCollisionTrianglePicking) {
+            // Check if the mouse is over a selection floor or ceiling
+            // Use the stencil buffer to just get an outline of the selected area
+            Gdx.gl20.glEnable(GL20.GL_STENCIL_TEST);
+            Gdx.gl20.glDisable(GL20.GL_DEPTH_TEST);
+            Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
+            Gdx.gl20.glStencilOp(GL20.GL_KEEP, GL20.GL_KEEP, GL20.GL_REPLACE);
+            Gdx.gl20.glColorMask(false, false, false,false);
+
+            for(TileSelection selection : pickedTileSelections) {
+                if(isOverACeilingPlane) {
+                    Gdx.gl20.glStencilFunc(GL20.GL_ALWAYS, 1, 0xFFFFFFFF);
+                    selection.ceilWorldChunk.renderAllForEditorPicker();
+                }
+                else if(isOverAFloorPlane) {
+                    Gdx.gl20.glStencilFunc(GL20.GL_ALWAYS, 2, 0xFFFFFFFF);
+                    selection.floorWorldChunk.renderAllForEditorPicker();
+                }
+            }
+
+            Gdx.gl20.glColorMask(true, true, true,true);
+            Gdx.gl20.glStencilOp(GL20.GL_KEEP, GL20.GL_KEEP, GL20.GL_KEEP);
+
+            Gdx.gl20.glStencilFunc(GL20.GL_EQUAL, 1, 0xFFFFFFFF);
+            ceilingPickColor.set(0.4f, 1.0f, 0.4f, 0.5f);
+            Editor.app.renderer.drawFlashOverlay(ceilingPickColor);
+
+            Gdx.gl20.glStencilFunc(GL20.GL_EQUAL, 2, 0xFFFFFFFF);
+            floorPickColor.set(0.5f, 0.5f, 1.0f, 0.5f);
+            Editor.app.renderer.drawFlashOverlay(floorPickColor);
+
+            // reset back to normal
+            Gdx.gl20.glDisable(GL20.GL_STENCIL_TEST);
+            Gdx.gl20.glDisable(GL20.GL_BLEND);
+            Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+            Gdx.gl20.glDepthMask(true);
         }
     }
 
@@ -649,6 +725,10 @@ public class CarveMode extends EditorMode {
             }
 
             adjustTileHeights(selection, dragStart, dragOffset, pickedControlPoint.controlPointType);
+
+            // Retesselate!
+            if(useCollisionTrianglePicking)
+                selection.refreshWorldChunks();
         }
 
         // FIXME: Just do this once for the whole box, not per tile!
@@ -694,5 +774,43 @@ public class CarveMode extends EditorMode {
         CarveMode newCarveMode = (CarveMode) newMode;
         newCarveMode.pickedTileSelections.addAll(pickedTileSelections);
         newCarveMode.state = CarveModeState.SELECTED_TILES;
+
+        if(!newCarveMode.useCollisionTrianglePicking)
+            return;
+
+        for(TileSelection selection : newCarveMode.pickedTileSelections) {
+            selection.refreshWorldChunks();
+        }
+    }
+
+    protected static boolean isControlPointOnCeiling(ControlPoint.ControlPointType c) {
+        if(c == ControlPoint.ControlPointType.vertex)
+            return false;
+
+        // Even numbers are floors, odd are ceilings
+        return c.ordinal() % 2 != 0;
+    }
+
+    protected static boolean controlPointTypeHasMatchingTileEdge(ControlPoint.ControlPointType c) {
+        if(c == ControlPoint.ControlPointType.ceiling)
+            return false;
+        if(c == ControlPoint.ControlPointType.floor)
+            return false;
+        if(c == ControlPoint.ControlPointType.vertex)
+            return false;
+
+        return true;
+    }
+
+    protected static TileEdges getTileEdgeFromControlPointType(ControlPoint.ControlPointType c) {
+        if(c == ControlPoint.ControlPointType.northCeil || c == ControlPoint.ControlPointType.northFloor)
+            return TileEdges.North;
+        if(c == ControlPoint.ControlPointType.eastCeil || c == ControlPoint.ControlPointType.eastFloor)
+            return TileEdges.East;
+        if(c == ControlPoint.ControlPointType.southCeil || c == ControlPoint.ControlPointType.southFloor)
+            return TileEdges.South;
+
+        // Only one left!
+        return TileEdges.West;
     }
 }

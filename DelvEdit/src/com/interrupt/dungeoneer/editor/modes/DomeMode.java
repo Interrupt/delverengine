@@ -11,6 +11,8 @@ public class DomeMode extends CarveMode {
         super(EditorModes.DOME);
         canCarve = false;
         canExtrude = false;
+        usePlanePicking = false;
+        useCollisionTrianglePicking = true;
         tileSelectionSettings.boundsUseTileHeights = true;
     }
 

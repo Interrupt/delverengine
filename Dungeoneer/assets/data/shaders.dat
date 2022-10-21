@@ -1,33 +1,5 @@
 [
 	{
-		"name": "editor-picked-ceiling",
-		"vertex": "editor-picked.vert",
-		"fragment": "editor-picked.frag",
-		"attributes": {
-			"u_pick_color": {
-				"class": "com.badlogic.gdx.graphics.Color",
-				"r": 0.0,
-				"g": 0.7,
-				"b": 0.0,
-				"a": 0.1
-			}
-		}
-	},
-	{
-		"name": "editor-picked-floor",
-		"vertex": "editor-picked.vert",
-		"fragment": "editor-picked.frag",
-		"attributes": {
-			"u_pick_color": {
-				"class": "com.badlogic.gdx.graphics.Color",
-				"r": 0.0,
-				"g": 0.0,
-				"b": 0.7,
-				"a": 0.1
-			}
-		}
-	},
-	{
 		"name": "magic-item",
 		"vertex": "magic-item.vert",
 		"fragment": "magic-item.frag",

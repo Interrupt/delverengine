@@ -15,6 +15,8 @@ public class NoiseMode extends CarveMode {
         canCarve = true;
         carveAutomatically = false;
         canExtrude = false;
+        usePlanePicking = false;
+        useCollisionTrianglePicking = true;
         tileSelectionSettings.boundsUseTileHeights = true;
     }
 

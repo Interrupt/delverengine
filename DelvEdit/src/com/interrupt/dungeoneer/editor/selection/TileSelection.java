@@ -258,10 +258,6 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         ceilWorldChunk.makeLowerWalls = false;
         ceilWorldChunk.makeFloors = false;
 
-        // Set to use a custom shader
-        floorWorldChunk.getTesselators().setShaderOverride(ShaderManager.getShaderManager().getCompiledShader("editor-picked-floor"));
-        ceilWorldChunk.getTesselators().setShaderOverride(ShaderManager.getShaderManager().getCompiledShader("editor-picked-ceiling"));
-
         // tesselate for the first time
         refreshWorldChunks();
     }
