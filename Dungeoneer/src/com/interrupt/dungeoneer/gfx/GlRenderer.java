@@ -2714,6 +2714,7 @@ public class GlRenderer {
 			camera2D.viewportHeight = height;
 		}
 		camera2D.update();
+        uiBatch.setProjectionMatrix(camera2D.combined);
 
 		if(Game.instance != null) Game.camera = camera;
 
