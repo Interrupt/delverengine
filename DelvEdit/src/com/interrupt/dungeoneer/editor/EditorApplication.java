@@ -2747,15 +2747,13 @@ public class EditorApplication implements ApplicationListener {
 	   return colorFromHex(Long.parseLong(aa + rr + gg + bb, 16));
    }
 
-   public void addEntityMarker(Markers selectedItem) {
+   public void addEntityMarker(Markers selectedItem, float xPos, float yPos) {
 	   clearSelectedMarkers();
 
 	   if(selectedItem != Markers.none) {
-           for (TileSelectionInfo info : Editor.selection.tiles) {
-               EditorMarker eM = new EditorMarker(selectedItem, info.x, info.y);
-               level.editorMarkers.add(eM);
-               markWorldAsDirty(info.x, info.y, 4);
-		   }
+           EditorMarker eM = new EditorMarker(selectedItem, (int)xPos, (int)yPos);
+           level.editorMarkers.add(eM);
+           markWorldAsDirty((int)xPos, (int)yPos, 4);
 	   }
 
        history.saveState(level);
