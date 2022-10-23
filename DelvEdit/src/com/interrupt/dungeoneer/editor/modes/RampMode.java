@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.ControlPoint;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
@@ -18,7 +19,6 @@ public class RampMode extends CarveMode {
         tileSelectionSettings.boundsUseTileHeights = true;
     }
 
-    protected Vector3 t_adjustHeights = new Vector3();
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
         boolean isCeiling = isControlPointOnCeiling(controlPointType);
@@ -29,75 +29,32 @@ public class RampMode extends CarveMode {
 
         TileEdges tileEdge = getTileEdgeFromControlPointType(controlPointType);
 
-        for (TileSelectionInfo info : selection) {
-            Tile t = info.tile;
-            if (t == null) {
-                continue;
+        // Apply a function across all of these vertices to set the height modifier
+        // These steps are flattened to avoid cache misses, hopefully
+        Array<Vector3> vertices = selection.getVertexLocations();
+        for(int i = 0; i < vertices.size; i++) {
+            Vector3 vert = vertices.get(i);
+
+            float xMod = (vert.x - selection.x) / (float)selection.width;
+            float yMod = (vert.y - selection.y) / (float)selection.height;
+
+            float pickedMod = 0f;
+            if(tileEdge == TileEdges.East) {
+                pickedMod = xMod;
+            } else if(tileEdge == TileEdges.West) {
+                pickedMod = 1f - xMod;
+            } else if(tileEdge == TileEdges.North) {
+                pickedMod = 1f - yMod;
+            } else if(tileEdge == TileEdges.South) {
+                pickedMod = yMod;
             }
 
-            Vector3 dragAmount = t_adjustHeights.set(dragOffset);
-            int selX = -1;
-            int selY = -1;
-
-            if(tileEdge == TileEdges.North) {
-                selY = selection.y + selection.height;
-            }
-            else if(tileEdge == TileEdges.South) {
-                selY = selection.y;
-                dragAmount.y *= -1;
-            }
-            else if(tileEdge == TileEdges.West) {
-                selX = selection.x + selection.width;
-            }
-            else if(tileEdge == TileEdges.East) {
-                selX = selection.x;
-                dragAmount.y *= -1;
-            }
-
-            // First set of verts
-            float modX = ((float)info.x - (float)selX) / (float)selection.width;
-            float modY = ((float)info.y - (float)selY) / (float)selection.height;
-
-            // Second set of verts
-            float modXNext = ((float)info.x - (float)selX + 1f) / (float)selection.width;
-            float modYNext = ((float)info.y - (float)selY + 1f) / (float)selection.height;
-
-            if(isCeiling) {
-                if(selX != -1) {
-                    t.ceilSlopeNE += dragAmount.y * modX;
-                    t.ceilSlopeSE += dragAmount.y * modX;
-
-                    t.ceilSlopeNW += dragAmount.y * modXNext;
-                    t.ceilSlopeSW += dragAmount.y * modXNext;
-                }
-                if(selY != -1) {
-                    t.ceilSlopeNE += dragAmount.y * modY;
-                    t.ceilSlopeNW += dragAmount.y * modY;
-
-                    t.ceilSlopeSE += dragAmount.y * modYNext;
-                    t.ceilSlopeSW += dragAmount.y * modYNext;
-                }
-            } else {
-                if(selX != -1) {
-                    t.slopeNE += dragAmount.y * modX;
-                    t.slopeSE += dragAmount.y * modX;
-
-                    t.slopeNW += dragAmount.y * modXNext;
-                    t.slopeSW += dragAmount.y * modXNext;
-                }
-                if(selY != -1) {
-                    t.slopeNE += dragAmount.y * modY;
-                    t.slopeNW += dragAmount.y * modY;
-
-                    t.slopeSE += dragAmount.y * modYNext;
-                    t.slopeSW += dragAmount.y * modYNext;
-                }
-            }
-
-            t.packHeights();
+            // Save this new Z value to use in the next step
+            vert.z = pickedMod * -dragOffset.y;
         }
 
-        selection.getBounds();
+        applyVertexHeightModifiers(selection, vertices, isCeiling, !isCeiling);
+        packTileHeights(selection, isCeiling);
     }
 
     @Override

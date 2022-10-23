@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.editor.modes;
 
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.ControlPoint;
@@ -8,10 +9,15 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.TileEdges;
 
-public class StairsMode extends RampMode {
-    public StairsMode() {
+public class Ramp2Mode extends RampMode {
+    public Ramp2Mode() {
         super();
-        mode = EditorModes.STAIRS;
+        mode = EditorModes.RAMP2;
+        canCarve = false;
+        canExtrude = false;
+        usePlanePicking = false;
+        useCollisionTrianglePicking = true;
+        tileSelectionSettings.boundsUseTileHeights = true;
     }
 
     @Override
@@ -26,7 +32,7 @@ public class StairsMode extends RampMode {
 
         // Apply a function across all of these vertices to set the height modifier
         // These steps are flattened to avoid cache misses, hopefully
-        Array<Vector3> vertices = selection.getVertexLocations(0, 0);
+        Array<Vector3> vertices = selection.getVertexLocations();
         for(int i = 0; i < vertices.size; i++) {
             Vector3 vert = vertices.get(i);
 
@@ -35,20 +41,22 @@ public class StairsMode extends RampMode {
 
             float pickedMod = 0f;
             if(tileEdge == TileEdges.East) {
-                pickedMod = xMod + (1f / selection.width);
+                pickedMod = xMod;
             } else if(tileEdge == TileEdges.West) {
                 pickedMod = 1f - xMod;
             } else if(tileEdge == TileEdges.North) {
                 pickedMod = 1f - yMod;
             } else if(tileEdge == TileEdges.South) {
-                pickedMod = yMod + (1f / selection.height);
+                pickedMod = yMod;
             }
 
+            float heightAtVertex = pickedMod * pickedMod;
+
             // Save this new Z value to use in the next step
-            vert.z = pickedMod * -dragOffset.y;
+            vert.z = heightAtVertex * -dragOffset.y;
         }
 
-        applyTileHeightModifiers(selection, vertices, isCeiling, !isCeiling);
+        applyVertexHeightModifiers(selection, vertices, isCeiling, !isCeiling);
         packTileHeights(selection, isCeiling);
     }
 }

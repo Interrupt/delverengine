@@ -783,6 +783,23 @@ public class CarveMode extends EditorMode {
         }
     }
 
+    protected void applyTileHeightModifiers(TileSelection selection, Array<Vector3> vertices, boolean adjustCeiling, boolean adjustFloor) {
+        Level level = Editor.app.level;
+
+        // Apply the height modifier of each vertex to adjacent tiles in the selection bounds
+        for(int i = 0; i < vertices.size; i++) {
+            Vector3 vert = vertices.get(i);
+            Tile t = level.getTileOrNull((int)vert.x, (int)vert.y);
+            if(t == null)
+                continue;
+
+            if(adjustFloor)
+                t.floorHeight += vert.z;
+            if(adjustCeiling)
+                t.ceilHeight += vert.z;
+        }
+    }
+
     protected void applyVertexHeightModifiers(TileSelection selection, Array<Vector3> vertices, boolean adjustCeiling, boolean adjustFloor) {
         Level level = Editor.app.level;
 

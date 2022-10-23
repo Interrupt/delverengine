@@ -370,8 +370,11 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.DOME, new DomeMode());
         editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode());
         editorModes.put(EditorMode.EditorModes.RAMP, new RampMode());
+        editorModes.put(EditorMode.EditorModes.RAMP2, new Ramp2Mode());
+        editorModes.put(EditorMode.EditorModes.RAMP3, new Ramp3Mode());
         editorModes.put(EditorMode.EditorModes.NOISE, new NoiseMode());
         editorModes.put(EditorMode.EditorModes.FLATTEN, new FlattenMode());
+        editorModes.put(EditorMode.EditorModes.LANDSCAPE, new LandscapeMode());
 	}
 
 	/** Load entity templates */

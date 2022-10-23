@@ -95,9 +95,13 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
     }
 
     public Array<Vector3> getVertexLocations() {
+        return getVertexLocations(1, 1);
+    }
+
+    public Array<Vector3> getVertexLocations(int expandX, int expandY) {
         Array<Vector3> result = new Array<>();
-        for(int ix = x; ix < x + width + 1; ix++) {
-            for(int iy = y; iy < y + height + 1; iy++) {
+        for(int ix = x; ix < x + width + expandX; ix++) {
+            for(int iy = y; iy < y + height + expandY; iy++) {
                 result.add(new Vector3(ix, iy, 0));
             }
         }
