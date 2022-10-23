@@ -28,7 +28,9 @@ public class LandscapeMode extends CarveMode {
             float xMod = (vert.x - selection.x) / (float)selection.width;
             float yMod = (vert.y - selection.y) / (float)selection.height;
 
-            float heightAtVertex = (float)Math.exp(xMod * xMod) - 1f;
+            xMod = (float)Math.pow(4f * xMod * (1f - xMod), 2f);
+            yMod = (float)Math.pow(4f * yMod * (1f - yMod), 2f);
+            float heightAtVertex = (xMod * yMod);
 
             // Save this new Z value to use in the next step
             vert.z = heightAtVertex * -dragOffset.y;
