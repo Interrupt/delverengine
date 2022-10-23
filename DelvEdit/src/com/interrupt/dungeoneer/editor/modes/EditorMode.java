@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input;
 import com.interrupt.dungeoneer.editor.EditorApplication;
 
 public class EditorMode {
-    public enum EditorModes { ENTITY_PICKED, CARVE, PAINT, DRAW, ERASE, ARCH, DOME, STAIRS, RAMP, NOISE }
+    public enum EditorModes { ENTITY_PICKED, CARVE, PAINT, DRAW, ERASE, ARCH, DOME, STAIRS, RAMP, NOISE, FLATTEN }
 
     public EditorModes mode;
 
