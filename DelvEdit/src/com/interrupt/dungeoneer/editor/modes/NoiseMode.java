@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.ControlPoint;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
@@ -25,6 +26,36 @@ public class NoiseMode extends CarveMode {
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
         boolean isCeiling = controlPointType == ControlPoint.ControlPointType.ceiling;
+
+        // Apply a function across all of these vertices to set the height modifier
+        // These steps are flattened to avoid cache misses, hopefully
+        Array<Vector3> vertices = selection.getVertexLocations();
+        for(int i = 0; i < vertices.size; i++) {
+            Vector3 vert = vertices.get(i);
+
+            // Offset the floor and ceiling noise by different amounts
+            int noiseOffset = 400;
+            if(isCeiling)
+                noiseOffset += 75;
+
+            // Perlin noise based randomness
+            float noiseAmt = (float)perlinNoise.getHeight(
+                vert.x * 0.05f + noiseOffset + selection.x,
+                vert.y * 0.05f + noiseOffset + selection.y);
+
+            noiseAmt /= perlinNoise.getAmplitude();
+            noiseAmt += 1f;
+            noiseAmt *= 0.5f;
+
+            if(noiseAmt < 0)
+                noiseAmt = 0;
+
+            vert.z = noiseAmt * -dragOffset.y;
+        }
+
+        applyVertexHeightModifiers(selection, vertices, isCeiling, !isCeiling);
+        packTileHeights(selection, isCeiling);
+
         for (TileSelectionInfo info : selection) {
             Tile t = info.tile;
             if (t == null) {

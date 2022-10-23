@@ -1,10 +1,9 @@
 package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.ControlPoint;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
-import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
-import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.TileEdges;
 
 public class ArchMode extends RampMode {
@@ -23,33 +22,21 @@ public class ArchMode extends RampMode {
 
         TileEdges tileEdge = getTileEdgeFromControlPointType(controlPointType);
 
-        for (TileSelectionInfo info : selection) {
-            Tile t = info.tile;
-            if (t == null) {
-                continue;
-            }
+        // Apply a function across all of these vertices to set the height modifier
+        // These steps are flattened to avoid cache misses, hopefully
+        Array<Vector3> vertices = selection.getVertexLocations();
+        for(int i = 0; i < vertices.size; i++) {
+            Vector3 vert = vertices.get(i);
 
-            // Get the arch heights
-            float widthMod = (info.x + 0.5f - selection.x) / (float)selection.width;
-            float heightMod = (info.y + 0.5f - selection.y) / (float)selection.height;
+            float xMod = (vert.x - selection.x) / (float)selection.width;
+            float yMod = (vert.y - selection.y) / (float)selection.height;
+            float heightAtVertex = tileEdge == TileEdges.East || tileEdge == TileEdges.West ? yMod : xMod;
 
-            widthMod = (float)Math.sin(widthMod * Math.PI);
-            heightMod = (float)Math.sin(heightMod * Math.PI);
-
-            // Pick our arch direction based on selection differences
-            boolean xMode = tileEdge == TileEdges.East || tileEdge == TileEdges.West;
-            float pickedArchMod = xMode ? heightMod : widthMod;
-
-            if (isCeiling) {
-                t.ceilHeight -= dragOffset.y * pickedArchMod;
-            } else {
-                t.floorHeight -= dragOffset.y * pickedArchMod;
-            }
-
-            t.packHeights();
-            if (t.getMinOpenHeight() < 0f) {
-                t.compressFloorAndCeiling(!isCeiling);
-            }
+            // Save this new Z value to use in the next step
+            vert.z = (float)Math.sin(heightAtVertex * Math.PI) * -dragOffset.y;
         }
+
+        applyVertexHeightModifiers(selection, vertices, isCeiling, !isCeiling);
+        packTileHeights(selection, isCeiling);
     }
 }

@@ -783,6 +783,78 @@ public class CarveMode extends EditorMode {
         }
     }
 
+    protected void applyVertexHeightModifiers(TileSelection selection, Array<Vector3> vertices, boolean adjustCeiling, boolean adjustFloor) {
+        Level level = Editor.app.level;
+
+        // Apply the height modifier of each vertex to adjacent tiles in the selection bounds
+        for(int i = 0; i < vertices.size; i++) {
+            Vector3 vert = vertices.get(i);
+
+            int minX = selection.x;
+            int minY = selection.y;
+            int maxX = selection.x + selection.width;
+            int maxY = selection.y + selection.height;
+
+            int x = (int)vert.x;
+            int y = (int)vert.y;
+
+            // Only tile we know for sure is in bounds
+            if(x < maxX && y < maxY) {
+                Tile t = level.getTileOrNull(x, y);
+                if (t != null) {
+                    if(adjustFloor)
+                        t.slopeNE += vert.z;
+                    if(adjustCeiling)
+                        t.ceilSlopeNE += vert.z;
+                }
+            }
+
+            if(x > minX && y < maxY) {
+                Tile t = level.getTileOrNull(x - 1, y);
+                if (t != null) {
+                    if(adjustFloor)
+                        t.slopeNW += vert.z;
+                    if(adjustCeiling)
+                        t.ceilSlopeNW += vert.z;
+                }
+            }
+
+            if(x < maxX && y > minY) {
+                Tile t = level.getTileOrNull(x, y - 1);
+                if (t != null) {
+                    if(adjustFloor)
+                        t.slopeSE += vert.z;
+                    if(adjustCeiling)
+                        t.ceilSlopeSE += vert.z;
+                }
+            }
+
+            if(x > minX && y > minY) {
+                Tile t = level.getTileOrNull(x - 1, y - 1);
+                if (t != null) {
+                    if(adjustFloor)
+                        t.slopeSW += vert.z;
+                    if(adjustCeiling)
+                        t.ceilSlopeSW += vert.z;
+                }
+            }
+        }
+    }
+
+    protected void packTileHeights(TileSelection selection, boolean isCeiling) {
+        // Pack all of the tile heights
+        for (TileSelectionInfo info : selection) {
+            Tile t = info.tile;
+            if(t == null)
+                continue;
+
+            t.packHeights();
+            if (t.getMinOpenHeight() < 0f) {
+                t.compressFloorAndCeiling(!isCeiling);
+            }
+        }
+    }
+
     protected static boolean isControlPointOnCeiling(ControlPoint.ControlPointType c) {
         if(c == ControlPoint.ControlPointType.vertex)
             return false;

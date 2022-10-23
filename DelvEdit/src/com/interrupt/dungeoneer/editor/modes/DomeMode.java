@@ -1,10 +1,9 @@
 package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.ControlPoint;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
-import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
-import com.interrupt.dungeoneer.tiles.Tile;
 
 public class DomeMode extends CarveMode {
     public DomeMode() {
@@ -18,31 +17,27 @@ public class DomeMode extends CarveMode {
 
     @Override
     public void adjustTileHeights(TileSelection selection, Vector3 dragStart, Vector3 dragOffset, ControlPoint.ControlPointType controlPointType) {
-        boolean isCeiling = controlPointType == ControlPoint.ControlPointType.ceiling;
-        for (TileSelectionInfo info : selection) {
-            Tile t = info.tile;
-            if (t == null) {
-                continue;
-            }
+        boolean isCeiling = isControlPointOnCeiling(controlPointType);
 
-            // Get the arch heights
-            float widthMod = (info.x + 0.5f - selection.x) / (float)selection.width;
-            float heightMod = (info.y + 0.5f - selection.y) / (float)selection.height;
+        // Apply a function across all of these vertices to set the height modifier
+        // These steps are flattened to avoid cache misses, hopefully
+        Array<Vector3> vertices = selection.getVertexLocations();
+        for(int i = 0; i < vertices.size; i++) {
+            Vector3 vert = vertices.get(i);
 
-            widthMod = (float)Math.sin(widthMod * Math.PI);
-            heightMod = (float)Math.sin(heightMod * Math.PI);
-            float calcedArchMod = (widthMod + heightMod) / 2f;
+            float xMod = (vert.x - selection.x) / (float)selection.width;
+            float yMod = (vert.y - selection.y) / (float)selection.height;
 
-            if (isCeiling) {
-                t.ceilHeight -= dragOffset.y * calcedArchMod;
-            } else {
-                t.floorHeight -= dragOffset.y * calcedArchMod;
-            }
+            xMod = (float)Math.sin(xMod * Math.PI);
+            yMod = (float)Math.sin(yMod * Math.PI);
 
-            t.packHeights();
-            if (t.getMinOpenHeight() < 0f) {
-                t.compressFloorAndCeiling(!isCeiling);
-            }
+            float heightAtVertex = (xMod + yMod) / 2f;
+
+            // Save this new Z value to use in the next step
+            vert.z = heightAtVertex * -dragOffset.y;
         }
+
+        applyVertexHeightModifiers(selection, vertices, isCeiling, !isCeiling);
+        packTileHeights(selection, isCeiling);
     }
 }

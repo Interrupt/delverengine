@@ -1,5 +1,7 @@
 package com.interrupt.dungeoneer.editor.selection;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
@@ -90,6 +92,16 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
                 return result.iterator();
             }
         };
+    }
+
+    public Array<Vector3> getVertexLocations() {
+        Array<Vector3> result = new Array<>();
+        for(int ix = x; ix < x + width + 1; ix++) {
+            for(int iy = y; iy < y + height + 1; iy++) {
+                result.add(new Vector3(ix, iy, 0));
+            }
+        }
+        return result;
     }
 
     public static TileSelection Rect(int x, int y, int width, int height) {
