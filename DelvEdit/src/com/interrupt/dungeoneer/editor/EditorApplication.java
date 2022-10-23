@@ -351,6 +351,7 @@ public class EditorApplication implements ApplicationListener {
         // Setup the different editor modes
         editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode());
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
+        editorModes.put(Editor)
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
         editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
         editorModes.put(EditorMode.EditorModes.ERASE, new EraseMode());
@@ -2909,15 +2910,57 @@ public class EditorApplication implements ApplicationListener {
 		spriteBatch.add(sd);
 	}
 
-   public void addEntityMarker(Markers selectedItem) {
+	// Expects a hex value as integer and returns the appropriate Color object.
+    // @param hex
+    //            Must be of the form 0xAARRGGBB
+    // @return the generated Color object
+   private Color colorFromHex(long hex)
+   {
+           float a = (hex & 0xFF000000L) >> 24;
+           float r = (hex & 0xFF0000L) >> 16;
+           float g = (hex & 0xFF00L) >> 8;
+           float b = (hex & 0xFFL);
+
+           return new Color(r/255f, g/255f, b/255f, a/255f);
+   }
+
+
+    // Expects a hex value as String and returns the appropriate Color object
+    // @param s The hex string to create the Color object from
+    // @return
+
+   private Color colorFromHexString(String s)
+   {
+           if(s.startsWith("0x"))
+                   s = s.substring(2);
+
+           if(s.length() != 8) // AARRGGBB
+                   throw new IllegalArgumentException("String must have the form AARRGGBB");
+
+           return colorFromHex(Long.parseLong(s, 16));
+   }
+
+   private Color getColor(int r, int g, int b, int a) {
+	   String rr = Integer.toHexString(r);
+	   String gg = Integer.toHexString(g);
+	   String bb = Integer.toHexString(b);
+	   String aa = Integer.toHexString(a);
+
+	   if(rr.length() == 1) rr = "0" + rr;
+	   if(gg.length() == 1) gg = "0" + gg;
+	   if(bb.length() == 1) bb = "0" + bb;
+	   if(aa.length() == 1) aa = "0" + aa;
+
+	   return colorFromHex(Long.parseLong(aa + rr + gg + bb, 16));
+   }
+
+    public void addEntityMarker(Markers selectedItem, float xPos, float yPos) {
 	   clearSelectedMarkers();
 
 	   if(selectedItem != Markers.none) {
-           for (TileSelectionInfo info : Editor.selection.tiles) {
-               EditorMarker eM = new EditorMarker(selectedItem, info.x, info.y);
-               level.editorMarkers.add(eM);
-               markWorldAsDirty(info.x, info.y, 4);
-		   }
+           EditorMarker eM = new EditorMarker(selectedItem, (int)xPos, (int)yPos);
+           level.editorMarkers.add(eM);
+           markWorldAsDirty((int)xPos, (int)yPos, 4);
 	   }
 
        history.save();

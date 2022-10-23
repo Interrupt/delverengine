@@ -223,7 +223,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 	    			markerItem.addActionListener(new ActionListener() {
 	    				public void actionPerformed(ActionEvent event) {
-							Editor.app.addEntityMarker(marker);
+							Editor.app.addEntityMarker(marker, xPos, yPos);
 	    				}
 	    			});
     			}
