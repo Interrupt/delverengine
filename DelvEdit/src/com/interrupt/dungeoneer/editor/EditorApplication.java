@@ -363,6 +363,7 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.RAMP3, new Ramp3Mode());
         editorModes.put(EditorMode.EditorModes.NOISE, new NoiseMode());
         editorModes.put(EditorMode.EditorModes.LANDSCAPE, new LandscapeMode());
+        editorModes.put(EditorMode.EditorModes.PYRAMID, new PyramidMode());
 	}
 
 	/** Load entity templates */
