@@ -47,7 +47,7 @@ public class Ramp3Mode extends RampMode {
                 pickedMod = yMod;
             }
 
-            float heightAtVertex = (float)Math.exp(pickedMod * pickedMod * pickedMod) - 1f;
+            float heightAtVertex = (float)Math.pow(pickedMod * pickedMod, 2);
 
             // Save this new Z value to use in the next step
             vert.z = heightAtVertex * -dragOffset.y;

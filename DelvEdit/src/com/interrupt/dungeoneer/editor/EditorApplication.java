@@ -366,6 +366,7 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
         editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
         editorModes.put(EditorMode.EditorModes.ERASE, new EraseMode());
+        editorModes.put(EditorMode.EditorModes.FLATTEN, new FlattenMode());
         editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode());
         editorModes.put(EditorMode.EditorModes.DOME, new DomeMode());
         editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode());
@@ -373,7 +374,6 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.RAMP2, new Ramp2Mode());
         editorModes.put(EditorMode.EditorModes.RAMP3, new Ramp3Mode());
         editorModes.put(EditorMode.EditorModes.NOISE, new NoiseMode());
-        editorModes.put(EditorMode.EditorModes.FLATTEN, new FlattenMode());
         editorModes.put(EditorMode.EditorModes.LANDSCAPE, new LandscapeMode());
 	}
 
