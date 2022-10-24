@@ -34,18 +34,22 @@ public class EditorClipboard {
         }
 
         // Copy tiles
-        for(TileSelection selection : Editor.app.getCurrentEditorMode().getPickedTileSelections(true)) {
-            for (TileSelectionInfo info : selection) {
-                Tile t = info.tile;
-                if (t != null) {
-                    info.tile = Tile.copy(t);
+        Array<TileSelection> selections = Editor.app.getCurrentEditorMode().getPickedTileSelections(true);
+        if (selections.size > 0) {
+            TileSelection firstSelection = selections.get(0);
+            for(TileSelection selection : Editor.app.getCurrentEditorMode().getPickedTileSelections(true)) {
+                for (TileSelectionInfo info : selection) {
+                    Tile t = info.tile;
+                    if (t != null) {
+                        info.tile = Tile.copy(t);
+                    }
+
+                    // Calculate offset
+                    info.x -= firstSelection.startX;
+                    info.y -= firstSelection.startY;
+
+                    instance.tiles.add(info);
                 }
-
-                // Calculate offset
-                info.x -= selection.x;
-                info.y -= selection.y;
-
-                instance.tiles.add(info);
             }
         }
 
