@@ -558,6 +558,10 @@ public class Tile implements Serializable {
         destination.ceilTexAtlas = source.ceilTexAtlas;
         destination.wallTexAtlas = source.wallTexAtlas;
         destination.wallBottomTexAtlas = source.wallBottomTexAtlas;
+        destination.eastTexAtlas = source.eastTexAtlas;
+        destination.westTexAtlas = source.westTexAtlas;
+        destination.northTexAtlas = source.northTexAtlas;
+        destination.southTexAtlas = source.southTexAtlas;
         destination.bottomEastTexAtlas = source.bottomEastTexAtlas;
         destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
         destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
@@ -586,6 +590,10 @@ public class Tile implements Serializable {
         destination.ceilTexAtlas = source.ceilTexAtlas;
         destination.wallTexAtlas = source.wallTexAtlas;
         destination.wallBottomTexAtlas = source.wallBottomTexAtlas;
+        destination.eastTexAtlas = source.eastTexAtlas;
+        destination.westTexAtlas = source.westTexAtlas;
+        destination.northTexAtlas = source.northTexAtlas;
+        destination.southTexAtlas = source.southTexAtlas;
         destination.bottomEastTexAtlas = source.bottomEastTexAtlas;
         destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
         destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
