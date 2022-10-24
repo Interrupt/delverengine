@@ -2186,6 +2186,7 @@ public class EditorApplication implements ApplicationListener {
 				Editor.selection.selected.clear();
 
 				refresh();
+                getCurrentEditorMode().refresh();
 			}
 		}
 		catch(Exception ex) {
