@@ -1,8 +1,10 @@
 package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Clipboard;
+import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -32,16 +34,16 @@ public class EditorClipboard {
         }
 
         // Copy tiles
-        if(Editor.selection.picked == null) {
-            for (TileSelectionInfo info : Editor.selection.tiles) {
+        for(TileSelection selection : Editor.app.getCurrentEditorMode().getPickedTileSelections(true)) {
+            for (TileSelectionInfo info : selection) {
                 Tile t = info.tile;
                 if (t != null) {
                     info.tile = Tile.copy(t);
                 }
 
                 // Calculate offset
-                info.x -= Editor.selection.tiles.x;
-                info.y -= Editor.selection.tiles.y;
+                info.x -= selection.x;
+                info.y -= selection.y;
 
                 instance.tiles.add(info);
             }
@@ -86,8 +88,9 @@ public class EditorClipboard {
             return;
         }
 
-        int cursorTileX = Editor.selection.tiles.x;
-        int cursorTileY = Editor.selection.tiles.y;
+        Vector3 worldIntersection = Editor.app.getEditorIntersection();
+        int cursorTileX = (int)worldIntersection.x;
+        int cursorTileY = (int)worldIntersection.z;
 
         // Paste tiles
         for (TileSelectionInfo info : instance.tiles) {
