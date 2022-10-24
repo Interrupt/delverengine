@@ -198,11 +198,8 @@ public class DrawMode extends EditorMode {
             }
         }
 
-        // Now mark everything as dirty
-        // FIXME: Just do this once, not per tile!
-        for (TileSelectionInfo info : tileSelection) {
-            Editor.app.markWorldAsDirty(info.x, info.y, 1);
-        }
+        // Refresh world
+        Editor.app.markWorldAsDirty(tileSelection.x, tileSelection.y, tileSelection.width, tileSelection.height);
     }
 
     @Override

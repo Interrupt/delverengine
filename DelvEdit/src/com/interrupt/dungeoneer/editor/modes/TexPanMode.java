@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorApplication;
+import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.TileEdges;
 
 public class TexPanMode extends DrawMode {
@@ -91,9 +92,9 @@ public class TexPanMode extends DrawMode {
         Vector3 dragOffset = t_dragOffset.set(dragStart.x - dragPlaneIntersectPos.x,dragStart.y - dragPlaneIntersectPos.y,dragStart.z - dragPlaneIntersectPos.z);
 
         // Finally, pan this surface
-        Editor.app.panSurfaceY(-dragOffset.y, (int)clickLocation.x, (int)clickLocation.z, clickedEdge, clickedUpperWall);
+        Editor.app.panSurfaceY(-dragOffset.y, (int) clickLocation.x, (int) clickLocation.z, clickedEdge, clickedUpperWall);
 
-        // FIXME: Just do this once for the whole box, not per tile!
+        // Refresh world
         Editor.app.markWorldAsDirty((int)tileLocation.x, (int)tileLocation.z, 1);
 
         // Now move the control point for next time
