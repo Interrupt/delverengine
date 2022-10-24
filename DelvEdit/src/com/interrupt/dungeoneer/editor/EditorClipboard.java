@@ -34,10 +34,10 @@ public class EditorClipboard {
         }
 
         // Copy tiles
-        Array<TileSelection> selections = Editor.app.getCurrentEditorMode().getPickedTileSelections(true);
+        Array<TileSelection> selections = Editor.app.getCurrentEditorMode().getPickedTileSelections(false);
         if (selections.size > 0) {
             TileSelection firstSelection = selections.get(0);
-            for(TileSelection selection : Editor.app.getCurrentEditorMode().getPickedTileSelections(true)) {
+            for(TileSelection selection : selections) {
                 for (TileSelectionInfo info : selection) {
                     Tile t = info.tile;
                     if (t != null) {
