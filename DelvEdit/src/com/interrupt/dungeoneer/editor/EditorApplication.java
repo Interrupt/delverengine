@@ -129,7 +129,7 @@ public class EditorApplication implements ApplicationListener {
     	public TileEdges edge;
     	public TileSurface tileSurface;
     	public boolean isPicked = false;
-    	Vector3 position = new Vector3();
+    	public Vector3 position = new Vector3();
 
         public FloatTuple ceilingPoints = new FloatTuple();
         public FloatTuple floorPoints = new FloatTuple();
@@ -353,6 +353,7 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
         editorModes.put(Editor)
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
+        editorModes.put(EditorMode.EditorModes.TEXPAN, new TexPanMode());
         editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
         editorModes.put(EditorMode.EditorModes.ERASE, new EraseMode());
         editorModes.put(EditorMode.EditorModes.FLATTEN, new FlattenMode());
@@ -3709,13 +3710,21 @@ public class EditorApplication implements ApplicationListener {
 				return;
 
 			boolean isUpperWall = pickedSurface.tileSurface == TileSurface.UpperWall;
+            panSurfaceY(amt, (int)pickedSurface.position.x, (int)pickedSurface.position.y, pickedSurface.edge, isUpperWall);
+		}
+	}
 
-			if(isUpperWall)
-				t.offsetTopWallSurfaces(pickedSurface.edge, amt);
-			else
-				t.offsetBottomWallSurfaces(pickedSurface.edge, amt);
+    public void panSurfaceY(float amt, int xLoc, int yLoc, TileEdges edge, boolean isUpperWall) {
+        Tile t = level.getTileOrNull(xLoc, yLoc);
+        if(t == null)
+            return;
 
-			markWorldAsDirty((int)pickedSurface.position.x, (int)pickedSurface.position.y, 1);
+        if(isUpperWall)
+            t.offsetTopWallSurfaces(edge, amt);
+        else
+            t.offsetBottomWallSurfaces(edge, amt);
+
+			markWorldAsDirty(xLoc, yLoc, 1);
 			history.save();
 		}
 	}

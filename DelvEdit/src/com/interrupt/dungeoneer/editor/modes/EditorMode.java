@@ -1,10 +1,7 @@
 package com.interrupt.dungeoneer.editor.modes;
 
-import com.badlogic.gdx.Input;
-import com.interrupt.dungeoneer.editor.EditorApplication;
-
 public class EditorMode {
-    public enum EditorModes { ENTITY_PICKED, CARVE, PAINT, DRAW, ERASE, FLATTEN, STAIRS, RAMP, RAMP2, RAMP3, PYRAMID, ARCH, DOME, NOISE, LANDSCAPE }
+    public enum EditorModes { ENTITY_PICKED, CARVE, PAINT, TEXPAN, DRAW, ERASE, FLATTEN, STAIRS, RAMP, RAMP2, RAMP3, PYRAMID, ARCH, DOME, NOISE, LANDSCAPE }
 
     public EditorModes mode;
 
