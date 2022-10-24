@@ -1110,7 +1110,7 @@ public class Tile implements Serializable {
 		if(materials == null)
 			materials = new TileMaterials();
 
-		TileSurface s = materials.getTopSurface(dir);
+		TileSurface s = materials.getBottomSurface(dir);
 		if(s == null) {
 			s = new TileSurface();
 			materials.setBottomSurface(dir, s);
