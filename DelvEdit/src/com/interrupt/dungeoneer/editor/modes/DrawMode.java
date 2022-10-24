@@ -42,6 +42,13 @@ public class DrawMode extends EditorMode {
     @Override
     public void start() {
         canDoAction = false;
+        wasPainting = false;
+    }
+
+    @Override
+    public void onSwitchTo(EditorMode newMode) {
+        canDoAction = false;
+        wasPainting = false;
     }
 
     @Override
