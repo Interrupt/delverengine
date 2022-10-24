@@ -3752,8 +3752,8 @@ public class EditorApplication implements ApplicationListener {
             t.offsetBottomWallSurfaces(edge, amt);
 		}
 
-			markWorldAsDirty(xLoc, yLoc, 1);
-			history.save();
+        markWorldAsDirty(xLoc, yLoc, 1);
+        history.save();
 	}
 
 	public TextureRegion[] loadAtlas(String texture, int spritesHorizontal, boolean filter) {
