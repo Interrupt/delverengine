@@ -33,7 +33,10 @@ public class PyramidMode extends CarveMode {
             if(yMod > 0.5f)
                 yMod = 1f - yMod;
 
-            float heightAtVertex = (xMod * yMod) * 2f;
+            xMod *= 2f;
+            yMod *= 2f;
+
+            float heightAtVertex = (xMod * yMod);
 
             // Save this new Z value to use in the next step
             vert.z = heightAtVertex * -dragOffset.y;
