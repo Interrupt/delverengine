@@ -341,6 +341,7 @@ public class EditorFile {
     /** Loads a `.bin` level file. */
     private Level loadBinFile(FileHandle file) {
         Level level = KryoSerializer.loadLevel(file);
+        level.postLoad();
         level.init(Level.Source.EDITOR);
 
         return level;

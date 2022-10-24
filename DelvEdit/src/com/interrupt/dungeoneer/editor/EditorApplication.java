@@ -2489,11 +2489,15 @@ public class EditorApplication implements ApplicationListener {
 		gameApp = new GameApplication();
 		GameApplication.editorRunning = true;
 
+        // Ensure materials get saved for preview
+        level.preSaveCleanup();
+
 		Level previewLevel = (Level) KryoSerializer.copyObject(level);
 		if(previewLevel.theme == null) previewLevel.theme = "TEST";
 
         previewLevel.levelName = "EDITOR LEVEL";
 		previewLevel.genTheme = DungeonGenerator.GetGenData(previewLevel.theme);
+        previewLevel.postLoad();
 
 		gameApp.createFromEditor(previewLevel);
 		Game.isDebugMode = true;
