@@ -156,7 +156,7 @@ public class Gun extends Weapon {
 
     private void doProjectileFire(Player p, Level lvl) {
         for(int pi = 0; pi < projectileNum; pi++) {
-            Projectile fire_projectile = (Projectile) EntityManager.instance.Copy(projectile);
+            Projectile fire_projectile = (Projectile) Entity.copy(projectile);
             fire_projectile.x = x;
             fire_projectile.y = y;
             fire_projectile.z = z;

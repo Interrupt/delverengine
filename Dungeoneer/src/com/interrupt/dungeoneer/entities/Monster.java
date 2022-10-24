@@ -1010,7 +1010,7 @@ public class Monster extends Actor implements Directional {
 			for (int i = 0; i < this.spawnsCount; i++) {
 				// Grab a random spawn element to create
 				int idx = Game.rand.nextInt(this.spawns.size);
-				Entity e = EntityManager.instance.Copy(this.spawns.get(idx));
+				Entity e = Entity.copy(this.spawns.get(idx));
 
 				// Honor entities' spawnChance property
 				if (Game.rand.nextFloat() >= e.spawnChance) {

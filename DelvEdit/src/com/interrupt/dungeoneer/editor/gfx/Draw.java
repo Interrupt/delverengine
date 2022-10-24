@@ -1,78 +1,155 @@
-package com.interrupt.dungeoneer.editor.ui;
+package com.interrupt.dungeoneer.editor.gfx;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Frustum;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.handles.Handles;
+import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.Meshes;
+import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 
-public class Handles {
+public class Draw {
     public static ShapeRenderer renderer = new ShapeRenderer();
     private static Camera camera;
     private static Color color = Color.WHITE;
 
-    public static void setColor(Color color) {
-        Handles.color = color;
+    private static final Mesh cone;
+    private static final Mesh cube;
+    private static final Mesh disc;
+    private static final Mesh quad;
+    private static final Texture texture;
+
+    static {
+        cone = Meshes.cone();
+        cube = Meshes.cube();
+        disc = Meshes.disc();
+        quad = Meshes.quad();
+
+        // Generate texture
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(1, 1, 1, 1);
+        pixmap.fill();
+        texture = new Texture(pixmap);
     }
 
-    public static void drawWireDisc(Vector3 position, Vector3 axis, float radius) {
-        begin();
-        drawWireDiscInternal(position, axis, radius);
-        end();
+    public static void color(Color color) {
+        Draw.color = color;
     }
 
-    public static void drawWireSphere(Vector3 position, float radius) {
-        begin();
+    private static Color getDrawOrPickColor() {
+        if (Handles.isPicking()) {
+            return Handles.getPickColor();
+        }
+        else {
+             return color;
+        }
+    }
+
+    private static float getLineWidth() {
+        return Handles.isPicking() ? 4 : 1;
+    }
+
+    public static void wireDisc(Vector3 position, Vector3 axis, float radius, int segments) {
+        beginLineRendering();
+        drawWireDiscInternal(position, axis, radius, segments);
+        endLineRendering();
+    }
+
+    public static void wireSphere(Vector3 position, float radius) {
+        beginLineRendering();
         drawWireSphereInternal(position, radius);
-        end();
+        endLineRendering();
     }
 
-    public static void drawWireCube(Vector3 position, Vector3 size) {
-        begin();
+    public static void wireCube(Vector3 position, Vector3 size) {
+        beginLineRendering();
         drawWireCubeInternal(position, size);
-        end();
+        endLineRendering();
     }
 
-    public static void drawWireFrustum(Frustum frustum) {
-        begin();
+    public static void wireFrustum(Frustum frustum) {
+        beginLineRendering();
         drawWireFrustumInternal(frustum);
-        end();
+        endLineRendering();
     }
 
-    private static void begin() {
+    public static void cone(Vector3 position, Quaternion rotation, Vector3 scale) {
+        mesh(cone, position, rotation, scale);
+    }
+
+    public static void cube(Vector3 position, Quaternion rotation, Vector3 scale) {
+        mesh(cube, position, rotation, scale);
+    }
+
+    public static void disc(Vector3 position, Quaternion rotation, Vector3 scale) {
+        mesh(disc, position, rotation, scale);
+    }
+
+    public static void quad(Vector3 position, Quaternion rotation, Vector3 scale) {
+        mesh(quad, position, rotation, scale);
+    }
+
+    public static void mesh(Mesh mesh, Matrix4 transform) {
+        beginMeshRendering();
+        drawMeshInternal(mesh, transform);
+        endMeshRendering();
+    }
+
+    public static void mesh(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale) {
+        model.set(
+            position,
+            rotation,
+            scale
+        );
+
+        mesh(mesh, model);
+    }
+
+    private static void beginLineRendering() {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-        Gdx.gl.glLineWidth(1f);
+
+        Gdx.gl.glLineWidth(getLineWidth());
 
         camera = Editor.app.camera;
 
         renderer.setProjectionMatrix(camera.combined);
         renderer.begin(ShapeRenderer.ShapeType.Line);
-        renderer.setColor(color);
+
+        renderer.setColor(getDrawOrPickColor());
     }
 
-    private static void end() {
+    private static void endLineRendering() {
         renderer.end();
-
+        Gdx.gl.glLineWidth(1f);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
     }
 
-    private static void drawWireDiscInternal(Vector3 position, Vector3 axis, float radius) {
+    private static void beginMeshRendering() {
+        GlRenderer.clearBoundTexture();
+    }
+
+    private static void endMeshRendering() {
+
+    }
+
+    private static void drawWireDiscInternal(Vector3 position, Vector3 axis, float radius, int segments) {
         Vector3 o = new Vector3(position);
         Vector3 d = new Vector3(axis).nor();
-        Vector3 r = new Vector3(0, 0, 1);
+        Vector3 r = new Vector3(1, 0, 0);
 
-        if (axis.epsilonEquals(Vector3.Z)) {
-            r.set(1, 0, 0);
+        if (axis.epsilonEquals(Vector3.X)) {
+            r.set(0, 0, 1);
         }
 
         r.crs(d).nor();
         Vector3 u = new Vector3(d).crs(r).nor();
 
         float tau = (float)Math.PI * 2;
-        int segments = 48;
         float step = tau / segments;
 
         Vector3 current = new Vector3();
@@ -116,7 +193,7 @@ public class Handles {
         Vector3 a = new Vector3(normal).scl(n0 / sqrMag);
         Vector3 b = new Vector3(position).sub(a);
 
-        drawWireDiscInternal(b, normal, n2);
+        drawWireDiscInternal(b, normal, n2, 48);
     }
 
     private static void drawWireCubeInternal(Vector3 position, Vector3 size) {
@@ -176,5 +253,31 @@ public class Handles {
 
 			renderer.line(startPoint.x, startPoint.y, startPoint.z, endPoint.x, endPoint.y, endPoint.z);
 		}
+    }
+
+    private static final Matrix4 combined = new Matrix4();
+    private static final Matrix4 model = new Matrix4();
+    private static void drawMeshInternal(Mesh mesh, Matrix4 transform) {
+        model.set(transform);
+        combined.set(Editor.app.camera.combined).mul(model);
+
+        ShaderInfo info = GlRenderer.modelShaderInfo;
+
+        GlRenderer.bindTexture(texture);
+
+        info.setAttributes(
+            combined,
+            0,
+            0,
+            0,
+            0,
+            Color.WHITE,
+            getDrawOrPickColor(),
+            false
+        );
+
+        info.begin();
+        mesh.render(info.shader, GL20.GL_TRIANGLES);
+        info.end();
     }
 }

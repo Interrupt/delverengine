@@ -113,7 +113,7 @@ public class EntityPickedMode extends EditorMode {
 
         // Save the movement state when we are done moving
         if (isMoving)
-            Editor.app.history.saveState(Editor.app.level);
+            Editor.app.history.save();
         isMoving = false;
     }
 
@@ -127,7 +127,7 @@ public class EntityPickedMode extends EditorMode {
     Vector3 t_dragVector2 = new Vector3();
     Vector3 t_dragOffset = new Vector3();
     @Override
-    public void tick() {
+    public void tick() {/*
         if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             setDragMode(DragMode.X);
         }
@@ -160,7 +160,7 @@ public class EntityPickedMode extends EditorMode {
 
             // Save the movement state when we are done moving
             if (isMoving)
-                Editor.app.history.saveState(Editor.app.level);
+                Editor.app.history.save();
             isMoving = false;
 
             return;
@@ -251,7 +251,7 @@ public class EntityPickedMode extends EditorMode {
                 Editor.app.refreshEntity(selected);
             }
         }
-    }
+    */}
 
     public void onMouseUp() {
         if(Editor.selection.picked == null) {

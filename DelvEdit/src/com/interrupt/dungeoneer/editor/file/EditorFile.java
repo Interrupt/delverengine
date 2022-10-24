@@ -305,7 +305,7 @@ public class EditorFile {
             Editor.app.cameraController.setPosition(level.width / 2f, 4.5f, level.height / 2f);
 
             Editor.app.history = new EditorHistory();
-            Editor.app.history.saveState(Editor.app.level);
+            Editor.app.history.save();
             Editor.app.file.markClean();
 
             Editor.options.addRecentlyOpenedFile(file.path());

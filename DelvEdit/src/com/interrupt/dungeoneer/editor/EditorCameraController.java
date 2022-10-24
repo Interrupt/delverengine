@@ -208,9 +208,9 @@ public class EditorCameraController extends InputAdapter implements EditorSubsys
 
             rotation.x -= Gdx.input.getDeltaX() * rotSpeed;
             rotation.y += Gdx.input.getDeltaY() * rotSpeed;
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     @Override

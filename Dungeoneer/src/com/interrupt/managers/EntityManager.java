@@ -1,24 +1,21 @@
 package com.interrupt.managers;
 
-import java.util.HashMap;
-import java.util.Random;
-
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.generator.GenTheme;
-import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.serializers.v2.ThreadSafeLevelSerializer;
 
+import java.util.HashMap;
+import java.util.Random;
+
 public class EntityManager {
-	
+
 	public static EntityManager instance = null;
 	public static void setSingleton(EntityManager _instance) { instance = _instance; }
-	
+
 	public HashMap<String, OrderedMap<String, Entity>> entities;
     public Array<Entity> surprises;
 
@@ -40,19 +37,19 @@ public class EntityManager {
 
         return null;
     }
-	
+
 	public Entity getEntity(String category, String name) {
 		OrderedMap<String, Entity> catHash = entities.get(category);
 		if(catHash != null) {
             if(!name.isEmpty()) {
-                return Copy(catHash.get(name));
+                return Entity.copy(catHash.get(name));
             }
             else if(catHash.size > 0) {
                 Array<Entity> values = catHash.values().toArray();
-                return Copy(values.get(Game.rand.nextInt(values.size)));
+                return Entity.copy(values.get(Game.rand.nextInt(values.size)));
             }
 		}
-		
+
 		return null;
 	}
 
@@ -107,11 +104,6 @@ public class EntityManager {
             }
 
             int r = random.nextInt(surprises.size);
-            return Copy(surprises.get(r));
-	}
-	
-	public Entity Copy(Entity tocopy)
-	{
-		return (Entity) KryoSerializer.copyObject(tocopy);
+            return Entity.copy(surprises.get(r));
 	}
 }

@@ -105,7 +105,7 @@ public class EditorClipboard {
 
         // Paste entities
         for(Entity e : instance.entities) {
-            Entity copy = copyEntity(e);
+            Entity copy = Entity.copy(e);
             copy.x += cursorTileX + 1;
             copy.y += cursorTileY + 1;
 
@@ -118,6 +118,6 @@ public class EditorClipboard {
         }
 
         // Save undo history
-        Editor.app.history.saveState(Editor.app.level);
+        Editor.app.history.save();
     }
 }

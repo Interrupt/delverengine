@@ -209,7 +209,7 @@ public class CarveMode extends EditorMode {
             return;
 
         state = CarveModeState.SELECTED_TILES;
-        Editor.app.history.saveState(Editor.app.level);
+        Editor.app.history.save();
     }
 
     protected boolean getPointerOverCeilingPlane(TileSelection selection) {
@@ -459,7 +459,7 @@ public class CarveMode extends EditorMode {
         extrudeFromSurface = EditorApplication.TileSurface.Floor;
 
         // Save the history for undo
-        Editor.app.history.saveState(Editor.app.level);
+        Editor.app.history.save();
     }
 
     protected void eraseSelection(TileSelection selection) {
@@ -502,7 +502,7 @@ public class CarveMode extends EditorMode {
         }
 
         // Save the history for undo
-        Editor.app.history.saveState(Editor.app.level);
+        Editor.app.history.save();
     }
 
     protected boolean canCarveTile(TileSelection selection, TileSelectionInfo info) {

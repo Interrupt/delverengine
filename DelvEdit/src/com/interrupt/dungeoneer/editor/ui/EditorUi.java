@@ -244,15 +244,10 @@ public class EditorUi {
 
         menuBar.addItem(
             new MenuItem("Entity", smallSkin)
+                .addItem(new MenuItem("Duplicate", smallSkin, actions.duplicateEntitiesAction).setAccelerator(new MenuAccelerator(Keys.D, true, false)))
                 .addItem(new MenuItem("Delete", smallSkin, actions.deleteAction).setAccelerator(new MenuAccelerator(Keys.DEL, false, false)))
                 .addItem(new MenuItem("Deselect", smallSkin, actions.escapeAction).setAccelerator(new MenuAccelerator(Keys.ESCAPE, false, false)))
                 .addSeparator()
-                .addItem(new MenuItem("Move", smallSkin)
-                    .addItem(new MenuItem("Constrain to X-axis", smallSkin, actions.xDragMode).setAccelerator(new MenuAccelerator(Keys.X, false, false)))
-                    .addItem(new MenuItem("Constrain to Y-axis", smallSkin, actions.yDragMode).setAccelerator(new MenuAccelerator(Keys.Y, false, false)))
-                    .addItem(new MenuItem("Constrain to Z-axis", smallSkin, actions.zDragMode).setAccelerator(new MenuAccelerator(Keys.Z, false, false)))
-                )
-                .addItem(new MenuItem("Rotate", smallSkin, actions.rotateMode).setAccelerator(new MenuAccelerator(Keys.R, false, false)))
                 .addItem(new MenuItem("Turn", smallSkin)
                         .addItem(new MenuItem("Clockwise", smallSkin, actions.turnLeftAction).setAccelerator(new MenuAccelerator(Keys.LEFT, true, false)))
                         .addItem(new MenuItem("Counter-clockwise", smallSkin, actions.turnRightAction).setAccelerator(new MenuAccelerator(Keys.RIGHT, true, false))))
@@ -325,7 +320,7 @@ public class EditorUi {
 
                 // must have touched the stage, should we show an entity properties menu?
                 if(button == Input.Buttons.LEFT && touched == mainTable) {
-                    if(entityPropertiesPane != null && Editor.selection.hovered == null) {
+                    if(entityPropertiesPane != null && Editor.selection.picked == null) {
                         sidebarTable.setVisible(false);
                     }
                 }
@@ -515,9 +510,7 @@ public class EditorUi {
                 Entity sel = Editor.selection.picked;
                 if (sel == null) sel = Editor.selection.hovered;
 
-                if (Editor.app.getMoveMode() == EditorApplication.MoveMode.ROTATE) {
-                    Editor.app.clearEntitySelection();
-                } else if (Editor.selection.selected.size == 0) {
+                if (Editor.selection.selected.size == 0) {
                     EditorRightClickMenu menu = new EditorRightClickMenu(sel, Editor.app.getLevel());
                     showContextMenu(x, y, menu);
                 } else {

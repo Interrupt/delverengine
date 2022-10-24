@@ -103,7 +103,7 @@ public class DrawMode extends EditorMode {
         // Done painting, save the state if needed
         if(wasPainting) {
             wasPainting = false;
-            Editor.app.history.saveState(Editor.app.level);
+            Editor.app.history.save();
         }
     }
 

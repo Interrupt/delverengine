@@ -69,3 +69,26 @@ project(":Dungeoneer") {
         api "com.bladecoder.ink:blade-ink:$inkVersion"
     }
 }
+
+project(":tests") {
+    apply plugin: "java"
+
+    sourceSets.test.java.srcDirs = ["src/"]
+
+    dependencies {
+        implementation project(":Dungeoneer")
+
+        compile "junit:junit:4.+"
+        compile "org.mockito:mockito-all:1.9.+"
+
+        compile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+
+        testCompile 'junit:junit:4.+'
+        testCompile "org.mockito:mockito-all:1.9.+"
+
+        testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+        testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    }
+}

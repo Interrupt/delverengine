@@ -11,7 +11,8 @@ public class EditorHistory {
     private final Array<byte[]> history = new Array<byte[]>();
     private int pos = 0;
 
-	public void saveState(Level level) {
+	public void save() {
+	    Level level = Editor.app.level;
         byte[] levelBytes = KryoSerializer.toBytes(level);
 
         if(history.size > 0) {

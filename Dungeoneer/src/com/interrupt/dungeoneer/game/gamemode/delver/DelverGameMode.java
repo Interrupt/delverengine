@@ -681,7 +681,7 @@ public class DelverGameMode extends GameModeAdapter {
 
             if(genTheme != null && genTheme.decorations != null) {
                 if(genTheme.decorations.size > 0)
-                    d = EntityManager.instance.Copy(genTheme.decorations.get(Game.rand.nextInt(genTheme.decorations.size)));
+                    d = Entity.copy(genTheme.decorations.get(Game.rand.nextInt(genTheme.decorations.size)));
             }
             else {
                 d = Game.GetItemManager().GetRandomDecoration();

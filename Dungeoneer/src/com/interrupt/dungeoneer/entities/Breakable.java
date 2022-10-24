@@ -182,7 +182,7 @@ public class Breakable extends Model {
 
 			if (this.spawns != null && this.spawns.size > 0) {
 				int idx = Game.rand.nextInt(this.spawns.size);
-				Entity e = EntityManager.instance.Copy(this.spawns.get(idx));
+				Entity e = Entity.copy(this.spawns.get(idx));
 				e.x = x;
 				e.y = y;
 				e.z = z;

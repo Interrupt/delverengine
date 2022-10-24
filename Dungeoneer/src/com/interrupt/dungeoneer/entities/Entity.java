@@ -17,6 +17,7 @@ import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableSprite;
+import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 import java.util.Random;
@@ -897,20 +898,31 @@ public class Entity {
 		return Vector3.Zero;
 	}
 
-	public void setPosition(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
+    public void setPosition(Vector3 position) {
+        x = position.x;
+        y = position.y;
+        z = position.z;
+    }
 
-	public void setPosition(Entity other) {
-	    if (other == null) {
-	        return;
+    public void setPosition(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public void setPosition(Entity other) {
+        if (other == null) {
+            return;
         }
 
-	    x = other.x;
-	    y = other.y;
-	    z = other.z;
+        x = other.x;
+        y = other.y;
+        z = other.z;
+    }
+
+    private final transient Vector3 position = new Vector3();
+    public Vector3 getPosition() {
+        return position.set(x, y, z);
     }
 
 	public void matchEntity(Entity toMatch) {
@@ -1064,4 +1076,8 @@ public class Entity {
 	// for stencil shadows and halos
 	public HaloMode getHaloMode() { return HaloMode.NONE; }
 	public boolean hasShadow() { return shadowType != ShadowType.NONE; }
+
+    public static Entity copy(Entity enity) {
+	    return (Entity)KryoSerializer.copyObject(enity);
+    }
 }
