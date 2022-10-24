@@ -351,7 +351,6 @@ public class EditorApplication implements ApplicationListener {
         // Setup the different editor modes
         editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode());
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
-        editorModes.put(Editor)
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
         editorModes.put(EditorMode.EditorModes.TEXPAN, new TexPanMode());
         editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
@@ -3746,14 +3745,15 @@ public class EditorApplication implements ApplicationListener {
         if(t == null)
             return;
 
-        if(isUpperWall)
+        if(isUpperWall) {
             t.offsetTopWallSurfaces(edge, amt);
-        else
+        }
+        else {
             t.offsetBottomWallSurfaces(edge, amt);
+		}
 
 			markWorldAsDirty(xLoc, yLoc, 1);
 			history.save();
-		}
 	}
 
 	public TextureRegion[] loadAtlas(String texture, int spritesHorizontal, boolean filter) {
