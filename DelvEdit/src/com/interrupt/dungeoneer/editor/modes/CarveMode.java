@@ -858,6 +858,13 @@ public class CarveMode extends EditorMode {
         }
     }
 
+    @Override
+    public void refresh() {
+        for(TileSelection selection : pickedTileSelections) {
+            selection.refreshWorldChunks();
+        }
+    }
+
     protected void packTileHeights(TileSelection selection, boolean isCeiling) {
         // Pack all of the tile heights
         for (TileSelectionInfo info : selection) {
