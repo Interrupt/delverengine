@@ -28,6 +28,10 @@ public class PaintMode extends DrawMode {
             return;
         }
 
-        Editor.app.paintSurfaceAtCursor();
+        if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+            Editor.app.fillSurfaceTexture();
+        } else {
+            Editor.app.paintSurfaceAtCursor();
+        }
     }
 }
