@@ -733,11 +733,9 @@ public class CarveMode extends EditorMode {
                 selection.refreshWorldChunks();
         }
 
-        // FIXME: Just do this once for the whole box, not per tile!
+        // Refresh world
         for(TileSelection selection : pickedTileSelections) {
-            for(TileSelectionInfo info : selection) {
-                Editor.app.markWorldAsDirty(info.x, info.y, 1);
-            }
+            Editor.app.markWorldAsDirty(selection.x, selection.y, selection.width, selection.height);
         }
 
         // Now move the control point for next time

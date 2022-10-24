@@ -2745,6 +2745,29 @@ public class EditorApplication implements ApplicationListener {
 		refreshLights();
 	}
 
+    public void markWorldAsDirty(int xPos, int yPos, int width, int height) {
+        int startX = xPos / 17;
+        int startY = yPos / 17;
+        int endX = (xPos + width) / 17;
+        int endY = (yPos + height) / 17;
+
+        for(int x = startX; x <= endX; x++) {
+            for(int y = startY; y <= endY; y++) {
+                WorldChunk chunk = renderer.GetWorldChunkAt(x * 17, y * 17);
+
+                if(chunk == null) {
+                    // No chunk here yet, so make one
+                    chunk = new WorldChunk(renderer);
+                    chunk.setOffset(x * 17, y * 17);
+                    chunk.setSize(17, 17);
+                    renderer.chunks.add(chunk);
+                }
+
+                chunk.hasBuilt = false;
+            }
+        }
+    }
+
 	public void markWorldAsDirty(int xPos, int yPos, int radius) {
 		int startX = (xPos - radius) / 17;
 		int startY = (yPos - radius) / 17;
