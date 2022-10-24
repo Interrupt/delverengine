@@ -493,6 +493,10 @@ public class Tile implements Serializable {
 		t.slopeNW = tocopy.slopeNW;
 		t.slopeSE = tocopy.slopeSE;
 		t.slopeSW = tocopy.slopeSW;
+        t.ceilSlopeNE = tocopy.ceilSlopeNE;
+        t.ceilSlopeNW = tocopy.ceilSlopeNW;
+        t.ceilSlopeSE = tocopy.ceilSlopeSE;
+        t.ceilSlopeSW = tocopy.ceilSlopeSW;
 		t.tileSpaceType = tocopy.tileSpaceType;
 		t.wallTex = tocopy.wallTex;
         t.wallBottomTex = tocopy.wallBottomTex;
@@ -500,6 +504,10 @@ public class Tile implements Serializable {
         t.westTex = tocopy.westTex;
         t.northTex = tocopy.northTex;
         t.southTex = tocopy.southTex;
+        t.eastTexAtlas = tocopy.eastTexAtlas;
+        t.westTexAtlas = tocopy.westTexAtlas;
+        t.northTexAtlas = tocopy.northTexAtlas;
+        t.southTexAtlas = tocopy.southTexAtlas;
         t.bottomEastTex = tocopy.bottomEastTex;
         t.bottomWestTex = tocopy.bottomWestTex;
         t.bottomNorthTex = tocopy.bottomNorthTex;
