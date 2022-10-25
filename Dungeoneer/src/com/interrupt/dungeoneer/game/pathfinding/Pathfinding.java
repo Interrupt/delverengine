@@ -51,7 +51,10 @@ public class Pathfinding {
         }
     }
 
-    public void LinkNodesAt(float levelX, float levelY, float levelZ) {
+    public void LinkNodesAt(Level level, float levelX, float levelY, float levelZ) {
+        if(level.getTileOrNull((int)levelX, (int)levelY) == null)
+            return;
+
         synchronized (GlobalPathfindingLock) {
             Array<Entity> nearby = pathfindingSpatialHash.getEntitiesAt(levelX, levelY, 1f);
             for(int i = 0; i < nearby.size; i++) {

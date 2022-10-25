@@ -331,12 +331,12 @@ public class PathNodesBuilder {
 
         // Fix up the edges!
         for(int x = 0; x < chunkWidth; x++) {
-            Game.pathfinding.LinkNodesAt(chunkX + x, chunkY, 0);
-            Game.pathfinding.LinkNodesAt(chunkX + x, chunkY + chunkHeight, 0);
+            Game.pathfinding.LinkNodesAt(level,chunkX + x, chunkY, 0);
+            Game.pathfinding.LinkNodesAt(level,chunkX + x, chunkY + chunkHeight, 0);
         }
         for(int y = 0; y < chunkHeight; y++) {
-            Game.pathfinding.LinkNodesAt(chunkX, chunkY + y, 0);
-            Game.pathfinding.LinkNodesAt(chunkX + chunkWidth, chunkY + y, 0);
+            Game.pathfinding.LinkNodesAt(level, chunkX, chunkY + y, 0);
+            Game.pathfinding.LinkNodesAt(level, chunkX + chunkWidth, chunkY + y, 0);
         }
 
         failed_collision = null;
