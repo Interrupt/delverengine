@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
@@ -204,6 +205,9 @@ public class Monster extends Actor implements Directional {
 
 	/** Monster rotation. */
 	public Vector3 rotation = new Vector3(Vector3.X);
+
+    /** Pathfinding direction */
+    public Vector3 lastPathDirection = new Vector3(1f, 0f, 0f);
 
 	private float soundVolume = 0.45f;
 
@@ -479,7 +483,8 @@ public class Monster extends Actor implements Directional {
 			if(mp < maxMp) mp++;
 		}
 
-		targetdist = Math.min(Math.abs(targetx - x), Math.abs(targety - y));
+        targetdist = new Vector2(targetx, targety).sub(x, y).len();
+		//targetdist = Math.min(Math.abs(targetx - x), Math.abs(targety - y));
 
 		if(alerted && last_targetx == targetx && last_targety == targety && stuckWanderTimer == 0) {
 
@@ -904,47 +909,17 @@ public class Monster extends Actor implements Directional {
 
 	private boolean findPathToPlayer(Level level)
 	{
-		PathNode node = Game.pathfinding.GetNodeAt(x + xa, y + ya, z + za);
+		PathNode picked = Game.pathfinding.GetNextPathLocation(level, this);
+        if(picked == null)
+            return false;
 
-		if(node != null && node.playerSmell != Short.MAX_VALUE) {
-			PathNode picked = node;
+        // Found a good target, use this for a bit
+        targetx = picked.loc.x;
+        targety = picked.loc.y;
 
-			Array<PathNode> adjacent = node.getConnections();
-			for(int i = 0; i < adjacent.size; i++) {
-				PathNode a = adjacent.get(i);
-				if(fleeing) {
-					if (a.playerSmell > picked.playerSmell) {
-						picked = a;
-					}
-				}
-				else {
-					if (a.playerSmell < picked.playerSmell) {
-						picked = a;
-					}
-				}
-			}
-
-			adjacent = node.getJumps();
-			for(int i = 0; i < adjacent.size; i++) {
-				PathNode a = adjacent.get(i);
-				if(fleeing) {
-					if (a.playerSmell > picked.playerSmell) {
-						picked = a;
-					}
-				}
-				else {
-					if (a.playerSmell < picked.playerSmell) {
-						picked = a;
-					}
-				}
-			}
-
-			targetx = picked.loc.x;
-			targety = picked.loc.y;
-			return true;
-		}
-
-		return false;
+        // Keep track of the direction we are heading in!
+        lastPathDirection.set(targetx, targety, 0).sub(x, y, 0).nor();
+        return true;
 	}
 
 	@Override

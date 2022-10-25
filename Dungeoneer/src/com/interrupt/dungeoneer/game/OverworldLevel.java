@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class OverworldLevel extends Level {
+public class  OverworldLevel extends Level {
 
 	public Map<String, OverworldChunk> chunks = new HashMap<String, OverworldChunk>();
 	private int chunkWidth = 25;

@@ -69,7 +69,7 @@ public class TriggeredElevator extends Trigger {
 	private transient Entity squishing = null;
 
 	private transient AmbientSound movingAmbientSound = null;
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 		if(state == ElevatorState.NONE) {
@@ -328,7 +328,7 @@ public class TriggeredElevator extends Trigger {
 				markWorldAsDirty(tileX, tileY - 1);
 
 				// Stop pathfinding to this tile if it has moved too much
-				Tile t = level.getTileOrNull(tileX, tileY);
+				/*Tile t = level.getTileOrNull(tileX, tileY);
 				if(t == null)
 					continue;
 
@@ -336,7 +336,7 @@ public class TriggeredElevator extends Trigger {
 				if(n == null)
 					continue;
 
-				n.setEnabled(!t.blockMotion && Math.abs(amountFloorMovedSinceStart) < 0.5f);
+				n.setEnabled(!t.blockMotion && Math.abs(amountFloorMovedSinceStart) < 0.5f);*/
 			}
 		}
 	}
