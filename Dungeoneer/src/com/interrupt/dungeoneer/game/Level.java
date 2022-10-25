@@ -21,6 +21,7 @@ import com.interrupt.dungeoneer.entities.Entity.EntityType;
 import com.interrupt.dungeoneer.entities.Stairs.StairDirection;
 import com.interrupt.dungeoneer.entities.triggers.ButtonDecal;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.game.pathfinding.PathNodesBuilder;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
@@ -1125,6 +1126,10 @@ public class Level {
 	private static Boolean checkIsValidLevel(Level tocheck, int dungeonlevel) {
 		if(tocheck == null) return false;
 
+        // If there is no game mode, assume we made a good level
+        if(GameManager.getGameMode() == null)
+            return true;
+
 		Array<Level> levels = GameManager.getGameMode().getGameLevelLayout();
 		if(dungeonlevel < levels.size) {
 			// look for exit markers
@@ -1175,6 +1180,9 @@ public class Level {
 		// can't init until loaded
 		if(!isLoaded) return;
 
+        // Clear the path nodes
+        Game.pathfinding.Clear();
+
         GameModeInterface gameMode = GameManager.getGameMode();
 		if(gameMode != null)
             gameMode.preLevelInit(source, this);
@@ -1210,8 +1218,6 @@ public class Level {
 		if(spawnEncounterDuringChase && Game.instance != null && Game.instance.player != null) {
 			spawnChaseEncounter();
 		}
-
-		Game.pathfinding.InitForLevel(this);
 	}
 
 	public void initEntities(Array<Entity> entityList, Source source) {

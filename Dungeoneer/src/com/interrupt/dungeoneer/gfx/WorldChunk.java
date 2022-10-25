@@ -19,6 +19,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.OverworldChunk;
 import com.interrupt.dungeoneer.game.OverworldLevel;
+import com.interrupt.dungeoneer.game.pathfinding.PathNodesBuilder;
 import com.interrupt.dungeoneer.gfx.drawables.DrawableMesh;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderInfo;
 import com.interrupt.dungeoneer.screens.GameScreen;
@@ -31,31 +32,31 @@ import java.util.List;
 public class WorldChunk {
 	public static Tesselator tesselator = new Tesselator();
     protected TesselatorGroups tesselators;
-	
+
 	protected int height = 17;
 	protected int width = 17;
-	
+
 	protected int xOffset = 0;
 	protected int yOffset = 0;
-	
+
 	protected Array<Entity> entities = new Array<Entity>();
-	
+
 	protected BoundingBox bounds = new BoundingBox();
-	
+
 	public boolean visible = true;
 	public boolean hasBuilt = false;
 	public boolean needsRetessellation = false;
-	
+
 	public ArrayMap<String,Array<Mesh>> staticMeshBatch = null;
-	
+
 	//private Array<Vector3> staticMeshCollisionTriangles = new Array<Vector3>();
-	
+
 	private boolean makeWalls = true;
 	private boolean makeFloors = true;
 	private boolean makeCeilings = true;
-	
+
 	Vector3 position = new Vector3();
-	
+
 	public static Comparator<WorldChunk> sorter = new Comparator<WorldChunk>() {
 		@Override
 		public int compare (WorldChunk o1, WorldChunk o2) {
@@ -71,31 +72,31 @@ public class WorldChunk {
 	{
         tesselators = new TesselatorGroups();
 	}
-	
+
 	public void setOffset(int x, int y)
 	{
 		xOffset = x;
 		yOffset = y;
-		
+
 		bounds.set(new Vector3(xOffset, -0.5f, yOffset), new Vector3(xOffset + width, 0.5f, yOffset + height));
 	}
-	
+
 	public void setSize(int width, int height)
 	{
 		this.width = width;
 		this.height = height;
-		
+
 		bounds.set(new Vector3(xOffset, -0.5f, yOffset), new Vector3(xOffset + width, 0.5f, yOffset + height));
 	}
-	
+
 	public void render() {
         tesselators.world.render();
 	}
-	
+
 	public void renderWater() {
         tesselators.water.render();
 	}
-	
+
 	public void renderWaterfall() {
         tesselators.waterfall.render();
 	}
@@ -107,13 +108,13 @@ public class WorldChunk {
     public void renderWaterfallEdges() {
         tesselators.waterfallEdges.render();
     }
-	
+
 	public void clear() {
         tesselators.clear();
 		hasBuilt = false;
 		freeStaticMeshes();
 	}
-	
+
 	public void refresh() {
         tesselators.refresh();
 		hasBuilt = false;
@@ -143,7 +144,7 @@ public class WorldChunk {
 			e.updateLight(level);
 		}
 	}
-	
+
 	public void Tesselate(Level level, GlRenderer renderer)
 	{
 		tesselator.Tesselate(level, renderer, this, xOffset, yOffset, width, height, tesselators, makeFloors, makeCeilings, makeWalls, true);
@@ -170,7 +171,7 @@ public class WorldChunk {
 				}
 			}
 		}
-		
+
 		if(level instanceof OverworldLevel) {
 			for(OverworldChunk chunk : ((OverworldLevel)level).chunks.values()) {
 				if(chunk.xChunk * 17 == xOffset && chunk.yChunk * 17 == yOffset) {
@@ -178,7 +179,7 @@ public class WorldChunk {
 				}
 			}
 		}
-		
+
 		// sort the mesh entities into buckets, determined by their texture
 		HashMap<String, Array<Entity>> meshesByTexture = new HashMap<String, Array<Entity>>();
 		for(Entity e : entities) {
@@ -196,17 +197,17 @@ public class WorldChunk {
 		bounds.clr();
 		bounds.min.x = xOffset;
 		bounds.max.x = xOffset + width;
-		
+
 		bounds.min.z = yOffset;
 		bounds.max.z = yOffset + width;
-		
+
 		// set drawing bounds
 		Array<BoundingBox> calcedBounds = new Array<BoundingBox>();
 
         calcedBounds.add(tesselators.world.calculateBoundingBox());
 		calcedBounds.add(tesselators.water.calculateBoundingBox());
 		calcedBounds.add(tesselators.waterfall.calculateBoundingBox());
-		
+
 		// make a static mesh from each entity bucket
 		List<Vector3> tempCollisionTriangles = new ArrayList<Vector3>();
 		staticMeshBatch = new ArrayMap<String, Array<Mesh>>();
@@ -214,7 +215,7 @@ public class WorldChunk {
 			Array<Mesh> m = GlRenderer.mergeStaticMeshes(level, meshesByTexture.get(key), tempCollisionTriangles);
 			if(m != null) {
 				staticMeshBatch.put(key, m);
-				
+
 				for(Mesh mesh : m) {
 					BoundingBox meshBounds = mesh.calculateBoundingBox();
 					bounds.min.x = Math.min(bounds.min.x, meshBounds.min.x);
@@ -226,10 +227,10 @@ public class WorldChunk {
 				}
 			}
 		}
-		
+
 		// cleanup, don't need the mesh buckets anymore
 		meshesByTexture.clear();
-		
+
 		for(BoundingBox b : calcedBounds)
 		{
 			if(b != null) {
@@ -237,20 +238,35 @@ public class WorldChunk {
 				bounds.max.y = Math.max(bounds.max.y, b.max.y);
 			}
 		}
-		
+
 		GameScreen.resetDelta = true;
 		position.set(xOffset + (width / 2f), 0, yOffset + (height / 2f));
+
+        BuildPathnodes();
 	}
 
 	public boolean UpdateVisiblity(PerspectiveCamera camera) {
 		visible = camera.frustum.boundsInFrustum(bounds);
 		return visible;
 	}
-	
+
+    Runnable t_pathNodeBuilder;
+    public void BuildPathnodes() {
+        if(t_pathNodeBuilder != null)
+            return;
+
+        t_pathNodeBuilder = PathNodesBuilder.GetPathNodeBuilderRunnable(this);
+        new Thread(t_pathNodeBuilder).start();
+    }
+
 	public boolean Empty() {
 		return (entities.size == 0 && tesselators.isEmpty());
 	}
-	
+
+    public Array<Entity> GetStaticEntities() {
+        return entities;
+    }
+
 	public void renderStaticMeshBatch(ShaderInfo shader) {
 		if(staticMeshBatch != null) {
 			for(Entry <String, Array<Mesh>> e : staticMeshBatch.entries()) {
@@ -278,6 +294,14 @@ public class WorldChunk {
 	public int getWorldY() {
 		return yOffset + (height / 2);
 	}
+
+    public int getWidth() { return width; }
+
+    public int getHeight() { return height; }
+
+    public int getX() { return xOffset; }
+
+    public int getY() { return yOffset; }
 
 	public int getRadius() {
 		return width / 2;
