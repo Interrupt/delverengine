@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 
 public class EditorMode {
-    public enum EditorModes { ENTITY_PICKED, CARVE, PAINT, TEXPAN, DRAW, ERASE, FLATTEN, STAIRS, RAMP, RAMP2, RAMP3, PYRAMID, ARCH, DOME, NOISE, LANDSCAPE }
+    public enum EditorModes { ENTITY_PICKED, CARVE, VERTEX, PAINT, TEXPAN, DRAW, ERASE, FLATTEN, STAIRS, RAMP, RAMP2, RAMP3, PYRAMID, ARCH, DOME, NOISE, LANDSCAPE }
 
     public EditorModes mode;
     protected TileSelection hoverSelection;
@@ -38,8 +38,13 @@ public class EditorMode {
 
     }
 
-    // Override this to take action when the state changes to another mode
+    // Override this to take action when the state is changing to another mode
     public void onSwitchTo(EditorMode newMode) {
+
+    }
+
+    // Override this to take action when the state changes to another mode
+    public void onSwitchFrom(EditorMode oldMode) {
 
     }
 

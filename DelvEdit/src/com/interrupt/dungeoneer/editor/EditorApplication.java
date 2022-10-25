@@ -365,6 +365,7 @@ public class EditorApplication implements ApplicationListener {
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
         editorModes.put(EditorMode.EditorModes.TEXPAN, new TexPanMode());
+        editorModes.put(EditorMode.EditorModes.VERTEX, new VertexMode());
         editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
         editorModes.put(EditorMode.EditorModes.ERASE, new EraseMode());
         editorModes.put(EditorMode.EditorModes.FLATTEN, new FlattenMode());
@@ -2032,6 +2033,7 @@ public class EditorApplication implements ApplicationListener {
 
             // Clean up the old mode
             curMode.onSwitchTo(nextMode);
+            nextMode.onSwitchFrom(curMode);
             curMode.reset();
         }
 

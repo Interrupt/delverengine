@@ -3,8 +3,8 @@ package com.interrupt.dungeoneer.editor;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class ControlPointVertex {
-    Tile tile;
-    ControlVertex vertex = ControlVertex.slopeNE;
+    public Tile tile;
+    public ControlVertex vertex = ControlVertex.slopeNE;
 
     public enum ControlVertex { slopeNW, slopeNE, slopeSW, slopeSE, ceilNW, ceilNE, ceilSW, ceilSE }
 
