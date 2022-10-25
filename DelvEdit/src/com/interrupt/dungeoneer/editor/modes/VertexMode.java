@@ -85,15 +85,19 @@ public class VertexMode extends CarveMode {
         if(pickedControlPoint == null)
             return;
 
-        // Keep adding more vertices to the set if Shift is pressed
-        if(!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-            pickedControlPointVertices.clear();
-        pickedControlPointVertices.add(pickedControlPoint);
-
         // Switch to the moving control point state
         didStartDrag = false;
         didPickSurface = false;
         state = CarveModeState.SELECTED_CONTROL_POINT;
+
+        // Might not be anything to do
+        if(pickedControlPointVertices.contains(pickedControlPoint, true))
+            return;
+
+        // Keep adding more vertices to the set if Shift is pressed
+        if(!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            pickedControlPointVertices.clear();
+        pickedControlPointVertices.add(pickedControlPoint);
     }
 
     @Override
@@ -113,21 +117,21 @@ public class VertexMode extends CarveMode {
                 Tile t = v.tile;
 
                 if (v.vertex == ControlPointVertex.ControlVertex.ceilNE) {
-                    t.ceilSlopeNE = pickedControlPoint.point.y - t.ceilHeight;
+                    t.ceilSlopeNE = controlPoint.point.y - t.ceilHeight;
                 } else if (v.vertex == ControlPointVertex.ControlVertex.ceilSE) {
-                    t.ceilSlopeSE = pickedControlPoint.point.y - t.ceilHeight;
+                    t.ceilSlopeSE = controlPoint.point.y - t.ceilHeight;
                 } else if (v.vertex == ControlPointVertex.ControlVertex.ceilNW) {
-                    t.ceilSlopeNW = pickedControlPoint.point.y - t.ceilHeight;
+                    t.ceilSlopeNW = controlPoint.point.y - t.ceilHeight;
                 } else if (v.vertex == ControlPointVertex.ControlVertex.ceilSW) {
-                    t.ceilSlopeSW = pickedControlPoint.point.y - t.ceilHeight;
+                    t.ceilSlopeSW = controlPoint.point.y - t.ceilHeight;
                 } else if (v.vertex == ControlPointVertex.ControlVertex.slopeNE) {
-                    t.slopeNE = pickedControlPoint.point.y - t.floorHeight;
+                    t.slopeNE = controlPoint.point.y - t.floorHeight;
                 } else if (v.vertex == ControlPointVertex.ControlVertex.slopeSE) {
-                    t.slopeSE = pickedControlPoint.point.y - t.floorHeight;
+                    t.slopeSE = controlPoint.point.y - t.floorHeight;
                 } else if (v.vertex == ControlPointVertex.ControlVertex.slopeNW) {
-                    t.slopeNW = pickedControlPoint.point.y - t.floorHeight;
+                    t.slopeNW = controlPoint.point.y - t.floorHeight;
                 } else if (v.vertex == ControlPointVertex.ControlVertex.slopeSW) {
-                    t.slopeSW = pickedControlPoint.point.y - t.floorHeight;
+                    t.slopeSW = controlPoint.point.y - t.floorHeight;
                 }
                 t.packHeights();
             }
