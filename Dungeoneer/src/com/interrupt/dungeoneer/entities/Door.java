@@ -32,13 +32,13 @@ public class Door extends Entity {
     /** Door texture filepath. */
     @EditorProperty(type = "FILE_PICKER")
     public String doorTexture = "door.png";
-	
+
 	@EditorProperty
 	private float speed = 60;
 	private float animateSpeed = 60;
-	
+
 	private transient Interpolation animateInterpolation = Interpolation.exp5;
-	
+
 	private float animateTime = speed;
 	private float lastAnimateTime = animateTime;
 
@@ -136,13 +136,13 @@ public class Door extends Entity {
 	public Vector3 startLoc = null;
 
 	private float rot = 0;
-	
+
 	private transient float rotateAnimSolidPoint = 0.8f;
 
     public transient String lastMeshFile = null;
-	
+
 	public Vector3 dir = new Vector3(Vector3.Z);
-	
+
 	public Door() { artType = ArtType.texture; isSolid = true; this.dir = Vector3.Z; this.isActive = true; stepHeight = 0f; isDynamic = true; }
 
 	public Vector3 tempDir = new Vector3();
@@ -152,17 +152,17 @@ public class Door extends Entity {
 	{
 		super(x, y, tex, false);
 		isSolid = true;
-		
+
 		artType = ArtType.texture;
 		this.dir = Vector3.Z;
-		
+
 		DrawableSprite doorDrawable = new DrawableSprite(tex,artType);
 		doorDrawable.billboard = false;
 		drawable = doorDrawable;
-		
+
 		isDynamic = true;
 	}
-	
+
 	public Door(Door toCopy) {
 		collision.set(toCopy.collision);
 		speed = toCopy.speed;
@@ -195,21 +195,21 @@ public class Door extends Entity {
 		breakSound = toCopy.breakSound;
 		isActive = true;
 		isDynamic = true;
-		
+
 		if(stuckChance > 0) {
 			if(Game.rand.nextFloat() * 100.0f < stuckChance) doorState = DoorState.STUCK;
 		}
 	}
-	
+
 	public void use(Player p, float projx, float projy)
-	{	
+	{
 		if((doorState==DoorState.OPEN)||(doorState==DoorState.OPENING)) {
             if (!getsStuckOpen){
                 doClose(true);
             } else {
                 Game.ShowMessage(StringManager.get("entities.Door.stuckText"), 3, 1f);
             }
-        } 
+        }
 		else if (doorState == DoorState.STUCK && breakable) {
 			if(Game.rand.nextFloat() > 0.975f) {
 				doOpen(true);
@@ -229,24 +229,24 @@ public class Door extends Entity {
                         isLocked=false;
                         Game.ShowMessage(StringManager.get("entities.Door.unlockedText"), 3, 1f);
                         doOpen(true);
-                    } else {    
+                    } else {
                         Game.ShowMessage(StringManager.get("entities.Door.lockedText"), 3, 1f);
                     }
-                } else {    
+                } else {
                     Game.ShowMessage(StringManager.get("entities.Door.opensElsewhereText"), 3, 1f);
                 }
             }
         }
 	}
-	
+
 	public void doOpen(boolean fireTrigger){
         isLocked=false;
-        
+
         if(hasRoomToOpen()) {
-        	
+
         	animateSpeed = speed;
             animateInterpolation = Interpolation.exp5;
-            
+
         	doorState=DoorState.OPENING;
         	if(fireTrigger) Game.instance.level.trigger(this, triggersId, "open");
         	Audio.playPositionedSound(openSound, new Vector3(x, y, z), 0.4f, 10f);
@@ -255,47 +255,46 @@ public class Door extends Entity {
 
 	public void doClose(boolean fireTrigger){
     	if(hasRoomToClose()) {
-    		
+
             animateInterpolation = Interpolation.exp5;
             animateSpeed = speed;
-            
+
     		doorState=DoorState.CLOSING;
     		if(fireTrigger) Game.instance.level.trigger(this, triggersId, "close");
     		Audio.playPositionedSound(closingSound, new Vector3(x, y, z), 0.3f, 10f);
     	}
     }
-	
+
 	private boolean hasRoomToOpen() {
 		if(doorType == DoorType.TRAPDOOR && doorOpenType == DoorOpenType.ROTATE) {
 			Entity encroaching = Game.instance.level.checkEntityCollision(x, y, z, collision, this);
 			return encroaching == null;
 		}
-		
+
 		return true;
 	}
-	
+
 	private boolean hasRoomToClose() {
 		if(doorType == DoorType.TRAPDOOR && doorOpenType == DoorOpenType.ROTATE) {
 			Entity encroaching = Game.instance.level.checkEntityCollision(startLoc.x, startLoc.y, startLoc.z, collision, this);
 			return encroaching == null;
 		}
-		
+
 		return true;
 	}
 
 	@Override
 	public void tick(Level level, float delta)
-	{		
-		isDynamic = false;
+	{
 		slideEffectTimer -= delta * 0.5f;
-		
+
 		if(startLoc == null) {
 			startLoc = new Vector3(x, y, z);
 			animateTime = speed;
 		}
-		
+
 		lastAnimateTime = animateTime;
-		
+
 		if(doorState == DoorState.OPENING) {
 			animateTime -= delta;
 			if(animateTime <= 0) {
@@ -311,24 +310,24 @@ public class Door extends Entity {
 				Audio.playPositionedSound(closedSound, new Vector3(x, y, z), 0.5f, 10f);
 			}
 		}
-		
+
 		if(doorOpenType == DoorOpenType.ROTATE) {
-			isSolid = doorState == DoorState.CLOSED || doorState == DoorState.STUCK; 
+			isSolid = doorState == DoorState.CLOSED || doorState == DoorState.STUCK;
 		}
-		
+
 		// animate!
 		if(animateTime != lastAnimateTime) {
 			float animUnit = animateInterpolation.apply(1 - animateTime / animateSpeed);
 			float nextX = startLoc.x;
 			float nextY = startLoc.y;
 			float nextZ = startLoc.z;
-			
+
 			if(doorOpenType == DoorOpenType.ROTATE && doorState == DoorState.OPENING) isSolid = animUnit < rotateAnimSolidPoint;
-			
+
 			float openMod = doorInvertOpen ? -1 : 1;
 			rot = 0;
-			
-			if(doorOpenType == DoorOpenType.SLIDE) {				
+
+			if(doorOpenType == DoorOpenType.SLIDE) {
 				if(doorDirection == DoorDirection.EAST) {
 					nextX = startLoc.x + (animUnit * 0.85f) * openMod;
 				}
@@ -346,9 +345,9 @@ public class Door extends Entity {
 				nextZ = startLoc.z + (animUnit * 0.8f) * openMod;
 			}
 			else if(doorOpenType == DoorOpenType.ROTATE) {
-			
+
 				rot = animUnit * 86 * openMod;
-				
+
 				if(doorType == DoorType.NORMAL) {
 					if(doorDirection == DoorDirection.EAST || doorDirection == DoorDirection.WEST) {
 						if(doorDirection == DoorDirection.WEST) openMod *= -1f;
@@ -359,7 +358,7 @@ public class Door extends Entity {
 						openMod = -1f;
 						if(doorDirection == DoorDirection.NORTH) openMod *= -1f;
 						nextX = startLoc.x - (rot / 84f) * 0.5f * openMod;
-						
+
 						openMod = doorInvertOpen ? -1 : 1;
 						if(doorDirection == DoorDirection.SOUTH) openMod *= -1f;
 						nextY = startLoc.y + (rot / 98f) * 0.5f * openMod;
@@ -370,11 +369,11 @@ public class Door extends Entity {
 					nextZ = startLoc.z + (rot / 84f) * 0.51f * openMod;
 				}
 			}
-			
+
 			if(doorOpenType == DoorOpenType.ROTATE && doorType == DoorType.NORMAL) {
 				Entity encroaching = null;
 				if(animUnit < rotateAnimSolidPoint && doorState == DoorState.CLOSING) encroaching = level.checkEntityCollision(x, y, z, collision, this);
-				
+
 				if(encroaching == null) {
 					if(doorState == DoorState.CLOSING && animUnit < rotateAnimSolidPoint) isSolid = true;
 				} else {
@@ -398,7 +397,7 @@ public class Door extends Entity {
 				}
 				else {
 					animateTime = lastAnimateTime;
-					
+
 					if(doorOpenType != DoorOpenType.SLIDE_UP) {
 						encroaching.xa += (nextX - x) / 2f;
 						encroaching.ya += (nextY - y) / 2f;
@@ -408,7 +407,7 @@ public class Door extends Entity {
 
 			makeDust(animUnit);
 		}
-		
+
 		// show mobile use message
 		if(Game.isMobile)
 		{
@@ -416,7 +415,7 @@ public class Door extends Entity {
 				Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Door.mobileUseText"), getUseText()));
 			}
 		}
-		
+
 		this.color = level.GetLightmapAt(x, y, z);
 
 		if(shakeTimer > 0) shakeTimer -= delta;
@@ -508,7 +507,7 @@ public class Door extends Entity {
 			isLocked = !isLocked;
 		}
 	}
-	
+
 	@Override
 	public void updateDrawable() {
 		// init the drawable
@@ -518,16 +517,16 @@ public class Door extends Entity {
 			drawable = doorDrawable;
             lastMeshFile = doorMesh;
 		}
-		
-		if(drawable != null) {  
+
+		if(drawable != null) {
 			doorDrawable = (DrawableMesh) drawable;
 			drawable.update(this);
-			
+
 			doorDrawable.x = x;
 			doorDrawable.y = y;
 			doorDrawable.z = z;
 		}
-		
+
 		// setup draw offset
 		if(doorDirection == DoorDirection.EAST) {
 			drawable.drawOffset.x = 0.5f;
@@ -545,7 +544,7 @@ public class Door extends Entity {
 			drawable.drawOffset.x = 0;
 			drawable.drawOffset.y = 0.5f;
 		}
-		
+
 		// trapdoors face up
 		drawable.dir.set(Vector3.X).scl(-1f);
 		if(doorType == DoorType.TRAPDOOR) {
@@ -555,7 +554,7 @@ public class Door extends Entity {
 		else {
 			yOffset = 0;
 		}
-		
+
 		// set the rotation based on the door direction
 		if(doorDirection == DoorDirection.EAST) {
 			drawable.dir.rotate(Vector3.Y, 90f);
@@ -569,7 +568,7 @@ public class Door extends Entity {
 		else if(doorDirection == DoorDirection.WEST) {
 			drawable.dir.rotate(Vector3.Y, 270f);
 		}
-		
+
 		if(rot != 0) {
 			if(doorType == DoorType.NORMAL)
 				drawable.dir.rotate(Vector3.Y, -rot);
@@ -633,21 +632,21 @@ public class Door extends Entity {
 		if(doorState == DoorState.OPEN || doorState == DoorState.OPENING) return StringManager.get("entities.Door.closeUseText");
 		return StringManager.get("entities.Door.openUseText");
 	}
-	
+
 	@Override
 	public void init(Level level, Source source) {
 		if(source == Source.LEVEL_START || startLoc == null) {
 			startLoc = new Vector3(x, y, z);
 			animateTime = speed;
 		}
-		
+
 		Audio.loadSound(openSound);
 		Audio.loadSound(closingSound);
 		Audio.loadSound(closedSound);
-		
+
 		super.init(level, source);
 	}
-	
+
 	public void doHitEffect(float xLoc, float yLoc, float zLoc, Sword sword, Level lvl) {
 		if(hp > 0) {
 			if(breakSound != null)
@@ -655,17 +654,17 @@ public class Door extends Entity {
 			else
 				Audio.playPositionedSound(sword.wallHitSound, new Vector3(x,y,z), 0.25f, Game.rand.nextFloat() * 0.1f + 0.95f, 12);
 		}
-		
+
 		Color hitColor = sword.getEnchantmentColor();
 		boolean fullBright = sword.getDamageType() != DamageType.PHYSICAL;
-		
+
 		if(fullBright) {
 			// make a light at this location
 			DynamicLight l = new DynamicLight(xLoc, yLoc, zLoc, new Vector3(hitColor.r * 0.85f, hitColor.g * 0.85f, hitColor.b * 0.85f));
 			l.startLerp(new Vector3(0,0,0), 20, true);
 			lvl.non_collidable_entities.add(l);
 		}
-		
+
 		Random r = Game.rand;
 		for(int ii = 0; ii < r.nextInt(5) + 3; ii++)
 		{
@@ -687,18 +686,18 @@ public class Door extends Entity {
 			part.fullbrite = true;
 			lvl.SpawnNonCollidingEntity(part);
 		}
-		
+
 		Game.instance.player.shake(0.8f);
 	}
-	
+
 	@Override
 	public void hit(float projx, float projy, int damage, float knockback, DamageType damageType, Entity instigator) {
 		super.hit(projx, projy, damage, knockback, damageType, instigator);
-		if(breakable) { 
+		if(breakable) {
 			hp -= damage;
 
 			shakeTimer = 40f;
-			
+
 			if(hp <= 0) {
 				gib(Game.instance.level, new Vector3(projx * 0.04f, projy * 0.04f, 0));
 			}
@@ -724,7 +723,7 @@ public class Door extends Entity {
 				f.y = ((Game.rand.nextFloat() - 0.5f) * 2f) * collision.y;
 				attach(f);
 			}
-			
+
 			// TODO: Better door stuck open effect
 			/*else {
 				if(Game.rand.nextFloat() < 0.2f + knockback * 0.5f && doorState == DoorState.STUCK) {
@@ -736,18 +735,18 @@ public class Door extends Entity {
 			}*/
 		}
 	}
-	
+
 	public void gib(Level level, Vector3 gibVel) {
 		isActive = false;
-		
+
 		for(int i = 0; i < gibNum; i++) {
 			int range = gibSpriteTexEnd - gibSpriteTexStart;
 			int ptex = gibSpriteTexStart;
 			float gibLifetime = 2000;
-			
+
 			Particle p = CachePools.getParticle(x, y, z + (collision.z * 0.95f * Game.rand.nextFloat()), (Game.rand.nextFloat() * gibVelocity.x) - gibVelocity.x * 0.5f + gibVel.x, (Game.rand.nextFloat() * gibVelocity.y) - gibVelocity.y * 0.5f + gibVel.y, (Game.rand.nextFloat() * gibVelocity.z) - gibVelocity.z * 0.5f, gibLifetime + Game.rand.nextFloat() * gibLifetime, ptex, Color.WHITE, false);
 			p.movementRotateAmount = 6f;
-			
+
 			// Make most of the gibs the small variant.
 			if(i < gibNum * 0.5f) {
 				p.tex = gibSpriteTexStart + range;
@@ -758,10 +757,10 @@ public class Door extends Entity {
 			else {
 				p.tex = gibSpriteTexStart + Game.rand.nextInt(range);
 			}
-			
+
 			level.non_collidable_entities.add(p);
 		}
-		
+
 		Audio.playPositionedSound(breakSound, new Vector3(x,y,z), 0.6f, 12);
 	}
 

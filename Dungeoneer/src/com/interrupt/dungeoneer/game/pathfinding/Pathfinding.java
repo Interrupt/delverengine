@@ -87,7 +87,6 @@ public class Pathfinding {
         Vector3 directionCalcNear = new Vector3(player.x, player.y, player.z).sub(posCalc).nor().scl(0.5f);
 
         Vector3 nearCheckPos = new Vector3(posCalc).add(directionCalcNear);
-        Vector3 farCheckPos = new Vector3(posCalc).add(directionCalcFar);
 
         Entity fakeChecker = new Entity();
         fakeChecker.collision.set(checking.collision);
@@ -102,12 +101,28 @@ public class Pathfinding {
         PathNode towardsPlayer = new PathNode();
         towardsPlayer.loc.set(nearCheckPos);
 
+        boolean couldMoveTowardsPlayer = false;
+
         if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, fakeChecker)) {
-            towardsPlayer.loc.set(farCheckPos);
-            if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, fakeChecker))
+            couldMoveTowardsPlayer = true;
+        }
+
+        if(couldMoveTowardsPlayer) {
+            // If this is the first tick being alerted, use this direction always
+            if(!m.wasAlerted)
                 return towardsPlayer;
-            towardsPlayer.loc.set(nearCheckPos);
-            return towardsPlayer;
+
+            // Check if we can do this turn! Don't just flip 180
+            Vector2 nextDir = new Vector2(m.lastPathDirection).scl(-1f);
+            Vector2 testCheckDir = new Vector2(checking.x - player.x, checking.y - player.y);
+
+            float checkAngle = testCheckDir.angleDeg(nextDir);
+            if(checkAngle > 180)
+                checkAngle -= 360;
+
+            //Gdx.app.log("Delver", "Angle: " + checkAngle);
+            if(Math.abs(checkAngle) <= 110)
+                return towardsPlayer;
         }
 
         // Try turning until we get free space

@@ -110,6 +110,7 @@ public class Monster extends Actor implements Directional {
 
 	/** Is monster alerted to player's presence? */
 	public boolean alerted = false;
+    public boolean wasAlerted = false;
 
 	/** Is monster fleeing from the player? */
 	public boolean fleeing = false;
@@ -483,10 +484,10 @@ public class Monster extends Actor implements Directional {
 			if(mp < maxMp) mp++;
 		}
 
-        targetdist = new Vector2(targetx, targety).sub(x, y).len();
+        //targetdist = new Vector2(targetx, targety).sub(x, y).len();
+		targetdist = Math.max(Math.abs(targetx - x), Math.abs(targety - y));
 
-		//targetdist = Math.min(Math.abs(targetx - x), Math.abs(targety - y));
-
+        wasAlerted = alerted;
 		if(alerted && last_targetx == targetx && last_targety == targety && stuckWanderTimer == 0) {
 
 			// are we stuck?
