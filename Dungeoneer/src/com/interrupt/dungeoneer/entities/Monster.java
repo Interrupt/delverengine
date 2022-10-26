@@ -207,7 +207,7 @@ public class Monster extends Actor implements Directional {
 	public Vector3 rotation = new Vector3(Vector3.X);
 
     /** Pathfinding direction */
-    public Vector3 lastPathDirection = new Vector3(1f, 0f, 0f);
+    public Vector2 lastPathDirection = new Vector2(1f, 0f);
 
 	private float soundVolume = 0.45f;
 
@@ -484,6 +484,7 @@ public class Monster extends Actor implements Directional {
 		}
 
         targetdist = new Vector2(targetx, targety).sub(x, y).len();
+
 		//targetdist = Math.min(Math.abs(targetx - x), Math.abs(targety - y));
 
 		if(alerted && last_targetx == targetx && last_targety == targety && stuckWanderTimer == 0) {
@@ -560,7 +561,7 @@ public class Monster extends Actor implements Directional {
 		if(alerted && playerdist > 0.7f && chasetarget && stuckWanderTimer <= 0) // When alerted, try to find a path to the player
 		{
 			nextTargetf -= delta;
-			if(nextTargetf < 0 || targetdist < 0.12)
+			if(nextTargetf < 0 || targetdist < 0.2)
 			{
 				if(targetdist < 0.12) {
 					// not stuck!
@@ -917,8 +918,15 @@ public class Monster extends Actor implements Directional {
         targetx = picked.loc.x;
         targety = picked.loc.y;
 
+        // See how much we would need to turn
+        float angle = new Vector2(x - targetx, y - targety)
+            .sub(x + lastPathDirection.x, y + lastPathDirection.y).nor()
+            .angleDeg();
+
         // Keep track of the direction we are heading in!
-        lastPathDirection.set(targetx, targety, 0).sub(x, y, 0).nor();
+        lastPathDirection.set(targetx, targety).sub(x, y).nor();
+
+        Gdx.app.log("Pathfinding", "Monster dir x:" + lastPathDirection.x +" angle: "+angle);
         return true;
 	}
 

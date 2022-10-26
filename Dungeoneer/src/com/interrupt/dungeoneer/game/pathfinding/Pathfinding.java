@@ -41,6 +41,13 @@ public class Pathfinding {
                 Tile t = level.getTile((int)(levelX + (x * checking.collision.x)), (int)(levelY + (y * checking.collision.y)));
                 if(!t.blockMotion) {
                     float floorHeight = t.getFloorHeight(levelX + (x * checking.collision.x * 0.1f), levelY + (y * checking.collision.y * 0.1f));
+
+                    float stepDistance = Math.abs(floorHeight - checking.z + 0.5f);
+                    if(stepDistance > checking.stepHeight) {
+                        t_foundTile.set(null, 0f);
+                        return t_foundTile;
+                    }
+
                     if(floorHeight > t_foundTile.floorHeight || first) {
                         t_foundTile.set(t, floorHeight);
                         first = false;
@@ -50,6 +57,18 @@ public class Pathfinding {
         }
 
         return t_foundTile;
+    }
+
+    public boolean TryTurn(Level level, Monster m, float angle) {
+        Vector2 nextDir = new Vector2(m.lastPathDirection).scl(0.5f);
+        nextDir.rotateDeg(angle);
+
+        Vector2 nextPos = new Vector2(m.x, m.y).add(nextDir);
+        if(CanMoveTo(level, nextPos.x, nextPos.y, m)) {
+            return true;
+        }
+
+        return false;
     }
 
     // Entity can ask for where to move next
@@ -66,68 +85,53 @@ public class Pathfinding {
             return null;
 
         // First, try to move towards the player
-        Vector3 posCalc = new Vector3(checking.x + checking.xa, checking.y + checking.ya, checking.z + checking.za);
+        Vector3 posCalc = new Vector3(checking.x, checking.y, checking.z);
         Vector3 directionCalcFar = new Vector3(player.x, player.y, player.z).sub(posCalc).nor();
         Vector3 directionCalcNear = new Vector3(player.x, player.y, player.z).sub(posCalc).nor().scl(0.5f);
 
-        // Check if we can actually walk towards this
+        Vector3 nearCheckPos = new Vector3(posCalc).add(directionCalcNear);
+        Vector3 farCheckPos = new Vector3(posCalc).add(directionCalcFar);
+
+        Entity fakeChecker = new Entity();
+        fakeChecker.collision.set(checking.collision);
+        fakeChecker.collidesWith = Entity.CollidesWith.staticOnly;
+        fakeChecker.stepHeight = 0.3f;
+        fakeChecker.isSolid = true;
+
+        // Check if we can actually walk towards the player
         PathNode towardsPlayer = new PathNode();
-        towardsPlayer.loc.set(posCalc.add(directionCalcNear));
-        if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, checking)) {
-            towardsPlayer.loc.set(posCalc.add(directionCalcFar));
-            if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, checking))
+        towardsPlayer.loc.set(nearCheckPos);
+
+        if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, fakeChecker)) {
+            towardsPlayer.loc.set(farCheckPos);
+            if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, fakeChecker))
                 return towardsPlayer;
+            towardsPlayer.loc.set(nearCheckPos);
+            return towardsPlayer;
         }
 
-        // Can't move towards the player, start random walking
-        Vector3 dir = new Vector3(m.lastPathDirection);
-        Vector2 monsterDir = new Vector2(dir.x, dir.y);
+        // Try turning until we get free space
+        boolean positiveAngleFirst = Game.rand.nextBoolean();
+        for(int angle = 0; angle <= 270; angle += 15) {
+            float finalAngle = positiveAngleFirst ? angle : -angle;
+            boolean canTurn = TryTurn(level, m, finalAngle);
+            if(!canTurn) {
+                // Now try the other direction
+                finalAngle *= -1;
+                canTurn = TryTurn(level, m, finalAngle);
+            }
 
-        Array<PathNode> availablePathNodes = new Array<>();
-        for(int x = -1; x < 2; x++) {
-            for(int y = -1; y < 2; y++) {
-                // Don't add the origin point
-                if(x == 0 && y== 0)
-                    continue;
+            if(canTurn) {
+                Vector2 nextDir = new Vector2(m.lastPathDirection).scl(0.5f);
+                nextDir.rotateDeg(finalAngle);
 
-                float checkX = (int)(posCalc.x + x) + 0.5f;
-                float checkY = (int)(posCalc.y + y) + 0.5f;
-
-                if(!CanMoveTo(level, checkX, checkY, checking))
-                    continue;
-
-                PathNode p = new PathNode(new Vector3(checkX, checkY, checking.z));
-                availablePathNodes.add(p);
+                Vector2 nextPos = new Vector2(checking.x, checking.y).add(nextDir);
+                towardsPlayer.loc.set(nextPos.x, nextPos.y, 0);
+                return towardsPlayer;
             }
         }
 
-        if(availablePathNodes.size == 0)
-            return null;
-
-        if(availablePathNodes.size == 1)
-            return availablePathNodes.get(0);
-
-        // More than one, try to pick a good one
-        Array<PathNode> validPathNodes = new Array<>();
-        for(int i = 0; i < availablePathNodes.size; i++) {
-            PathNode toCheck = availablePathNodes.get(i);
-            Vector2 newDir = new Vector2(toCheck.loc.x, toCheck.loc.y).sub(checking.x, checking.y).nor();
-            float angle = monsterDir.angleDeg(newDir);
-
-            // Don't turn around if able
-            if(Math.abs(angle) < 160)
-                validPathNodes.add(toCheck);
-        }
-
-        if(validPathNodes.size == 0) {
-            // No path nodes that we can turn towards? Use a random one from the list of all instead
-            return availablePathNodes.get(Game.rand.nextInt(availablePathNodes.size));
-        }
-
-        if(validPathNodes.size == 1)
-            return validPathNodes.get(0);
-
-        return validPathNodes.get(Game.rand.nextInt(validPathNodes.size));
+        return null;
     }
 
     public boolean CanMoveTo(Level level, float x, float y, Entity checking) {
