@@ -490,7 +490,7 @@ public class Monster extends Actor implements Directional {
 		if(alerted && last_targetx == targetx && last_targety == targety && stuckWanderTimer == 0) {
 
 			// are we stuck?
-			if(Math.abs(xa) + Math.abs(ya) < 0.05f)
+			if(Math.abs(xa) + Math.abs(ya) < 0.02f)
 				stuckTime += delta;
 
 			float speedStuckMod = 1.5f / getSpeed();
@@ -563,7 +563,7 @@ public class Monster extends Actor implements Directional {
 			nextTargetf -= delta;
 			if(nextTargetf < 0 || targetdist < 0.2)
 			{
-				if(targetdist < 0.12) {
+				if(targetdist < 0.2) {
 					// not stuck!
 					stuckTime = 0f;
 				}
@@ -926,7 +926,6 @@ public class Monster extends Actor implements Directional {
         // Keep track of the direction we are heading in!
         lastPathDirection.set(targetx, targety).sub(x, y).nor();
 
-        Gdx.app.log("Pathfinding", "Monster dir x:" + lastPathDirection.x +" angle: "+angle);
         return true;
 	}
 

@@ -23,10 +23,12 @@ public class Pathfinding {
     public class FoundTile {
         public Tile tile;
         public float floorHeight;
+        public float lowestHeight;
 
-        public void set(Tile tile, float floorHeight) {
+        public void set(Tile tile, float highest, float lowest) {
             this.tile = tile;
-            this.floorHeight = floorHeight;
+            this.floorHeight = highest;
+            this.lowestHeight = lowest;
         }
     }
 
@@ -34,24 +36,19 @@ public class Pathfinding {
     public FoundTile getHighestTile(Level level, float levelX, float levelY, Entity checking) {
         boolean first = true;
 
-        t_foundTile.set(null, 0f);
+        t_foundTile.set(null, 0f, Float.MAX_VALUE);
 
         for(int x = -1; x <= 1; x += 2) {
             for(int y = -1; y <= 1; y += 2) {
-                Tile t = level.getTile((int)(levelX + (x * checking.collision.x)), (int)(levelY + (y * checking.collision.y)));
+                Tile t = level.getTile((int)(levelX + (x * checking.collision.x * 0.5f)), (int)(levelY + (y * checking.collision.y * 0.5f)));
                 if(!t.blockMotion) {
                     float floorHeight = t.getFloorHeight(levelX + (x * checking.collision.x * 0.1f), levelY + (y * checking.collision.y * 0.1f));
-
-                    float stepDistance = Math.abs(floorHeight - checking.z - 0.5f);
-                    if(stepDistance > checking.stepHeight) {
-                        t_foundTile.set(null, 0f);
-                        return t_foundTile;
-                    }
-
                     if(floorHeight > t_foundTile.floorHeight || first) {
-                        t_foundTile.set(t, floorHeight);
+                        t_foundTile.tile = t;
+                        t_foundTile.floorHeight = floorHeight;
                         first = false;
                     }
+                    t_foundTile.lowestHeight = Math.min(floorHeight, t_foundTile.lowestHeight);
                 }
             }
         }
@@ -97,6 +94,9 @@ public class Pathfinding {
         fakeChecker.collidesWith = Entity.CollidesWith.staticOnly;
         fakeChecker.stepHeight = 0.3f;
         fakeChecker.isSolid = true;
+        fakeChecker.x = checking.x;
+        fakeChecker.y = checking.y;
+        fakeChecker.z = checking.z;
 
         // Check if we can actually walk towards the player
         PathNode towardsPlayer = new PathNode();
@@ -112,7 +112,7 @@ public class Pathfinding {
 
         // Try turning until we get free space
         boolean positiveAngleFirst = Game.rand.nextBoolean();
-        for(int angle = 0; angle <= 270; angle += 15) {
+        for(int angle = 0; angle <= 270; angle += 30) {
             float finalAngle = positiveAngleFirst ? angle : -angle;
             boolean canTurn = TryTurn(level, m, finalAngle);
             if(!canTurn) {
@@ -137,6 +137,15 @@ public class Pathfinding {
     public boolean CanMoveTo(Level level, float x, float y, Entity checking) {
         FoundTile at = getHighestTile(level, x, y, checking);
         Tile t = at.tile;
+
+        float stepDistance = Math.abs(at.lowestHeight - checking.z + 0.5f);
+        if(at.lowestHeight < checking.z + 0.5f && stepDistance > StepHeight) {
+            // Don't step off of edges!
+            // TODO: Check if the player is close enough and below. If so, step down!
+            // Unless there is a static entity to step on!
+            if(!isBridgeAt(level, x, y, checking))
+                return false;
+        }
 
         if(t == null)
             return false;
@@ -163,14 +172,28 @@ public class Pathfinding {
         if(!isFree)
             return false;
 
-        float heightDifference = Math.abs(checking.z - at.floorHeight);
+        float heightDifference = at.floorHeight - checking.z;
         if(heightDifference > StepHeight)
             return false;
 
-        if(at.floorHeight < checking.z && heightDifference > FallHeight)
-            return false;
-
         return true;
+    }
+
+    public boolean isBridgeAt(Level level, float x, float y, Entity checking) {
+        Array<Entity> bridges = level.staticSpatialhash.getEntitiesAt(x, y, checking.collision.x);
+        for(int i = 0; i < bridges.size; i++) {
+            Entity e = bridges.get(i);
+            if(Math.abs(x - e.x) > e.collision.x || Math.abs(y - e.y) > e.collision.y)
+                continue;
+
+            if(e.collision.x < 0.4f && e.collision.y < 0.4f)
+                continue;
+
+            if(Math.abs(e.z + e.collision.z - checking.z) < StepHeight)
+                return true;
+        }
+
+        return false;
     }
 
     public void InitForLevel(Level level) {
