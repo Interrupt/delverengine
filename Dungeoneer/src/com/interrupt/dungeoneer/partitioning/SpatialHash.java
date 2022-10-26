@@ -48,34 +48,38 @@ public class SpatialHash {
 	}
 
 	public Array<Entity> getEntitiesAt(float x, float y, float colSize) {
-		int startX = (int)(x / cellSize - colSize);
-		int endX = (int)(x / cellSize + colSize);
-		int startY = (int)(y / cellSize - colSize);
-		int endY = (int)(y / cellSize + colSize);
+		return getEntitiesAt(x, y ,colSize, temp);
+	}
 
-		temp.clear();
+    public Array<Entity> getEntitiesAt(float x, float y, float colSize, Array<Entity> arrayToFill) {
+        int startX = (int)(x / cellSize - colSize);
+        int endX = (int)(x / cellSize + colSize);
+        int startY = (int)(y / cellSize - colSize);
+        int endY = (int)(y / cellSize + colSize);
+
+        arrayToFill.clear();
 
         // Guard from super high values causing an infinite loop here
-		if(startX == Integer.MAX_VALUE || startX == Integer.MIN_VALUE)
-			return temp;
-		if(startY == Integer.MAX_VALUE || startY == Integer.MIN_VALUE)
-			return temp;
+        if(startX == Integer.MAX_VALUE || startX == Integer.MIN_VALUE)
+            return arrayToFill;
+        if(startY == Integer.MAX_VALUE || startY == Integer.MIN_VALUE)
+            return arrayToFill;
 
-		for(int xi = startX; xi <= endX; xi++) {
-			for(int yi = startY; yi <= endY; yi++) {
-				int key = getKey(xi, yi);
-				Array<Entity> entitiesHere = hash.get(key);
-				if(entitiesHere != null) {
-					for(Entity entity : entitiesHere) {
-						if(!temp.contains(entity, true)) // make sure this entity only is returned once
-							temp.add(entity);
-					}
-				}
-			}
-		}
+        for(int xi = startX; xi <= endX; xi++) {
+            for(int yi = startY; yi <= endY; yi++) {
+                int key = getKey(xi, yi);
+                Array<Entity> entitiesHere = hash.get(key);
+                if(entitiesHere != null) {
+                    for(Entity entity : entitiesHere) {
+                        if(!arrayToFill.contains(entity, true)) // make sure this entity only is returned once
+                            arrayToFill.add(entity);
+                    }
+                }
+            }
+        }
 
-		return temp;
-	}
+        return arrayToFill;
+    }
 
 	public void Clear() {
 		hash.clear();

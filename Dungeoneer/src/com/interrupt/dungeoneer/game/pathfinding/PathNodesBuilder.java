@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.game.pathfinding;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.interrupt.dungeoneer.entities.Actor;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.PathNode;
 import com.interrupt.dungeoneer.entities.Player;
@@ -49,6 +50,43 @@ public class PathNodesBuilder {
         return t_foundTile;
     }
 
+    Array<Entity> t_entityCheckerArray = new Array<>();
+    protected boolean collidesWorldOrEntities(Level level, float x, float y, float z, Vector3 collision, Entity checking) {
+        boolean isFreeSoFar = level.isFree(x, y, z, collision, checking.stepHeight, checking.floating, null);
+        if(!isFreeSoFar)
+            return false;
+
+        float widthX = checking.collision.x;
+        float widthY = checking.collision.y;
+
+        // The level entity collision checks are not thread safe by default.
+        Array<Entity> foundEntities = level.staticSpatialhash.getEntitiesAt(x,y,checking.collision.x,t_entityCheckerArray);
+        for(int i = 0; i < foundEntities.size; i++)
+        {
+            Entity e = foundEntities.get(i);
+            if(e.isSolid && e != checking && e.isActive)
+            {
+                if(e.isDynamic && checking.collidesWith == Entity.CollidesWith.staticOnly) continue;
+                else if(e.collidesWith == Entity.CollidesWith.staticOnly && checking.isDynamic) continue;
+
+                // simple AABB test
+                if(x > e.x - e.collision.x - widthX) {
+                    if(x < e.x + e.collision.x + widthX) {
+                        if(y > e.y - e.collision.y - widthY) {
+                            if(y < e.y + e.collision.y + widthY) {
+                                if(z > e.z - height && z < e.z + e.collision.z) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     public PathNode addNodeIfFree(Level level, int x, int y, float levelX, float levelY, Entity checking, Vector3 collision, int pass) {
         FoundTile at = getHighestTile(level, levelX, levelY, checking);
         Tile t = at.tile;
@@ -74,7 +112,7 @@ public class PathNodesBuilder {
                 at.floorHeight += 0.4f;
         }
 
-        boolean isFree = level.collidesWorldOrEntities(levelX, levelY, at.floorHeight, collision, checking);
+        boolean isFree = collidesWorldOrEntities(level, levelX, levelY, at.floorHeight, collision, checking);
         if(isFree) {
             PathNode existing = GetNode(x, y);
 
@@ -160,7 +198,7 @@ public class PathNodesBuilder {
         for(int i = 0; i < staticEntities.size; i++) {
             Entity e = staticEntities.get(i);
             if(e.collision.x >= 0.4f || e.collision.y >= 0.4f) {
-                boolean isFree = level.collidesWorldOrEntities(e.x, e.y, e.z + e.collision.z, checking.collision, checking);
+                boolean isFree = collidesWorldOrEntities(level, e.x, e.y, e.z + e.collision.z, checking.collision, checking);
                 if(isFree) {
                     PathNode n = new PathNode(new Vector3(e.x, e.y, e.z + e.collision.z));
 

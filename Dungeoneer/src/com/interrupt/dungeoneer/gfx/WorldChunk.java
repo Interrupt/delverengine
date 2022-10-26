@@ -241,8 +241,6 @@ public class WorldChunk {
 
 		GameScreen.resetDelta = true;
 		position.set(xOffset + (width / 2f), 0, yOffset + (height / 2f));
-
-        BuildPathnodes();
 	}
 
 	public boolean UpdateVisiblity(PerspectiveCamera camera) {

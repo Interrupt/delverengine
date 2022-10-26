@@ -6,11 +6,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.IntIntMap;
 import com.badlogic.gdx.utils.IntMap;
+import com.interrupt.dungeoneer.GameApplication;
+import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.PathNode;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -22,8 +26,6 @@ public class Pathfinding {
     public static final float PathUpdateTime = 35f;
 
     private IntMap<PathNode> allNodes = new IntMap<>();
-
-    //private Array<PathNode> allNodes = new Array<PathNode>();
     public SpatialHash pathfindingSpatialHash = new SpatialHash(1);
 
     private float timeSinceLastPathUpdate = 1000f;
@@ -32,14 +34,6 @@ public class Pathfinding {
     private Vector3 lastPathfindingUpdateLoc = new Vector3();
 
     public final Integer GlobalPathfindingLock = 1;
-
-    public PathNode AddNode(PathNode n) {
-        synchronized (GlobalPathfindingLock) {
-            allNodes.put(n.loc.hashCode(), n);
-            pathfindingSpatialHash.AddEntity(n);
-            return n;
-        }
-    }
 
     public void AddNodes(Array<PathNode> nodes) {
         synchronized (GlobalPathfindingLock) {
@@ -174,6 +168,16 @@ public class Pathfinding {
         timeSinceLastPathUpdate += delta;
         if(timeSinceLastPathUpdate > PathUpdateTime) {
             timeSinceLastPathUpdate = 0f;
+
+            // See if any chunks need to have their path nodes built
+            Array<WorldChunk> chunks = GameManager.renderer.getChunks();
+            if(chunks != null) {
+                for (int i = 0; i < chunks.size; i++) {
+                    chunks.get(i).BuildPathnodes();
+                }
+            }
+
+            // Also kick off the path updater
             Game.threadPool.submit(Game.pathfinding.GetRunnable());
         }
     }

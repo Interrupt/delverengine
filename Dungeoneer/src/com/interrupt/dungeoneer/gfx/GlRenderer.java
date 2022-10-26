@@ -4102,4 +4102,8 @@ public class GlRenderer {
 	public void setFieldOfViewMod(float newFieldOfView) {
 	    fieldOfViewMod = newFieldOfView;
     }
+
+    public Array<WorldChunk> getChunks() {
+        return chunks;
+    }
 }
