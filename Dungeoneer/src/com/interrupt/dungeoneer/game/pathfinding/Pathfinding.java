@@ -42,7 +42,7 @@ public class Pathfinding {
                 if(!t.blockMotion) {
                     float floorHeight = t.getFloorHeight(levelX + (x * checking.collision.x * 0.1f), levelY + (y * checking.collision.y * 0.1f));
 
-                    float stepDistance = Math.abs(floorHeight - checking.z + 0.5f);
+                    float stepDistance = Math.abs(floorHeight - checking.z - 0.5f);
                     if(stepDistance > checking.stepHeight) {
                         t_foundTile.set(null, 0f);
                         return t_foundTile;
