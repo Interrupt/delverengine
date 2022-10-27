@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
@@ -26,8 +25,8 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.gamemode.delver.DelverGameMode;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
-import com.interrupt.dungeoneer.game.gamemode.GameStateInterface;
-import com.interrupt.dungeoneer.generator.SectionDefinition;
+import com.interrupt.dungeoneer.game.pathfinding.NodeGraphPathfinding;
+import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.input.ControllerState;
@@ -44,7 +43,6 @@ import com.interrupt.utils.OSUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Comparator;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -122,7 +120,7 @@ public class Game {
 
     public static ExecutorService threadPool = Executors.newFixedThreadPool(4);
 
-    public static Pathfinding pathfinding = new Pathfinding();
+    protected PathfindingInterface pathfindingManager = new NodeGraphPathfinding();
 
     protected GameModeInterface gameMode = new DelverGameMode();
 
@@ -504,7 +502,7 @@ public class Game {
 
 		input.tick();
         Audio.tick(delta, player, level);
-		Game.pathfinding.tick(delta);
+		Game.instance.pathfindingManager.tick(delta);
 
         if(!gamepadManager.menuMode) {
 			gamepadManager.tick(delta);
@@ -1483,5 +1481,8 @@ public class Game {
 
     public GameModeInterface getGameMode() {
         return gameMode;
+    }
+    public PathfindingInterface getPathfindingManager() {
+        return pathfindingManager;
     }
 }
