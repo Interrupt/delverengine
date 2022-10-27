@@ -2,10 +2,7 @@ package com.interrupt.dungeoneer.gfx.animation;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.interrupt.dungeoneer.entities.Entity;
-import com.interrupt.dungeoneer.entities.Item;
-import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.Prefab;
+import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.managers.EntityManager;
@@ -46,6 +43,11 @@ public class ProjectileAttackAction extends AnimationAction {
 		if(projectile == null)
 			return;
 
+        // Who are we attacking?
+        Entity attackTarget = Game.instance.player;
+        if(instigator instanceof Monster)
+            attackTarget = (Monster)((Monster) instigator).getAttackTarget();
+
 		for(int i = 0; i < projectileNum; i++) {
 			Entity pCopy = null;
 			if (projectile instanceof Prefab) {
@@ -56,7 +58,6 @@ public class ProjectileAttackAction extends AnimationAction {
 			}
 
 			if (pCopy != null) {
-				Player player = Game.instance.player;
 				pCopy.owner = instigator;
 				pCopy.ignorePlayerCollision = false;
 
@@ -66,7 +67,7 @@ public class ProjectileAttackAction extends AnimationAction {
 				pCopy.z = instigator.z + (instigator.collision.z * 0.6f);
 
 				// initial instigator to player direction, for the projectile offset
-				Vector3 dirToPlayer = workVector3d_1.set(player.x, player.y, 0);
+				Vector3 dirToPlayer = workVector3d_1.set(attackTarget.x, attackTarget.y, 0);
 				dirToPlayer.sub(pCopy.x, pCopy.y, 0);
 				float playerdist = dirToPlayer.len();
 
@@ -83,7 +84,7 @@ public class ProjectileAttackAction extends AnimationAction {
 				pCopy.z += projectileOffset.z;
 
 				// get direction from the projectile to the player. aim for center mass!
-				dirToPlayer.set(player.x, player.y, player.z + player.collision.z * 0.5f);
+				dirToPlayer.set(attackTarget.x, attackTarget.y, attackTarget.z + attackTarget.collision.z * 0.5f);
 				dirToPlayer.sub(pCopy.x, pCopy.y, pCopy.z);
 				dirToPlayer.nor();
 

@@ -1,16 +1,12 @@
 package com.interrupt.dungeoneer.game.pathfinding;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Monster;
 import com.interrupt.dungeoneer.entities.PathNode;
-import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class Pathfinding {
@@ -68,10 +64,10 @@ public class Pathfinding {
         return CanMoveTo(level, nextPos.x, nextPos.y, m);
     }
 
-    float getAngleTowards(Vector3 direction, Entity checking, Player player) {
+    float getAngleTowards(Vector3 direction, Entity checking, Entity target) {
         // Check if we can do this turn! Don't just flip 180
         Vector2 nextDir = t_vec2Calc1.set(direction.x, direction.y).scl(-1f);
-        Vector2 testCheckDir = t_vec2Calc2.set(checking.x - player.x, checking.y - player.y);
+        Vector2 testCheckDir = t_vec2Calc2.set(checking.x - target.x, checking.y - target.y);
 
         float checkAngle = testCheckDir.angleDeg(nextDir);
         if(checkAngle > 180)
@@ -88,12 +84,11 @@ public class Pathfinding {
     Vector2 t_vec2Calc1 = new Vector2();
     Vector2 t_vec2Calc2 = new Vector2();
     PathNode towardsPlayer = new PathNode();
-    public PathNode GetNextPathLocation(Level level, Entity checking) {
+    public PathNode GetNextPathLocation(Level level, Entity checking, Entity target) {
         if(checking == null)
             return null;
 
-        Player player = Game.instance.player;
-        if(player == null)
+        if(target == null)
             return null;
 
         Monster m = (Monster)checking;
@@ -104,7 +99,7 @@ public class Pathfinding {
 
         // First, try to move towards the player
         Vector3 posCalc = t_vec3Calc1.set(checking.x, checking.y, checking.z);
-        Vector3 directionCalcNear = t_vec3Calc2.set(player.x, player.y, player.z).sub(posCalc).nor().scl(0.5f);
+        Vector3 directionCalcNear = t_vec3Calc2.set(target.x, target.y, target.z).sub(posCalc).nor().scl(0.5f);
         Vector3 nearCheckPos = t_vec3Calc3.set(posCalc).add(directionCalcNear);
 
         t_fakeChecker.collision.set(checking.collision);
@@ -124,7 +119,7 @@ public class Pathfinding {
             couldMoveTowardsPlayer = true;
         }
 
-        float angleToTarget = getAngleTowards(monsterDir, checking, player);
+        float angleToTarget = getAngleTowards(monsterDir, checking, target);
 
         if(couldMoveTowardsPlayer) {
             // If this is the first tick being alerted, use this direction always
@@ -224,11 +219,10 @@ public class Pathfinding {
     }
 
     public void InitForLevel(Level level) {
-        // add bridges
-        //addNodesForStaticEntities(level, checking);
+        // Nothing to do here for Doom-style pathfinding
     }
 
     public void tick(float delta) {
-
+        // Nothing to do here for Doom-style pathfinding
     }
 }

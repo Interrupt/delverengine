@@ -431,6 +431,13 @@ public class Monster extends Actor implements Directional {
 		if(!isActive)
 			return;
 
+        // For testing, make us mad!
+        for(Entity e : level.entities) {
+            if(e instanceof Monster && e != this) {
+                attackTarget = e;
+            }
+        }
+
 		// Time speed could be different for just us
 		delta *= actorTimeScale;
 
@@ -481,7 +488,6 @@ public class Monster extends Actor implements Directional {
 			if(mp < maxMp) mp++;
 		}
 
-        //targetdist = new Vector2(targetx, targety).sub(x, y).len();
 		targetdist = Math.max(Math.abs(targetx - x), Math.abs(targety - y));
 
         wasAlerted = alerted;
@@ -543,6 +549,9 @@ public class Monster extends Actor implements Directional {
 			if(playerdist < (player.visiblityMod * 15) + 3  || alertValue >= 1f) {
 				alerted = true;
 
+                // The player is our target now!
+                attackTarget = player;
+
 				// bark!
 				Audio.playPositionedSound(alertSound, new Vector3(x, y, z), soundVolume, 1f, 12f);
 
@@ -556,7 +565,14 @@ public class Monster extends Actor implements Directional {
 			ambushMode = AmbushMode.None;
 		}
 
-		if(alerted && playerdist > 0.7f && chasetarget && stuckWanderTimer <= 0) // When alerted, try to find a path to the player
+        float attackTargetDist = playerdist;
+        if(attackTarget != null) {
+            pxdir = attackTarget.x - x;
+            pydir = attackTarget.y - y;
+            attackTargetDist = GlRenderer.FastSqrt(pxdir * pxdir + pydir * pydir);
+        }
+
+		if(alerted && attackTargetDist > 0.7f && chasetarget && stuckWanderTimer <= 0) // When alerted, try to find a path to the player
 		{
 			nextTargetf -= delta;
 			if(nextTargetf < 0 || targetdist < 0.2)
@@ -569,13 +585,13 @@ public class Monster extends Actor implements Directional {
 				nextTargetf = 50f;
 
 				// try to find a path to the player, or stop being alerted if the player ran away
-				foundPath = findPathToPlayer(level);
+				foundPath = findPathToTarget(level);
 				if(!foundPath && !canSeePlayer) alerted = false;
 				else if(!foundPath && !fleeing)
 				{
-					if(level.canSafelySee(x, y, player.x, player.y)) {
-						targetx = player.x;
-						targety = player.y;
+					if(level.canSafelySee(x, y, attackTarget.x, attackTarget.y)) {
+						targetx = attackTarget.x;
+						targety = attackTarget.y;
 					}
 					else {
 						canSafelyNavigateToTarget = false;
@@ -587,10 +603,10 @@ public class Monster extends Actor implements Directional {
 				}
 			}
 		}
-		else if(alerted && playerdist <= 1f && !fleeing) // If close enough to the player, skip pathfindinga
+		else if(alerted && attackTargetDist <= 1f && !fleeing) // If close enough to the attack target, skip pathfinding
 		{
-			targetx = player.x;
-			targety = player.y;
+			targetx = attackTarget.x;
+			targety = attackTarget.y;
 			stuckWanderTimer = 0f;
 		}
 
@@ -737,17 +753,22 @@ public class Monster extends Actor implements Directional {
 
 		// Attack the player once we're mad and alerted
 		if(hostile && alerted) {
-			if((playerdist < collision.x + reach || playerdist < collision.x + attackStartDistance)) {
-				float zDiff = Math.abs((player.z + 0.3f) - (z + 0.3f));
+
+            // Default to the player if no other attack target is given
+            if(attackTarget == null)
+                attackTarget = player;
+
+			if((attackTargetDist < collision.x + reach || attackTargetDist < collision.x + attackStartDistance)) {
+				float zDiff = Math.abs((attackTarget.z + 0.3f) - (z + 0.3f));
 				if (zDiff < reach || zDiff < attackStartDistance) {
-					attack(player);
+					attack(attackTarget);
 
                     // Update the target to the player if we are close enough to attack!
-                    targetx = player.x;
-                    targety = player.y;
+                    targetx = attackTarget.x;
+                    targety = attackTarget.y;
 				}
-			} else if(playerdist > projectileAttackMinDistance && playerdist < projectileAttackMaxDistance && (projectile != null || rangedAttackAnimation != null)) {
-				rangedAttack(player);
+			} else if(attackTargetDist > projectileAttackMinDistance && attackTargetDist < projectileAttackMaxDistance && (projectile != null || rangedAttackAnimation != null)) {
+				rangedAttack(attackTarget);
 			}
 		}
 
@@ -808,9 +829,9 @@ public class Monster extends Actor implements Directional {
 			int pickedSpell = Game.rand.nextInt(spells.size);
 			Spell picked = spells.get(pickedSpell);
 
-			setDirectionTowards(player);
+			setDirectionTowards(attackTarget);
 
-			if(mp >= picked.mpCost && playerdist < picked.maxDistanceToTarget && playerdist > picked.minDistanceToTarget) {
+			if(mp >= picked.mpCost && attackTargetDist < picked.maxDistanceToTarget && attackTargetDist > picked.minDistanceToTarget) {
 				stuntime = 30;
 				attacktimer = projectileAttackTime + Game.rand.nextInt(30);
 
@@ -831,7 +852,7 @@ public class Monster extends Actor implements Directional {
 					castAnimation.play();
 				}
 				else {
-					Vector3 dir = new Vector3(player.x, player.z, player.y).sub(x, z + projectileOffset, y).nor();
+					Vector3 dir = new Vector3(attackTarget.x, attackTarget.z, attackTarget.y).sub(x, z + projectileOffset, y).nor();
 					picked.cast(this, dir);
 
 					if(attackAnimation != null) {
@@ -910,9 +931,9 @@ public class Monster extends Actor implements Directional {
 		return true;
 	}
 
-	private boolean findPathToPlayer(Level level)
+	private boolean findPathToTarget(Level level)
 	{
-		PathNode picked = Game.pathfinding.GetNextPathLocation(level, this);
+		PathNode picked = Game.pathfinding.GetNextPathLocation(level, this, attackTarget);
         if(picked == null)
             return false;
 

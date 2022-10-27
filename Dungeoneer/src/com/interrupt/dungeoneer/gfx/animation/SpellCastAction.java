@@ -8,15 +8,15 @@ import com.interrupt.dungeoneer.entities.spells.Spell;
 import com.interrupt.dungeoneer.game.Game;
 
 public class SpellCastAction extends AnimationAction {
-	
+
 	private Spell spell;
-	
+
 	public SpellCastAction() { }
 	public SpellCastAction(Spell spell) {
 		this.spell = spell;
 	}
-	
-	public void setSpell(Spell spell) { 
+
+	public void setSpell(Spell spell) {
 		this.spell = spell;
 	}
 
@@ -24,9 +24,9 @@ public class SpellCastAction extends AnimationAction {
 	public void doAction(Entity instigator) {
 		if(instigator instanceof Monster) {
 			Monster m = (Monster)instigator;
-			Player player = Game.instance.player;
-			
-			Vector3 dir = new Vector3(player.x, player.z, player.y).sub(m.x, m.z + m.projectileOffset, m.y).nor();
+			Entity attackTarget = m.getAttackTarget();
+
+			Vector3 dir = new Vector3(attackTarget.x, attackTarget.z, attackTarget.y).sub(m.x, m.z + m.projectileOffset, m.y).nor();
 			spell.cast(m, dir);
 		}
 	}
