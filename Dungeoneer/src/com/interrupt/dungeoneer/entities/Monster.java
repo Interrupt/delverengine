@@ -295,6 +295,7 @@ public class Monster extends Actor implements Directional {
 	public float spawnMomentumTransfer = 1.0f;
 
 	private transient Entity attackTarget = null;
+    private transient Entity lastAttackTarget = null;
 
 	public Monster() {
 		// for ranged monsters
@@ -431,13 +432,6 @@ public class Monster extends Actor implements Directional {
 		if(!isActive)
 			return;
 
-        // For testing, make us mad!
-        for(Entity e : level.entities) {
-            if(e instanceof Monster && e != this) {
-                attackTarget = e;
-            }
-        }
-
 		// Time speed could be different for just us
 		delta *= actorTimeScale;
 
@@ -565,12 +559,13 @@ public class Monster extends Actor implements Directional {
 			ambushMode = AmbushMode.None;
 		}
 
-        float attackTargetDist = playerdist;
-        if(attackTarget != null) {
-            pxdir = attackTarget.x - x;
-            pydir = attackTarget.y - y;
-            attackTargetDist = GlRenderer.FastSqrt(pxdir * pxdir + pydir * pydir);
-        }
+        // Refresh the attack target! Should always return something, defaults to the player
+        attackTarget = getAttackTarget();
+
+        // See how close to the target we are
+        pxdir = attackTarget.x - x;
+        pydir = attackTarget.y - y;
+        float attackTargetDist = GlRenderer.FastSqrt(pxdir * pxdir + pydir * pydir);
 
 		if(alerted && attackTargetDist > 0.7f && chasetarget && stuckWanderTimer <= 0) // When alerted, try to find a path to the player
 		{
@@ -997,6 +992,9 @@ public class Monster extends Actor implements Directional {
 				if(triggersWhenHurt != null && !triggersWhenHurt.isEmpty()) {
 					Game.GetLevel().trigger(this, triggersWhenHurt, name);
 				}
+
+                // Switch to this target!
+                attackTarget = instigator;
 			}
 		}
 	}
@@ -1490,4 +1488,11 @@ public class Monster extends Actor implements Directional {
 
 		walkAnimation.animate(delta, this);
 	}
+
+    public boolean isNewAttackTarget() {
+        // Let the monster quickly flip to a new target when the target changes
+        boolean isNewTarget = attackTarget != lastAttackTarget;
+        lastAttackTarget = attackTarget;
+        return isNewTarget;
+    }
 }

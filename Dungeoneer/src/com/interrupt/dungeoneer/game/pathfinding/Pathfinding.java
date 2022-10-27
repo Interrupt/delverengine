@@ -83,7 +83,7 @@ public class Pathfinding {
     Vector3 t_vec3Calc3 = new Vector3();
     Vector2 t_vec2Calc1 = new Vector2();
     Vector2 t_vec2Calc2 = new Vector2();
-    PathNode towardsPlayer = new PathNode();
+    PathNode towardsTarget = new PathNode();
     public PathNode GetNextPathLocation(Level level, Entity checking, Entity target) {
         if(checking == null)
             return null;
@@ -97,11 +97,12 @@ public class Pathfinding {
 
         Vector3 monsterDir = m.getDirection();
 
-        // First, try to move towards the player
+        // First, try to move towards the target
         Vector3 posCalc = t_vec3Calc1.set(checking.x, checking.y, checking.z);
         Vector3 directionCalcNear = t_vec3Calc2.set(target.x, target.y, target.z).sub(posCalc).nor().scl(0.5f);
         Vector3 nearCheckPos = t_vec3Calc3.set(posCalc).add(directionCalcNear);
 
+        // This first check should ignore static entities!
         t_fakeChecker.collision.set(checking.collision);
         t_fakeChecker.collidesWith = Entity.CollidesWith.staticOnly;
         t_fakeChecker.stepHeight = 0.3f;
@@ -110,29 +111,27 @@ public class Pathfinding {
         t_fakeChecker.y = checking.y;
         t_fakeChecker.z = checking.z;
 
-        // Check if we can actually walk towards the player
-        towardsPlayer.loc.set(nearCheckPos);
+        boolean couldMoveTowardsTarget = false;
+        towardsTarget.loc.set(nearCheckPos);
 
-        boolean couldMoveTowardsPlayer = false;
-
-        if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, t_fakeChecker)) {
-            couldMoveTowardsPlayer = true;
+        if(CanMoveTo(level, towardsTarget.loc.x, towardsTarget.loc.y, t_fakeChecker)) {
+            couldMoveTowardsTarget = true;
         }
 
         float angleToTarget = getAngleTowards(monsterDir, checking, target);
 
-        if(couldMoveTowardsPlayer) {
+        if(couldMoveTowardsTarget) {
             // If this is the first tick being alerted, use this direction always
-            if(!m.wasAlerted)
-                return towardsPlayer;
+            if(m.isNewAttackTarget())
+                return towardsTarget;
 
             // TODO: Removing this check effectively gives the monster a turning radius.
             // Maybe we want that for some monsters?
             if(Math.abs(angleToTarget) <= 110)
-                return towardsPlayer;
+                return towardsTarget;
         }
 
-        // Try turning until we get free space
+        // Could not simply move towards the target. Try turning until we face free space
         boolean turnDirection = angleToTarget > 0;
         for(int angle = 15; angle <= 270; angle += 15) {
             float finalAngle = turnDirection ? angle : -angle;
@@ -148,8 +147,8 @@ public class Pathfinding {
                 nextDir.rotateDeg(finalAngle);
 
                 Vector2 nextPos = t_vec2Calc2.set(checking.x, checking.y).add(nextDir);
-                towardsPlayer.loc.set(nextPos.x, nextPos.y, 0);
-                return towardsPlayer;
+                towardsTarget.loc.set(nextPos.x, nextPos.y, 0);
+                return towardsTarget;
             }
         }
 
@@ -163,7 +162,7 @@ public class Pathfinding {
         float stepDistance = Math.abs(at.lowestHeight - checking.z + 0.5f);
         if(at.lowestHeight < checking.z + 0.5f && stepDistance > StepHeight) {
             // Don't step off of edges!
-            // TODO: Check if the player is close enough and below. If so, step down!
+            // TODO: Check if the target is close enough and below. If so, step down!
             // Unless there is a static entity to step on!
             if(!isBridgeAt(level, x, y, checking))
                 return false;
