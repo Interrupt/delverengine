@@ -20,6 +20,9 @@ public class Pathfinding {
     private static final float StepHeight = 0.35f;
     private static final float FallHeight = 1.5f;
 
+    Vector2 t_calcVec1 = new Vector2();
+    Vector2 t_calcVec2 = new Vector2();
+
     public class FoundTile {
         public Tile tile;
         public float floorHeight;
@@ -57,18 +60,22 @@ public class Pathfinding {
     }
 
     public boolean TryTurn(Level level, Monster m, float angle) {
-        Vector2 nextDir = new Vector2(m.lastPathDirection).scl(0.5f);
+        Vector3 monsterDir = m.getDirection();
+        Vector2 nextDir = t_calcVec1.set(monsterDir.x, monsterDir.y).scl(0.5f);
         nextDir.rotateDeg(angle);
 
-        Vector2 nextPos = new Vector2(m.x, m.y).add(nextDir);
-        if(CanMoveTo(level, nextPos.x, nextPos.y, m)) {
-            return true;
-        }
-
-        return false;
+        Vector2 nextPos = t_calcVec2.set(m.x, m.y).add(nextDir);
+        return CanMoveTo(level, nextPos.x, nextPos.y, m);
     }
 
     // Entity can ask for where to move next
+    Entity t_fakeChecker = new Entity();
+    Vector3 t_vec3Calc1 = new Vector3();
+    Vector3 t_vec3Calc2 = new Vector3();
+    Vector3 t_vec3Calc3 = new Vector3();
+    Vector2 t_vec2Calc1 = new Vector2();
+    Vector2 t_vec2Calc2 = new Vector2();
+    PathNode towardsPlayer = new PathNode();
     public PathNode GetNextPathLocation(Level level, Entity checking) {
         if(checking == null)
             return null;
@@ -81,29 +88,27 @@ public class Pathfinding {
         if(m == null)
             return null;
 
+        Vector3 monsterDir = m.getDirection();
+
         // First, try to move towards the player
-        Vector3 posCalc = new Vector3(checking.x, checking.y, checking.z);
-        Vector3 directionCalcFar = new Vector3(player.x, player.y, player.z).sub(posCalc).nor();
-        Vector3 directionCalcNear = new Vector3(player.x, player.y, player.z).sub(posCalc).nor().scl(0.5f);
+        Vector3 posCalc = t_vec3Calc1.set(checking.x, checking.y, checking.z);
+        Vector3 directionCalcNear = t_vec3Calc2.set(player.x, player.y, player.z).sub(posCalc).nor().scl(0.5f);
+        Vector3 nearCheckPos = t_vec3Calc3.set(posCalc).add(directionCalcNear);
 
-        Vector3 nearCheckPos = new Vector3(posCalc).add(directionCalcNear);
-
-        Entity fakeChecker = new Entity();
-        fakeChecker.collision.set(checking.collision);
-        fakeChecker.collidesWith = Entity.CollidesWith.staticOnly;
-        fakeChecker.stepHeight = 0.3f;
-        fakeChecker.isSolid = true;
-        fakeChecker.x = checking.x;
-        fakeChecker.y = checking.y;
-        fakeChecker.z = checking.z;
+        t_fakeChecker.collision.set(checking.collision);
+        t_fakeChecker.collidesWith = Entity.CollidesWith.staticOnly;
+        t_fakeChecker.stepHeight = 0.3f;
+        t_fakeChecker.isSolid = true;
+        t_fakeChecker.x = checking.x;
+        t_fakeChecker.y = checking.y;
+        t_fakeChecker.z = checking.z;
 
         // Check if we can actually walk towards the player
-        PathNode towardsPlayer = new PathNode();
         towardsPlayer.loc.set(nearCheckPos);
 
         boolean couldMoveTowardsPlayer = false;
 
-        if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, fakeChecker)) {
+        if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, t_fakeChecker)) {
             couldMoveTowardsPlayer = true;
         }
 
@@ -113,8 +118,8 @@ public class Pathfinding {
                 return towardsPlayer;
 
             // Check if we can do this turn! Don't just flip 180
-            Vector2 nextDir = new Vector2(m.lastPathDirection).scl(-1f);
-            Vector2 testCheckDir = new Vector2(checking.x - player.x, checking.y - player.y);
+            Vector2 nextDir = t_vec2Calc1.set(monsterDir.x, monsterDir.y).scl(-1f);
+            Vector2 testCheckDir = t_vec2Calc2.set(checking.x - player.x, checking.y - player.y);
 
             float checkAngle = testCheckDir.angleDeg(nextDir);
             if(checkAngle > 180)
@@ -137,10 +142,10 @@ public class Pathfinding {
             }
 
             if(canTurn) {
-                Vector2 nextDir = new Vector2(m.lastPathDirection).scl(0.5f);
+                Vector2 nextDir = t_vec2Calc1.set(monsterDir.x, monsterDir.y).scl(0.5f);
                 nextDir.rotateDeg(finalAngle);
 
-                Vector2 nextPos = new Vector2(checking.x, checking.y).add(nextDir);
+                Vector2 nextPos = t_vec2Calc2.set(checking.x, checking.y).add(nextDir);
                 towardsPlayer.loc.set(nextPos.x, nextPos.y, 0);
                 return towardsPlayer;
             }

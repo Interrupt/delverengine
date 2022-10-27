@@ -207,9 +207,6 @@ public class Monster extends Actor implements Directional {
 	/** Monster rotation. */
 	public Vector3 rotation = new Vector3(Vector3.X);
 
-    /** Pathfinding direction */
-    public Vector2 lastPathDirection = new Vector2(1f, 0f);
-
 	private float soundVolume = 0.45f;
 
 	private float deathDelay = 22f;
@@ -744,6 +741,10 @@ public class Monster extends Actor implements Directional {
 				float zDiff = Math.abs((player.z + 0.3f) - (z + 0.3f));
 				if (zDiff < reach || zDiff < attackStartDistance) {
 					attack(player);
+
+                    // Update the target to the player if we are close enough to attack!
+                    targetx = player.x;
+                    targety = player.y;
 				}
 			} else if(playerdist > projectileAttackMinDistance && playerdist < projectileAttackMaxDistance && (projectile != null || rangedAttackAnimation != null)) {
 				rangedAttack(player);
@@ -918,15 +919,6 @@ public class Monster extends Actor implements Directional {
         // Found a good target, use this for a bit
         targetx = picked.loc.x;
         targety = picked.loc.y;
-
-        // See how much we would need to turn
-        float angle = new Vector2(x - targetx, y - targety)
-            .sub(x + lastPathDirection.x, y + lastPathDirection.y).nor()
-            .angleDeg();
-
-        // Keep track of the direction we are heading in!
-        lastPathDirection.set(targetx, targety).sub(x, y).nor();
-
         return true;
 	}
 
