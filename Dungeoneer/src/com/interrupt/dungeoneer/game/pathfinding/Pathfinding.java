@@ -68,6 +68,18 @@ public class Pathfinding {
         return CanMoveTo(level, nextPos.x, nextPos.y, m);
     }
 
+    float getAngleTowards(Vector3 direction, Entity checking, Player player) {
+        // Check if we can do this turn! Don't just flip 180
+        Vector2 nextDir = t_vec2Calc1.set(direction.x, direction.y).scl(-1f);
+        Vector2 testCheckDir = t_vec2Calc2.set(checking.x - player.x, checking.y - player.y);
+
+        float checkAngle = testCheckDir.angleDeg(nextDir);
+        if(checkAngle > 180)
+            checkAngle -= 360;
+
+        return checkAngle;
+    }
+
     // Entity can ask for where to move next
     Entity t_fakeChecker = new Entity();
     Vector3 t_vec3Calc1 = new Vector3();
@@ -112,28 +124,23 @@ public class Pathfinding {
             couldMoveTowardsPlayer = true;
         }
 
+        float angleToTarget = getAngleTowards(monsterDir, checking, player);
+
         if(couldMoveTowardsPlayer) {
             // If this is the first tick being alerted, use this direction always
             if(!m.wasAlerted)
                 return towardsPlayer;
 
-            // Check if we can do this turn! Don't just flip 180
-            Vector2 nextDir = t_vec2Calc1.set(monsterDir.x, monsterDir.y).scl(-1f);
-            Vector2 testCheckDir = t_vec2Calc2.set(checking.x - player.x, checking.y - player.y);
-
-            float checkAngle = testCheckDir.angleDeg(nextDir);
-            if(checkAngle > 180)
-                checkAngle -= 360;
-
-            //Gdx.app.log("Delver", "Angle: " + checkAngle);
-            if(Math.abs(checkAngle) <= 110)
+            // TODO: Removing this check effectively gives the monster a turning radius.
+            // Maybe we want that for some monsters?
+            if(Math.abs(angleToTarget) <= 110)
                 return towardsPlayer;
         }
 
         // Try turning until we get free space
-        boolean positiveAngleFirst = Game.rand.nextBoolean();
-        for(int angle = 0; angle <= 270; angle += 30) {
-            float finalAngle = positiveAngleFirst ? angle : -angle;
+        boolean turnDirection = angleToTarget > 0;
+        for(int angle = 15; angle <= 270; angle += 30) {
+            float finalAngle = turnDirection ? angle : -angle;
             boolean canTurn = TryTurn(level, m, finalAngle);
             if(!canTurn) {
                 // Now try the other direction
