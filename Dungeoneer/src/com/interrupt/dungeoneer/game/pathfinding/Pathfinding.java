@@ -139,7 +139,7 @@ public class Pathfinding {
 
         // Try turning until we get free space
         boolean turnDirection = angleToTarget > 0;
-        for(int angle = 15; angle <= 270; angle += 30) {
+        for(int angle = 15; angle <= 270; angle += 15) {
             float finalAngle = turnDirection ? angle : -angle;
             boolean canTurn = TryTurn(level, m, finalAngle);
             if(!canTurn) {
