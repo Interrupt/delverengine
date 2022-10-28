@@ -1,34 +1,4 @@
 {
     "$schema": "http://delverengine.com/jsonschema/current/managers/MonsterManager.schema.json",
-	"monsters":{
-		"TEST" : [
-			{
-				"class": "com.interrupt.dungeoneer.entities.Monster",
-				"tex":0,
-				"name":"SLIME",
-				"speed":0.003,
-				"maxHp":4,
-				"atk":4,
-				"chasetarget":false,
-				"hasAttackAnim":false,
-				"bloodType": "Slime",
-				"bloodPoolDecal":{
-					"tex":6,
-					"artType":"sprite"
-				},
-				"bloodSplatterDecal":{"isActive":false},
-				"canOpenDoors":false,
-				"alertSound":"mobs/slime/en_slime_alert_01.mp3,mobs/slime/en_slime_alert_02.mp3,mobs/slime/en_slime_alert_03.mp3",
-				"attackSound":"mobs/slime/en_slime_attack_01.mp3,mobs/slime/en_slime_attack_02.mp3,mobs/slime/en_slime_attack_03.mp3",
-				"dieSound":"mobs/slime/en_slime_die_01.mp3,mobs/slime/en_slime_die_02.mp3,mobs/slime/en_slime_die_03.mp3",
-				"hurtSound":"mobs/slime/en_slime_hurt_01.mp3,mobs/slime/en_slime_hurt_02.mp3,mobs/slime/en_slime_hurt_03.mp3",
-				"idleSound":"mobs/slime/en_slime_idle_01.mp3,mobs/slime/en_slime_idle_02.mp3,mobs/slime/en_slime_idle_03.mp3",
-				"walkAnimation": { "start": 0, "end": 3, "speed": 35 },
-				"hurtAnimation": { "start": 8, "end": 10, "speed": 22 },
-				"attackAnimation": { "start": 4, "end": 7, "speed": 55, "actions":{"6":[{"class": "com.interrupt.dungeoneer.gfx.animation.DamageAction"}]} },
-				"dieAnimation": { "start": 8, "end": 10, "speed": 30 },
-				"spriteAtlas": "entities"
-            }
-		]
-	}
+    "monsters": {}
 }

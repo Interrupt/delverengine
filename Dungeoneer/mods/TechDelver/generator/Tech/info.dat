@@ -1,0 +1,81 @@
+{
+    "chunkTiles": 17,
+    "mapChunks": 4,
+    "mapComplexity": 5,
+    "lakes": [],
+    "spawnLights": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.Torch",
+            "texAnimStart": 32,
+            "texAnimEnd": 39,
+            "spriteAtlas": "sprites",
+            "torchAnimateMode": "LOOP",
+            "fullbrite": true,
+            "yOffset": 0.125,
+            "lightColor": {
+                "r": 1.0,
+                "g": 0.8,
+                "b": 0.2,
+                "a": 1.0
+            }
+		}
+	],
+	"doors": [ ],
+	"surprises":[ ],
+	"decorations": [ ],
+	"texturePainters": {
+		"greybox": {
+			"floor": { "2": [2, 2, 3]}
+		}
+	},
+	"genInfos": [
+		{
+			"class": "com.interrupt.dungeoneer.generator.GenInfo",
+			"comment": "rocks on light rock",
+			"floorTex": 0,
+			"textureAtlas": "tech_outdoor",
+			"chance": 0.10,
+			"clusterCount": 2,
+			"clusterSpread": 0.4,
+			"performanceControlledClustering": true,
+			"spawns": [{
+				"class": "com.interrupt.dungeoneer.entities.Sprite",
+				"tex": 4,
+				"spriteAtlas": "tech_sprites",
+				"isDynamic": false
+			}]
+		},
+		{
+			"class": "com.interrupt.dungeoneer.generator.GenInfo",
+			"comment": "grass on light rock",
+			"floorTex": 0,
+			"textureAtlas": "tech_outdoor",
+			"chance": 0.08,
+			"clusterCount": 3,
+			"clusterSpread": 0.4,
+			"performanceControlledClustering": true,
+			"spawns": [{
+				"class": "com.interrupt.dungeoneer.entities.Foliage",
+				"tex": 5,
+				"spriteAtlas": "tech_sprites",
+				"isDynamic": false
+			}]
+		},
+		{
+			"class": "com.interrupt.dungeoneer.generator.GenInfo",
+			"comment": "rocks on dark rock",
+			"floorTex": 0,
+			"textureAtlas": "tech_outdoor_dark",
+			"chance": 0.25,
+			"clusterCount": 4,
+			"clusterSpread": 0.4,
+			"performanceControlledClustering": true,
+			"spawns": [{
+				"class": "com.interrupt.dungeoneer.entities.Sprite",
+				"tex": 4,
+				"spriteAtlas": "tech_sprites",
+				"isDynamic": false
+			}]
+		}
+	]
+}

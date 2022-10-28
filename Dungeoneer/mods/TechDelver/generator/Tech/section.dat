@@ -2,18 +2,20 @@
     "$schema": "http://delverengine.com/jsonschema/current/dungeoneer/generator/SectionDefinition.schema.json",
 	"difficultyLevel": 1,
 	"sortOrder": 1,
-	"name": "Test",
+	"name": "Tech",
 	"floors": 2,
 	"levelTemplates": [
 		{
 			"class": "com.interrupt.dungeoneer.game.Level",
-			"theme": "TEST",
+			"theme": "TECH",
 			"fogStart": 3.0,
 			"fogEnd": 30.0,
 			"fogColor": { "r":0.0, "g":0.0, "b":0.0 },
 			"ambientColor": { "r": 0.025, "g": 0, "b": 0.075 },
 			"generated": false,
 			"levelFileName": "levels/test-level.bin",
+			"ambientSound": "env_indoor.mp3",
+			"ambientSoundVolume": 0.15,
 			"traps": []
 		}
 	]
