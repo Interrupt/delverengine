@@ -1,7 +1,13 @@
 package com.interrupt.dungeoneer.game;
 
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+
 public class GameData {
     public GameData() { }
+
+    /** The Game Mode to be used for the game */
+    public GameModeInterface gameMode;
+
     /** Tutorial level. Shown when starting a new save slot. */
     public Level tutorialLevel = null;
 
@@ -26,6 +32,10 @@ public class GameData {
     /** Is player allowed to jump? */
     public boolean playerJumpEnabled = false;
 
+    /** Whether the mod including this should override the packaged game data.
+     * Setting this to true makes the mod basically the Delver version of an iWad in Doom. */
+    public boolean overrideBaseGame = false;
+
     public void merge(GameData modData) {
         tutorialLevel = modData.tutorialLevel;
         endingLevel = modData.endingLevel;
@@ -33,6 +43,9 @@ public class GameData {
         GameData defaultGameData = new GameData();
 
         // Merge some properties only if different!
+        if(modData.gameMode != null && modData.gameMode != defaultGameData.gameMode) {
+            gameMode = modData.gameMode;
+        }
         if(modData.playerJumpEnabled != defaultGameData.playerJumpEnabled) {
             playerJumpEnabled = modData.playerJumpEnabled;
         }

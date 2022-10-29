@@ -35,6 +35,8 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredMessage;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredMusic;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredShop;
 import com.interrupt.dungeoneer.game.*;
+import com.interrupt.dungeoneer.game.pathfinding.NodeGraphPathfinding;
+import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpFrame;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.dungeoneer.gfx.decals.DDecal;
@@ -424,9 +426,12 @@ public class GlRenderer {
 		boolean inCutscene = cutsceneCamera != null && cutsceneCamera.isActive;
 
 		this.game = game;
-		if(game != null) {
+		if(game != null && game.level != null) {
 			loadedLevel = game.level;
 		}
+
+		if(loadedLevel == null)
+		    return;
 
 		if(loadedLevel.rendererDirty) {
 			if(chunks != null) {
@@ -569,7 +574,7 @@ public class GlRenderer {
 		clearDecals();
 
 		// are we near a pit?
-		Tile t = game.level.getTileOrNull((int)game.player.x, (int)game.player.y);
+		Tile t = loadedLevel.getTileOrNull((int)game.player.x, (int)game.player.y);
 		if(t != null && t.data != null && t.data.darkenFloor) {
 			if(game.player.z < t.floorHeight) {
 				drawFlashOverlay(Color.BLACK);
@@ -3574,6 +3579,10 @@ public class GlRenderer {
 	Color pathfindingColorStart = new Color();
 	Color pathfindingColorEnd = new Color();
 	public void renderPathfinding() {
+        NodeGraphPathfinding pathfinding = (NodeGraphPathfinding)Game.instance.getPathfindingManager();
+        if(pathfinding == null)
+            return;
+
 		ShapeRenderer lineRenderer = collisionLineRenderer;
 		if(lineRenderer == null) lineRenderer = new ShapeRenderer();
 		lineRenderer.setProjectionMatrix(camera.combined);
@@ -3583,7 +3592,7 @@ public class GlRenderer {
 		lineRenderer.setColor(Color.WHITE);
 		lineRenderer.begin(ShapeType.Line);
 
-		for(PathNode node : Game.pathfinding.GetNodes()) {
+		for(PathNode node : pathfinding.GetNodes()) {
 			if(node != null) {
 				Array<PathNode> connections = node.getConnections();
 				Array<PathNode> jumps = node.getJumps();
@@ -3592,16 +3601,16 @@ public class GlRenderer {
 					PathNode c = connections.get(i);
 
 					float colorStart;
-					if(node.playerSmell > Pathfinding.MaxTraversal)
+					if(node.playerSmell > NodeGraphPathfinding.MaxTraversal)
 						colorStart = 0f;
 					else
-						colorStart = 1f - ((float)node.playerSmell / Pathfinding.MaxTraversal);
+						colorStart = 1f - ((float)node.playerSmell / NodeGraphPathfinding.MaxTraversal);
 
 					float colorEnd;
-					if(c.playerSmell > Pathfinding.MaxTraversal)
+					if(c.playerSmell > NodeGraphPathfinding.MaxTraversal)
 						colorEnd = 0f;
 					else
-						colorEnd = 1f - ((float)c.playerSmell / Pathfinding.MaxTraversal);
+						colorEnd = 1f - ((float)c.playerSmell / NodeGraphPathfinding.MaxTraversal);
 
 					pathfindingColorStart.set(colorStart, colorStart, colorStart, 1f);
 					pathfindingColorEnd.set(colorEnd, colorEnd, colorEnd, 1f);
@@ -3613,16 +3622,16 @@ public class GlRenderer {
 					PathNode c = jumps.get(i);
 
 					float colorStart;
-					if(node.playerSmell > Pathfinding.MaxTraversal)
+					if(node.playerSmell > NodeGraphPathfinding.MaxTraversal)
 						colorStart = 0f;
 					else
-						colorStart = 1f - ((float)node.playerSmell / Pathfinding.MaxTraversal);
+						colorStart = 1f - ((float)node.playerSmell / NodeGraphPathfinding.MaxTraversal);
 
 					float colorEnd;
-					if(c.playerSmell > Pathfinding.MaxTraversal)
+					if(c.playerSmell > NodeGraphPathfinding.MaxTraversal)
 						colorEnd = 0f;
 					else
-						colorEnd = 1f - ((float)c.playerSmell / Pathfinding.MaxTraversal);
+						colorEnd = 1f - ((float)c.playerSmell / NodeGraphPathfinding.MaxTraversal);
 
 					pathfindingColorStart.set(colorStart, colorStart * 0.1f, colorStart * 0.1f, 1f);
 					pathfindingColorEnd.set(colorEnd, colorEnd * 0.1f, colorEnd * 0.1f, 1f);

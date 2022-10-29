@@ -1,0 +1,450 @@
+{
+    "$schema": "http://delverengine.com/jsonschema/current/managers/ItemManager.schema.json",
+    "unique": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Sword",
+            "itemType": "sword",
+            "tex": 0,
+            "brokenTex": 0,
+            "spriteAtlas": "unique",
+            "name": "Lucky Testing Dagger",
+            "unique": true,
+            "baseDamage": 1,
+            "randDamage": 5,
+            "durability": 1000,
+            "knockback": 0.1,
+            "reach": 0.45,
+            "speed": 1.0,
+            "chargespeed": 1.0,
+            "cost": 1000,
+            "pickupSound": "pu_metal.mp3",
+            "attackAnimation": "daggerAttack",
+            "attackStrongAnimation": "daggerAttackStrong",
+            "chargeAnimation": "daggerCharge",
+            "dropSound": "drops/drop_metal_01.mp3,drops/drop_metal_02.mp3,drops/drop_metal_03.mp3",
+            "minItemLevel": 1,
+            "maxItemLevel": 5
+        }
+    ],
+    "melee": {
+        "1": [
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.Sword",
+                "itemType": "sword",
+                "tex": 0,
+                "brokenTex": 0,
+                "spriteAtlas": "melee",
+                "name": "Test Knife",
+                "baseDamage": 2,
+                "randDamage": 1,
+                "knockback": 0.1,
+                "reach": 0.45,
+                "speed": 1.0,
+                "chargespeed": 1.0,
+                "cost": 5,
+                "wallHitSound": "clang.mp3,clang_02.mp3,clang_03.mp3,clang_04.mp3",
+                "pickupSound": "pu_metal.mp3",
+                "attackAnimation": "daggerAttack",
+                "attackStrongAnimation": "daggerAttackStrong",
+                "chargeAnimation": "daggerCharge",
+                "dropSound": "drops/drop_metal_01.mp3,drops/drop_metal_02.mp3,drops/drop_metal_03.mp3"
+            }
+        ]
+    },
+    "ranged": {
+        "1": [
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.Bow",
+                "itemType": "bow",
+                "tex": 2,
+                "name": "Testing Ranged Bow",
+                "baseDamage": 1,
+                "randDamage": 2,
+                "knockback": 0.1,
+                "range": 4,
+                "speed": 1.75,
+                "cost": 20,
+                "yOffset": 0.05,
+                "twoHanded": true
+            },
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.ItemStack",
+                "itemType": "stack",
+                "item": {
+                    "class": "com.interrupt.dungeoneer.entities.projectiles.Missile",
+                    "name": "Arrow",
+                    "tex": 73
+                },
+                "stackType": "ARROW",
+                "tex": 3,
+                "name": "Testing Arrows",
+                "count": 4,
+                "yOffset": -0.11,
+                "cost": 10
+            },
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.Gun",
+                "tex": 0,
+                "heldTex": 1,
+                "spriteAtlas": "item-guns",
+                "name": "Handgun",
+                "attackAnimation": "gunFire",
+                "attackStrongAnimation": "gunFire",
+                "automatic": false,
+                "projectileNum": 1,
+                "projectileSpreadX": 3,
+                "projectileSpreadY": 3,
+                "cycleTime": 7,
+                "ammoType": "BULLET",
+                "twoHanded": true,
+                "baseDamage": 10,
+                "randDamage": 0,
+                "roll": 45,
+                "fireSound": "pistol-shot.mp3",
+                "hitEffect": {
+                    "shakeAmount": 2.0,
+                    "shakeDistance": 2.0,
+                    "lightMod": 0.2,
+                    "explosionLightLifetime": 6.0,
+                    "particleCount": 0,
+                    "damage": 0,
+                    "tex": 18,
+                    "explosionStartTex": 18,
+                    "explosionEndTex": 23,
+                    "explosionAnimSpeed": 22,
+                    "hasHalo": false,
+                    "explodeSound": null,
+                    "fullbrite": false,
+                    "impulseAmount": 0,
+                    "scale": 0.3
+                },
+                "muzzleFlash": {
+                    "shakeAmount": 2.0,
+                    "shakeDistance": 2.0,
+                    "lightMod": 0.2,
+                    "explosionLightLifetime": 6.0,
+                    "particleCount": 0,
+                    "damage": 0,
+                    "tex": 18,
+                    "explosionStartTex": 18,
+                    "explosionEndTex": 23,
+                    "explosionAnimSpeed": 22,
+                    "hasHalo": false,
+                    "explodeSound": null,
+                    "impulseAmount": 0,
+                    "scale": 0.4,
+                    "color": { "r": 0.9, "g": 0.6, "b": 0.2, "a": 1.0 },
+                    "fullbrite": true
+                }
+            },
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.ItemStack",
+                "itemType": "stack",
+                "stackType": "BULLET",
+                "tex": 3,
+                "spriteAtlas": "item-guns",
+                "name": "Bullets",
+                "count": 100,
+                "yOffset": -0.11,
+                "cost": 10
+            }
+        ]
+    },
+    "armor": {
+        "1": [
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.Armor",
+                "itemType": "armor",
+                "tex": 8,
+                "spriteAtlas": "armor",
+                "name": "Test Shirt",
+                "armor": 3,
+                "yOffset": -0.11,
+                "cost": 8,
+                "pickupSound": "pu_gen_v2.mp3"
+            },
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.Armor",
+                "itemType": "armor",
+                "tex": 16,
+                "spriteAtlas": "armor",
+                "name": "Test Pants",
+                "armor": 1,
+                "equipLoc": "PANTS",
+                "yOffset": -0.11,
+                "cost": 8,
+                "pickupSound": "pu_gen_v2.mp3"
+            },
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.Armor",
+                "itemType": "armor",
+                "tex": 0,
+                "spriteAtlas": "armor",
+                "name": "Test Hat",
+                "armor": 1,
+                "equipLoc": "HAT",
+                "yOffset": -0.11,
+                "cost": 8,
+                "pickupSound": "pu_gen_v2.mp3"
+            },
+            {
+                "class": "com.interrupt.dungeoneer.entities.items.Armor",
+                "itemType": "armor",
+                "tex": 24,
+                "heldTex": 32,
+                "spriteAtlas": "armor",
+                "name": "Test Shield",
+                "armor": 2,
+                "durability": 50,
+                "equipLoc": "OFFHAND",
+                "yOffset": -0.125,
+                "cost": 8,
+                "pickupSound": "pu_gen_v2.mp3",
+                "baseMods": { "moveSpeedMod": -1 }
+            }
+        ]
+    },
+    "wands": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Wand",
+            "itemType": "wand",
+            "name": "Test Wand",
+            "magicStatBoostMod": 6,
+            "spell": {
+                "class": "com.interrupt.dungeoneer.entities.spells.MagicMissile",
+                "magicMissileProjectile": {
+                    "class": "com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile",
+                    "tex": 52,
+                    "endAnimTex": 55,
+                    "scale": 0.5,
+                    "animSpeed": 7.5,
+                    "spriteAtlas": "particle",
+                    "floating": true,
+                    "fullbrite": true,
+                    "knockback": 0.01,
+                    "attached": [
+                        {
+                            "class": "com.interrupt.dungeoneer.entities.SpriteBeam",
+                            "tex": 30,
+                            "color": {
+                                "r": 0.6172,
+                                "g": 0.0937,
+                                "b": 0.7695
+                            },
+                            "yOffset": -0.425,
+                            "beamRenderMode": "LINE"
+                        }
+                    ],
+                    "splashRadius": 0.5,
+                    "explosion": {
+                        "explosionStartTex": 36,
+                        "explosionEndTex": 39,
+                        "explosionAnimSpeed": 15.0,
+                        "lightMod": 0.45,
+                        "explosionLightStartColor": {
+                            "r": 0.9490, "g": 0.3450, "b": 0.9176
+                        },
+                        "explosionLightEndColor": {
+                            "r": 0.6172, "g": 0.0937, "b": 0.7695
+                        },
+                        "explosionLightLifetime": 10,
+                        "particleCount": 5,
+                        "impulseDistance": 0.4,
+                        "impulseAmount": 0.05,
+                        "shakeDistance": 0.25,
+                        "particleForce": 0.5,
+                        "scale": 0.75,
+                        "randomRoll": 45.0
+                    }
+                },
+                "spellColor": {
+                    "r": 0.6172,
+                    "g": 0.0937,
+                    "b": 0.7695
+                },
+                "appearance": {
+                    "tex": 15,
+                    "texAtlas": "particle"
+                },
+                "castSoundVolume": 0.1,
+                "trailInterval": 2,
+                "splashForce": 0.01,
+                "speed": 0.45,
+                "shotAccuracy": 0.92
+            },
+            "charges": 20,
+            "damageType": "MAGIC",
+            "baseDamage": 1,
+            "randDamage": 1,
+            "autoFire": true,
+            "autoFireTime": 10,
+            "tex": 1,
+            "spriteAtlas": "wands",
+            "yOffset": 0.0,
+            "cost": 45
+        }
+    ],
+    "potions": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Potion",
+            "itemType": "potion",
+            "tex": 2,
+            "name": "Red potion",
+            "yOffset": -0.11,
+            "cost": 25,
+            "pickupSound": "pu_glass.mp3",
+            "dropSound": "drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Potion",
+            "itemType": "potion",
+            "tex": 3,
+            "name": "Blue potion",
+            "yOffset": -0.11,
+            "cost": 30,
+            "pickupSound": "pu_glass.mp3",
+            "dropSound": "drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Potion",
+            "itemType": "potion",
+            "tex": 4,
+            "name": "Green potion",
+            "yOffset": -0.11,
+            "cost": 50,
+            "pickupSound": "pu_glass.mp3",
+            "dropSound": "drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Potion",
+            "itemType": "potion",
+            "tex": 5,
+            "name": "Purple potion",
+            "yOffset": -0.11,
+            "cost": 40,
+            "pickupSound": "pu_glass.mp3",
+            "dropSound": "drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Potion",
+            "itemType": "potion",
+            "tex": 6,
+            "name": "Dark potion",
+            "yOffset": -0.11,
+            "cost": 50,
+            "pickupSound": "pu_glass.mp3",
+            "dropSound": "drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Potion",
+            "itemType": "potion",
+            "tex": 7,
+            "name": "Gold potion",
+            "yOffset": -0.11,
+            "cost": 45,
+            "pickupSound": "pu_glass.mp3",
+            "dropSound": "drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
+        },
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Potion",
+            "itemType": "potion",
+            "tex": 1,
+            "name": "Bright potion",
+            "yOffset": -0.11,
+            "cost": 50,
+            "pickupSound": "pu_glass.mp3",
+            "dropSound": "drops/drop_glass_01.mp3,drops/drop_glass_02.mp3,drops/drop_glass_03.mp3"
+        }
+    ],
+    "scrolls": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Scroll",
+            "itemType": "scroll",
+            "spell": {
+                "class": "com.interrupt.dungeoneer.entities.spells.Heal",
+                "heal": 6
+            },
+            "tex": 72,
+            "name": "Testing Scroll",
+            "yOffset": -0.11,
+            "cost": 120
+        }
+    ],
+    "decorations": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Decoration",
+            "itemType": "junk",
+            "tex": 2,
+            "name": "Test Junk",
+            "yOffset": -0.11
+        }
+    ],
+    "junk": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Decoration",
+            "itemType": "junk",
+            "collision": { "x": 0.1, "y": 0.1, "z": 0.2 },
+            "tex": 3,
+            "mass": 0.7,
+            "name": "Test Lamp",
+            "yOffset": -0.055,
+            "equipLoc": "OFFHAND",
+            "attached": [
+                {
+                    "class": "com.interrupt.dungeoneer.entities.DynamicLight",
+                    "id": "",
+                    "range": 3,
+                    "lightColor": {
+                        "x": 0.9,
+                        "y": 0.47,
+                        "z": 0.12
+                    },
+                    "lightType": "fire",
+                    "z": -0.2,
+                    "haloMode": "BOTH"
+                }
+            ]
+        }
+    ],
+    "food": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.Food",
+            "itemType": "potion",
+            "foodType": "food",
+            "foodMod": 0.5,
+            "tex": 4,
+            "name": "Testing Food",
+            "description": "bread.description",
+            "yOffset": -0.11,
+            "cost": 30
+        }
+    ],
+    "weaponEnchantments": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.ItemModification",
+            "name": "of Testing",
+            "attackSpeedMod": 0.3
+        }
+    ],
+    "weaponPrefixEnchantments": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.ItemModification",
+            "name": "Test's",
+            "attackSpeedMod": 0.1
+        }
+    ],
+    "armorEnchantments": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.ItemModification",
+            "name": "of the Test",
+            "moveSpeedMod": 2
+        }
+    ],
+    "armorPrefixEnchantments": [
+        {
+            "class": "com.interrupt.dungeoneer.entities.items.ItemModification",
+            "name": "Tester's",
+            "moveSpeedMod": 1
+        }
+    ]
+}

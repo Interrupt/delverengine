@@ -9,7 +9,11 @@ import com.interrupt.dungeoneer.entities.Stairs;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.GameData;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.screens.*;
+import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.screens.GameScreen;
+import com.interrupt.dungeoneer.screens.LevelChangeScreen;
+import com.interrupt.dungeoneer.screens.MainMenuScreen;
+import com.interrupt.dungeoneer.screens.SplashScreen;
 import com.interrupt.utils.JsonUtil;
 
 public class GameApplication extends Game {
@@ -18,16 +22,13 @@ public class GameApplication extends Game {
 	public GameInput input = new GameInput();
 
     public GameScreen mainScreen;
-    public GameOverScreen gameoverScreen;
     public LevelChangeScreen levelChangeScreen;
     public SplashScreen mainMenuScreen;
-
-    public WinScreen winScreen;
 
     public static GameApplication instance;
     public static boolean editorRunning = false;
 
-	@Override
+    @Override
 	public void create() {
 		instance = this;
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create");
@@ -40,9 +41,7 @@ public class GameApplication extends Game {
 
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(gameManager, input);
-        gameoverScreen = new GameOverScreen(gameManager);
-        levelChangeScreen = new LevelChangeScreen(gameManager);
-        winScreen = new WinScreen(gameManager);
+        levelChangeScreen = new LevelChangeScreen();
 
         if (com.interrupt.dungeoneer.game.Game.skipIntro)
         {
@@ -64,8 +63,7 @@ public class GameApplication extends Game {
 		com.interrupt.dungeoneer.game.Game.inEditor = true;
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(level, gameManager, input);
-        gameoverScreen = new GameOverScreen(gameManager);
-        levelChangeScreen = new LevelChangeScreen(gameManager);
+        levelChangeScreen = new LevelChangeScreen();
 
         setScreen(mainScreen);
 	}
@@ -83,7 +81,6 @@ public class GameApplication extends Game {
 	}
 
 	public static void ShowGameOverScreen(boolean escaped) {
-
 		// Only show the ending level once!
 		if(escaped) {
 			GameData gameData = JsonUtil.fromJson(GameData.class, com.interrupt.dungeoneer.game.Game.findInternalFileInMods("data/game.dat"));
@@ -116,19 +113,20 @@ public class GameApplication extends Game {
 			}
 		}
 
-		GameManager.getGame().gameOver = true;
-		instance.gameoverScreen.gameOver = !escaped;
+        com.interrupt.dungeoneer.game.Game currentGame = GameManager.getGame();
+        currentGame.gameOver = true;
 
-		if(escaped) {
-			instance.setScreen(instance.winScreen);
-		}
-		else {
-			instance.setScreen(instance.gameoverScreen);
-		}
+        // Do game mode game over logic
+        GameModeInterface gameMode = GameManager.getGameMode();
+        if(escaped) {
+            gameMode.onWin(currentGame);
+        } else {
+            gameMode.onGameOver(currentGame);
+        }
 	}
 
 	public static void ShowLevelChangeScreen(Stairs stair) {
-		instance.levelChangeScreen.stair = stair;
+        instance.levelChangeScreen.stair = stair;
 		instance.levelChangeScreen.triggeredWarp = null;
 		instance.mainScreen.saveOnPause = false;
 
@@ -136,7 +134,7 @@ public class GameApplication extends Game {
 	}
 
 	public static void ShowLevelChangeScreen(TriggeredWarp warp) {
-		instance.levelChangeScreen.triggeredWarp = warp;
+        instance.levelChangeScreen.triggeredWarp = warp;
 		instance.levelChangeScreen.stair = null;
 		instance.mainScreen.saveOnPause = false;
 
@@ -155,4 +153,10 @@ public class GameApplication extends Game {
 		instance.mainScreen.didStart = false;
 		instance.setScreen(new MainMenuScreen());
 	}
+
+    public static void SetLevelChangeScreen(LevelChangeScreen newLevelChangeScreen) {
+        // Letting the Game Mode override the Level Change Screen
+        if(newLevelChangeScreen != null)
+            instance.levelChangeScreen = newLevelChangeScreen;
+    }
 }

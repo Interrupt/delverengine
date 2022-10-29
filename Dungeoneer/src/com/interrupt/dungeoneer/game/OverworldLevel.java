@@ -465,7 +465,7 @@ public class OverworldLevel extends Level {
 	}
 
 	public void spawnEntitiesFromMarkers(Array<EditorMarker> markers, int xOffset, int yOffset) {
-		addEntitiesFromMarkers(markers, new Array<Vector2>(), null, new Array<Vector2>(), genTheme, xOffset, yOffset);
+		addEntitiesFromMarkers(markers, xOffset, yOffset);
 	}
 
 	public OverworldChunk getChunkAt(float x, float y) {

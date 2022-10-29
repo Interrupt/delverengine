@@ -26,7 +26,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class PropertiesMenu extends Table {
     public ArrayMap<String, Array<Field>> arrayMap = new ArrayMap<String, Array<Field>>();
@@ -327,7 +329,7 @@ public class PropertiesMenu extends Table {
                         tf.addListener(new InputListener() {
                             @Override
                             public boolean keyDown(InputEvent event, int keycode) {
-                                DecimalFormat format = new DecimalFormat("##.##");
+                                DecimalFormat format = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
                                 if(keycode == Input.Keys.UP) {
                                     double dval = 0;
                                     if(!tf.getText().equals("")) dval = Double.parseDouble(tf.getText());
@@ -350,7 +352,7 @@ public class PropertiesMenu extends Table {
 
                         // Allow drag on label to scrub value.
                         label.addListener(new InputListener() {
-                            private final DecimalFormat format = new DecimalFormat("##.##");
+                            private final DecimalFormat format = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
                             private float firstX;
                             private float firstY;
                             private float lastX;
