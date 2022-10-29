@@ -904,47 +904,13 @@ public class Monster extends Actor implements Directional {
 
 	private boolean findPathToPlayer(Level level)
 	{
-		PathNode node = Game.pathfinding.GetNodeAt(x + xa, y + ya, z + za);
+		Vector3 nextPathLocation = Game.instance.getPathfindingManager().getNextPathToTarget(level,this, Game.instance.player);
+        if(nextPathLocation == null)
+            return false;
 
-		if(node != null && node.playerSmell != Short.MAX_VALUE) {
-			PathNode picked = node;
-
-			Array<PathNode> adjacent = node.getConnections();
-			for(int i = 0; i < adjacent.size; i++) {
-				PathNode a = adjacent.get(i);
-				if(fleeing) {
-					if (a.playerSmell > picked.playerSmell) {
-						picked = a;
-					}
-				}
-				else {
-					if (a.playerSmell < picked.playerSmell) {
-						picked = a;
-					}
-				}
-			}
-
-			adjacent = node.getJumps();
-			for(int i = 0; i < adjacent.size; i++) {
-				PathNode a = adjacent.get(i);
-				if(fleeing) {
-					if (a.playerSmell > picked.playerSmell) {
-						picked = a;
-					}
-				}
-				else {
-					if (a.playerSmell < picked.playerSmell) {
-						picked = a;
-					}
-				}
-			}
-
-			targetx = picked.loc.x;
-			targety = picked.loc.y;
-			return true;
-		}
-
-		return false;
+        targetx = nextPathLocation.x;
+        targety = nextPathLocation.y;
+        return true;
 	}
 
 	@Override
