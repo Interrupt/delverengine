@@ -1,9 +1,9 @@
 {
-	repeats: false,
-	messages: [
-		[
-			"Delver engine by Chad Cuddigan",
-			"and Joshua Skelton"
-		]
-	]
+    "repeats": false,
+    "messages": [
+        [
+            "Delver engine by Chad Cuddigan",
+            "and Joshua Skelton"
+        ]
+    ]
 }

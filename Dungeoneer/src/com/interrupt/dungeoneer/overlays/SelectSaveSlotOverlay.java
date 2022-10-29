@@ -38,6 +38,7 @@ import java.text.MessageFormat;
 public class SelectSaveSlotOverlay extends WindowOverlay {
     public class SaveSlot extends Table {
         private int number;
+        boolean isSelected = false;
 
         public SaveSlot(int number) {
             super(skin);
@@ -147,10 +148,12 @@ public class SelectSaveSlotOverlay extends WindowOverlay {
 
         public void select() {
             selectSaveButtonEvent(number, this);
+            isSelected = true;
         }
 
         public void deselect() {
             setColor(Color.GRAY);
+            isSelected = false;
         }
     }
 
@@ -274,7 +277,7 @@ public class SelectSaveSlotOverlay extends WindowOverlay {
         }
     }
 
-    public void selectSaveButtonEvent(int saveLoc, Table selected) {
+    public void selectSaveButtonEvent(int saveLoc, SaveSlot selected) {
         gamepadSelectionIndex = saveLoc;
 
         for(int i = 0; i < saveSlots.size; i++) {
@@ -290,6 +293,11 @@ public class SelectSaveSlotOverlay extends WindowOverlay {
 
         deleteButton.setVisible(saveGames[Options.instance.selectedSaveSlot] != null || progress[Options.instance.selectedSaveSlot] != null);
 
+        // Don't keep playing the click button over and over
+        if(selected.isSelected == true)
+            return;
+
+        selected.isSelected = true;
         Audio.playSound("/ui/ui_button_click.mp3", 0.3f);
     }
 
