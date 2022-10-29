@@ -25,7 +25,9 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.gamemode.delver.DelverGameMode;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
-import com.interrupt.dungeoneer.game.pathfinding.Pathfinding;
+import com.interrupt.dungeoneer.game.pathfinding.DoomStylePathfinding;
+import com.interrupt.dungeoneer.game.pathfinding.NodeGraphPathfinding;
+import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.input.ControllerState;
@@ -119,7 +121,7 @@ public class Game {
 
     public static ExecutorService threadPool = Executors.newFixedThreadPool(4);
 
-    public static Pathfinding pathfinding = new Pathfinding();
+    protected PathfindingInterface pathfindingManager = new DoomStylePathfinding();
 
     protected GameModeInterface gameMode = new DelverGameMode();
 
@@ -501,7 +503,7 @@ public class Game {
 
 		input.tick();
         Audio.tick(delta, player, level);
-		Game.pathfinding.tick(delta);
+		Game.instance.pathfindingManager.tick(delta);
 
         if(!gamepadManager.menuMode) {
 			gamepadManager.tick(delta);
@@ -1480,5 +1482,8 @@ public class Game {
 
     public GameModeInterface getGameMode() {
         return gameMode;
+    }
+    public PathfindingInterface getPathfindingManager() {
+        return pathfindingManager;
     }
 }

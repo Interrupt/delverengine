@@ -912,13 +912,12 @@ public class Monster extends Actor implements Directional {
 
 	private boolean findPathToPlayer(Level level)
 	{
-		PathNode picked = Game.pathfinding.GetNextPathLocation(level, this);
-        if(picked == null)
+		Vector3 nextPathLocation = Game.instance.getPathfindingManager().getNextPathToTarget(level,this, Game.instance.player);
+        if(nextPathLocation == null)
             return false;
 
-        // Found a good target, use this for a bit
-        targetx = picked.loc.x;
-        targety = picked.loc.y;
+        targetx = nextPathLocation.x;
+        targety = nextPathLocation.y;
         return true;
 	}
 

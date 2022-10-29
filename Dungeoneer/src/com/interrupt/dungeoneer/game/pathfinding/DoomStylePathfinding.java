@@ -1,21 +1,18 @@
 package com.interrupt.dungeoneer.game.pathfinding;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Monster;
-import com.interrupt.dungeoneer.entities.PathNode;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.tiles.Tile;
 
-public class Pathfinding {
+public class DoomStylePathfinding implements PathfindingInterface {
 
-    public Pathfinding() { }
+    public DoomStylePathfinding() { }
 
     private static final float StepHeight = 0.35f;
     private static final float FallHeight = 1.5f;
@@ -87,8 +84,8 @@ public class Pathfinding {
     Vector3 t_vec3Calc3 = new Vector3();
     Vector2 t_vec2Calc1 = new Vector2();
     Vector2 t_vec2Calc2 = new Vector2();
-    PathNode towardsPlayer = new PathNode();
-    public PathNode GetNextPathLocation(Level level, Entity checking) {
+    Vector3 t_towardsPlayer = new Vector3();
+    public Vector3 GetNextPathLocation(Level level, Entity checking) {
         if(checking == null)
             return null;
 
@@ -116,11 +113,11 @@ public class Pathfinding {
         t_fakeChecker.z = checking.z;
 
         // Check if we can actually walk towards the player
-        towardsPlayer.loc.set(nearCheckPos);
+        Vector3 towardsPlayer = t_towardsPlayer.set(nearCheckPos);
 
         boolean couldMoveTowardsPlayer = false;
 
-        if(CanMoveTo(level, towardsPlayer.loc.x, towardsPlayer.loc.y, t_fakeChecker)) {
+        if(CanMoveTo(level, towardsPlayer.x, towardsPlayer.y, t_fakeChecker)) {
             couldMoveTowardsPlayer = true;
         }
 
@@ -153,7 +150,7 @@ public class Pathfinding {
                 nextDir.rotateDeg(finalAngle);
 
                 Vector2 nextPos = t_vec2Calc2.set(checking.x, checking.y).add(nextDir);
-                towardsPlayer.loc.set(nextPos.x, nextPos.y, 0);
+                towardsPlayer.set(nextPos.x, nextPos.y, 0);
                 return towardsPlayer;
             }
         }
@@ -223,12 +220,18 @@ public class Pathfinding {
         return false;
     }
 
-    public void InitForLevel(Level level) {
-        // add bridges
-        //addNodesForStaticEntities(level, checking);
-    }
-
+    @Override
     public void tick(float delta) {
 
+    }
+
+    @Override
+    public void initForLevel(Level level) {
+
+    }
+
+    @Override
+    public Vector3 getNextPathToTarget(Level level, Entity checking, Entity target) {
+        return GetNextPathLocation(level, checking);
     }
 }

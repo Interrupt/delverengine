@@ -21,6 +21,7 @@ import com.interrupt.dungeoneer.entities.Entity.EntityType;
 import com.interrupt.dungeoneer.entities.Stairs.StairDirection;
 import com.interrupt.dungeoneer.entities.triggers.ButtonDecal;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
 import com.interrupt.dungeoneer.generator.GenInfo;
 import com.interrupt.dungeoneer.generator.GenInfo.Markers;
@@ -1211,7 +1212,12 @@ public class Level {
 			spawnChaseEncounter();
 		}
 
-		Game.pathfinding.InitForLevel(this);
+        if(Game.instance == null)
+            return;
+
+        PathfindingInterface pathfinding = Game.instance.getPathfindingManager();
+        if(pathfinding != null)
+		    pathfinding.initForLevel(this);
 	}
 
 	public void initEntities(Array<Entity> entityList, Source source) {

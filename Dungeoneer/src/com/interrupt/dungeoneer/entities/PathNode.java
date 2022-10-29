@@ -2,7 +2,7 @@ package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.dungeoneer.game.pathfinding.Pathfinding;
+import com.interrupt.dungeoneer.game.pathfinding.NodeGraphPathfinding;
 
 public class PathNode extends Entity {
     public transient short playerSmell = 0;
@@ -79,7 +79,7 @@ public class PathNode extends Entity {
             playerSmell = (short) Math.min(iteration, playerSmell);
         }
 
-        /*if(iteration++ < Pathfinding.MaxTraversal) {
+        if(iteration++ < NodeGraphPathfinding.MaxTraversal) {
             // normal connections
             for (int i = 0; i < connections.size; i++) {
                 PathNode node = connections.get(i);
@@ -87,7 +87,7 @@ public class PathNode extends Entity {
                     node.walk(iteration, this);
                 }
             }
-        }*/
+        }
     }
 
     public void reset() {

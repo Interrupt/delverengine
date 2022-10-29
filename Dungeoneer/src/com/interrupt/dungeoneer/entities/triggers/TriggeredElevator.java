@@ -12,6 +12,8 @@ import com.interrupt.dungeoneer.entities.PathNode;
 import com.interrupt.dungeoneer.entities.items.Weapon;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.pathfinding.NodeGraphPathfinding;
+import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 import com.interrupt.dungeoneer.gfx.WorldChunk;
 import com.interrupt.dungeoneer.tiles.Tile;
 
@@ -319,6 +321,9 @@ public class TriggeredElevator extends Trigger {
 		int minY = (int)Math.floor(y - collision.y);
 		int maxY = (int)Math.ceil(y + collision.y);
 
+        PathfindingInterface pathfinding = Game.instance.getPathfindingManager();
+        NodeGraphPathfinding nodeGraphPathfinding = (NodeGraphPathfinding)pathfinding;
+
 		for(int tileX = minX; tileX < maxX; tileX++) {
 			for (int tileY = minY; tileY < maxY; tileY++) {
 				markWorldAsDirty(tileX, tileY);
@@ -327,16 +332,19 @@ public class TriggeredElevator extends Trigger {
 				markWorldAsDirty(tileX, tileY + 1);
 				markWorldAsDirty(tileX, tileY - 1);
 
-				// Stop pathfinding to this tile if it has moved too much
-				/*Tile t = level.getTileOrNull(tileX, tileY);
+				// If we are using the node graph pathfinder, Stop pathfinding to this tile if it has moved too much
+				Tile t = level.getTileOrNull(tileX, tileY);
 				if(t == null)
 					continue;
 
-				PathNode n = Game.pathfinding.GetNodeAt(tileX + 0.5f, tileY + 0.5f, t.floorHeight);
-				if(n == null)
-					continue;
+                if(nodeGraphPathfinding == null)
+                    continue;
 
-				n.setEnabled(!t.blockMotion && Math.abs(amountFloorMovedSinceStart) < 0.5f);*/
+                PathNode n = nodeGraphPathfinding.GetNodeAt(tileX + 0.5f, tileY + 0.5f, t.floorHeight);
+                if (n == null)
+                    continue;
+
+                n.setEnabled(!t.blockMotion && Math.abs(amountFloorMovedSinceStart) < 0.5f);
 			}
 		}
 	}
