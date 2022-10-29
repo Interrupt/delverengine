@@ -25,7 +25,6 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.game.gamemode.delver.DelverGameMode;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
-import com.interrupt.dungeoneer.game.pathfinding.DoomStylePathfinding;
 import com.interrupt.dungeoneer.game.pathfinding.NodeGraphPathfinding;
 import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 import com.interrupt.dungeoneer.gfx.DecalManager;
@@ -121,7 +120,7 @@ public class Game {
 
     public static ExecutorService threadPool = Executors.newFixedThreadPool(4);
 
-    protected PathfindingInterface pathfindingManager = new DoomStylePathfinding();
+    protected PathfindingInterface pathfindingManager = new NodeGraphPathfinding();
 
     protected GameModeInterface gameMode = new DelverGameMode();
 
