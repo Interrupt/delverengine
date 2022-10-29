@@ -14,17 +14,13 @@ public class SpotLight extends Light implements Directional {
     @EditorProperty
     public float spotLightWidth = 45.0f;
 
-    /** How much of the spotlight should be the hotspot */
+    /** How much of the spotlight should be the hotspot. In the 0 - 1 range. */
     @EditorProperty
-    public float hotSpotWidthFactor = 0.5f;
+    public float hotSpotBias = 0.5f;
 
     /** The brightness modifier of the hotspot */
     @EditorProperty
     public float hotSpotIntensity = 0.5f;
-
-    /** How far the hotspot should extend, relative to the overall width */
-    @EditorProperty
-    public float hotSpotRangeFactor = 0.75f;
 
     /** Controls how much the corona fades away when the camera is in the spotlight */
     @EditorProperty
@@ -117,8 +113,7 @@ public class SpotLight extends Light implements Directional {
 
         // Only do the check in the level if this point is actually in the spotlight
         // This should cut down drastically on the number of checks required
-        final float maxSpotLightWidth = Math.max(spotLightWidth, spotLightWidth * hotSpotWidthFactor);
-        if(angleFromSpotlight < maxSpotLightWidth) {
+        if(angleFromSpotlight < spotLightWidth) {
             canSeeHowMuch = level.canSeeHowMuch(this.x, this.y, x, y);
 
             boolean canSee = canSeeHowMuch >= 1f;
@@ -147,17 +142,10 @@ public class SpotLight extends Light implements Directional {
         attenuateLightColor(baseLighting, x2, y2, z2, spotLightWidth);
 
         // Now add in the hot spot
-        if(hotSpotWidthFactor > 0 && hotSpotIntensity > 0 && hotSpotRangeFactor > 0) {
-            // Fake out attenuateLightColor by changing the range out from underneath it
-            float savedRange = range;
-            range *= hotSpotRangeFactor;
-
+        if(hotSpotBias > 0 && hotSpotIntensity > 0) {
             // Find the light values for the hotspot
-            attenuateLightColor(hotSpotLighting, x2, y2, z2, spotLightWidth * hotSpotWidthFactor);
+            attenuateLightColor(hotSpotLighting, x2, y2, z2, spotLightWidth * hotSpotBias);
             hotSpotLighting.mul(hotSpotIntensity);
-
-            // Switch the range back to what it was
-            range = savedRange;
         }
 
         // Mix the base spot light with the hot spot
