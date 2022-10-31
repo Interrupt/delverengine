@@ -25,6 +25,7 @@ DungeoneerAndroid/libs
 Manifest.java
 
 # Gradle ignores
+/local.properties
 .gradle
 Dungeoneer/build
 DungeoneerDesktop/build
