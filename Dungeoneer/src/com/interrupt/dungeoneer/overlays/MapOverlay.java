@@ -120,6 +120,11 @@ public class MapOverlay extends Overlay {
             }
 
             @Override
+            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
             public boolean touchDragged(int i, int i2, int i3) {
                 return false;
             }
