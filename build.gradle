@@ -19,7 +19,7 @@ allprojects {
     version = '1.4.0'
     ext {
         appName = "delver"
-        gdxVersion = '1.11.0'
+        gdxVersion = '1.11.1-SNAPSHOT'
         gdxControllersVersion = '2.2.2'
         jamepadVersion = '2.0.14.2'
         roboVMVersion = '2.3.9'
@@ -73,6 +73,8 @@ project(":DungeoneerAndroid") {
     configurations { natives }
 
     dependencies {
+        implementation("com.badlogicgames.gdx:gdx-backend-android:1.11.0!!")
+
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
