@@ -15,7 +15,7 @@ public class RotationHandle extends CompositeHandle {
     private static final Mesh mesh;
 
     static {
-        mesh = Meshes.ring(1, 1 - (1 / 32f), 64);
+        mesh = Meshes.ring(1, 1 - (1 / 16f), 64);
     }
 
     private class AxialRotationHandle extends PlaneAlignedHandle {

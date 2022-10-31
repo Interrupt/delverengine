@@ -351,6 +351,9 @@ public class EditorApplication implements ApplicationListener {
         // Setup the different editor modes
         editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode());
         editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
+        editorModes.put(EditorMode.EditorModes.ENTITY_TRANSLATE, new EditorMode(EditorMode.EditorModes.ENTITY_TRANSLATE));
+        editorModes.put(EditorMode.EditorModes.ENTITY_ROTATE, new EditorMode(EditorMode.EditorModes.ENTITY_ROTATE));
+        editorModes.put(EditorMode.EditorModes.ENTITY_SCALE, new EditorMode(EditorMode.EditorModes.ENTITY_SCALE));
         editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
         editorModes.put(EditorMode.EditorModes.TEXPAN, new TexPanMode());
         editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
@@ -3978,6 +3981,15 @@ public class EditorApplication implements ApplicationListener {
         ui.showEntityPropertiesMenu(true);
 	}
 
+    private boolean isInEntityEditorMode() {
+        if (currentEditorMode == EditorMode.EditorModes.ENTITY_PICKED) return true;
+        if (currentEditorMode == EditorMode.EditorModes.ENTITY_TRANSLATE) return true;
+        if (currentEditorMode == EditorMode.EditorModes.ENTITY_ROTATE) return true;
+        if (currentEditorMode == EditorMode.EditorModes.ENTITY_SCALE) return true;
+
+        return false;
+    }
+
     public void pickEntity(Entity entity) {
         Editor.selection.picked = entity;
         ui.showEntityPropertiesMenu(true);
@@ -3986,7 +3998,9 @@ public class EditorApplication implements ApplicationListener {
             return;
 
         // Make sure we end up in the Picked mode
-        setCurrentEditorMode(EditorMode.EditorModes.ENTITY_PICKED);
+        if (!isInEntityEditorMode()) {
+            setCurrentEditorMode(EditorMode.EditorModes.ENTITY_PICKED);
+        }
     }
 
     public void pickAdditionalEntity(Entity entity) {

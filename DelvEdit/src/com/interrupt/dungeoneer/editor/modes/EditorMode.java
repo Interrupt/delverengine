@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
 
 public class EditorMode {
-    public enum EditorModes { ENTITY_PICKED, CARVE, PAINT, TEXPAN, DRAW, ERASE, FLATTEN, STAIRS, RAMP, RAMP2, RAMP3, PYRAMID, ARCH, DOME, NOISE, LANDSCAPE }
+    public enum EditorModes { ENTITY_PICKED, ENTITY_TRANSLATE, ENTITY_ROTATE, ENTITY_SCALE, CARVE, PAINT, TEXPAN, DRAW, ERASE, FLATTEN, STAIRS, RAMP, RAMP2, RAMP3, PYRAMID, ARCH, DOME, NOISE, LANDSCAPE }
 
     public EditorModes mode;
     protected TileSelection hoverSelection;
