@@ -125,11 +125,6 @@ public class EditorInput implements InputProcessor {
     }
 
     @Override
-    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
     public boolean touchDragged(int x, int y, int pointer) {
         for (InputProcessor listener : listeners) {
             boolean results = listener.touchDragged(x, y, pointer);
