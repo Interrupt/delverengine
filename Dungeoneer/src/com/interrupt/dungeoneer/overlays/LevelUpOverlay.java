@@ -79,7 +79,7 @@ public class LevelUpOverlay extends WindowOverlay {
 		value.setFontScale(0.75f);
 		value.setAlignment(Align.center);
 		value.setColor(new Color(0.298039215686275f, 0.12156862745098f, 0.12156862745098f, 1f));
-		
+
 		valueLabels.put(text, value);
 		startingValues.put(text, currentValue);
 
@@ -106,28 +106,42 @@ public class LevelUpOverlay extends WindowOverlay {
 		card.setBackground(cardBackground);
 		card.setTouchable(Touchable.enabled);
 
-		final int xLocation = (attributeNum * 120) - 8;
-		card.addAction(Actions.sequence(Actions.hide(), Actions.moveTo(0, 0, 0.01f), Actions.show(), Actions.delay(0.15f), Actions.moveTo(xLocation, 0, 0.1f + attributeNum * 0.1f, Interpolation.exp5)));
+        // Card horizontal location
+        final int xLocation = (attributeNum * 120) - 8;
 
-		card.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				pickStat(text.toUpperCase());
-				Audio.playSound("ui/ui_statincrease.mp3", 0.35f);
-			}
+        ClickListener cardClickListener = new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                pickStat(text.toUpperCase());
+                Audio.playSound("ui/ui_statincrease.mp3", 0.35f);
+            }
 
-			@Override
-			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				card.addAction(Actions.moveTo(xLocation, 8, 0.1f, Interpolation.pow2));
-				hoverLabel.setText(StringManager.get("screens.CharacterScreen.tooltips." + text.toLowerCase()));
-			}
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                card.addAction(Actions.moveTo(xLocation, 8, 0.1f, Interpolation.pow2));
+                hoverLabel.setText(StringManager.get("screens.CharacterScreen.tooltips." + text.toLowerCase()));
+            }
 
-			@Override
-			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-				card.addAction(Actions.moveTo(xLocation, 0, 0.1f, Interpolation.pow2));
-				hoverLabel.setText("");
-			}
-		});
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                card.addAction(Actions.moveTo(xLocation, 0, 0.1f, Interpolation.pow2));
+                hoverLabel.setText("");
+            }
+        };
+
+		card.addAction(
+            Actions.sequence(
+                Actions.hide(),
+                Actions.delay(0.15f + attributeNum * 0.6f),
+                Actions.moveTo(0, 0),
+                Actions.moveTo(112.0f, -120.0f),
+                Actions.show(),
+                Actions.fadeIn(0.2f),
+                Actions.moveTo(xLocation, 0, 0.1f + attributeNum * 0.1f, Interpolation.exp5),
+                Actions.delay(0.01f + (2 - attributeNum) * 0.9f),
+                Actions.addListener(cardClickListener, true)
+            )
+        );
 
 		attributeNum++;
 	}
@@ -158,7 +172,7 @@ public class LevelUpOverlay extends WindowOverlay {
 			OverlayManager.instance.remove(this);
 		}
 	}
-	
+
 	protected void applyStats() {
 		Player p = Game.instance.player;
 		p.maxHp = (int)(p.stats.END * (p.stats.END / 3f)) + 4;
@@ -168,23 +182,23 @@ public class LevelUpOverlay extends WindowOverlay {
 
 	@Override
 	public Table makeContent() {
-		
+
 		buttonOrder.clear();
 		valueLabels.clear();
 		startingValues.clear();
-	    
+
 		Table contentTable = new Table();
 	    Label title = new Label(StringManager.get("overlays.LevelUpOverlay.levelUpLabel"), skin.get(LabelStyle.class));
 	    title.setFontScale(1.25f);
 	    contentTable.add(title).padBottom(4f).padTop(20);
 	    contentTable.row();
-	    
+
 	    Label text = new Label(StringManager.get("overlays.LevelUpOverlay.chooseYourFateLabel"), skin.get(LabelStyle.class));
 	    contentTable.add(text).padBottom(12f);
 	    contentTable.row();
-	    
+
 	    Array<Stat> allStats = getAllStats();
-	    
+
 	    // randomly pick three stats to pick from
 	    allStats.shuffle();
 
@@ -200,27 +214,27 @@ public class LevelUpOverlay extends WindowOverlay {
 		hoverLabel.setWrap(true);
 		hoverLabel.setAlignment(Align.center);
 		contentTable.add(hoverLabel).width(250).align(Align.center).align(Align.bottom).height(50);
-	    
+
 	    return contentTable;
 	}
-	
+
 	public Array<Stat> getAllStats() {
 		Array<Stat> stats = new Array<Stat>();
-		
+
 		stats.add(new Stat("Attack", player.stats.ATK));
 		stats.add(new Stat("Speed", player.stats.SPD));
 		stats.add(new Stat("Health", player.stats.END));
 		stats.add(new Stat("Magic", player.stats.MAG));
 		stats.add(new Stat("Agility", player.stats.DEX));
 		stats.add(new Stat("Defense", player.stats.DEF));
-		
+
 		return stats;
 	}
-	
+
 	protected class Stat {
 		String name;
 		int stat;
-		
+
 		public Stat(String name, int stat) {
 			this.name = name;
 			this.stat = stat;

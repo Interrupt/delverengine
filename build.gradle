@@ -19,7 +19,9 @@ allprojects {
     version = '1.4.0'
     ext {
         appName = "delver"
-        gdxVersion = '1.9.12'
+        gdxVersion = '1.11.0'
+        gdxControllersVersion = '2.2.2'
+        jamepadVersion = '2.0.14.2'
         roboVMVersion = '2.3.9'
         kryoVersion = '2.24.0'
         reflectionsVersion = '0.9.12'
@@ -41,10 +43,12 @@ project(":DungeoneerDesktop") {
 
     dependencies {
         implementation project(":Dungeoneer")
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
+        // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
+        //api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
     }
 }
 
@@ -53,9 +57,13 @@ project(":DelvEdit") {
 
     dependencies {
         implementation project(":Dungeoneer")
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
+        // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
+        // api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "org.reflections:reflections:$reflectionsVersion"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
     }
 }
 
@@ -67,13 +75,11 @@ project(":DungeoneerAndroid") {
     dependencies {
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
-        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
     }
 }
 
@@ -82,7 +88,7 @@ project(":Dungeoneer") {
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.esotericsoftware.kryo:kryo:$kryoVersion"
         api "com.bladecoder.ink:blade-ink:$inkVersion"
     }

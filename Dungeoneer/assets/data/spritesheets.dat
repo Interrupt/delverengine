@@ -26,13 +26,6 @@
     },
     {
         "columns": 4,
-        "filename": "items-guns.png",
-        "scale": 0.5,
-        "name": "item-guns",
-        "y_offset": 0.25
-    },
-    {
-        "columns": 4,
         "filename": "particles.png",
         "scale": 1,
         "name": "particle"
@@ -68,11 +61,5 @@
         "filename": "vfx.png",
         "scale": 1,
         "name": "vfx"
-    },
-    {
-        "columns": 4,
-        "filename": "textures/tech/sprites.png",
-        "scale": 1,
-        "name": "tech_sprites"
     }
 ]

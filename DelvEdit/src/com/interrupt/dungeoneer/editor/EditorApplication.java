@@ -3,8 +3,9 @@ package com.interrupt.dungeoneer.editor;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -54,6 +55,7 @@ import com.interrupt.dungeoneer.game.CachePools;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
+import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.generator.DungeonGenerator;
 import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.generator.RoomGenerator;
@@ -328,23 +330,30 @@ public class EditorApplication implements ApplicationListener {
 	public EditorApplication() {
 		frame = new JFrame("DelvEdit");
 
-		Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
+        // We are the app now!
+        Editor.app = this;
 
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "New Level - DelvEdit";
-		config.fullscreen = false;
-		config.width = defaultMode.width;
-		config.height = defaultMode.height;
-		config.vSyncEnabled = true;
-		config.foregroundFPS = 120;
-		config.backgroundFPS = 30;
-		config.stencil = 8;
+		Graphics.DisplayMode defaultMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
 
-		config.addIcon("icon-128.png", Files.FileType.Internal); // 128x128 icon (mac OS)
-		config.addIcon("icon-32.png", Files.FileType.Internal);  // 32x32 icon (Windows + Linux)
-		config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+		config.setTitle("New Level - DelvEdit");
+		config.setWindowedMode(defaultMode.width, defaultMode.height);
+        config.setMaximized(true);
+        config.useVsync(true);
+		config.setForegroundFPS(144);
+        config.setIdleFPS(30);
+        config.setBackBufferConfig(8,8,8,8,16,8,0);
 
-		new LwjglApplication(this, config) {
+        // Enable OpenGL Emulation over ANGLE for better cross platform support
+        if (Options.instance.renderingEngine == Options.RenderingEngine.ANGLE) {
+            config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
+        }
+
+		config.setWindowIcon(Files.FileType.Internal, "icon-128.png"); // 128x128 icon (mac OS)
+		config.setWindowIcon(Files.FileType.Internal, "icon-32.png");  // 32x32 icon (Windows + Linux)
+		config.setWindowIcon(Files.FileType.Internal, "icon-16.png");  // 16x16 icon (Windows)
+
+		new Lwjgl3Application(this, config) {
 		    public void close() {
 		        Editor.dispose();
 		        super.exit();
@@ -439,6 +448,7 @@ public class EditorApplication implements ApplicationListener {
 	/** Creates an empty level with given `width` and `height`. */
 	public void createEmptyLevel(int width, int height) {
 		level = new Level(width, height);
+		level.init(Source.EDITOR);
 
 		Tile t = new Tile();
 		t.floorHeight = -0.5f;
@@ -2525,7 +2535,13 @@ public class EditorApplication implements ApplicationListener {
 
 		cubeVertArray.shrink();
 
-        float[] vertices = new float[cubeVertArray.size + (cubeVertArray.size / 3) * 4];
+        // Now make the actual mesh vertices and indices
+        int numLines = width * height;
+
+        // Each line has start and end points for a total of six vertices, and eight colors
+        int numVertices = (numLines * 6) + (numLines * 8);
+
+        float[] vertices = new float[numVertices];
         int i = 0;
         for (int pIdx = 0; pIdx < cubeVertArray.size;) {
         		// vertex position
@@ -2547,7 +2563,7 @@ public class EditorApplication implements ApplicationListener {
 			indices[i++] = (short)(i - 1);
         }
 
-		Mesh mesh = new Mesh(false, vertices.length, indices.length, new VertexAttribute(Usage.Position, 3, "a_position"), new VertexAttribute(Usage.ColorUnpacked, 4, "a_color"));
+		Mesh mesh = new Mesh(true, vertices.length, indices.length, new VertexAttribute(Usage.Position, 3, "a_position"), new VertexAttribute(Usage.ColorUnpacked, 4, "a_color"));
         mesh.setVertices(vertices);
         mesh.setIndices(indices);
 

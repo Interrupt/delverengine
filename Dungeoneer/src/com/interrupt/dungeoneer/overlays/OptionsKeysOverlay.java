@@ -188,6 +188,11 @@ public class OptionsKeysOverlay extends WindowOverlay {
         return f != null ? f : -1;
     }
 
+    @Override
+    public void back() {
+        saveAndClose();
+    }
+
     public void saveAndClose() {
         Options.instance.key_use = getKeyBinding(Actions.Action.USE);
         Options.instance.key_attack = getKeyBinding(Actions.Action.ATTACK);

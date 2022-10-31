@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.ui.ActionSpinnerButton;
 import com.interrupt.managers.StringManager;
@@ -67,16 +68,19 @@ public class OptionsInputOverlay extends WindowOverlay {
             }
         });
 
-        TextButton gamepadBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.gamepadButton"), skin.get(TextButton.TextButtonStyle.class));
-        gamepadBtn.setWidth(200);
-        gamepadBtn.setHeight(50);
-        gamepadBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                saveOptions();
-                OverlayManager.instance.replaceCurrent(new OptionsGamepadOverlay(dimScreen, showBackground));
-            }
-        });
+        TextButton gamepadBtn = null;
+        if (Game.gamepadManager.controllerCount() > 0) {
+            gamepadBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.gamepadButton"), skin.get(TextButton.TextButtonStyle.class));
+            gamepadBtn.setWidth(200);
+            gamepadBtn.setHeight(50);
+            gamepadBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    saveOptions();
+                    OverlayManager.instance.replaceCurrent(new OptionsGamepadOverlay(dimScreen, showBackground));
+                }
+            });
+        }
 
         mainTable = new Table();
         mainTable.setFillParent(true);
@@ -223,6 +227,11 @@ public class OptionsInputOverlay extends WindowOverlay {
         }
 
         super.tick(delta);
+    }
+
+    @Override
+    public void back() {
+        saveAndClose();
     }
 
     public void saveAndClose() {

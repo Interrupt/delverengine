@@ -20,17 +20,17 @@ public abstract class Overlay {
 	public boolean running = false;
 	public boolean showCursor = true;
 	public boolean catchInput = true;
-	
+
 	private InputProcessor previousInputProcessor = null;
-	
+
 	private boolean cursorWasShownBefore = false;
-	
+
 	public Overlay() { }
 
 	public void show() {
 		show(true);
 	}
-	
+
 	public void show(boolean setInputSettings) {
 		visible = true;
 		running = true;
@@ -51,10 +51,10 @@ public abstract class Overlay {
 				previousInputProcessor = Gdx.input.getInputProcessor();
 			}
 		}
-		
+
 		onShow();
 	}
-	
+
 	public void hide() {
 		visible = false;
 		running = false;
@@ -63,31 +63,39 @@ public abstract class Overlay {
 			Gdx.input.setCursorCatched(!cursorWasShownBefore);
 			Game.instance.input.caughtCursor = !cursorWasShownBefore;
 		}
-		
+
 		if(previousInputProcessor != null)
 			Gdx.input.setInputProcessor(previousInputProcessor);
-		
+
 		onHide();
 	}
-	
+
 	protected void draw(float delta) {
 		renderer = GameManager.renderer;
 		gl = renderer.getGL();
-		
+
 		if(ui != null) {
 			if(running) ui.act(delta);
 			ui.draw();
 		}
 	}
-	
+
 	public abstract void tick(float delta);
 	public abstract void onShow();
 	public abstract void onHide();
 
+    public void back() {
+        remove();
+    }
+
+    public void remove() {
+        OverlayManager.instance.remove(this);
+    }
+
 	public void pause() {
 		running = false;
 	}
-	
+
 	public void resume() {
 		running = true;
 	}

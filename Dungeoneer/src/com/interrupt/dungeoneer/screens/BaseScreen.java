@@ -3,10 +3,13 @@ package com.interrupt.dungeoneer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,14 +22,11 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Art;
-import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.GlRenderer;
-import com.interrupt.dungeoneer.gfx.Tesselator;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.ControllerState.DPAD;
 import com.interrupt.dungeoneer.ui.UiSkin;
@@ -36,10 +36,35 @@ public class BaseScreen implements Screen {
 		public void onPress() {}
 	}
 
+    public class ClickOnGamepadPress extends GamepadEntryListener {
+        private Actor target;
+
+        public ClickOnGamepadPress(Actor actor) {
+            target = actor;
+        }
+
+        @Override
+        public void onPress() {
+            for (EventListener listener : target.getListeners()) {
+                if (listener instanceof ClickListener) {
+                    ((ClickListener) listener).clicked(new InputEvent(), target.getX(), target.getY());
+                }
+            }
+        }
+    }
+
 	public class GamepadEntry {
 		public Table table;
 		private GamepadEntryListener onSelect = null;
 		private GamepadEntryListener onDeselect = null;
+
+        public GamepadEntry(Table table) {
+            this(
+                table,
+                new ClickOnGamepadPress(table),
+                new ClickOnGamepadPress(table)
+            );
+        }
 
 		public GamepadEntry(Table table, GamepadEntryListener onSelect, GamepadEntryListener onDeselect) {
 			this.table = table;
@@ -76,7 +101,7 @@ public class BaseScreen implements Screen {
 
 	protected ControllerState controllerState = null;
 	protected Integer gamepadSelectionIndex = null;
-	protected Array<GamepadEntry> gamepadEntries = new Array<GamepadEntry>();
+	protected Array<GamepadEntry> gamepadEntries = new Array<>();
 
 	protected float uiScale = 3.75f;
 
@@ -378,14 +403,12 @@ public class BaseScreen implements Screen {
         if(GameManager.renderer.needToInit)
 			GameManager.renderer.initTextures();
 
-		level = new Level(17,17);
+		level = new Level();
 		level.loadForSplash(filename);
 
 		// Temple fog settings
 		level.fogStart = 2f;
 		level.fogEnd = 12f;
-
-		level.init(Source.LEVEL_START);
 
 		level.isDirty = true;
 		level.rendererDirty = true;
@@ -445,4 +468,12 @@ public class BaseScreen implements Screen {
 	public static Viewport getViewport(float width, float height) {
 		return new FillViewport(width, height);
 	}
+
+    public void clearGamepadEntries() {
+        gamepadEntries.clear();
+    }
+
+    public void addGamepadEntry(Table table) {
+        gamepadEntries.add(new GamepadEntry(table));
+    }
 }

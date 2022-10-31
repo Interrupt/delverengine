@@ -1,7 +1,9 @@
 package com.interrupt.dungeoneer.editor.ui;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
@@ -18,13 +20,15 @@ import com.interrupt.dungeoneer.editor.EditorArt;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.Material;
-import org.lwjgl.LWJGLUtil;
+//import org.lwjgl.LWJGLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class PropertiesMenu extends Table {
     public ArrayMap<String, Array<Field>> arrayMap = new ArrayMap<String, Array<Field>>();
@@ -325,7 +329,7 @@ public class PropertiesMenu extends Table {
                         tf.addListener(new InputListener() {
                             @Override
                             public boolean keyDown(InputEvent event, int keycode) {
-                                DecimalFormat format = new DecimalFormat("##.##");
+                                DecimalFormat format = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
                                 if(keycode == Input.Keys.UP) {
                                     double dval = 0;
                                     if(!tf.getText().equals("")) dval = Double.parseDouble(tf.getText());
@@ -348,7 +352,7 @@ public class PropertiesMenu extends Table {
 
                         // Allow drag on label to scrub value.
                         label.addListener(new InputListener() {
-                            private final DecimalFormat format = new DecimalFormat("##.##");
+                            private final DecimalFormat format = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
                             private float firstX;
                             private float firstY;
                             private float lastX;
@@ -373,9 +377,11 @@ public class PropertiesMenu extends Table {
                                 }
 
                                 Gdx.input.setCursorPosition((int) firstX, (int) firstY);
-                                if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
+
+                                // CC: LWJGL3 hax
+                                /*if (LWJGLUtil.getPlatform() == LWJGLUtil.PLATFORM_MACOSX) {
                                     Gdx.input.setCursorPosition((int) firstX, Gdx.graphics.getHeight() - 1 - (int) firstY);
-                                }
+                                }*/
                             }
 
                             @Override

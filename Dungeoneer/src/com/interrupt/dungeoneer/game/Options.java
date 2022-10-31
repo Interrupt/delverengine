@@ -14,7 +14,12 @@ import java.util.function.Supplier;
 
 /** Game options container class. */
 public class Options {
-    transient public static Options instance;
+    public enum RenderingEngine {
+        ANGLE,
+        OpenGL,
+    }
+
+    public static Options instance;
 
     public boolean mouseInvert = false;
     public boolean enableMusic = true;
@@ -88,7 +93,12 @@ public class Options {
     public int postProcessingQuality = 3;
     public String postProcessFilter;
 
+    // Angle has the best cross platform support, default to that.
+    public RenderingEngine renderingEngine = RenderingEngine.ANGLE;
+
     public boolean tutorialEnabled = true;
+
+    public int selectedSaveSlot = 0;
 
     static {
         instance = new Options();

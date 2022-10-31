@@ -1,17 +1,20 @@
-package com.interrupt.dungeoneer.game;
+package com.interrupt.dungeoneer.game.pathfinding;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.entities.Entity;
+import com.interrupt.dungeoneer.entities.Monster;
 import com.interrupt.dungeoneer.entities.PathNode;
 import com.interrupt.dungeoneer.entities.Player;
+import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.partitioning.SpatialHash;
 import com.interrupt.dungeoneer.tiles.Tile;
 
-public class Pathfinding {
+public class NodeGraphPathfinding implements PathfindingInterface {
 
-    public Pathfinding() { }
+    public NodeGraphPathfinding() { }
 
     public static final int MaxTraversal = 16;
     public static final float PathUpdateTime = 35f;
@@ -45,6 +48,54 @@ public class Pathfinding {
 
     private final Integer PathfindingLock = 0;
     private Vector3 lastPathfindingUpdateLoc = new Vector3();
+
+    private Vector3 t_calcVec = new Vector3();
+    @Override
+    public Vector3 getNextPathToTarget(Level level, Entity checking, Entity target) {
+        PathNode node = GetNodeAt(checking.x + checking.xa, checking.y + checking.ya, checking.z + checking.za);
+        boolean fleeing = false;
+
+        Monster m = (Monster)checking;
+        if(m != null)
+            fleeing = m.fleeing;
+
+        if(node == null || node.playerSmell == Short.MAX_VALUE)
+            return null;
+
+        PathNode picked = node;
+        Array<PathNode> adjacent = node.getConnections();
+
+        for(int i = 0; i < adjacent.size; i++) {
+            PathNode a = adjacent.get(i);
+            if(fleeing) {
+                if (a.playerSmell > picked.playerSmell) {
+                    picked = a;
+                }
+            }
+            else {
+                if (a.playerSmell < picked.playerSmell) {
+                    picked = a;
+                }
+            }
+        }
+
+        adjacent = node.getJumps();
+        for(int i = 0; i < adjacent.size; i++) {
+            PathNode a = adjacent.get(i);
+            if(fleeing) {
+                if (a.playerSmell > picked.playerSmell) {
+                    picked = a;
+                }
+            }
+            else {
+                if (a.playerSmell < picked.playerSmell) {
+                    picked = a;
+                }
+            }
+        }
+
+        return t_calcVec.set(picked.loc);
+    }
 
     FoundTile t_foundTile = new FoundTile();
     public FoundTile getHighestTile(Level level, float levelX, float levelY, Entity checking) {
@@ -125,7 +176,7 @@ public class Pathfinding {
         return anyFailedCollision;
     }
 
-    public void InitForLevel(Level level) {
+    public void initForLevel(Level level) {
         scale = 2f;
         offset = 0.5f;
 
@@ -404,7 +455,7 @@ public class Pathfinding {
         timeSinceLastPathUpdate += delta;
         if(timeSinceLastPathUpdate > PathUpdateTime) {
             timeSinceLastPathUpdate = 0f;
-            Game.threadPool.submit(Game.pathfinding.GetRunnable());
+            Game.threadPool.submit(GetRunnable());
         }
     }
 

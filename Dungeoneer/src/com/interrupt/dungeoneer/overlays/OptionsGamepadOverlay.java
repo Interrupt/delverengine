@@ -3,11 +3,10 @@ package com.interrupt.dungeoneer.overlays;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -37,7 +36,7 @@ public class OptionsGamepadOverlay extends WindowOverlay {
     private Table changeKeyTable;
 
     Actions.Action currentlyEditing = null;
-    ControllerListener controllerListener = null;
+    ControllerListener changeButtonListener = null;
 
     public OptionsGamepadOverlay() {
         animateBackground = false;
@@ -55,7 +54,6 @@ public class OptionsGamepadOverlay extends WindowOverlay {
     @Override
     public Table makeContent() {
         Options.loadOptions();
-        Options options = Options.instance;
 
         // check if the Jump option should be enabled
         try {
@@ -70,17 +68,7 @@ public class OptionsGamepadOverlay extends WindowOverlay {
             Gdx.app.log("KeysOverlay", ex.getMessage());
         }
 
-        controllerListener = new ControllerListener() {
-            @Override
-            public void connected(Controller controller) {
-
-            }
-
-            @Override
-            public void disconnected(Controller controller) {
-
-            }
-
+        changeButtonListener = new ControllerAdapter() {
             @Override
             public boolean buttonDown (Controller controller, int buttonIndex) {
                 Actions.Action action = getCurrentlyEditing();
@@ -89,11 +77,6 @@ public class OptionsGamepadOverlay extends WindowOverlay {
                     setupTable();
                 }
                 return true;
-            }
-
-            @Override
-            public boolean buttonUp(Controller controller, int buttonCode) {
-                return false;
             }
 
             @Override
@@ -107,41 +90,6 @@ public class OptionsGamepadOverlay extends WindowOverlay {
                 }
                 return false;
             }
-
-            @Override
-            public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-                Actions.Action action = getCurrentlyEditing();
-                if(action != null) {
-                    Actions.gamepadBindings.put(action, new GamepadBinding(povCode, GamepadBinding.GamepadInputType.POV, value.ordinal()));
-                    setupTable();
-                }
-                return false;
-            }
-
-            @Override
-            public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
-                Actions.Action action = getCurrentlyEditing();
-                if(action != null) {
-                    Actions.gamepadBindings.put(action, new GamepadBinding(sliderCode, GamepadBinding.GamepadInputType.SLIDER, value ? 1 : 0));
-                    setupTable();
-                }
-                return false;
-            }
-
-            @Override
-            public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
-                Actions.Action action = getCurrentlyEditing();
-                if(action != null) {
-                    Actions.gamepadBindings.put(action, new GamepadBinding(sliderCode, GamepadBinding.GamepadInputType.SLIDER, value ? 1 : 0));
-                    setupTable();
-                }
-                return false;
-            }
-
-            @Override
-            public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
-                return false;
-            }
         };
 
         content = new Table();
@@ -152,11 +100,12 @@ public class OptionsGamepadOverlay extends WindowOverlay {
     public void tick(float delta) {
         // back
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
-            if(changeKeyTable == null) {
-                saveAndClose();
+            if (isChangingButton())
+            {
+                setupTable();
             }
             else {
-                setupTable();
+                saveAndClose();
             }
         }
 
@@ -165,7 +114,7 @@ public class OptionsGamepadOverlay extends WindowOverlay {
         ignoreChange = false;
     }
 
-    public Table setupTable() {
+    private void setupTable() {
         currentlyEditing = null;
         changeKeyTable = null;
 
@@ -261,7 +210,12 @@ public class OptionsGamepadOverlay extends WindowOverlay {
 
         Game.gamepadManager.controllerState.clearEvents();
 
-        return mainTable;
+        Controllers.removeListener(changeButtonListener);
+    }
+
+    @Override
+    public void back() {
+        saveAndClose();
     }
 
     public void saveAndClose() {
@@ -284,12 +238,15 @@ public class OptionsGamepadOverlay extends WindowOverlay {
 
         Options.saveOptions();
 
-        Controllers.removeListener(controllerListener);
+        Controllers.removeListener(changeButtonListener);
         OverlayManager.instance.replaceCurrent(new OptionsInputOverlay(dimScreen, showBackground));
     }
 
-    public void changeButton(final String readableAction, final Actions.Action action) {
+    private boolean isChangingButton() {
+        return changeKeyTable != null;
+    }
 
+    private void changeButton(final String readableAction, final Actions.Action action) {
         if(currentlyEditing != null) {
             return;
         }
@@ -309,7 +266,7 @@ public class OptionsGamepadOverlay extends WindowOverlay {
         changeKeyTable.add(new Label(StringManager.get("screens.OptionsKeysScreen.pressEscToCancelLabel"),skin.get(Label.LabelStyle.class)));
         changeKeyTable.row();
 
-        Controllers.addListener(controllerListener);
+        Controllers.addListener(changeButtonListener);
     }
 
     public Actions.Action getCurrentlyEditing() {

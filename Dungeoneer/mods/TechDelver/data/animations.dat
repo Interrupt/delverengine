@@ -1,0 +1,613 @@
+{
+    "$schema": "http://delverengine.com/jsonschema/current/filetypes/animations.dat",
+    "animations": {
+        "swordAttack": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "actionTime": 10,
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": 0.0, "z": 0.0 },
+                    "length": 2.50
+                },
+                {
+                    "transform": { "x": -0.1544, "y": 0.0107, "z": -0.0152 },
+                    "rotation": { "x": -42.9773, "y": -23.1511, "z": -16.3218 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.1874, "y": 0.0807, "z": -0.0027 },
+                    "rotation": { "x": -60.0175, "y": -25.8106, "z": -11.7752 },
+                    "length": 2.50
+                },
+                {
+                    "transform": { "x": 0.1327, "y": -0.0141, "z": 0.1084 },
+                    "rotation": { "x": -41.7370, "y": 7.4958, "z": 52.6477 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": 0.2398, "y": -0.0741, "z": 0.0546 },
+                    "rotation": { "x": -57.1316, "y": 31.8556, "z": 94.5610 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": 0.2865, "y": -0.1291, "z": -0.0550 },
+                    "rotation": { "x": -82.5583, "y": 53.2625, "z": 132.9505 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": 0.0587, "y": -0.1825, "z": 0.0 },
+                    "rotation": { "x": -8.8314, "y": 27.4724, "z": 68.2367 },
+                    "length": 2.25
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": 0.0 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "swordAttackStrong": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "actionTime": 7,
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.1500, "z": -0.2000 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": -65.0000 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": -0.0178, "y": 0.1610, "z": -0.1691 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": -95.0843 },
+                    "length": 1.00
+                },
+                {
+                    "transform": { "x": -0.0871, "y": 0.2028, "z": 0.0988 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": -16.7235 },
+                    "length": 1.00
+                },
+                {
+                    "transform": { "x": -0.0, "y": 0.0365, "z": 0.2087 },
+                    "rotation": { "x": -0.0001, "y": -0.0001, "z": 40.1103 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": 0.0871, "y": -0.1294, "z": 0.1688 },
+                    "rotation": { "x": -11.9974, "y": 15.5479, "z": 84.6034 },
+                    "length": 2.50
+                },
+                {
+                    "transform": { "x": 0.0554, "y": -0.1999, "z": 0.0631 },
+                    "rotation": { "x": -0.0, "y": -0.0001, "z": 108.3257 },
+                    "length": 7.50
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": 0.0 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "swordCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0, "y": 0, "z": 0 },
+                    "rotation": { "x": 0, "y": 0, "z": 0 },
+                    "length": 0.5
+                },
+                {
+                    "transform": { "x": 0, "y": 0.15, "z": -0.2 },
+                    "rotation": { "x": 0, "y": 0, "z": -65 },
+                    "length": 1.0
+                }
+            ]
+        },
+        "daggerAttack": {
+            "actionTime": 5,
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": 0.0, "z": 0.0 },
+                    "length": 2.25
+                },
+                {
+                    "transform": { "x": 0.0210, "y": -0.0524, "z": 0.0483 },
+                    "rotation": { "x": -6.7949, "y": -4.8309, "z": 49.7009 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": 0.0210, "y": 0.0236, "z": 0.1787 },
+                    "rotation": { "x": -8.0008, "y": -2.3280, "z": 30.5676 },
+                    "length": 3.75
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": 0.0 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "daggerAttackStrong": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "actionTime": 6.5,
+            "frames": [
+                {
+                    "transform": { "x": -0.0, "y": 0.1500, "z": -0.2000 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": -65.0000 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0917, "y": 0.1448, "z": -0.1750 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": -65.0000 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.1873, "y": 0.1108, "z": 0.0470 },
+                    "rotation": { "x": -40.1127, "y": 2.6569, "z": 10.7066 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": 0.0022, "y": 0.0442, "z": 0.1461 },
+                    "rotation": { "x": -49.3682, "y": 4.3551, "z": 44.0685 },
+                    "length": 2.00
+                },
+                {
+                    "transform": { "x": 0.2056, "y": -0.1100, "z": 0.0375 },
+                    "rotation": { "x": -45.1952, "y": 12.2242, "z": 96.3685 },
+                    "length": 2.25
+                },
+                {
+                    "transform": { "x": 0.2550, "y": -0.1691, "z": -0.1872 },
+                    "rotation": { "x": -78.2619, "y": 41.3055, "z": 130.0162 },
+                    "length": 2.25
+                },
+                {
+                    "transform": { "x": 0.0751, "y": -0.1418, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": 0.0 },
+                    "length": 1.00
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": 0.0 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "daggerCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.000, "y": 0.000, "z": 0.000 },
+                    "rotation": { "x": 0.000, "y": 0.000, "z": 0.000 },
+                    "length": 0.75
+                },
+                {
+                    "transform": { "x": 0.000, "y": 0.150, "z": -0.200 },
+                    "rotation": { "x": 0.000, "y": 0.000, "z": -65.000 },
+                    "length": 1.00
+                }
+            ]
+        },
+        "thrustCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.000, "y": 0.000, "z": 0.000 },
+                    "rotation": { "x": 0.000, "y": 0.000, "z": 0.000 },
+                    "length": 2.00
+                },
+                {
+                    "transform": { "x": -0.025, "y": -0.022, "z": -0.178 },
+                    "rotation": { "x": -17.387, "y": 14.660, "z": 19.632 },
+                    "length": 1.00
+                }
+            ]
+        },
+        "thrustAttack": {
+            "actionTime": 18,
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": 0.0, "z": 0.0 },
+                    "length": 2.50
+                },
+                {
+                    "transform": { "x": -0.0250, "y": -0.0220, "z": -0.1780 },
+                    "rotation": { "x": -17.3870, "y": 14.6600, "z": 19.6320 },
+                    "length": 5.25
+                },
+                {
+                    "transform": { "x": -0.0222, "y": -0.0721, "z": 0.0186 },
+                    "rotation": { "x": -19.9723, "y": -1.1301, "z": 62.5692 },
+                    "length": 1.75
+                },
+                {
+                    "transform": { "x": -0.0158, "y": 0.0403, "z": 0.2807 },
+                    "rotation": { "x": -12.8359, "y": 6.4658, "z": 25.7815 },
+                    "length": 2.00
+                },
+                {
+                    "transform": { "x": -0.0158, "y": 0.0403, "z": 0.2807 },
+                    "rotation": { "x": -12.8359, "y": 6.4658, "z": 25.7815 },
+                    "length": 2.75
+                },
+                {
+                    "transform": { "x": -0.0158, "y": -0.0432, "z": 0.1244 },
+                    "rotation": { "x": -13.6501, "y": 4.4629, "z": 34.3147 },
+                    "length": 5.75
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": 0.0 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "swordAttackSlow": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "actionTime": 18,
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": 0.0, "z": 0.0 },
+                    "length": 4.75
+                },
+                {
+                    "transform": { "x": -0.1544, "y": 0.0107, "z": -0.0152 },
+                    "rotation": { "x": -42.9773, "y": -23.1511, "z": -16.3218 },
+                    "length": 2.25
+                },
+                {
+                    "transform": { "x": -0.2196, "y": 0.0107, "z": 0.0810 },
+                    "rotation": { "x": -42.2112, "y": -22.7135, "z": -38.3274 },
+                    "length": 1.75
+                },
+                {
+                    "transform": { "x": 0.0659, "y": -0.0141, "z": 0.1239 },
+                    "rotation": { "x": -41.3018, "y": 0.0782, "z": 46.0781 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": 0.3081, "y": -0.0741, "z": 0.0546 },
+                    "rotation": { "x": -57.1316, "y": 31.8556, "z": 94.5610 },
+                    "length": 2.00
+                },
+                {
+                    "transform": { "x": 0.2865, "y": -0.1291, "z": -0.0550 },
+                    "rotation": { "x": -82.5583, "y": 53.2625, "z": 132.9505 },
+                    "length": 1.75
+                },
+                {
+                    "transform": { "x": 0.0587, "y": -0.1825, "z": 0.0 },
+                    "rotation": { "x": 8.8314, "y": 27.4724, "z": 68.2367 },
+                    "length": 3.75
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": -0.0, "z": 0.0 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "wandAttack": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0, "y": -0.05, "z": -0.1 },
+                    "rotation": { "x": 0, "y": 0, "z": 20 }
+                },
+                {
+                    "transform": { "x": 0, "y": -0.05, "z": -0.2 },
+                    "rotation": { "x": 0, "y": 0, "z": 20 },
+                    "length": 1.5
+                },
+                {
+                    "transform": { "x": 0, "y": 0, "z": 0 },
+                    "rotation": { "x": 0, "y": 0, "z": 0 },
+                    "length": 2
+                }
+            ]
+        },
+        "wandCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0, "y": 0, "z": 0 },
+                    "rotation": { "x": 0, "y": 0, "z": 0 }
+                },
+                {
+                    "transform": { "x": 0, "y": -0.05, "z": -0.1 },
+                    "rotation": { "x": 0, "y": 0, "z": 20 }
+                }
+            ]
+        },
+        "bowAttack": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0, "y": 0.07, "z": 0.05 },
+                    "rotation": { "x": 0, "y": 0, "z": 25 },
+                    "length": 1.5
+                },
+                {
+                    "transform": { "x": 0, "y": 0.07, "z": 0.05 },
+                    "rotation": { "x": 0, "y": 0, "z": 25 },
+                    "length": 1.5
+                },
+                {
+                    "transform": { "x": 0, "y": 0, "z": 0 },
+                    "rotation": { "x": 0, "y": 0, "z": 0 }
+                }
+            ]
+        },
+        "bowCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -0.0, "y": 0.0, "z": 0.0 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": -0.0036, "y": 0.0905, "z": -0.0 },
+                    "rotation": { "x": 1.7813, "y": 7.2860, "z": 27.8962 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "decorationCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0, "y": 0, "z": 0 },
+                    "rotation": { "x": 0, "y": 0, "z": 0 }
+                },
+                {
+                    "transform": { "x": 0, "y": -0.05, "z": -0.1 },
+                    "rotation": { "x": 0, "y": 0, "z": 20 }
+                }
+            ]
+        },
+        "maceAttack": {
+            "actionTime": 12,
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 3.75
+                },
+                {
+                    "transform": { "x": -0.0, "y": 0.0517, "z": -0.0728 },
+                    "rotation": { "x": -5.0159, "y": 21.6432, "z": -61.8545 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0, "y": 0.0958, "z": 0.0447 },
+                    "rotation": { "x": -19.8207, "y": 10.1832, "z": -11.3688 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0, "y": -0.0670, "z": 0.1482 },
+                    "rotation": { "x": -18.8754, "y": -11.8854, "z": 45.8242 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0, "y": -0.2465, "z": 0.1114 },
+                    "rotation": { "x": -5.4004, "y": -20.1997, "z": 89.4094 },
+                    "length": 10.00
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "maceCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 1.75
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.1280, "z": -0.0483 },
+                    "rotation": { "x": -5.5367, "y": 27.5388, "z": -123.0339 },
+                    "length": 1.00
+                }
+            ]
+        },
+        "maceStrongAttack": {
+            "actionTime": 9.00,
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": -0.0633, "y": 0.1280, "z": -0.0483 },
+                    "rotation": { "x": -5.5367, "y": 27.5388, "z": -123.0339 },
+                    "length": 1.00
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.1121, "z": -0.0501 },
+                    "rotation": { "x": -2.0579, "y": 27.9776, "z": -130.4949 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.2399, "z": 0.0881 },
+                    "rotation": { "x": -28.0231, "y": -1.2122, "z": -42.5987 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.1843, "z": 0.2268 },
+                    "rotation": { "x": -18.8141, "y": 9.7486, "z": -4.1304 },
+                    "length": 1.75
+                },
+                {
+                    "transform": { "x": -0.0633, "y": -0.2392, "z": 0.2265 },
+                    "rotation": { "x": -3.9649, "y": 4.2698, "z": 92.3980 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": -0.0633, "y": -0.1537, "z": 0.1159 },
+                    "rotation": { "x": -3.0381, "y": 4.9715, "z": 80.9307 },
+                    "length": 8.75
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0173, "z": -0.0214 },
+                    "rotation": { "x": -12.9373, "y": 15.8612, "z": -6.6304 },
+                    "length": 3.00
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "axeAttack": {
+            "actionTime": 12,
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 3.75
+                },
+                {
+                    "transform": { "x": -0.0, "y": 0.0517, "z": -0.0728 },
+                    "rotation": { "x": -5.0159, "y": 21.6432, "z": -61.8545 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0, "y": 0.0958, "z": 0.0447 },
+                    "rotation": { "x": -19.8207, "y": 10.1832, "z": -11.3688 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0, "y": -0.0670, "z": 0.1482 },
+                    "rotation": { "x": -18.8754, "y": -11.8854, "z": 45.8242 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0, "y": -0.2465, "z": 0.1114 },
+                    "rotation": { "x": -5.4004, "y": -20.1997, "z": 89.4094 },
+                    "length": 10.00
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "axeCharge": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 3.5
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.1280, "z": -0.0483 },
+                    "rotation": { "x": -5.5367, "y": 27.5388, "z": -123.0339 },
+                    "length": 2.00
+                }
+            ]
+        },
+        "axeStrongAttack": {
+            "actionTime": 9.00,
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "frames": [
+                {
+                    "transform": { "x": -0.0633, "y": 0.1280, "z": -0.0483 },
+                    "rotation": { "x": -5.5367, "y": 27.5388, "z": -123.0339 },
+                    "length": 1.00
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.1121, "z": -0.0501 },
+                    "rotation": { "x": -2.0579, "y": 27.9776, "z": -130.4949 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.2399, "z": 0.0881 },
+                    "rotation": { "x": -28.0231, "y": -1.2122, "z": -42.5987 },
+                    "length": 1.25
+                },
+                {
+                    "transform": { "x": -0.0633, "y": 0.1843, "z": 0.2268 },
+                    "rotation": { "x": -18.8141, "y": 9.7486, "z": -4.1304 },
+                    "length": 1.75
+                },
+                {
+                    "transform": { "x": -0.0633, "y": -0.2392, "z": 0.2265 },
+                    "rotation": { "x": -3.9649, "y": 4.2698, "z": 92.3980 },
+                    "length": 1.50
+                },
+                {
+                    "transform": { "x": -0.0633, "y": -0.1537, "z": 0.1159 },
+                    "rotation": { "x": -3.0381, "y": 4.9715, "z": 80.9307 },
+                    "length": 8.75
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0173, "z": -0.0214 },
+                    "rotation": { "x": -12.9373, "y": 15.8612, "z": -6.6304 },
+                    "length": 3.00
+                },
+                {
+                    "transform": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "rotation": { "x": -15.6840, "y": 13.1533, "z": 4.3002 },
+                    "length": 0.00
+                }
+            ]
+        },
+        "gunFire": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "actionTime": 10,
+            "endTexOffset": 1,
+            "frames": [
+                {
+                    "transform": { "x": 0.12, "y": -0.20, "z": 0.4000 },
+                    "rotation": { "x": 0.0, "y": 80.0, "z": 0.0 },
+                    "length": 0.0
+                },
+                {
+                    "transform": { "x": 0.12, "y": -0.01200, "z": -0.150 },
+                    "rotation": { "x": 0.0, "y": 80.0, "z": 0.0 },
+                    "length": 1.2
+                },
+                {
+                    "transform": { "x": 0.12, "y": -0.20, "z": 0.4000 },
+                    "rotation": { "x": 0.0, "y": 80.0, "z": 0.0 },
+                    "length": 0
+                }
+            ]
+        },
+        "gunFire3D": {
+            "class": "com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation",
+            "actionTime": 10,
+            "endTexOffset": 1,
+            "frames": [
+                {
+                    "transform": { "x": -0.1, "y": -0.3, "z": 0.30 },
+                    "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "length": 0.0
+                },
+                {
+                    "transform": { "x": -0.1, "y": -0.3, "z": 0.20 },
+                    "rotation": { "x": 5.0, "y": 0.0, "z": 0.0 },
+                    "length": 1.2
+                },
+                {
+                    "transform": { "x": -0.1, "y": -0.3, "z": 0.30 },
+                    "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+                    "length": 0
+                }
+            ]
+        }
+	}
+}

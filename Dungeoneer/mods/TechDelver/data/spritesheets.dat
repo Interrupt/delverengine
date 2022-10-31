@@ -1,0 +1,78 @@
+[
+    {
+        "columns": 16,
+        "filename": "entities.png",
+        "scale": 1,
+        "name": "entity"
+    },
+    {
+        "columns": 4,
+        "filename": "textures.png",
+        "scale": 1,
+        "name": "texture"
+    },
+    {
+        "columns": 4,
+        "filename": "sprites.png",
+        "scale": 1,
+        "name": "sprite"
+    },
+    {
+        "columns": 8,
+        "filename": "items.png",
+        "scale": 0.5,
+        "name": "item",
+        "y_offset": 0.25
+    },
+    {
+        "columns": 4,
+        "filename": "items-guns.png",
+        "scale": 0.5,
+        "name": "item-guns",
+        "y_offset": 0.25
+    },
+    {
+        "columns": 4,
+        "filename": "particles.png",
+        "scale": 1,
+        "name": "particle"
+    },
+    {
+        "columns": 4,
+        "filename": "fog.png",
+        "scale": 1,
+        "name": "fog_sprites",
+        "filter": true
+    },
+    {
+        "columns": 16,
+        "filename": "font.png",
+        "scale": 1,
+        "name": "font"
+    },
+    {
+        "columns": 4,
+        "filename": "editor.png",
+        "scale": 1,
+        "name": "editor",
+        "filter": true
+    },
+    {
+        "columns": 4,
+        "filename": "dust_puffs.png",
+        "scale": 1,
+        "name": "dust_puffs"
+    },
+    {
+        "columns": 4,
+        "filename": "vfx.png",
+        "scale": 1,
+        "name": "vfx"
+    },
+    {
+        "columns": 4,
+        "filename": "textures/tech/sprites.png",
+        "scale": 1,
+        "name": "tech_sprites"
+    }
+]

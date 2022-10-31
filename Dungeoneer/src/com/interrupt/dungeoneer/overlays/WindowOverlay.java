@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -32,7 +29,8 @@ import com.interrupt.dungeoneer.ui.SpinnerButton;
 import com.interrupt.dungeoneer.ui.UiSkin;
 
 public abstract class WindowOverlay extends Overlay {
-	
+    public class GamepadEvent extends InputEvent {}
+
 	public float timer = 0;
 	public Table stageTable;
 	public Float uiScale = null;
@@ -54,7 +52,7 @@ public abstract class WindowOverlay extends Overlay {
 	public boolean animateBackground = true;
 	public boolean animate = true;
 	protected int align = Align.center;
-	
+
 	protected NinePatchDrawable background = new NinePatchDrawable(new NinePatch(UiSkin.getSkin().getRegion("window"), 11, 11, 11, 11));
 
 	Vector2 offset = new Vector2();
@@ -64,7 +62,7 @@ public abstract class WindowOverlay extends Overlay {
 	float keyRepeat = 0f;
 
 	public boolean playSoundOnOpen = true;
-	
+
 	public WindowOverlay() {
 	}
 
@@ -72,14 +70,14 @@ public abstract class WindowOverlay extends Overlay {
 	public void tick(float delta) {
 
 		if(running) {
-			timer += delta;	
+			timer += delta;
 		}
 
 		controllerState = Game.gamepadManager.controllerState;
 
 		// Allow all overlays to be exited via the menu cancel button
 		if (Game.gamepadManager.controllerState.menuButtonEvents.contains(ControllerState.MenuButtons.CANCEL, true)) {
-			OverlayManager.instance.remove(this);
+            back();
 			Game.gamepadManager.controllerState.clearEvents();
 			Game.gamepadManager.controllerState.resetState();
 		}
@@ -132,16 +130,18 @@ public abstract class WindowOverlay extends Overlay {
 				if(gamepadSelectionIndex < 0) gamepadSelectionIndex = buttonOrder.size - 1;
 			}
 		}
-		
-		if(gamepadSelectionIndex != null && buttonOrder.size > 0 && 
+
+		if(gamepadSelectionIndex != null && buttonOrder.size > 0 &&
 				(Game.gamepadManager != null && Game.gamepadManager.controllerState.buttonEvents.contains(Actions.Action.USE, true) || Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Game.gamepadManager.controllerState.menuButtonEvents.contains(ControllerState.MenuButtons.SELECT, true))) {
 			Actor button = buttonOrder.get(gamepadSelectionIndex);
 			for(EventListener listener : button.getListeners()) {
 				if(listener instanceof ClickListener) {
-					((ClickListener)listener).clicked(new InputEvent(), button.getX(), button.getY());
+					((ClickListener)listener).clicked(new GamepadEvent(), button.getX(), button.getY());
 				}
 			}
 		}
+
+        if(gamepadSelectionIndex != null && gamepadSelectionIndex < buttonOrder.size) selected = buttonOrder.get(gamepadSelectionIndex);
 
 		for(Actor actor : buttonOrder) {
 			if(actor != selected) {
@@ -152,26 +152,36 @@ public abstract class WindowOverlay extends Overlay {
 					((TextButton) actor).setStyle(UiSkin.getSkin().get("default", TextButtonStyle.class));
 				}
 
+                else if (actor instanceof SelectSaveSlotOverlay.SaveSlot) {
+                    SelectSaveSlotOverlay.SaveSlot saveSlot = (SelectSaveSlotOverlay.SaveSlot)actor;
+                    saveSlot.deselect();
+                }
+
 				if(buttonLabels.containsKey(actor)) {
 					Label notSelected = buttonLabels.get(actor);
 					notSelected.setColor(Color.WHITE);
 				}
 			}
 			else {
-				if(actor instanceof CheckBox) {
+				if (actor instanceof CheckBox) {
 					// special style?
 				}
-				else if(actor instanceof TextButton) {
+				else if (actor instanceof TextButton) {
 					((TextButton) actor).setStyle(UiSkin.getSkin().get("gamepad-selected", TextButtonStyle.class));
 				}
 
+                else if (actor instanceof SelectSaveSlotOverlay.SaveSlot) {
+                    SelectSaveSlotOverlay.SaveSlot saveSlot = (SelectSaveSlotOverlay.SaveSlot)actor;
+                    saveSlot.select();
+                }
+
 				if(buttonLabels.containsKey(actor)) {
-					Label notSelected = buttonLabels.get(actor);
-					notSelected.setColor(Colors.PARALYZE);
+					Label selectedLabel = buttonLabels.get(actor);
+                    selectedLabel.setColor(Colors.PARALYZE);
 				}
 			}
 		}
-		
+
 		// do hover events
 		if(lastGamepadSelectionIndex != gamepadSelectionIndex) {
 			try {
@@ -194,10 +204,10 @@ public abstract class WindowOverlay extends Overlay {
 			}
 			catch (Exception ex) { lastGamepadSelectionIndex = null; gamepadSelectionIndex = null; }
 		}
-		
+
 		Game.gamepadManager.menuMode = true;
 		Game.gamepadManager.tick(delta);
-		
+
 		lastGamepadSelectionIndex = gamepadSelectionIndex;
 	}
 
@@ -250,7 +260,7 @@ public abstract class WindowOverlay extends Overlay {
 		ui = new Stage(viewport);
 
 		resize(width, height);
-		
+
 		makeLayout();
 
 		if(playSoundOnOpen) {
@@ -262,7 +272,7 @@ public abstract class WindowOverlay extends Overlay {
 
 		controllerState = Game.gamepadManager.controllerState;
 	}
-	
+
 	protected void makeLayout() {
 		if(stageTable == null) {
 			stageTable = new Table();
@@ -271,18 +281,18 @@ public abstract class WindowOverlay extends Overlay {
 		else {
 			stageTable.clear();
 		}
-		
+
 		stageTable.setFillParent(true);
 		stageTable.align(align);
-		
+
 		Table mainTable = new Table();
 		if(background != null && showBackground) mainTable.setBackground(background);
 		stageTable.add(mainTable).fill();
-	    
+
 		Table contentTable = makeContent();
 	    mainTable.add(contentTable).pad(4f);
 	}
-	
+
 	protected void makeLayout(Table contentTable) {
 		if(stageTable == null) {
 			stageTable = new Table();
@@ -291,36 +301,36 @@ public abstract class WindowOverlay extends Overlay {
 		else {
 			stageTable.clear();
 		}
-		
+
 		stageTable.setFillParent(true);
 		stageTable.align(align);
-		
+
 		Table mainTable = new Table();
 		if(background != null && showBackground) mainTable.setBackground(background);
 		stageTable.add(mainTable).fill();
-	    
+
 	    mainTable.add(contentTable).pad(4f);
-	    
+
 	    ui.addActor(stageTable);
 	}
 
 	@Override
 	protected void draw(float delta) {
-		
+
 		int width = Gdx.graphics.getWidth();
 		int height = Gdx.graphics.getHeight();
-		
+
 		int scaleFactor = width < height * 1.5 ? width : height;
 		float scaleMod = width < height * 1.5 ? 480f * 1.5f : 480f;
 		uiScale = (scaleFactor / scaleMod) * 3f;
-		
+
 		uiScale *= Math.min(1f, Options.instance.uiSize);
-		
+
 		if(!Game.isMobile) uiScale *= 0.75f;
-		
+
 		renderer = GameManager.renderer;
 		gl = renderer.getGL();
-		
+
 		lerpValue = animate ? lerp.apply(0, 1f, Math.min(timer * 4, 1f)) : 1f;
 		float moveLerpValue = animate ? lerp.apply(-10f, 0f, Math.min(timer * 4, 1f)) : 0f;
 
@@ -342,7 +352,7 @@ public abstract class WindowOverlay extends Overlay {
 
 		animateColor.set(1, 1, 1, 1f * lerpValue);
 		stageTable.setColor(animateColor);
-		
+
 		super.draw(delta);
 	}
 
@@ -360,4 +370,8 @@ public abstract class WindowOverlay extends Overlay {
 
 	// Override this to make table content
 	public abstract Table makeContent();
+
+    protected void close() {
+        OverlayManager.instance.remove(this);
+    }
 }

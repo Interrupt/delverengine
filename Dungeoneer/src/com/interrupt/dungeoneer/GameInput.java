@@ -196,7 +196,7 @@ public class GameInput implements InputProcessor {
 		return false;
 	}
 
-	@Override
+    @Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
 		if(menuUi != null)
 			menuUi.touchUp(x, y, pointer, button);
@@ -211,7 +211,7 @@ public class GameInput implements InputProcessor {
 		return false;
 	}
 
-	public float getLeftDeltaX()
+    public float getLeftDeltaX()
 	{
 		if(leftPointer == null) return 0;
 		return Gdx.input.getDeltaX(leftPointer);
