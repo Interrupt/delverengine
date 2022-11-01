@@ -16,6 +16,7 @@ Dungeoneer/save/
 Dungeoneer/assets/packaged_files.txt
 Dungeoneer/assets/errorlog.txt
 DungeoneerDesktop/save
+DungeoneerAndroid/libs
 
 *.iml
 .idea/*
@@ -24,6 +25,7 @@ DungeoneerDesktop/save
 Manifest.java
 
 # Gradle ignores
+/local.properties
 .gradle
 Dungeoneer/build
 DungeoneerDesktop/build

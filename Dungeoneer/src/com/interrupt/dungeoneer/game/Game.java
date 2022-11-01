@@ -1361,23 +1361,29 @@ public class Game {
 		return interactMode;
 	}
 
-	// Grabs from an external assets dir if available, or gets internal
-	static public FileHandle getInternal(String filename)
-	{
-	    Gdx.app.debug("Delver", "Looking for " + filename);
+    // Grabs from an external assets dir if available, or gets internal
+    static public FileHandle getInternal(String filename) {
+        Gdx.app.debug("Delver", "Looking for " + filename);
 
-		if(filename.startsWith("./")) filename = filename.substring(2);
-		FileHandle h = getFile("assets/" + filename);
-		if(h.exists()) return h;
+        if (filename.startsWith("./")) filename = filename.substring(2);
+
+        // Check assets directory
+        FileHandle h = getFile("assets/" + filename);
+        if (h.exists()) return h;
+
+        // Check local filesystem
+        h = getFile(filename);
+        if (h.exists()) return h;
 
         Gdx.app.debug("Delver", " Not found, looking internally");
 
+        // Check Jar file
         h = Gdx.files.internal(filename);
 
-        if(!h.exists()) Gdx.app.debug("Delver", "  Still not found!");
+        if (!h.exists()) Gdx.app.debug("Delver", "  Still not found!");
 
-		return h;
-	}
+        return h;
+    }
 
     static public FileHandle findInternalFileInMods(String filename) {
 		if(filename == null) return null;

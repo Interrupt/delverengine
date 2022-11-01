@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -276,10 +277,13 @@ public class GameInput implements InputProcessor {
 	public boolean isActionRequested(Action action){
 		boolean isActionRequested = checkKeyDown(action);
 
-		//Only trap caughtCursor for the primary button
-		isActionRequested|=(caughtCursor && (Options.instance.mouseButton1Action == action) && isPressedMouse1);
-		isActionRequested|=((Options.instance.mouseButton2Action == action) && isPressedMouse2);
-		isActionRequested|=((Options.instance.mouseButton3Action == action) && isPressedMouse3);
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+		    //Only trap caughtCursor for the primary button
+            isActionRequested |= (caughtCursor && (Options.instance.mouseButton1Action == action) && isPressedMouse1);
+            isActionRequested |= ((Options.instance.mouseButton2Action == action) && isPressedMouse2);
+            isActionRequested |= ((Options.instance.mouseButton3Action == action) && isPressedMouse3);
+        }
+
 		return isActionRequested;
 	}
 

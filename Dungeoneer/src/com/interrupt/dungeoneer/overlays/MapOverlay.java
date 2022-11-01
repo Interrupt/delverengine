@@ -3,7 +3,6 @@ package com.interrupt.dungeoneer.overlays;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -13,10 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-//import com.esotericsoftware.tablelayout.Cell;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -24,7 +22,6 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.input.Actions.Action;
-import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.ui.UiSkin;
 
 public class MapOverlay extends Overlay {
@@ -123,7 +120,9 @@ public class MapOverlay extends Overlay {
             }
 
             @Override
-            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) { return false; }
+            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
 
             @Override
             public boolean touchDragged(int i, int i2, int i3) {

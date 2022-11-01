@@ -1073,13 +1073,13 @@ public class Player extends Actor {
 				}
 			}
 
-			if((Game.hud.isAttackPressed()) && !(touchingItem && input.uiTouchPointer == input.rightPointer)) {
+            if((Game.hud.isAttackPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer)) {
 
 				deltaX = 0;
 				deltaY = 0;
 
-				Integer thisX = 0;
-				Integer thisY = 0;
+				int thisX = 0;
+				int thisY = 0;
 
 				if(input.isRightTouched()) {
 					thisX = Gdx.input.getX(input.rightPointer);
@@ -1102,6 +1102,12 @@ public class Player extends Actor {
 				deltaX *= Options.instance.mouseXSensitivity;
 				deltaY *= Options.instance.mouseYSensitivity;
 
+                // This is a bandaid. Need to investigate why we get such a large delta tapping the attack button.
+                if (deltaX > 200f || deltaY > 200f) {
+                    deltaX = 0;
+                    deltaY = 0;
+                }
+
 				if(!Game.ignoreTouch) {
 					rotya += (deltaY / 800f) * Game.GetUiSize() / 85f;
 					rota += (deltaX / 400f) * Game.GetUiSize() / 85f;
@@ -1110,9 +1116,9 @@ public class Player extends Actor {
 				lastDelta.set(thisX, thisY);
 			}
 
-			if(!(Game.hud.isAttackPressed())) {
-				lastDelta = null;
-			}
+            if(!(Game.hud.isAttackPressed() || input.isRightTouched())) {
+                lastDelta = null;
+            }
 		}
 
 		// reset the ignore touch flag
