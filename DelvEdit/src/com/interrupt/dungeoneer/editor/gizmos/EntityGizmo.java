@@ -71,6 +71,8 @@ public class EntityGizmo extends Gizmo {
                 entity.scale = startScale * distance;
             }
         };
+        scaleHandle.setColor(EditorColors.WHITE);
+        scaleHandle.setHighlightColor(EditorColors.WHITE_BRIGHT);
         Editor.app.editorInput.addListener(scaleHandle);
     }
 

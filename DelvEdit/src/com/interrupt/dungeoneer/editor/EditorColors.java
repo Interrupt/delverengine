@@ -18,4 +18,7 @@ public class EditorColors {
     public static final Color X_AXIS_DARK = new Color(0.8f, 0f, 0f, 0.3f);
     public static final Color Y_AXIS_DARK = new Color(0f, 0.8f, 0f, 0.3f);
     public static final Color Z_AXIS_DARK = new Color(0f, 0f, 0.8f, 0.3f);
+
+    public static final Color WHITE = new Color(204f / 255f, 204f / 255f, 204f / 255f, 1f);
+    public static final Color WHITE_BRIGHT = new Color(255f, 255f, 255f, 1f);
 }
