@@ -1,15 +1,15 @@
 package com.interrupt.dungeoneer.editor.gizmos;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorColors;
 import com.interrupt.dungeoneer.editor.gfx.Draw;
-import com.interrupt.dungeoneer.editor.handles.Handle;
-import com.interrupt.dungeoneer.editor.handles.PositionHandle;
-import com.interrupt.dungeoneer.editor.handles.RotationHandle;
-import com.interrupt.dungeoneer.editor.modes.EditorMode;
+import com.interrupt.dungeoneer.editor.handles.*;
 import com.interrupt.dungeoneer.entities.DirectionalEntity;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.math.MathUtils;
@@ -18,6 +18,7 @@ import com.interrupt.math.MathUtils;
 public class EntityGizmo extends Gizmo {
     private final Handle translateHandle;
     private final Handle rotationHandle;
+    private final Handle scaleHandle;
 
     public EntityGizmo(Entity entity) {
         super(entity);
@@ -49,6 +50,28 @@ public class EntityGizmo extends Gizmo {
             }
         };
         Editor.app.editorInput.addListener(rotationHandle);
+
+        scaleHandle = new RingHandle(entity.getPosition(), 1f) {
+            float distance = 0f;
+            float startScale = 1f;
+            @Override
+            public void select() {
+                super.select();
+                distance = intersection.len();
+                startScale = entity.scale;
+                u.set(transform.getPosition());
+            }
+            private final Vector3 u = new Vector3();
+            private final Vector3 v = new Vector3();
+
+            @Override
+            public void change() {
+                v.set(transform.getPosition()).sub(u).sub(cursorDragOffset);
+                distance = v.len();
+                entity.scale = startScale * distance;
+            }
+        };
+        Editor.app.editorInput.addListener(scaleHandle);
     }
 
     @Override
@@ -56,6 +79,7 @@ public class EntityGizmo extends Gizmo {
         Vector3 position = entity.getPosition();
         translateHandle.setPosition(position.x, position.z - 0.5f, position.y);
         rotationHandle.setPosition(position.x, position.z - 0.5f, position.y);
+        scaleHandle.setPosition(position.x, position.z - 0.5f, position.y);
 
         if (entity instanceof DirectionalEntity) {
             DirectionalEntity d = (DirectionalEntity)entity;
@@ -63,13 +87,16 @@ public class EntityGizmo extends Gizmo {
             rotationHandle.setRotation(d.rotation.z, d.rotation.x, d.rotation.y);
         }
 
-        EditorMode.EditorModes current = Editor.app.currentEditorMode;
-
-        if (current == EditorMode.EditorModes.ENTITY_TRANSLATE) {
-            translateHandle.draw();
-        }
-        else if (current == EditorMode.EditorModes.ENTITY_ROTATE) {
-            rotationHandle.draw();
+        switch (Editor.app.currentEditorMode) {
+            case ENTITY_TRANSLATE:
+                translateHandle.draw();
+                break;
+            case ENTITY_ROTATE:
+                rotationHandle.draw();
+                break;
+            case ENTITY_SCALE:
+                scaleHandle.draw();
+                break;
         }
 
         if (entity.isSolid) {

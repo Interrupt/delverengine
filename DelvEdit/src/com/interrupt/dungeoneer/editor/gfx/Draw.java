@@ -110,6 +110,12 @@ public class Draw {
         mesh(mesh, model);
     }
 
+    public static void line(Vector3 a, Vector3 b) {
+        beginLineRendering();
+        renderer.line(a, b);
+        endLineRendering();
+    }
+
     private static void beginLineRendering() {
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 
