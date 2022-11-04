@@ -169,13 +169,14 @@ public class CarveMode extends EditorMode {
 
         // A new tile selection was created
         pickedTileSelections.add(tileSelection.copy());
+        onNewTileSelectionPicked();
+    }
 
+    public void onNewTileSelectionPicked() {
         // Carve automatically, unless shift is being held
-        if(Editor.app.editorInput.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+        if(Editor.app.editorInput.isKeyPressed(Input.Keys.SHIFT_LEFT))
             return;
-        }
 
-        // Simple case, carve automatically
         if(carveAutomatically)
             doCarve();
     }
@@ -736,8 +737,12 @@ public class CarveMode extends EditorMode {
         }
 
         // Now move the control point for next time
-        pickedControlPoint.point.y -= dragOffset.y;
+        movePickedControlPoint(dragOffset);
         dragStart.set(dragPlaneIntersectPos);
+    }
+
+    protected void movePickedControlPoint(Vector3 dragOffset) {
+        pickedControlPoint.point.y -= dragOffset.y;
     }
 
     // Override this for different behaviors when adjusting the tile ceiling heights

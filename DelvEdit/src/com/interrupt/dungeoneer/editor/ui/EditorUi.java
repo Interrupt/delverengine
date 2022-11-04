@@ -42,6 +42,8 @@ public class EditorUi {
     Scene2dMenu rightClickMenu;
     Scene2dMenuBar menuBar;
 
+    ToolMenuBar toolMenuBar;
+
     public Actor showingModal;
 
     ActionListener resizeWindowAction;
@@ -300,11 +302,16 @@ public class EditorUi {
 
         mainTable.setZIndex(1000);
         mainTable.add(menuBar);
-
         mainTable.row();
 
-        ToolMenuBar toolMenuBar = new ToolMenuBar();
-        mainTable.add(toolMenuBar).align(Align.left);
+        // Manually position the tools bar under the menu bar
+        toolMenuBar = new ToolMenuBar();
+        toolMenuBar.setZIndex(0);
+        toolMenuBar.setX(0);
+        toolMenuBar.padTop(36);
+        toolMenuBar.padLeft(4);
+        toolMenuBar.setY(viewport.getScreenHeight() - menuBar.getHeight());
+        stage.addActor(toolMenuBar);
 
         stage.addListener(new InputListener() {
             @Override
@@ -427,8 +434,10 @@ public class EditorUi {
         viewport.update((int)width, (int)height, true);
 
         menuBar.refresh();
-
         mainTable.pack();
+
+        // Manually position tools bar
+        toolMenuBar.setY(viewport.getScreenHeight() - menuBar.getHeight());
 
         if(entityPropertiesPane != null && propertiesMenu != null) {
             boolean fillsStage = propertiesSize.y > stage.getHeight() - menuBar.getHeight();

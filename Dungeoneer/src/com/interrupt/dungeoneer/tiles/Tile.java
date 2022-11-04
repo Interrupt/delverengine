@@ -493,6 +493,10 @@ public class Tile implements Serializable {
 		t.slopeNW = tocopy.slopeNW;
 		t.slopeSE = tocopy.slopeSE;
 		t.slopeSW = tocopy.slopeSW;
+        t.ceilSlopeNE = tocopy.ceilSlopeNE;
+        t.ceilSlopeNW = tocopy.ceilSlopeNW;
+        t.ceilSlopeSE = tocopy.ceilSlopeSE;
+        t.ceilSlopeSW = tocopy.ceilSlopeSW;
 		t.tileSpaceType = tocopy.tileSpaceType;
 		t.wallTex = tocopy.wallTex;
         t.wallBottomTex = tocopy.wallBottomTex;
@@ -500,6 +504,10 @@ public class Tile implements Serializable {
         t.westTex = tocopy.westTex;
         t.northTex = tocopy.northTex;
         t.southTex = tocopy.southTex;
+        t.eastTexAtlas = tocopy.eastTexAtlas;
+        t.westTexAtlas = tocopy.westTexAtlas;
+        t.northTexAtlas = tocopy.northTexAtlas;
+        t.southTexAtlas = tocopy.southTexAtlas;
         t.bottomEastTex = tocopy.bottomEastTex;
         t.bottomWestTex = tocopy.bottomWestTex;
         t.bottomNorthTex = tocopy.bottomNorthTex;
@@ -550,6 +558,10 @@ public class Tile implements Serializable {
         destination.ceilTexAtlas = source.ceilTexAtlas;
         destination.wallTexAtlas = source.wallTexAtlas;
         destination.wallBottomTexAtlas = source.wallBottomTexAtlas;
+        destination.eastTexAtlas = source.eastTexAtlas;
+        destination.westTexAtlas = source.westTexAtlas;
+        destination.northTexAtlas = source.northTexAtlas;
+        destination.southTexAtlas = source.southTexAtlas;
         destination.bottomEastTexAtlas = source.bottomEastTexAtlas;
         destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
         destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
@@ -578,6 +590,10 @@ public class Tile implements Serializable {
         destination.ceilTexAtlas = source.ceilTexAtlas;
         destination.wallTexAtlas = source.wallTexAtlas;
         destination.wallBottomTexAtlas = source.wallBottomTexAtlas;
+        destination.eastTexAtlas = source.eastTexAtlas;
+        destination.westTexAtlas = source.westTexAtlas;
+        destination.northTexAtlas = source.northTexAtlas;
+        destination.southTexAtlas = source.southTexAtlas;
         destination.bottomEastTexAtlas = source.bottomEastTexAtlas;
         destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
         destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
