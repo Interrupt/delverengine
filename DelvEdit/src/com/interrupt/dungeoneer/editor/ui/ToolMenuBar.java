@@ -6,35 +6,56 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.modes.EditorMode;
 
 public class ToolMenuBar extends Container<Actor> {
     private ButtonGroup<Button> buttonGroup;
     private HorizontalGroup horizontalGroup;
+    private HorizontalGroup subtoolsHorizontalGroup;
+
+    private Table toolsTable;
 
     public ToolMenuBar() {
-        initialize();
+
     }
 
-    private void initialize() {
+    public void initialize() {
         fillX();
-        align(Align.left);
+        align(Align.topLeft);
 
         EditorMode.EditorModes[] modes = EditorMode.EditorModes.class.getEnumConstants();
+
+        toolsTable = new Table();
 
         horizontalGroup = new HorizontalGroup();
         horizontalGroup.space(2.0f);
 
+        subtoolsHorizontalGroup = new HorizontalGroup();
+        subtoolsHorizontalGroup.space(2.0f);
+
         buttonGroup = new ButtonGroup<>();
 
         for (EditorMode.EditorModes mode : modes) {
+            // Only add in the top level modes.
+            EditorMode editorMode = Editor.app.editorModes.get(mode);
+            if(!editorMode.showAtTopLevel)
+                continue;
+
             Button button = new TextButton(mode.toString(), EditorUi.smallSkin, "toggle");
             buttonGroup.add(button);
             horizontalGroup.addActor(button);
         }
 
-        setActor(horizontalGroup);
+        // Add the main tools group
+        toolsTable.add(horizontalGroup).align(Align.left);
+        toolsTable.row();
+
+        // Add the subtools group
+        toolsTable.add(subtoolsHorizontalGroup).align(Align.left);
+
+        setActor(toolsTable);
 
         addListener(new ChangeListener() {
             @Override
@@ -53,8 +74,11 @@ public class ToolMenuBar extends Container<Actor> {
         addAction(new Action() {
             @Override
             public boolean act(float delta) {
-                EditorMode.EditorModes current = Editor.app.getCurrentEditorMode().mode;
-                setChecked(current);
+                if(Editor.app.getCurrentEditorMode().showAtTopLevel) {
+                    EditorMode.EditorModes current = Editor.app.getCurrentEditorMode().mode;
+                    setChecked(current);
+                }
+
                 return false;
             }
         });
@@ -76,5 +100,21 @@ public class ToolMenuBar extends Container<Actor> {
                 return;
             }
         }
+    }
+
+    public void setSubtools(Array<EditorMode.EditorModes> subModes) {
+        // Empty the old ones
+        subtoolsHorizontalGroup.clear();
+        subtoolsHorizontalGroup.align(Align.left);
+
+        ButtonGroup subtoolsButtonGroup = new ButtonGroup<>();
+
+        for (EditorMode.EditorModes mode : subModes) {
+            Button button = new TextButton(mode.toString(), EditorUi.smallSkin, "toggle");
+            subtoolsButtonGroup.add(button);
+            subtoolsHorizontalGroup.addActor(button);
+        }
+
+        subtoolsButtonGroup.uncheckAll();
     }
 }

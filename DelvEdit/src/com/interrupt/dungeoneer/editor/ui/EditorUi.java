@@ -42,7 +42,7 @@ public class EditorUi {
     Scene2dMenu rightClickMenu;
     Scene2dMenuBar menuBar;
 
-    ToolMenuBar toolMenuBar;
+    public ToolMenuBar toolMenuBar;
 
     public Actor showingModal;
 
@@ -308,7 +308,6 @@ public class EditorUi {
         toolMenuBar = new ToolMenuBar();
         toolMenuBar.setZIndex(0);
         toolMenuBar.setX(0);
-        toolMenuBar.padTop(36);
         toolMenuBar.padLeft(4);
         toolMenuBar.setY(viewport.getScreenHeight() - menuBar.getHeight());
         stage.addActor(toolMenuBar);
@@ -454,6 +453,7 @@ public class EditorUi {
 
     public void initUi() {
         stage.addActor(mainTable);
+        toolMenuBar.initialize();
     }
 
     public void showModal(Actor modal) {

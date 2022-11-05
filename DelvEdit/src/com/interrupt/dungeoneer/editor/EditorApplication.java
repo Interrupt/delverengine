@@ -44,6 +44,7 @@ import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.editor.ui.SaveChangesDialog;
 import com.interrupt.dungeoneer.editor.ui.TextureRegionPicker;
+import com.interrupt.dungeoneer.editor.ui.ToolMenuBar;
 import com.interrupt.dungeoneer.editor.ui.menu.generator.GeneratorInfo;
 import com.interrupt.dungeoneer.editor.utils.LiveReload;
 import com.interrupt.dungeoneer.entities.*;
@@ -291,6 +292,30 @@ public class EditorApplication implements ApplicationListener {
 	}
 
 	public void init(){
+        // Setup the different editor modes
+        EntityPickedMode entityPickedMode = new EntityPickedMode();
+        editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode());
+        editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, entityPickedMode);
+        editorModes.put(EditorMode.EditorModes.ENTITY_TRANSLATE, new EditorMode(EditorMode.EditorModes.ENTITY_TRANSLATE, entityPickedMode));
+        editorModes.put(EditorMode.EditorModes.ENTITY_ROTATE, new EditorMode(EditorMode.EditorModes.ENTITY_ROTATE, entityPickedMode));
+        editorModes.put(EditorMode.EditorModes.ENTITY_SCALE, new EditorMode(EditorMode.EditorModes.ENTITY_SCALE, entityPickedMode));
+        editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
+        editorModes.put(EditorMode.EditorModes.TEXPAN, new TexPanMode());
+        editorModes.put(EditorMode.EditorModes.VERTEX, new VertexMode());
+        editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
+        editorModes.put(EditorMode.EditorModes.ERASE, new EraseMode());
+        editorModes.put(EditorMode.EditorModes.FLATTEN, new FlattenMode());
+        editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode());
+        editorModes.put(EditorMode.EditorModes.DOME, new DomeMode());
+        editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode());
+        editorModes.put(EditorMode.EditorModes.RAMP, new RampMode());
+        editorModes.put(EditorMode.EditorModes.RAMP2, new Ramp2Mode());
+        editorModes.put(EditorMode.EditorModes.RAMP3, new Ramp3Mode());
+        editorModes.put(EditorMode.EditorModes.NOISE, new NoiseMode());
+        editorModes.put(EditorMode.EditorModes.LANDSCAPE, new LandscapeMode());
+        editorModes.put(EditorMode.EditorModes.PYRAMID, new PyramidMode());
+
+        // Setup the editor and renderer
         renderer = new GlRenderer();
         EditorArt.initAtlases();
 
@@ -329,28 +354,6 @@ public class EditorApplication implements ApplicationListener {
 		TextureAtlas.cachedRepeatingAtlases.firstKey();
 
 		createEmptyLevel(17, 17);
-
-        // Setup the different editor modes
-        editorModes.put(EditorMode.EditorModes.CARVE, new CarveMode());
-        editorModes.put(EditorMode.EditorModes.ENTITY_PICKED, new EntityPickedMode());
-        editorModes.put(EditorMode.EditorModes.ENTITY_TRANSLATE, new EditorMode(EditorMode.EditorModes.ENTITY_TRANSLATE));
-        editorModes.put(EditorMode.EditorModes.ENTITY_ROTATE, new EditorMode(EditorMode.EditorModes.ENTITY_ROTATE));
-        editorModes.put(EditorMode.EditorModes.ENTITY_SCALE, new EditorMode(EditorMode.EditorModes.ENTITY_SCALE));
-        editorModes.put(EditorMode.EditorModes.PAINT, new PaintMode());
-        editorModes.put(EditorMode.EditorModes.TEXPAN, new TexPanMode());
-        editorModes.put(EditorMode.EditorModes.VERTEX, new VertexMode());
-        editorModes.put(EditorMode.EditorModes.DRAW, new DrawMode());
-        editorModes.put(EditorMode.EditorModes.ERASE, new EraseMode());
-        editorModes.put(EditorMode.EditorModes.FLATTEN, new FlattenMode());
-        editorModes.put(EditorMode.EditorModes.ARCH, new ArchMode());
-        editorModes.put(EditorMode.EditorModes.DOME, new DomeMode());
-        editorModes.put(EditorMode.EditorModes.STAIRS, new StairsMode());
-        editorModes.put(EditorMode.EditorModes.RAMP, new RampMode());
-        editorModes.put(EditorMode.EditorModes.RAMP2, new Ramp2Mode());
-        editorModes.put(EditorMode.EditorModes.RAMP3, new Ramp3Mode());
-        editorModes.put(EditorMode.EditorModes.NOISE, new NoiseMode());
-        editorModes.put(EditorMode.EditorModes.LANDSCAPE, new LandscapeMode());
-        editorModes.put(EditorMode.EditorModes.PYRAMID, new PyramidMode());
 	}
 
 	/** Load entity templates */
@@ -559,7 +562,6 @@ public class EditorApplication implements ApplicationListener {
     public void setCurrentEditorMode(EditorMode.EditorModes newMode) {
         // Don't switch if this is the same mode, but do call start again
         if(newMode == currentEditorMode) {
-            //getCurrentEditorMode().start();
             return;
         }
 
@@ -1207,14 +1209,22 @@ public class EditorApplication implements ApplicationListener {
             EditorMode curMode = getCurrentEditorMode();
             EditorMode nextMode = editorModes.get(switchingToEditorMode);
 
-            // Switch to the new mode
-            currentEditorMode = switchingToEditorMode;
-            nextMode.start();
+            if(nextMode != null) {
+                // Switch to the new mode
+                currentEditorMode = switchingToEditorMode;
+                nextMode.start();
 
-            // Clean up the old mode
-            curMode.onSwitchTo(nextMode);
-            nextMode.onSwitchFrom(curMode);
-            curMode.reset();
+                // If this is a top level editor mode, set the subtools now
+                if(nextMode.parentEditorMode == null) {
+                    ToolMenuBar menuBar = Editor.app.ui.toolMenuBar;
+                    menuBar.setSubtools(nextMode.subModes);
+                }
+
+                // Clean up the old mode
+                curMode.onSwitchTo(nextMode);
+                nextMode.onSwitchFrom(curMode);
+                curMode.reset();
+            }
         }
 
         Handles.pick();

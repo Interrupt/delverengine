@@ -1,7 +1,10 @@
 package com.interrupt.dungeoneer.editor.modes;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.selection.TileSelection;
+import com.interrupt.dungeoneer.editor.ui.ToolMenuBar;
 
 public class EditorMode {
     public enum EditorModes { ENTITY_PICKED, ENTITY_TRANSLATE, ENTITY_ROTATE, ENTITY_SCALE, CARVE, VERTEX, PAINT, TEXPAN, DRAW, ERASE, FLATTEN, STAIRS, RAMP, RAMP2, RAMP3, PYRAMID, ARCH, DOME, NOISE, LANDSCAPE }
@@ -10,8 +13,20 @@ public class EditorMode {
     protected TileSelection hoverSelection;
     protected Array<TileSelection> pickedTileSelections = new Array<>();
 
+    // Whether this should show at the top level of tools
+    public boolean showAtTopLevel = true;
+
+    public EditorMode parentEditorMode;
+    public Array<EditorModes> subModes = new Array<>();
+
     public EditorMode(EditorModes mode) {
         this.mode = mode;
+    }
+
+    public EditorMode(EditorModes mode, EditorMode inParentEditorMode) {
+        this.mode = mode;
+        showAtTopLevel = inParentEditorMode == null;
+        parentEditorMode = inParentEditorMode;
     }
 
     // Override this to draw any editor mode gizmos

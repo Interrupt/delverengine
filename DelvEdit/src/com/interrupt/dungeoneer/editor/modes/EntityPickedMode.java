@@ -34,6 +34,10 @@ public class EntityPickedMode extends EditorMode {
 
     public EntityPickedMode() {
         super(EditorModes.ENTITY_PICKED);
+
+        subModes.add(EditorMode.EditorModes.ENTITY_TRANSLATE);
+        subModes.add(EditorMode.EditorModes.ENTITY_ROTATE);
+        subModes.add(EditorMode.EditorModes.ENTITY_SCALE);
     }
 
     // Sets to true on the tick where a mouse up was detected
