@@ -968,7 +968,7 @@ public class GlRenderer {
 		drawFlashOverlay(color, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	protected void drawFlashOverlay(Color color, int srcBlendFunction, int dstBlendFunction) {
+	public void drawFlashOverlay(Color color, int srcBlendFunction, int dstBlendFunction) {
 		Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 		uiBatch.begin();
 		uiBatch.enableBlending();
@@ -2716,6 +2716,7 @@ public class GlRenderer {
 			camera2D.viewportHeight = height;
 		}
 		camera2D.update();
+        uiBatch.setProjectionMatrix(camera2D.combined);
 
 		if(Game.instance != null) Game.camera = camera;
 

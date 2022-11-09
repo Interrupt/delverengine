@@ -1,5 +1,7 @@
 package com.interrupt.dungeoneer.gfx;
 
+import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
+
 public class TesselatorGroups {
     public TesselatorGroup world;
     public TesselatorGroup water;
@@ -45,5 +47,11 @@ public class TesselatorGroups {
 
     public void render() {
 
+    }
+
+    public void addCollisionTriangles(TriangleSpatialHash spatialHash) {
+        world.addCollisionTriangles(spatialHash);
+        water.addCollisionTriangles(spatialHash);
+        waterfall.addCollisionTriangles(spatialHash);
     }
 }

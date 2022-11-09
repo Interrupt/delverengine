@@ -1,8 +1,10 @@
 package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Clipboard;
+import com.interrupt.dungeoneer.editor.selection.TileSelection;
 import com.interrupt.dungeoneer.editor.selection.TileSelectionInfo;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.tiles.Tile;
@@ -32,18 +34,22 @@ public class EditorClipboard {
         }
 
         // Copy tiles
-        if(Editor.selection.picked == null) {
-            for (TileSelectionInfo info : Editor.selection.tiles) {
-                Tile t = info.tile;
-                if (t != null) {
-                    info.tile = Tile.copy(t);
+        Array<TileSelection> selections = Editor.app.getCurrentEditorMode().getPickedTileSelections(false);
+        if (selections.size > 0) {
+            TileSelection firstSelection = selections.get(0);
+            for(TileSelection selection : selections) {
+                for (TileSelectionInfo info : selection) {
+                    Tile t = info.tile;
+                    if (t != null) {
+                        info.tile = Tile.copy(t);
+                    }
+
+                    // Calculate offset
+                    info.x -= firstSelection.startX;
+                    info.y -= firstSelection.startY;
+
+                    instance.tiles.add(info);
                 }
-
-                // Calculate offset
-                info.x -= Editor.selection.tiles.x;
-                info.y -= Editor.selection.tiles.y;
-
-                instance.tiles.add(info);
             }
         }
 
@@ -86,8 +92,9 @@ public class EditorClipboard {
             return;
         }
 
-        int cursorTileX = Editor.selection.tiles.x;
-        int cursorTileY = Editor.selection.tiles.y;
+        Vector3 worldIntersection = Editor.app.getEditorIntersection();
+        int cursorTileX = (int)worldIntersection.x;
+        int cursorTileY = (int)worldIntersection.z;
 
         // Paste tiles
         for (TileSelectionInfo info : instance.tiles) {

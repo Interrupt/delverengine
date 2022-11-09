@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Triangle;
 
 public class Collidor {
-	
+
 	private static Vector3 tmp = new Vector3();
     private static Vector3 tempRayVec = new Vector3();
 
@@ -19,15 +19,17 @@ public class Collidor {
 	private static Vector3 workVector3 = new Vector3();
 	private static Vector3 workVector4 = new Vector3();
 	private static Vector3 workVector5 = new Vector3();
-	
+    private static Vector3 workVector6 = new Vector3();
+
 	private static Vector3 best = new Vector3();
-	
+    private static Vector3 bestNormal = new Vector3();
+
 	private static Vector3 bestTriangleV1 = new Vector3();
 	private static Vector3 bestTriangleV2 = new Vector3();
 	private static Vector3 bestTriangleV3 = new Vector3();
-	
+
 	/** Intersects the given ray with list of triangles. Returns the nearest intersection point in intersection, and the normal
-	 * 
+	 *
 	 * @param ray The ray
 	 * @param triangles The triangles
 	 * @param intersection The nearest intersection point (optional)
@@ -47,11 +49,11 @@ public class Collidor {
 				if (dist < min_dist) {
 					min_dist = dist;
 					best.set(tmp);
-					
+
 					bestTriangleV1.set(triangles.get(i));
 					bestTriangleV2.set(triangles.get(i + 1));
 					bestTriangleV3.set(triangles.get(i + 2));
-					
+
 					hit = true;
 				}
 			}
@@ -63,25 +65,25 @@ public class Collidor {
 			if(intersection != null) {
 				intersection.set(best);
 			}
-			
+
 			if(normal != null) {
 				Vector3 p1 = workVector1.set(bestTriangleV1);
 				Vector3 p2 = workVector2.set(bestTriangleV2);
 				Vector3 p3 = workVector3.set(bestTriangleV3);
-				
+
 				Vector3 c1 = workVector4.set(p2).sub(p1);
 				Vector3 c2 = workVector5.set(p3).sub(p1);
 				Vector3 nor = c2.crs(c1).nor();
-				
+
 				normal.set(nor);
 			}
-			
+
 			return true;
 		}
 	}
-	
+
 	/** Intersects the given ray with list of triangles. Returns the nearest intersection point in intersection, and the normal
-	 * 
+	 *
 	 * @param ray The ray
 	 * @param triangles The triangles
 	 * @param intersection The nearest intersection point (optional)
@@ -92,7 +94,7 @@ public class Collidor {
 
 		for (int i = 0; i < triangles.size; i++) {
 			Triangle t = triangles.get(i);
-			
+
 			boolean result = Intersector.intersectRayTriangle(ray, t.v1, t.v2, t.v3, tmp);
 
 			if (result == true) {
@@ -101,11 +103,11 @@ public class Collidor {
 				if (dist < min_dist) {
 					min_dist = dist;
 					best.set(tmp);
-					
+
 					bestTriangleV1.set(t.v1);
 					bestTriangleV2.set(t.v2);
 					bestTriangleV3.set(t.v3);
-					
+
 					hit = true;
 				}
 			}
@@ -117,19 +119,19 @@ public class Collidor {
 			if(intersection != null) {
 				intersection.set(best);
 			}
-			
+
 			if(normal != null) {
 				Vector3 p1 = workVector1.set(bestTriangleV1);
 				Vector3 p2 = workVector2.set(bestTriangleV2);
 				Vector3 p3 = workVector3.set(bestTriangleV3);
-				
+
 				Vector3 c1 = workVector4.set(p2).sub(p1);
 				Vector3 c2 = workVector5.set(p3).sub(p1);
 				Vector3 nor = c2.crs(c1).nor();
-				
+
 				normal.set(nor);
 			}
-			
+
 			return true;
 		}
 	}
@@ -148,24 +150,24 @@ public class Collidor {
 				float dist = tempRayVec.sub(tmp).len2();
 				if (dist < min_dist) {
 					boolean frontFacing = false;
-					if(normal != null) {
-						Vector3 p1 = workVector1.set(t.v1);
-						Vector3 p2 = workVector2.set(t.v2);
-						Vector3 p3 = workVector3.set(t.v3);
 
-						Vector3 c1 = workVector4.set(p2).sub(p1);
-						Vector3 c2 = workVector5.set(p3).sub(p1);
-						Vector3 nor = c2.crs(c1).nor();
-						normal.set(nor);
+                    Vector3 calcNormal = workVector6;
+                    Vector3 p1 = workVector1.set(t.v1);
+                    Vector3 p2 = workVector2.set(t.v2);
+                    Vector3 p3 = workVector3.set(t.v3);
 
-						// if this is backfacing, skip!
-						frontFacing = normal.dot(ray.direction) <= 0f;
-						normal.set(nor);
-					}
+                    Vector3 c1 = workVector4.set(p2).sub(p1);
+                    Vector3 c2 = workVector5.set(p3).sub(p1);
+                    Vector3 nor = c2.crs(c1).nor();
+                    calcNormal.set(nor);
+
+                    // if this is backfacing, skip!
+                    frontFacing = calcNormal.dot(ray.direction) <= 0f;
 
 					if(frontFacing) {
 						min_dist = dist;
 						best.set(tmp);
+                        bestNormal.set(calcNormal);
 
 						bestTriangleV1.set(t.v1);
 						bestTriangleV2.set(t.v2);
@@ -182,6 +184,7 @@ public class Collidor {
 		else {
 			if(intersection != null) {
 				intersection.set(best);
+                normal.set(bestNormal);
 			}
 			return true;
 		}

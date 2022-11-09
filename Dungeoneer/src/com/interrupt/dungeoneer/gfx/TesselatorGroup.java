@@ -22,7 +22,7 @@ public class TesselatorGroup {
     public boolean needsTesselation() {
         if(tesselators.size == 0)
             return true;
-        
+
         for(int i = 0; i < tesselators.size; i++) {
             Tesselator tesselator = tesselators.getValueAt(i);
             if(!tesselator.HasBuilt())

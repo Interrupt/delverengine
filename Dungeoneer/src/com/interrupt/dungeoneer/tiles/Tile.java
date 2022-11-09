@@ -24,27 +24,27 @@ import com.interrupt.managers.TileManager;
 public class Tile implements Serializable {
 	private static final long serialVersionUID = 7907569533774959788L;
 
-	public enum TileSpaceType { EMPTY, SOLID, OPEN_NW, OPEN_NE, OPEN_SW, OPEN_SE };
+    public enum TileSpaceType { EMPTY, SOLID, OPEN_NW, OPEN_NE, OPEN_SW, OPEN_SE };
 	public TileSpaceType tileSpaceType = TileSpaceType.EMPTY;
 	public transient boolean drawCeiling = true;
 	public transient boolean drawWalls = true;
 	public transient TileData data = TileManager.DEFAULT_TILEDATA;
-	
+
 	public byte tileType = 0;
-	
+
 	public boolean blockMotion = false;
 	public boolean renderSolid = false;
 	public boolean hide = false;
-	
+
 	public byte wallTex = 0;
     public String wallTexAtlas = null;
 
 	public Byte wallBottomTex = null;
     public String wallBottomTexAtlas = null;
-	
+
 	public byte floorTex = 2;
 	public byte ceilTex = 1;
-	
+
 	public byte floorTexRot = 0;
     public String floorTexAtlas = null;
 
@@ -72,46 +72,46 @@ public class Tile implements Serializable {
     public String bottomWestTexAtlas = null;
 
     public TileMaterials materials;
-	
+
 	public float floorHeight = -0.5f;
 	public float ceilHeight = 0.5f;
-	
+
 	public boolean seen = false;
-	
+
 	public static Tile solidWall = Tile.NewSolidTile();
 	public static Tile emptyWall = Tile.EmptyTile();
-	
+
 	public float slopeNW, slopeNE, slopeSE, slopeSW;
 	public float ceilSlopeNW, ceilSlopeNE, ceilSlopeSE, ceilSlopeSW;
-	
+
 	public transient boolean canNav = true;
     public transient boolean canTeleportHere = true;
 
     public boolean isLocked = false;
-	
+
 	private static transient Plane PLANE_SE = new Plane(new Vector3(0.5f,0.5f,0), -0.701710677f);
 	private static transient Plane PLANE_SW = new Plane(new Vector3(-0.5f,0.5f,0), 0f);
 	private static transient Plane PLANE_NE = new Plane(new Vector3(0.5f,-0.5f,0), 0f);
 	private static transient Plane PLANE_NW = new Plane(new Vector3(-0.5f,-0.5f,0), -0.701710677f);
-	
+
 	private static transient Vector3 tempVector1 = new Vector3();
 	private static transient Vector3 tempVector2 = new Vector3();
 	private static transient Vector3 tempVector3 = new Vector3();
 	private static transient Vector3 tempVector4 = new Vector3();
 	private static transient Vector3 tempVector5 = new Vector3();
-	
+
 	static {
 		PLANE_SE.d = -PLANE_SE.normal.x;
 		PLANE_NW.d = -PLANE_NW.normal.x;
 	}
-	
+
 	public Tile()
 	{
 		floorTex = 2;
 		ceilTex = 1;
 		wallTex = 0;
 	}
-	
+
 	public static Tile NewSolidTile() {
 		Tile t = new Tile();
 		t.blockMotion = true;
@@ -121,7 +121,7 @@ public class Tile implements Serializable {
 		t.data = new TileData();
 		return t;
 	}
-	
+
 	public static Tile EmptyTile() {
 		Tile t = new Tile();
 		t.blockMotion = false;
@@ -132,7 +132,7 @@ public class Tile implements Serializable {
 		t.data = new TileData();
 		return t;
 	}
-	
+
 	public static ExitTile NewExitTile() {
 		ExitTile t = new ExitTile();
 		t.blockMotion = true;
@@ -141,17 +141,17 @@ public class Tile implements Serializable {
 		t.tileSpaceType = TileSpaceType.SOLID;
 		return t;
 	}
-	
+
 	public boolean IsFree()
 	{
 		return !blockMotion;
 	}
-	
+
 	public boolean IsSolid()
 	{
 		return renderSolid || tileSpaceType == TileSpaceType.SOLID;
 	}
-	
+
 	public boolean CanSpawnHere()
 	{
 		return !renderSolid && !blockMotion && !data.isWater && tileSpaceType == TileSpaceType.EMPTY && hasRoomFor(0.75f) && canNav && data.entitiesCanSpawn && canTeleportHere;
@@ -160,7 +160,7 @@ public class Tile implements Serializable {
 	public boolean CanDecorateHere() {
 		return !renderSolid && !blockMotion && tileSpaceType == TileSpaceType.EMPTY && hasRoomFor(0.75f) && canNav && data.entitiesCanSpawn;
 	}
-	
+
 	public float getFloorHeight()
 	{
 		// if water, lower the height a bit
@@ -168,7 +168,7 @@ public class Tile implements Serializable {
 		if(data.darkenFloor) return floorHeight - 30f;
 		return floorHeight;
 	}
-	
+
 	public float getMaxFloorHeight()
 	{
 		float maxCorner = slopeNW;
@@ -185,9 +185,9 @@ public class Tile implements Serializable {
 		if(minCorner > slopeSE) minCorner = slopeSE;
 		return minCorner + floorHeight;
 	}
-	
+
 	public float getFloorHeight(float x, float y) {
-		
+
 		// check if flat, can skip most checks if it is
 		if(slopeNE == slopeNW && slopeNE == slopeSE && slopeNE == slopeSW) {
 			float heightMod = 0;
@@ -195,7 +195,7 @@ public class Tile implements Serializable {
 			if(data.isWater) heightMod = -0.4f;
 			return slopeNE + floorHeight + heightMod;
 		}
-		
+
 		x = (float) (x - Math.floor(x));
 		y = (float) (y - Math.floor(y));
 
@@ -246,15 +246,15 @@ public class Tile implements Serializable {
 			return data.isWater ? AA.z - 0.4f : AA.z;
 		}
 	}
-	
+
 	public float getCeilHeight(float x, float y) {
-		
+
 		// check if flat, can skip most checks if it is
 		if(ceilSlopeNE == ceilSlopeNW && ceilSlopeNE == ceilSlopeSE && ceilSlopeNE == ceilSlopeSW) return ceilSlopeNE + ceilHeight;
-		
+
 		x = (float) (x - Math.floor(x));
 		y = (float) (y - Math.floor(y));
-		
+
 		// check which part of the triangle we're in
 		if (x + y < 1) {        // lower right
 			Vector3 AA = tempVector1.set(0, 0, getNECeilHeight());
@@ -277,87 +277,87 @@ public class Tile implements Serializable {
 			return AA.z;
 		}
 	}
-	
+
 	public void getFloorNormal(float x, float y, Vector3 normal) {
 		// check if flat, can skip most checks if it is
 		if(slopeNE == slopeNW && slopeNE == slopeSE && slopeNE == slopeSW) {
 			normal.set(0, 0, 1);
 			return;
 		}
-		
+
 		x = (float) (x - Math.floor(x));
 		y = (float) (y - Math.floor(y));
-		
+
 		// check which part of the triangle we're in
 		if(x + y < 1) {		// lower right
 			Vector3 AB = tempVector1.set(1 - 0, 0 - 0, getNWFloorHeight() - getNEFloorHeight());
 			Vector3 AC = tempVector2.set(0 - 0, 1 - 0, getSEFloorHeight() - getNEFloorHeight());
-			
+
 			normal.set(AB.crs(AC).nor());
 			return;
 		}
 		else { 				// upper left
 			Vector3 AB = tempVector1.set(0 - 1, 1 - 1, getSEFloorHeight() - getSWFloorHeight());
 			Vector3 AC = tempVector2.set(1 - 1, 0 - 1, getNWFloorHeight() - getSWFloorHeight());
-			
+
 			normal.set(AB.crs(AC).nor());
 			return;
 		}
 	}
-	
+
 	public float getCeilingHeight()
 	{
 		return ceilHeight;
 	}
-	
+
 	public void use()
 	{
 	}
-	
+
 	public boolean isWater() {
 		return data != null && data.isWater && !blockMotion;
 	}
-	
+
 	public boolean isSky() {
 		return !drawWalls;
 	}
-	
+
 	public boolean skyCeiling() {
 		return !drawCeiling;
 	}
-	
+
 	public float getNWFloorHeight() {
 		return floorHeight + slopeNW;
 	}
-	
+
 	public float getNEFloorHeight() {
 		return floorHeight + slopeNE;
 	}
-	
+
 	public float getSEFloorHeight() {
 		return floorHeight + slopeSE;
 	}
-	
+
 	public float getSWFloorHeight() {
 		return floorHeight + slopeSW;
 	}
-	
+
 	public float getNWCeilHeight() {
 		return ceilHeight + ceilSlopeNW;
 	}
-	
+
 	public float getNECeilHeight() {
 		return ceilHeight + ceilSlopeNE;
 	}
-	
+
 	public float getSECeilHeight() {
 		return ceilHeight + ceilSlopeSE;
 	}
-	
+
 	public float getSWCeilHeight() {
 		return ceilHeight + ceilSlopeSW;
 	}
-	
+
 	public boolean IsHigher(TileEdges direction, Tile toCompare) {
 		if(direction == TileEdges.North) {
 			if(getNWFloorHeight() > toCompare.getSWFloorHeight() || getNEFloorHeight() > toCompare.getSEFloorHeight()) return true;
@@ -375,10 +375,10 @@ public class Tile implements Serializable {
 			if(getNWFloorHeight() > toCompare.getNEFloorHeight() || getSWFloorHeight() > toCompare.getSEFloorHeight()) return true;
 			return false;
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean IsCeilLower(TileEdges direction, Tile toCompare) {
 		if(direction == TileEdges.North) {
 			if(getNWCeilHeight() < toCompare.getSWCeilHeight() || getNECeilHeight() < toCompare.getSECeilHeight()) return true;
@@ -396,40 +396,40 @@ public class Tile implements Serializable {
 			if(getNWCeilHeight() < toCompare.getNECeilHeight() || getSWCeilHeight() < toCompare.getSECeilHeight()) return true;
 			return false;
 		}
-		
+
 		return false;
 	}
-	
+
 	// rotates the slopes of the tile 90 degrees clockwise
 	public void rotate90() {
 		float nw = slopeNW;
 		float ne = slopeNE;
 		float se = slopeSE;
 		float sw = slopeSW;
-		
+
 		slopeNE = se;
 		slopeSE = sw;
 		slopeSW = nw;
 		slopeNW = ne;
-		
+
 		nw = ceilSlopeNW;
 		ne = ceilSlopeNE;
 		se = ceilSlopeSE;
 		sw = ceilSlopeSW;
-		
+
 		ceilSlopeNE = se;
 		ceilSlopeSE = sw;
 		ceilSlopeSW = nw;
 		ceilSlopeNW = ne;
-		
+
 		if(tileSpaceType == TileSpaceType.OPEN_NW) tileSpaceType = TileSpaceType.OPEN_NE;
 		else if(tileSpaceType == TileSpaceType.OPEN_NE) tileSpaceType = TileSpaceType.OPEN_SE;
 		else if(tileSpaceType == TileSpaceType.OPEN_SE) tileSpaceType = TileSpaceType.OPEN_SW;
 		else if(tileSpaceType == TileSpaceType.OPEN_SW) tileSpaceType = TileSpaceType.OPEN_NW;
-		
+
 		floorTexRot++;
 		floorTexRot %= 4;
-		
+
 		ceilTexRot++;
 		ceilTexRot %= 4;
 
@@ -480,7 +480,7 @@ public class Tile implements Serializable {
 
 	public static Tile copy(Tile tocopy) {
 		if(tocopy == null) return null;
-		
+
 		Tile t = new Tile();
 		t.blockMotion = tocopy.blockMotion;
 		t.ceilHeight = tocopy.ceilHeight;
@@ -493,6 +493,10 @@ public class Tile implements Serializable {
 		t.slopeNW = tocopy.slopeNW;
 		t.slopeSE = tocopy.slopeSE;
 		t.slopeSW = tocopy.slopeSW;
+        t.ceilSlopeNE = tocopy.ceilSlopeNE;
+        t.ceilSlopeNW = tocopy.ceilSlopeNW;
+        t.ceilSlopeSE = tocopy.ceilSlopeSE;
+        t.ceilSlopeSW = tocopy.ceilSlopeSW;
 		t.tileSpaceType = tocopy.tileSpaceType;
 		t.wallTex = tocopy.wallTex;
         t.wallBottomTex = tocopy.wallBottomTex;
@@ -500,6 +504,10 @@ public class Tile implements Serializable {
         t.westTex = tocopy.westTex;
         t.northTex = tocopy.northTex;
         t.southTex = tocopy.southTex;
+        t.eastTexAtlas = tocopy.eastTexAtlas;
+        t.westTexAtlas = tocopy.westTexAtlas;
+        t.northTexAtlas = tocopy.northTexAtlas;
+        t.southTexAtlas = tocopy.southTexAtlas;
         t.bottomEastTex = tocopy.bottomEastTex;
         t.bottomWestTex = tocopy.bottomWestTex;
         t.bottomNorthTex = tocopy.bottomNorthTex;
@@ -513,13 +521,13 @@ public class Tile implements Serializable {
         t.bottomNorthTexAtlas = tocopy.bottomNorthTexAtlas;
         t.bottomSouthTexAtlas = tocopy.bottomSouthTexAtlas;
         t.isLocked = tocopy.isLocked;
-		
+
 		return t;
 	}
-	
+
 	public static void copy(Tile source, Tile destination) {
 		if(source == null || destination == null) return;
-		
+
 		destination.blockMotion = source.blockMotion;
 		destination.ceilHeight = source.ceilHeight;
 		destination.ceilTex = source.ceilTex;
@@ -550,6 +558,10 @@ public class Tile implements Serializable {
         destination.ceilTexAtlas = source.ceilTexAtlas;
         destination.wallTexAtlas = source.wallTexAtlas;
         destination.wallBottomTexAtlas = source.wallBottomTexAtlas;
+        destination.eastTexAtlas = source.eastTexAtlas;
+        destination.westTexAtlas = source.westTexAtlas;
+        destination.northTexAtlas = source.northTexAtlas;
+        destination.southTexAtlas = source.southTexAtlas;
         destination.bottomEastTexAtlas = source.bottomEastTexAtlas;
         destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
         destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
@@ -559,11 +571,42 @@ public class Tile implements Serializable {
         destination.isLocked = source.isLocked;
 	}
 
+    public static void copyTextures(Tile source, Tile destination) {
+        if(source == null || destination == null) return;
+
+        destination.ceilTex = source.ceilTex;
+        destination.floorTex = source.floorTex;
+        destination.wallTex = source.wallTex;
+        destination.wallBottomTex = source.wallBottomTex;
+        destination.eastTex = source.eastTex;
+        destination.westTex = source.westTex;
+        destination.northTex = source.northTex;
+        destination.southTex = source.southTex;
+        destination.bottomEastTex = source.bottomEastTex;
+        destination.bottomWestTex = source.bottomWestTex;
+        destination.bottomNorthTex = source.bottomNorthTex;
+        destination.bottomSouthTex = source.bottomSouthTex;
+        destination.floorTexAtlas = source.floorTexAtlas;
+        destination.ceilTexAtlas = source.ceilTexAtlas;
+        destination.wallTexAtlas = source.wallTexAtlas;
+        destination.wallBottomTexAtlas = source.wallBottomTexAtlas;
+        destination.eastTexAtlas = source.eastTexAtlas;
+        destination.westTexAtlas = source.westTexAtlas;
+        destination.northTexAtlas = source.northTexAtlas;
+        destination.southTexAtlas = source.southTexAtlas;
+        destination.bottomEastTexAtlas = source.bottomEastTexAtlas;
+        destination.bottomWestTexAtlas = source.bottomWestTexAtlas;
+        destination.bottomNorthTexAtlas = source.bottomNorthTexAtlas;
+        destination.bottomSouthTexAtlas = source.bottomSouthTexAtlas;
+        destination.ceilTexRot = source.ceilTexRot;
+        destination.floorTexRot = source.floorTexRot;
+    }
+
 	public boolean isFlat() {
 		if(slopeNW == slopeNE && slopeNW == slopeSE && slopeNW == slopeSW) return true;
 		return false;
 	}
-	
+
 	public FloatTuple getCeilingPair(TileEdges dir, Tesselator.TuplePool pool) {
 		if(dir == TileEdges.South) {
 			return pool.get(getNECeilHeight(), getNWCeilHeight());
@@ -635,11 +678,11 @@ public class Tile implements Serializable {
 		else if(dir == TileEdges.West) return TileEdges.East;
 		return null;
 	}
-	
+
 	public boolean collidesWithAngles(float startX, float startY, float x, float y, Vector3 collision, int tileX, int tileY, Collision hitLoc)
 	{
 		Plane checkPlane = null;
-		
+
 		if(tileSpaceType == TileSpaceType.OPEN_SE) {
 			checkPlane = PLANE_SE;
 		}
@@ -653,19 +696,19 @@ public class Tile implements Serializable {
 		if(tileSpaceType == TileSpaceType.OPEN_NW) {
 			checkPlane = PLANE_NW;
 		}
-		
+
 		if(checkPlane != null)
 		{
 			float flooredX = (float) (x - Math.floor(x));
 			float flooredY = (float) (y - Math.floor(y));
-			
+
 			Vector3 point = tempVector1.set(flooredX, flooredY, 0);
-			
+
 			if(checkPlane.testPoint(point) == PlaneSide.Back) {
 				if(hitLoc != null) hitLoc.setHitNormal(checkPlane.normal);
 				return true;
 			}
-			
+
 			// check corners
 			if((tileSpaceType == TileSpaceType.OPEN_SE || tileSpaceType == TileSpaceType.OPEN_NE)) {
 				if((tileSpaceType == TileSpaceType.OPEN_SE && startX > tileY) || (tileSpaceType == TileSpaceType.OPEN_NE && startY < tileY))
@@ -677,7 +720,7 @@ public class Tile implements Serializable {
 				{
 					if(startY - 0.5f < tileY - 1 + collision.y) return true;
 				}
-			
+
 				if((tileSpaceType == TileSpaceType.OPEN_NE && startX > tileX))
 				{
 					if(startY - 0.5f > tileY - collision.y) return true;
@@ -688,26 +731,26 @@ public class Tile implements Serializable {
 				{
 					if(startX - 0.5f > tileX - collision.x) return true;
 				}
-				
+
 				if((tileSpaceType == TileSpaceType.OPEN_NW && startX < tileX))
 				{
 					if(startY - 0.5f > tileY - collision.y) return true;
 				}
-				
+
 				if((tileSpaceType == TileSpaceType.OPEN_SW && startX < tileX))
 				{
 					if(startY - 0.5f < tileY - 1 + collision.y) return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean pointBehindAngle(float x, float y)
 	{
 		Plane checkPlane = null;
-		
+
 		if(tileSpaceType == TileSpaceType.OPEN_SE) {
 			checkPlane = PLANE_SE;
 		}
@@ -721,29 +764,29 @@ public class Tile implements Serializable {
 		if(tileSpaceType == TileSpaceType.OPEN_NW) {
 			checkPlane = PLANE_NW;
 		}
-		
+
 		if(checkPlane != null)
 		{
 			float flooredX = (float) (x - Math.floor(x));
 			float flooredY = (float) (y - Math.floor(y));
-			
+
 			Vector3 point = tempVector2.set(flooredX, flooredY, 0);
-			
+
 			if(checkPlane.testPoint(point) == PlaneSide.Back) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean checkAngledWallCollision(float startX, float startY, float x, float y, int tileX, int tileY, Entity e)
 	{
 		Plane checkPlane = null;
-		
+
 		float backToX = x - startX;
 		float backToY = y - startY;
-		
+
 		if(tileSpaceType == TileSpaceType.OPEN_SE) {
 			checkPlane = PLANE_SE;
 		}
@@ -757,12 +800,12 @@ public class Tile implements Serializable {
 		if(tileSpaceType == TileSpaceType.OPEN_NW) {
 			checkPlane = PLANE_NW;
 		}
-		
+
 		boolean hitSide = false;
 		boolean hitCorner = false;
-		
+
 		float wallOffset = 0.01f;
-		
+
 		// check solid bits (East and West)
 		if(tileSpaceType == TileSpaceType.OPEN_NW || tileSpaceType == TileSpaceType.OPEN_SW)
 		{
@@ -780,7 +823,7 @@ public class Tile implements Serializable {
 				hitSide = true;
 			}
 		}
-		
+
 		// check solid bets (North and South)
 		if(tileSpaceType == TileSpaceType.OPEN_NW || tileSpaceType == TileSpaceType.OPEN_NE)
 		{
@@ -799,9 +842,9 @@ public class Tile implements Serializable {
 			}
 		}
 		if(hitSide) return true;
-		
+
 		if((tileSpaceType == TileSpaceType.OPEN_SE || tileSpaceType == TileSpaceType.OPEN_NE)) {
-			
+
 			if((tileSpaceType == TileSpaceType.OPEN_SE && e.y > tileY) || (tileSpaceType == TileSpaceType.OPEN_NE && e.y < tileY))
 			{
 				if(startX - 0.5f < tileX - 1 + e.collision.x) {
@@ -817,7 +860,7 @@ public class Tile implements Serializable {
 					hitCorner = true;
 				}
 			}
-		
+
 			if((tileSpaceType == TileSpaceType.OPEN_NE && e.x > tileX))
 			{
 				if(startY - 0.5f > tileY - e.collision.y) {
@@ -834,7 +877,7 @@ public class Tile implements Serializable {
 					hitCorner = true;
 				}
 			}
-			
+
 			if((tileSpaceType == TileSpaceType.OPEN_NW && e.x < tileX))
 			{
 				if(startY - 0.5f > tileY - e.collision.y) {
@@ -842,7 +885,7 @@ public class Tile implements Serializable {
 					hitCorner = true;
 				}
 			}
-			
+
 			if((tileSpaceType == TileSpaceType.OPEN_SW && e.x < tileX))
 			{
 				if(startY - 0.5f < tileY - 1 + e.collision.y) {
@@ -855,56 +898,56 @@ public class Tile implements Serializable {
 			return false;
 		}
 		if(hitCorner) return true;
-		
+
 		if(checkPlane != null)
 		{
 			float flooredX = (float) (x - Math.floor(x));
 			float flooredY = (float) (y - Math.floor(y));
-			
+
 			Vector3 point = tempVector1.set(flooredX, flooredY, 0);
-			
+
 			if(checkPlane.testPoint(point) == PlaneSide.Back)
 			{
 				Vector3 onPlane = ProjectPointOnPlane(point, checkPlane);
-				
+
 				float angleOffset = 0.0001f;
-				
+
 				if(tileSpaceType == TileSpaceType.OPEN_SE) {
 					onPlane.x += angleOffset;
 					onPlane.y += angleOffset;
-					
+
 					e.x = tileX - backToX + onPlane.x + 1f;
 					e.y = tileY - backToY + onPlane.y + 1f;
 				}
 				else if(tileSpaceType == TileSpaceType.OPEN_SW) {
 					onPlane.x -= angleOffset;
 					onPlane.y += angleOffset;
-					
+
 					e.x = tileX - backToX + onPlane.x;
 					e.y = tileY - backToY + onPlane.y;
 				}
 				else if(tileSpaceType == TileSpaceType.OPEN_NE) {
 					onPlane.x += angleOffset;
 					onPlane.y -= angleOffset;
-					
+
 					e.x = tileX - backToX + onPlane.x;
 					e.y = tileY - backToY + onPlane.y;
 				}
 				else if(tileSpaceType == TileSpaceType.OPEN_NW) {
 					onPlane.x -= angleOffset;
 					onPlane.y -= angleOffset;
-					
+
 					e.x = tileX - backToX + onPlane.x + 1f;
 					e.y = tileY - backToY + onPlane.y + 1f;
 				}
-				
+
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public static Vector3 ProjectPointOnPlane(Vector3 point, Plane plane)
 	{
 
@@ -914,26 +957,26 @@ public class Tile implements Serializable {
 
 	  Vector3 pointOnPlane = tempVector1.set(plane.normal).scl(plane.d / plane.normal.len());
 
-	
+
 	  // Vector from some point on the plane to the passed in point.
 
 	  Vector3 testVector = pointOnPlane.add(tempVector2.set(point).scl(-1f));
 
-	 
+
 
 	  // Cos(theta) = A.B / |A||B|
 
 	  float cosTheta = tempVector3.set(testVector).nor().dot(new Vector3(plane.normal).scl(-1f));
-	 
+
 
 	  // using Cos(theta) = Adjacent / Hypotenuse.
 
 	  // We know Hypotenuse = testVector and Adjacent = (projectedPoint - point).
 
 	  //Vector3 projectedPoint = new Vector3(point).add(new Vector3(plane.normal).scl((testVector.len() * cosTheta)).scl(-1f));
-	  
+
 	  Vector3 newTestVec = tempVector4.set(plane.normal).scl(testVector.len() * cosTheta).scl(-1f);
-	  
+
 	  Vector3 projectedPoint = tempVector5.set(point).add(newTestVec);
 
 	  return projectedPoint;
@@ -941,7 +984,7 @@ public class Tile implements Serializable {
 	}
 
 	public boolean isTileEdgeVisible(TileEdges dir, Tile c) {
-		
+
 		// check the direction we're coming from
 		if(c.tileSpaceType == TileSpaceType.OPEN_NW)
 		{
@@ -959,9 +1002,9 @@ public class Tile implements Serializable {
 		{
 			if(dir == TileEdges.West || dir == TileEdges.South) return false;
 		}
-		
+
 		if(IsSolid()) return true;
-		
+
 		// check the direction opening to
 		if(tileSpaceType == TileSpaceType.OPEN_NE)
 		{
@@ -979,10 +1022,10 @@ public class Tile implements Serializable {
 		{
 			if(dir == TileEdges.West || dir == TileEdges.North) return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean isNorthSolid(){
 		return (tileSpaceType==TileSpaceType.SOLID)||(tileSpaceType==TileSpaceType.OPEN_SE)||(tileSpaceType==TileSpaceType.OPEN_SW)||renderSolid||floorAndCeilingAreSameHeight();
 	}
@@ -1083,7 +1126,7 @@ public class Tile implements Serializable {
 		if(materials == null)
 			materials = new TileMaterials();
 
-		TileSurface s = materials.getTopSurface(dir);
+		TileSurface s = materials.getBottomSurface(dir);
 		if(s == null) {
 			s = new TileSurface();
 			materials.setBottomSurface(dir, s);
@@ -1172,28 +1215,28 @@ public class Tile implements Serializable {
             }
         }
 	}
-	
+
 	public void packHeights() {
 		float maxCeilHeight = Math.max(Math.max(Math.max(ceilSlopeNE, ceilSlopeNW), ceilSlopeSE), ceilSlopeSW);
 		float minFloorHeight = Math.min(Math.min(Math.min(slopeNE, slopeNW), slopeSE), slopeSW);
-		
+
 		float ceilMod = maxCeilHeight;
 		float floorMod = minFloorHeight;
-		
+
 		ceilHeight += maxCeilHeight;
 		floorHeight += minFloorHeight;
-		
+
 		ceilSlopeNE -= ceilMod;
 		ceilSlopeNW -= ceilMod;
 		ceilSlopeSE -= ceilMod;
 		ceilSlopeSW -= ceilMod;
-		
+
 		slopeNE -= floorMod;
 		slopeNW -= floorMod;
 		slopeSE -= floorMod;
 		slopeSW -= floorMod;
 	}
-	
+
 	public float getMinOpenHeight() {
 		float min = (ceilSlopeNE + ceilHeight) - (slopeNE + floorHeight);
 		min = Math.min(min, (ceilSlopeNW + ceilHeight) - (slopeNW + floorHeight));
@@ -1201,7 +1244,7 @@ public class Tile implements Serializable {
 		min = Math.min(min, (ceilSlopeSW + ceilHeight) - (slopeSW + floorHeight));
 		return min;
 	}
-	
+
 	public boolean hasRoomFor(float collisionHeight) {
 		return collisionHeight <= getMinOpenHeight();
 	}

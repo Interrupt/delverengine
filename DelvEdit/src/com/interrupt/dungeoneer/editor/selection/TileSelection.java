@@ -1,10 +1,22 @@
 package com.interrupt.dungeoneer.editor.selection;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
+import com.interrupt.dungeoneer.collision.CollisionTriangle;
+import com.interrupt.dungeoneer.editor.ControlPoint;
+import com.interrupt.dungeoneer.editor.ControlPointVertex;
 import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.EditorApplication;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.gfx.WorldChunk;
+import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.tiles.Tile;
+import com.interrupt.helpers.FloatTuple;
+import com.interrupt.helpers.TileEdges;
+import com.interrupt.managers.ShaderManager;
 
 import java.util.Iterator;
 
@@ -17,6 +29,15 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
 
     public int startX;
     public int startY;
+
+    public boolean boundsUseTileHeights = false;
+
+    // Used for drawing the floors and ceilings of this selection
+    public WorldChunk floorWorldChunk;
+    public WorldChunk ceilWorldChunk;
+
+    public TriangleSpatialHash floorCollisionTriangles = new TriangleSpatialHash(1);
+    public TriangleSpatialHash ceilCollisionTriangles = new TriangleSpatialHash(1);
 
     /** A collection of tiles that are adjacent to the selection. */
     public Iterable<AdjacentTileSelectionInfo> adjacent;
@@ -73,6 +94,20 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         };
     }
 
+    public Array<Vector3> getVertexLocations() {
+        return getVertexLocations(1, 1);
+    }
+
+    public Array<Vector3> getVertexLocations(int expandX, int expandY) {
+        Array<Vector3> result = new Array<>();
+        for(int ix = x; ix < x + width + expandX; ix++) {
+            for(int iy = y; iy < y + height + expandY; iy++) {
+                result.add(new Vector3(ix, iy, 0));
+            }
+        }
+        return result;
+    }
+
     public static TileSelection Rect(int x, int y, int width, int height) {
         TileSelection tileSelection = new TileSelection();
 
@@ -126,6 +161,18 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
 
     private final BoundingBox bounds = new BoundingBox();
     public BoundingBox getBounds() {
+        // Always recalculate by default
+        return getBounds(true);
+    }
+
+    public BoundingBox getBounds(boolean recalculate) {
+        // Only update the bounds when asked
+        if(!recalculate) {
+            // Reset bounds, to update the internal size.
+            bounds.set(bounds.min, bounds.max);
+            return bounds;
+        }
+
         TileSelectionInfo first = null;
 
         for (TileSelectionInfo info : this) {
@@ -145,13 +192,26 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         }
 
         // Clamp tile selection bounds to the floor / ceiling heights of the first tile
-        Tile firstTile = first();
-        bounds.min.z = firstTile.floorHeight;
-        bounds.max.z = firstTile.ceilHeight;
+        if(!boundsUseTileHeights) {
+            Tile firstTile = first();
+            bounds.min.z = firstTile.floorHeight;
+            bounds.max.z = firstTile.ceilHeight;
+        }
 
         // Reset bounds, to update the internal size.
         bounds.set(bounds.min, bounds.max);
 
+        return bounds;
+    }
+
+    public BoundingBox getBounds(FloatTuple floorPoints, FloatTuple ceilPoints) {
+        getBounds();
+
+        bounds.max.z = ceilPoints.max();
+        bounds.min.z = floorPoints.min();
+
+        // Reset bounds, to update the internal size.
+        bounds.set(bounds.min, bounds.max);
         return bounds;
     }
 
@@ -161,5 +221,76 @@ public class TileSelection implements Iterable<TileSelectionInfo>{
         tileBounds.max.set(info.x + 1, info.y + 1, info.tile.ceilHeight);
 
         return tileBounds;
+    }
+
+    // Always make that the lowest corner is the start so that the selection size is positive
+    // this makes it easier to iterate through the list in a for loop
+    public void fixup(float dragDistanceX, float dragDistanceY) {
+        float selectionWidth = 1.5f + Math.abs(dragDistanceX);
+        float selectionHeight = 1.5f + Math.abs(dragDistanceY);
+
+        if(dragDistanceX < -0.5f)
+            x = startX - (int)selectionWidth + 1;
+        else
+            x = startX;
+
+        if(dragDistanceY < -0.5f)
+            y = startY - (int)selectionHeight + 1;
+        else
+            y = startY;
+
+        width = (int)selectionWidth;
+        height = (int)selectionHeight;
+    }
+
+    public TileSelection copy() {
+        TileSelection copy = new TileSelection();
+        copy.x = x;
+        copy.y = y;
+        copy.startX = startX;
+        copy.startY = startY;
+        copy.width = width;
+        copy.height = height;
+        copy.boundsUseTileHeights = boundsUseTileHeights;
+        copy.bounds.set(bounds);
+        return copy;
+    }
+
+    public void initWorldChunks() {
+        if(floorWorldChunk != null && ceilWorldChunk != null)
+            return;
+
+        floorWorldChunk = new WorldChunk(Editor.app.renderer);
+        floorWorldChunk.setOffset(x, y);
+        floorWorldChunk.setSize(width, height);
+        floorWorldChunk.makeWalls = false;
+        floorWorldChunk.makeUpperWalls = false;
+        floorWorldChunk.makeCeilings = false;
+
+        ceilWorldChunk = new WorldChunk(Editor.app.renderer);
+        ceilWorldChunk.setOffset(x, y);
+        ceilWorldChunk.setSize(width, height);
+        ceilWorldChunk.makeWalls = false;
+        ceilWorldChunk.makeLowerWalls = false;
+        ceilWorldChunk.makeFloors = false;
+
+        // tesselate for the first time
+        refreshWorldChunks();
+    }
+
+    public void refreshWorldChunks() {
+        floorCollisionTriangles.Flush();
+        ceilCollisionTriangles.Flush();
+
+        if(floorWorldChunk != null) {
+            floorWorldChunk.refresh();
+            floorWorldChunk.Tesselate(Editor.app.level, Editor.app.renderer, false);
+            floorWorldChunk.getTesselators().addCollisionTriangles(floorCollisionTriangles);
+        }
+        if(ceilWorldChunk != null) {
+            ceilWorldChunk.refresh();
+            ceilWorldChunk.Tesselate(Editor.app.level, Editor.app.renderer, false);
+            ceilWorldChunk.getTesselators().addCollisionTriangles(ceilCollisionTriangles);
+        }
     }
 }

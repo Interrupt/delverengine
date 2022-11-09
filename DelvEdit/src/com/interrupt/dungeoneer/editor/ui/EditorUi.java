@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -40,6 +41,8 @@ public class EditorUi {
 
     Scene2dMenu rightClickMenu;
     Scene2dMenuBar menuBar;
+
+    ToolMenuBar toolMenuBar;
 
     public Actor showingModal;
 
@@ -304,6 +307,16 @@ public class EditorUi {
 
         mainTable.setZIndex(1000);
         mainTable.add(menuBar);
+        mainTable.row();
+
+        // Manually position the tools bar under the menu bar
+        toolMenuBar = new ToolMenuBar();
+        toolMenuBar.setZIndex(0);
+        toolMenuBar.setX(0);
+        toolMenuBar.padTop(36);
+        toolMenuBar.padLeft(4);
+        toolMenuBar.setY(viewport.getScreenHeight() - menuBar.getHeight());
+        stage.addActor(toolMenuBar);
 
         stage.addListener(new InputListener() {
             @Override
@@ -426,8 +439,10 @@ public class EditorUi {
         viewport.update((int)width, (int)height, true);
 
         menuBar.refresh();
-
         mainTable.pack();
+
+        // Manually position tools bar
+        toolMenuBar.setY(viewport.getScreenHeight() - menuBar.getHeight());
 
         if(entityPropertiesPane != null && propertiesMenu != null) {
             boolean fillsStage = propertiesSize.y > stage.getHeight() - menuBar.getHeight();
@@ -520,11 +535,13 @@ public class EditorUi {
                 }
             } else {
                 Editor.app.setSelected(true);
+
+                Vector3 worldIntersection = Editor.app.getEditorIntersection();
                 showContextMenu(x, y, new EditorRightClickEntitiesMenu(smallSkin,
-                        Editor.app.getIntersection().x,
-                        Editor.app.getIntersection().z,
-                        Editor.app.getIntersection().y,
-                        Editor.app.getLevel()));
+                    worldIntersection.x,
+                    worldIntersection.z,
+                    worldIntersection.y,
+                    Editor.app.getLevel()));
             }
         }
     }

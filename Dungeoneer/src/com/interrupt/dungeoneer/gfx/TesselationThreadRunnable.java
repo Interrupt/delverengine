@@ -26,6 +26,8 @@ public class TesselationThreadRunnable implements Runnable {
     boolean makeFloors = true;
     boolean makeCeilings = true;
     boolean makeWalls = true;
+    boolean makeUpperWalls = true;
+    boolean makeLowerWalls = true;
 
     final Tesselator t = new Tesselator();
     final TesselatorGroups theseTesselators = new TesselatorGroups();
@@ -33,7 +35,7 @@ public class TesselationThreadRunnable implements Runnable {
     @Override
     public void run() {
         theseTesselators.clear();
-        t.Tesselate(level, renderer, wc, wc.xOffset, wc.yOffset, wc.width, wc.height, theseTesselators, makeFloors, makeCeilings, makeWalls, true);
+        t.Tesselate(level, renderer, wc, wc.xOffset, wc.yOffset, wc.width, wc.height, theseTesselators, makeFloors, makeCeilings, makeWalls, makeUpperWalls, makeLowerWalls, true);
 
         if(wc.overworldChunk != null) {
             wc.entities = wc.overworldChunk.static_entities;
