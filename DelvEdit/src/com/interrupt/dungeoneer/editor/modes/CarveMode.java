@@ -188,14 +188,67 @@ public class CarveMode extends EditorMode {
         } else if(Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             doErase();
         } else if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            for(TileSelection selection : pickedTileSelections) {
+            for (TileSelection selection : pickedTileSelections) {
                 tryPickingControlPoint(selection);
             }
 
             // Try starting over and selecting something new if no control point was just set
-            if(state != CarveModeState.SELECTED_CONTROL_POINT)
+            if (state != CarveModeState.SELECTED_CONTROL_POINT)
                 tickStateStart();
+        } else if(Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            doChangeTileWallAngle();
         }
+    }
+
+    private void doChangeTileWallAngle() {
+        if(!canCarve || !canExtrude)
+            return;
+
+        Array<TileSelectionInfo> corners = new Array<>();
+        for(TileSelection selection : pickedTileSelections) {
+            corners.clear();
+            if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                corners.add(new TileSelectionInfo(selection.x, selection.y, null));
+                corners.add(new TileSelectionInfo(selection.x + selection.width - 1, selection.y, null));
+                corners.add(new TileSelectionInfo(selection.x, selection.y + selection.height - 1, null));
+                corners.add(new TileSelectionInfo(selection.x + selection.width - 1, selection.y + selection.height - 1, null));
+            } else {
+                corners.add(new TileSelectionInfo(selection.x + selection.width - 1, selection.y + selection.height - 1, null));
+                corners.add(new TileSelectionInfo(selection.x, selection.y + selection.height - 1, null));
+                corners.add(new TileSelectionInfo(selection.x + selection.width - 1, selection.y, null));
+                corners.add(new TileSelectionInfo(selection.x, selection.y, null));
+            }
+
+            // For the simple case, just cycle between them
+            if(selection.width == 1 && selection.height == 1) {
+                Tile existing = Editor.app.level.getTileOrNull(selection.x, selection.y);
+                int tileSpaceTypeLength = Tile.TileSpaceType.values().length;
+                existing.tileSpaceType = Tile.TileSpaceType.values()[(existing.tileSpaceType.ordinal() + 1) % tileSpaceTypeLength];
+            } else {
+                int firstOrdinal = 1;
+
+                int ordinalIndex = 0;
+                for (TileSelectionInfo info : corners) {
+                    ordinalIndex++;
+                    Tile existing = Editor.app.level.getTileOrNull(info.x, info.y);
+                    if(existing == null)
+                        continue;
+
+                    int thisOrdinal = firstOrdinal + ordinalIndex;
+                    int tileSpaceTypes = Tile.TileSpaceType.values().length;
+                    existing.tileSpaceType = Tile.TileSpaceType.values()[(thisOrdinal) % tileSpaceTypes];
+                    existing.renderSolid = false;
+                }
+            }
+        }
+
+        // Refresh world
+        for(TileSelection selection : pickedTileSelections) {
+            Editor.app.markWorldAsDirty(selection.x, selection.y, selection.width, selection.height);
+        }
+
+        // Save the history for undo
+        Editor.app.history.saveState(Editor.app.level);
     }
 
     public void tickStateSelectedControlPoint() {
