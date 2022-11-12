@@ -1,12 +1,16 @@
 package com.interrupt.dungeoneer.game;
 
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
+import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 
 public class GameData {
     public GameData() { }
 
     /** The Game Mode to be used for the game */
     public GameModeInterface gameMode;
+
+    /** The Pathfinding Interface to use for the game */
+    public PathfindingInterface pathfindingMode;
 
     /** Tutorial level. Shown when starting a new save slot. */
     public Level tutorialLevel = null;
@@ -45,6 +49,9 @@ public class GameData {
         // Merge some properties only if different!
         if(modData.gameMode != null && modData.gameMode != defaultGameData.gameMode) {
             gameMode = modData.gameMode;
+        }
+        if(modData.pathfindingMode != null && modData.pathfindingMode != defaultGameData.pathfindingMode) {
+            pathfindingMode = modData.pathfindingMode;
         }
         if(modData.playerJumpEnabled != defaultGameData.playerJumpEnabled) {
             playerJumpEnabled = modData.playerJumpEnabled;
