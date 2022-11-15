@@ -371,17 +371,22 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 		light.lightColor = com.badlogic.gdx.graphics.Color.WHITE;
 		light.range = 3;
 		baseEntity.add(light);
-		
+
+        Light spotLight = new SpotLight();
+        light.lightColor = com.badlogic.gdx.graphics.Color.WHITE;
+        light.range = 6;
+        baseEntity.add(spotLight);
+
 		Monster monster = new Monster();
 		monster.artType = ArtType.entity;
 		monster.tex = 0;
 		baseEntity.add(monster);
-		
+
 		Sprite s = new Sprite();
 		s.isDynamic = false;
 		s.artType = ArtType.sprite;
 		baseEntity.add(s);
-		
+
 		AnimatedSprite as = new AnimatedSprite();
 		s.isDynamic = false;
 		s.artType = ArtType.sprite;
@@ -390,25 +395,25 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 		SpriteBeam beam = new SpriteBeam();
 		beam.tex = 15;
 		baseEntity.add(beam);
-		
+
 		Door d = new Door(0,0,0);
 		baseEntity.add(d);
 
 		Key k = new Key();
 		k.name = "Key";
 		baseEntity.add(k);
-		
+
 		Model m = new Model("meshes/chair.obj");
 		m.isDynamic = false;
 		baseEntity.add(m);
-		
+
 		Breakable b = new Breakable("meshes/crate.obj", "meshes.png");
 		b.collision.set(0.25f, 0.25f, 0.5f);
 		baseEntity.add(b);
-		
+
 		SpriteDecal decal = new SpriteDecal(0,0,0);
 		baseEntity.add(decal);
-		
+
 		baseEntity.add(new ProjectedDecal());
 		baseEntity.add(new Trigger());
 		baseEntity.add(new ProgressionTrigger());
@@ -430,7 +435,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
         baseEntity.add(new Critter());
 		baseEntity.add(new Fire());
 		baseEntity.add(new Text());
-		
+
 		return baseEntity;
     }
 }

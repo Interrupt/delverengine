@@ -217,7 +217,7 @@ public class Level {
 
 	public transient SpatialHash spatialhash = new SpatialHash(2);
 	public transient SpatialHash staticSpatialhash = new SpatialHash(2);
-	public transient LightSpatialHash lightSpatialHash = new LightSpatialHash(1);
+	public transient LightSpatialHash lightSpatialHash = new LightSpatialHash(2);
 
 	public transient GenTheme genTheme = null;
 
@@ -1706,106 +1706,6 @@ public class Level {
 		}
 	}
 
-	public float calculateLightColorAt(float posx, float posy, float posz, Vector3 normal, Color c)
-	{
-		Color t = calculateLightColorAt(posx, posz, posy, c);
-		if(t == null) return Color.BLACK.toFloatBits();
-		return t.toFloatBits();
-	}
-
-	private static Vector3 t_light_Calc_pos = new Vector3();
-	public Color calculateLightColorAt(float x, float y, float z, Color c)
-	{
-		Vector3 pos = t_light_Calc_pos.set(x,y,z);
-		c.set(ambientColor);
-
-		// light markers
-		for(int i = 0; i < editorMarkers.size; i++) {
-			if(editorMarkers.get(i).type == Markers.torch) {
-				EditorMarker t = editorMarkers.get(i);
-				if(canSee((float)t.x + 0.5f, (float)t.y + 0.5f, pos.x, pos.y) ) {
-					c.add(attenuateLightColor(pos.x,pos.y,0.5f, (float)t.x + 0.5f, (float)t.y + 0.5f, 0.5f, 3f, CachePools.getColor(1f, 0.8f, 0.4f, 1f)));
-				}
-			}
-		}
-
-		// light emitting entities
-		for(int i = 0; i < entities.size; i++)
-		{
-			Entity e = entities.get(i);
-			if(e instanceof Light && e.isActive)
-			{
-				Light t = (Light)e;
-				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
-					if(canSee(t.x, t.y, pos.x, pos.y) ) {
-						if(t.invertLight)
-							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-						else
-							c.add(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-					}
-				}
-			}
-		}
-
-		for(int i = 0; i < non_collidable_entities.size; i++)
-		{
-			Entity e = non_collidable_entities.get(i);
-			if(e instanceof Light && e.isActive)
-			{
-				Light t = (Light)e;
-
-				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
-
-					if(canSee(t.x, t.y, pos.x, pos.y) ) {
-						if(t.invertLight)
-							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-						else
-							c.add(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-					}
-				}
-			}
-		}
-
-		for(int i = 0; i < static_entities.size; i++)
-		{
-			Entity e = static_entities.get(i);
-			if(e instanceof Light && e.isActive)
-			{
-				Light t = (Light)e;
-
-				if(Math.abs(x - t.x) <= t.range && Math.abs(y - t.y) <= t.range) {
-
-					if(canSee(t.x, t.y, pos.x, pos.y) ) {
-						if(t.invertLight)
-							c.sub(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-						else
-							c.add(attenuateLightColor(pos.x,pos.y,pos.z, t.x, t.y, t.z, t.range, t.getColor()));
-					}
-				}
-			}
-		}
-
-		// some tiles should emit light. do that!
-		for(int lx = 0; lx < width; lx++) {
-			for(int ly = 0; ly < height; ly++) {
-				Tile t = getTile(lx,ly);
-				Color lightColor = TileManager.instance.getLightColor(t);
-				if(lightColor != null) {
-					float range = 1.6f;
-					if(Math.abs(x - lx + 0.5f) <= range && Math.abs(y - ly + 0.5f) <= range)
-						c.add(attenuateLightColor(pos.x,pos.y,pos.z, lx + 0.5f, ly + 0.5f, t.floorHeight, range, lightColor));
-				}
-				if(t.skyCeiling()) {
-					float range = 1.6f;
-					if(Math.abs(x - lx + 0.5f) <= range && Math.abs(y - ly + 0.5f) <= range)
-						c.add(attenuateLightColor(pos.x,pos.y,0, lx + 0.5f, ly + 0.5f, 0, range, skyLightColor));
-				}
-			}
-		}
-
-		return c;
-	}
-
 	Color ambientTileLighting = new Color();
 	Color tempLightColor = new Color();
 	public Color getAmbientTileLighting(float x, float y, float z) {
@@ -1899,16 +1799,12 @@ public class Level {
 								c.sub(lightColor);
 							else
 								c.add(lightColor);
-
-							//l.cacheLightColor(x, y, z, lightColor);
 						} else {
-							Color lightColor = attenuateLightColor(x, y, z, l.x, l.y, l.z, l.range, l.getColor()).mul(shadowMul);
+							Color lightColor = l.attenuateLightColor(x,y,z).mul(shadowMul);
 							if (l.invertLight)
 								c.sub(lightColor);
 							else
 								c.add(lightColor);
-
-							//l.cacheLightColor(x, y, z, lightColor);
 						}
 					}
 

@@ -62,6 +62,9 @@
             },
             "Dynamic": {
                 "class": "com.interrupt.dungeoneer.entities.DynamicLight"
+            },
+            "SpotLight": {
+                "class": "com.interrupt.dungeoneer.entities.SpotLight"
             }
         },
         "Meshes": {

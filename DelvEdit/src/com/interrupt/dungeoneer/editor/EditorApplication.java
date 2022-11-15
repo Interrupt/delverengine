@@ -1698,9 +1698,10 @@ public class EditorApplication implements ApplicationListener {
 
 	protected void refreshEntity(Entity theEntity) {
 		if(theEntity instanceof Light && showLights) {
-			markWorldAsDirty((int)theEntity.x, (int)theEntity.y, (int)((Light)theEntity).range + 1);
-			((Light)theEntity).clearCanSee();
-			lightsDirty = true;
+			Light l = (Light)theEntity;
+			markWorldAsDirty((int)l.x, (int)l.y, (int)l.range + 1);
+			l.clearCanSee();
+			level.lightSpatialHash.RefreshLight(l);
 		}
 		else if(theEntity instanceof ProjectedDecal) {
 			((ProjectedDecal)theEntity).refresh();
