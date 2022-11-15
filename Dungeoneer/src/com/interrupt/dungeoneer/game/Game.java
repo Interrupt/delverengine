@@ -136,6 +136,10 @@ public class Game {
         if(gameData.gameMode != null)
             gameMode = gameData.gameMode;
 
+        // Use the given pathfinder
+        if(gameData.pathfindingMode != null)
+            pathfindingManager = gameData.pathfindingMode;
+
 		// Load item data
 		ItemManager im = modManager.loadItemManager(gameData.itemDataFiles);
 		if(im != null) itemManager = im;

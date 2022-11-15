@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
@@ -109,6 +110,7 @@ public class Monster extends Actor implements Directional {
 
 	/** Is monster alerted to player's presence? */
 	public boolean alerted = false;
+    public boolean wasAlerted = false;
 
 	/** Is monster fleeing from the player? */
 	public boolean fleeing = false;
@@ -479,12 +481,14 @@ public class Monster extends Actor implements Directional {
 			if(mp < maxMp) mp++;
 		}
 
-		targetdist = Math.min(Math.abs(targetx - x), Math.abs(targety - y));
+        //targetdist = new Vector2(targetx, targety).sub(x, y).len();
+		targetdist = Math.max(Math.abs(targetx - x), Math.abs(targety - y));
 
+        wasAlerted = alerted;
 		if(alerted && last_targetx == targetx && last_targety == targety && stuckWanderTimer == 0) {
 
 			// are we stuck?
-			if(Math.abs(xa) + Math.abs(ya) < 0.05f)
+			if(Math.abs(xa) + Math.abs(ya) < 0.02f)
 				stuckTime += delta;
 
 			float speedStuckMod = 1.5f / getSpeed();
@@ -555,9 +559,9 @@ public class Monster extends Actor implements Directional {
 		if(alerted && playerdist > 0.7f && chasetarget && stuckWanderTimer <= 0) // When alerted, try to find a path to the player
 		{
 			nextTargetf -= delta;
-			if(nextTargetf < 0 || targetdist < 0.12)
+			if(nextTargetf < 0 || targetdist < 0.2)
 			{
-				if(targetdist < 0.12) {
+				if(targetdist < 0.2) {
 					// not stuck!
 					stuckTime = 0f;
 				}
@@ -737,6 +741,10 @@ public class Monster extends Actor implements Directional {
 				float zDiff = Math.abs((player.z + 0.3f) - (z + 0.3f));
 				if (zDiff < reach || zDiff < attackStartDistance) {
 					attack(player);
+
+                    // Update the target to the player if we are close enough to attack!
+                    targetx = player.x;
+                    targety = player.y;
 				}
 			} else if(playerdist > projectileAttackMinDistance && playerdist < projectileAttackMaxDistance && (projectile != null || rangedAttackAnimation != null)) {
 				rangedAttack(player);

@@ -36,7 +36,6 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredMusic;
 import com.interrupt.dungeoneer.entities.triggers.TriggeredShop;
 import com.interrupt.dungeoneer.game.*;
 import com.interrupt.dungeoneer.game.pathfinding.NodeGraphPathfinding;
-import com.interrupt.dungeoneer.game.pathfinding.PathfindingInterface;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpFrame;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimation;
 import com.interrupt.dungeoneer.gfx.decals.DDecal;
