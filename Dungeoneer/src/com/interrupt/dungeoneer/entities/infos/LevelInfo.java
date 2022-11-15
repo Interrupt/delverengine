@@ -50,7 +50,7 @@ public class LevelInfo extends Entity {
     public static String skyboxTexture;
 
     @EditorProperty
-    public static boolean showSkybox = false;
+    public static boolean showSkybox = true;
 
     /** Comma separated list of mp3 filepaths. */
     @EditorProperty
