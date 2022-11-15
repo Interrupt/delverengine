@@ -49,6 +49,9 @@ public class LevelInfo extends Entity {
     @EditorProperty(type = "FILE_PICKER", params = "")
     public static String skyboxTexture;
 
+    @EditorProperty
+    public static boolean showSkybox = true;
+
     /** Comma separated list of mp3 filepaths. */
     @EditorProperty
     public static String music;
@@ -126,6 +129,19 @@ public class LevelInfo extends Entity {
         level.ambientSound = ambientSound;
         level.ambientSoundVolume = ambientSoundVolume;
 
+        updateSkybox(level);
+
+        level.isDirty = true;
+    }
+
+    private void updateSkybox(Level level) {
+        if(!showSkybox) {
+            // Not supposed to be showing the skybox, so just quit here.
+            level.skybox = null;
+            return;
+        }
+
+        // Ensure there is always a skybox mesh when needed
         if (level.skybox == null) {
             level.skybox = new DrawableMesh();
         }
@@ -133,8 +149,6 @@ public class LevelInfo extends Entity {
         level.skybox.meshFile = skyboxMesh;
         level.skybox.textureFile = skyboxTexture;
         level.skybox.isDirty = true;
-
-        level.isDirty = true;
     }
 
     private boolean levelNeedsUpdated(Level level) {
@@ -159,8 +173,11 @@ public class LevelInfo extends Entity {
         if (skyboxMesh == null || skyboxMesh.isEmpty()) return false;
         if (skyboxTexture == null || skyboxTexture.isEmpty()) return false;
 
+        // Make sure we clear the skybox when asked to
+        if(level.skybox != null && !showSkybox) return true;
+
         // If we get this far and the skybox is null, we need an update
-        if (level.skybox == null) return true;
+        if (level.skybox == null) return showSkybox;
 
 
         // Verify drawable fields are equal
