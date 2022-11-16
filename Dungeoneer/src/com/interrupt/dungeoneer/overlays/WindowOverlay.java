@@ -49,6 +49,7 @@ public abstract class WindowOverlay extends Overlay {
 	protected Array<Actor> buttonOrder = new Array<Actor>();
 	protected ArrayMap<Actor, Label> buttonLabels = new ArrayMap<Actor, Label>();
 
+	public boolean canCancelOverlay = true;
 	public boolean animateBackground = true;
 	public boolean animate = true;
 	protected int align = Align.center;
@@ -76,10 +77,11 @@ public abstract class WindowOverlay extends Overlay {
 		controllerState = Game.gamepadManager.controllerState;
 
 		// Allow all overlays to be exited via the menu cancel button
-		if (Game.gamepadManager.controllerState.menuButtonEvents.contains(ControllerState.MenuButtons.CANCEL, true)) {
+		if (canCancelOverlay && Game.gamepadManager.controllerState.menuButtonEvents.contains(ControllerState.MenuButtons.CANCEL, true)) {
             back();
 			Game.gamepadManager.controllerState.clearEvents();
 			Game.gamepadManager.controllerState.resetState();
+            return;
 		}
 
 		// Translate keyboard directions into gamepad directions
