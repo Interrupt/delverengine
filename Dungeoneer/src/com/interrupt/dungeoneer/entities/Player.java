@@ -960,11 +960,12 @@ public class Player extends Actor {
             Game.instance.input.isPointerTouched(0);
 
 		if(!inOverlay && !isDead && shouldPickupItem) {
+            boolean wasJustTouched = Gdx.input.justTouched() || input.isNewlyTouched;
 			if(Game.hud.dragging != null) {
 				touchingItem = true;
 			}
-			else if(Gdx.input.justTouched() && !attack && input.uiTouchPointer == null && input.lastTouchedPointer != null) {
-				Entity touching = pickEntity(level, Gdx.input.getX(input.lastTouchedPointer), Gdx.input.getY(input.lastTouchedPointer), 0.9f);
+			else if(wasJustTouched && !attack && input.uiTouchPointer == null && input.lastTouchedPointer != null) {
+				Entity touching = pickEntity(level, input.getPointerX(), input.getPointerY(), 0.9f);
 				if(touching != null)
                     input.uiTouchPointer = input.lastTouchedPointer;
 
@@ -988,7 +989,7 @@ public class Player extends Actor {
 		}
 
 		hovering = null;
-		if(!touchingItem && !Game.isMobile && !input.isCursorCatched()) {
+		if(!touchingItem && !Game.isMobile && (!input.isCursorCatched() || input.showingGamepadCursor)) {
 			hovering = pickItem(level, input.getPointerX(), input.getPointerY(), 0.9f);
 		}
 

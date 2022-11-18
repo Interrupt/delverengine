@@ -52,6 +52,8 @@ public class GameInput implements InputProcessor {
 	public Vector2 gamepadCursorPosition = new Vector2();
 	public final int gamepadPointerNum = 0;
 
+    public boolean isNewlyTouched = false;
+
 	public void setGamepadManager(GamepadManager gamepadManager) {
 		this.gamepadManager = gamepadManager;
 		gamepadCursorPosition = new Vector2(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
@@ -75,6 +77,8 @@ public class GameInput implements InputProcessor {
 		//reset mouse scroll wheel
 		newlyMouseScrollUp=false;
 		newlyMouseScrollDown=false;
+
+        isNewlyTouched = false;
 
 		if(!Gdx.input.isCursorCatched()) {
 			ignoreLastMouseLocation = true;
@@ -119,8 +123,8 @@ public class GameInput implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
-
 		lastTouchedPointer = pointer;
+        isNewlyTouched = true;
 
 		if(menuUi != null) menuUi.touchDown(x, y, pointer, button);
 
