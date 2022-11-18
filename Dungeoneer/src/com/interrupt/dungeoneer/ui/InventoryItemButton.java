@@ -40,7 +40,7 @@ public class InventoryItemButton extends Button {
 			@Override
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 // Start a drag, if nobody else has yet
-                if(button == 0 && Hotbar.getItemBeingDragged() == null) {
+                if(button == 0 && Hotbar.getItemAtTouchStart() == null) {
                     thisButton.touchStarted(pointer);
                 }
 	        	return true;
@@ -60,17 +60,21 @@ public class InventoryItemButton extends Button {
                 thisButton.isTouched = false;
                 thisButton.isBeingDragged = false;
                 Hotbar.setItemBeingDragged(null);
+                Hotbar.setItemAtTouchStart(null);
             }
         });
 	}
 
     public void touchStarted(int pointer) {
+        Gdx.app.log("DelverInventory", "Touch Started");
+        Hotbar.setItemAtTouchStart(this);
         isTouched = true;
         cursor = pointer;
     }
 
     public void dragStarted() {
         // Set ourselves as the item being dragged.
+        Gdx.app.log("DelverInventory", "Drag started!");
         Hotbar.setItemBeingDragged(this);
         isBeingDragged = true;
     }
@@ -84,6 +88,7 @@ public class InventoryItemButton extends Button {
         // Reset back to defaults
         isTouched = false;
         isBeingDragged = false;
+        Hotbar.setItemAtTouchStart(null);
     }
 
     public void finishDragAndDrop() {
