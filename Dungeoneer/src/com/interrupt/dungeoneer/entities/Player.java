@@ -1665,7 +1665,7 @@ public class Player extends Actor {
 
 		itm.isActive = true;
 		itm.isDynamic = true;
-		itm.z = z + 0.5f;
+		itm.z = z + 0.35f;
 		itm.xa = projx * (throwPower * 0.3f);
 		itm.ya = projy * (throwPower * 0.3f);
 		itm.za = throwPower * 0.05f;

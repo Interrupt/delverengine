@@ -46,10 +46,7 @@ import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.Tile;
-import com.interrupt.dungeoneer.ui.EquipLoc;
-import com.interrupt.dungeoneer.ui.FontBounds;
-import com.interrupt.dungeoneer.ui.Hotbar;
-import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.managers.ShaderManager;
 import com.interrupt.managers.TileManager;
 import com.noise.PerlinNoise;
@@ -726,8 +723,10 @@ public class GlRenderer {
 			Item hoverItm = Game.hud.getMouseOverItem();
 			if(hoverItm == null) hoverItm = game.player.hovering;
 
-			if(Game.isMobile) {
-				hoverItm = Game.hudManager.quickSlots.dragging;
+            boolean usingGamepadCursor = game.input.getGamepadCursorPosition() != null;
+
+			if(Game.isMobile || usingGamepadCursor) {
+                if(Game.isMobile) hoverItm = Game.hudManager.quickSlots.dragging;
 				if(hoverItm == null) hoverItm = Game.hudManager.backpack.dragging;
 				if(hoverItm == null) hoverItm = Game.hud.dragging;
 			}
@@ -742,7 +741,9 @@ public class GlRenderer {
 				if(Game.isMobile) {
 					this.drawTextOnScreen(hoverItm.GetInfoText(), Gdx.input.getX(uiTouchPointer) - Gdx.graphics.getWidth() / 2 + uiSize * 1.25f, -Gdx.input.getY(uiTouchPointer) + Gdx.graphics.getHeight() / 2, uiSize / 5, Color.WHITE, Color.BLACK);
 				} else {
-					Game.tooltip.show(game.input.getPointerX(uiTouchPointer), -game.input.getPointerY(uiTouchPointer) + Gdx.graphics.getHeight(), hoverItm);
+                    int tooltipX = game.input.getPointerX(uiTouchPointer);
+                    int tooltipY = game.input.getPointerY(uiTouchPointer);
+					Game.tooltip.show(tooltipX, -tooltipY + Gdx.graphics.getHeight(), hoverItm);
 				}
 
 				uiBatch.end();
@@ -1731,16 +1732,22 @@ public class GlRenderer {
 
 			uiBatch.draw(itemTextures.getSprite(equipLoc.bgTex), xPos + xOffset, yPos - yOffset, uiSize, uiSize);
 
-			if(at instanceof ItemStack && !( equipLoc.isDragging.containsKey(equipLoc)) ) {
-				ItemStack stack = (ItemStack)at;
-				drawText(CachePools.toString(stack.count), xPos + xOffset + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-			}
+            // Draw number of charges, unless being dragged
+            InventoryItemButton itemButton = Hotbar.getItemBeingDragged();
+            Item beingDragged = itemButton != null ? itemButton.getItem() : null;
 
-			if(at instanceof Wand && !( equipLoc.isDragging.containsKey(equipLoc))) {
-				Wand wand = (Wand)at;
-				String chargeText = wand.getChargeText();
-				drawText(chargeText, xPos + xOffset + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-			}
+            if(at != beingDragged) {
+                if (at instanceof ItemStack) {
+                    ItemStack stack = (ItemStack) at;
+                    drawText(CachePools.toString(stack.count), xPos + xOffset + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                }
+
+                if (at instanceof Wand) {
+                    Wand wand = (Wand) at;
+                    String chargeText = wand.getChargeText();
+                    drawText(chargeText, xPos + xOffset + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                }
+            }
 
 			uiBatch.end();
 		}
@@ -1787,16 +1794,22 @@ public class GlRenderer {
 
 				uiBatch.draw(itemTextures.getSprite(127), xPos, yPos - yOffset, uiSize, uiSize);
 
-				if(at instanceof ItemStack && !( hotbar.isDragging.containsKey(i + hotbar.invOffset)) ) {
-					ItemStack stack = (ItemStack)at;
-					drawText(CachePools.toString(stack.count), xPos + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-				}
+                // Draw the number of charges, unless we are being dragged
+                InventoryItemButton itemButton = Hotbar.getItemBeingDragged();
 
-				if(at instanceof Wand && !( hotbar.isDragging.containsKey(i + hotbar.invOffset))) {
-					Wand wand = (Wand)at;
-					String chargeText = wand.getChargeText();
-					drawText(chargeText, xPos + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-				}
+                Item beingDragged = itemButton != null ? itemButton.getItem() : null;
+                if(at != beingDragged) {
+                    if (at instanceof ItemStack) {
+                        ItemStack stack = (ItemStack) at;
+                        drawText(CachePools.toString(stack.count), xPos + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                    }
+
+                    if (at instanceof Wand) {
+                        Wand wand = (Wand) at;
+                        String chargeText = wand.getChargeText();
+                        drawText(chargeText, xPos + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                    }
+                }
 			}
 		}
 
