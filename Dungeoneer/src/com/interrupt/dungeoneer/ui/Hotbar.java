@@ -26,6 +26,8 @@ public class Hotbar {
     private static InventoryItemButton itemBeingDragged;
     private static InventoryItemButton itemClickedInitially;
 
+    public Hotbar() { }
+
     public Hotbar(int columns, int rows, int invOffset) {
         this.columns = columns;
         this.rows = rows;
