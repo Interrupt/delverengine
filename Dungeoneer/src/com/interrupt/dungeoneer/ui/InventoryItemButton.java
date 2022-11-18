@@ -149,13 +149,15 @@ public class InventoryItemButton extends Button {
             return;
         }
 
-        // Check if we have been moved far enough to start being dragged
-        boolean hasMovedEnoughX = Math.abs(gameInput.getUiTouchPosition().x
-            - gameInput.getPointerX(0)) > uiSize / 8;
-        boolean hasMovedEnoughY = Math.abs(gameInput.getUiTouchPosition().y
-            - gameInput.getPointerY(0)) > uiSize / 8;
+        float movedAmountX = Math.abs(gameInput.getUiTouchPosition().x  - gameInput.getPointerX(cursor));
+        float movedAmountY = Math.abs(gameInput.getUiTouchPosition().y  - gameInput.getPointerY(cursor));
 
+        // Check if we have been moved far enough to start being dragged
+        boolean hasMovedEnoughX = movedAmountX > uiSize / 8;
+        boolean hasMovedEnoughY = movedAmountY > uiSize / 8;
         boolean hasMovedEnough = hasMovedEnoughX || hasMovedEnoughY;
+
+        //Gdx.app.log("DelverInventory", "Drag amount: " + moveAmountX + "," + moveAmountY);
 
         if(hasMovedEnough) {
             dragStarted();

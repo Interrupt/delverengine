@@ -918,17 +918,21 @@ public class Player extends Actor {
 				}
 
 				input.gamepadCursorPosition.x = Math.min(input.gamepadCursorPosition.x, Gdx.graphics.getWidth());
-				input.gamepadCursorPosition.y = Math.min(input.gamepadCursorPosition.y, Gdx.graphics.getHeight());
+				input.gamepadCursorPosition.y = Math.min(input.gamepadCursorPosition.y, Gdx.graphics.getHeight() - 1);
 				input.gamepadCursorPosition.x = Math.max(input.gamepadCursorPosition.x, 0);
 				input.gamepadCursorPosition.y = Math.max(input.gamepadCursorPosition.y, 0);
 
 				Game.ui.mouseMoved((int)input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int)input.gamepadCursorPosition.y);
 
 				if(controllerState.use) {
-					wasGamepadDragging = true;
-					input.touchDown((int)input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int)input.gamepadCursorPosition.y, input.gamepadPointerNum, 0);
+                    // Kick off a gamepad drag
+                    if(!wasGamepadDragging) {
+                        wasGamepadDragging = true;
+                        input.touchDown((int) input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int) input.gamepadCursorPosition.y, input.gamepadPointerNum, 0);
+                    }
 				}
 				else if(wasGamepadDragging) {
+                    // End a gamepad drag
 					wasGamepadDragging = false;
 					input.touchUp((int)input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int)input.gamepadCursorPosition.y, input.gamepadPointerNum, 0);
 				}
