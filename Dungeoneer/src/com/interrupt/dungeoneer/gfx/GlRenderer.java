@@ -1828,20 +1828,14 @@ public class GlRenderer {
 	}
 
 	protected void drawGamepadCursor() {
-		if(game.input.getGamepadCursorPosition() != null) {
+		if(game.input.getGamepadCursorPosition() != null && Hotbar.getItemBeingDragged() == null) {
 			float uiSize = Game.GetUiSize();
 			Vector2 gamepadCursorPos = game.input.getGamepadCursorPosition();
 
 			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 			uiBatch.begin();
 			uiBatch.enableBlending();
-
-            if(Hotbar.getItemBeingDragged() != null) {
-                uiBatch.setColor(1, 1, 1, 0.5f);
-            } else {
-                uiBatch.setColor(Color.WHITE);
-            }
-
+            uiBatch.setColor(Color.WHITE);
 			uiBatch.draw(itemTextures.getSprite(126), -Gdx.graphics.getWidth() / 2f + gamepadCursorPos.x - uiSize / 2.6f, -Gdx.graphics.getHeight() / 2f + gamepadCursorPos.y - uiSize / 1.25f, uiSize, uiSize);
 			uiBatch.end();
 			Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);

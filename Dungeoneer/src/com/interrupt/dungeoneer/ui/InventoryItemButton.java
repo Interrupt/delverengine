@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -77,6 +78,8 @@ public class InventoryItemButton extends Button {
         Gdx.app.log("DelverInventory", "Drag started!");
         Hotbar.setItemBeingDragged(this);
         isBeingDragged = true;
+
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
     }
 
     public void touchEnded() {
@@ -125,6 +128,7 @@ public class InventoryItemButton extends Button {
         }
 
         Game.RefreshUI();
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 
     @Override
