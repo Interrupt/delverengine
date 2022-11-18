@@ -43,7 +43,7 @@ public class InventoryItemButton extends Button {
 			@Override
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 // Start a drag, if nobody else has yet
-                if(button == 0 && Hotbar.getItemAtTouchStart() == null) {
+                if(button == 0 && Hud.getItemAtTouchStart() == null) {
                     thisButton.touchStarted(pointer);
                 }
 	        	return true;
@@ -63,15 +63,15 @@ public class InventoryItemButton extends Button {
                 // Reset for next time
                 thisButton.isTouched = false;
                 thisButton.isBeingDragged = false;
-                Hotbar.setItemBeingDragged(null);
-                Hotbar.setItemAtTouchStart(null);
+                Hud.setItemBeingDragged(null);
+                Hud.setItemAtTouchStart(null);
             }
         });
 	}
 
     public void touchStarted(int pointer) {
         Gdx.app.log("DelverInventory", "Touch Started");
-        Hotbar.setItemAtTouchStart(this);
+        Hud.setItemAtTouchStart(this);
         isTouched = true;
         cursor = pointer;
     }
@@ -79,7 +79,7 @@ public class InventoryItemButton extends Button {
     public void dragStarted() {
         // Set ourselves as the item being dragged.
         Gdx.app.log("DelverInventory", "Drag started!");
-        Hotbar.setItemBeingDragged(this);
+        Hud.setItemBeingDragged(this);
         isBeingDragged = true;
 
         final float uiSize = Game.GetUiSize();
@@ -102,14 +102,14 @@ public class InventoryItemButton extends Button {
 
     public void touchEnded() {
         if(isBeingDragged) {
-            Hotbar.setItemBeingDragged(null);
+            Hud.setItemBeingDragged(null);
             finishDragAndDrop();
         }
 
         // Reset back to defaults
         isTouched = false;
         isBeingDragged = false;
-        Hotbar.setItemAtTouchStart(null);
+        Hud.setItemAtTouchStart(null);
     }
 
     public void finishDragAndDrop() {

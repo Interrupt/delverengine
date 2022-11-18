@@ -726,7 +726,7 @@ public class GlRenderer {
 			Item hoverItm = null;
 
             // If nothing is being dragged, see what is under the cursor
-            if(Hotbar.getItemBeingDragged() == null) {
+            if(Hud.getItemBeingDragged() == null) {
                 hoverItm = Game.hud.getHoveredInventoryItem();
                 if(hoverItm == null)
                     hoverItm = game.player.hovering;
@@ -734,7 +734,7 @@ public class GlRenderer {
 
             boolean usingGamepadCursor = game.input.getGamepadCursorPosition() != null;
 			if(Game.isMobile || usingGamepadCursor) {
-                InventoryItemButton draggingButton = Hotbar.getItemBeingDragged();
+                InventoryItemButton draggingButton = Hud.getItemBeingDragged();
                 if(draggingButton != null) {
                     hoverItm = draggingButton.getItem();
                 }
@@ -1745,7 +1745,7 @@ public class GlRenderer {
 			uiBatch.draw(itemTextures.getSprite(equipLoc.bgTex), xPos + xOffset, yPos - yOffset, uiSize, uiSize);
 
             // Draw number of charges, unless being dragged
-            InventoryItemButton itemButton = Hotbar.getItemBeingDragged();
+            InventoryItemButton itemButton = Hud.getItemBeingDragged();
             Item beingDragged = itemButton != null ? itemButton.getItem() : null;
 
             if(at != beingDragged) {
@@ -1807,7 +1807,7 @@ public class GlRenderer {
 				uiBatch.draw(itemTextures.getSprite(127), xPos, yPos - yOffset, uiSize, uiSize);
 
                 // Draw the number of charges, unless we are being dragged
-                InventoryItemButton itemButton = Hotbar.getItemBeingDragged();
+                InventoryItemButton itemButton = Hud.getItemBeingDragged();
 
                 Item beingDragged = itemButton != null ? itemButton.getItem() : null;
                 if(at != beingDragged) {
@@ -1840,7 +1840,7 @@ public class GlRenderer {
 	}
 
 	protected void drawGamepadCursor() {
-		if(game.input.getGamepadCursorPosition() != null && Hotbar.getItemBeingDragged() == null) {
+		if(game.input.getGamepadCursorPosition() != null && Hud.getItemBeingDragged() == null) {
 			float uiSize = Game.GetUiSize();
 			Vector2 gamepadCursorPos = game.input.getGamepadCursorPosition();
 

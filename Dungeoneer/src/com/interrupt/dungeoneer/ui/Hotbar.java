@@ -23,9 +23,6 @@ public class Hotbar {
     private Integer mouseOverSlot = null;
     private Integer lastUiTouchPointer = null;
 
-    private static InventoryItemButton itemBeingDragged;
-    private static InventoryItemButton itemClickedInitially;
-
     public Hotbar() { }
 
     public Hotbar(int columns, int rows, int invOffset) {
@@ -93,7 +90,7 @@ public class Hotbar {
                         int xPos = (int) (uiSize * x + Gdx.graphics.getWidth() / 2.0 - uiSize * (columns / 2.0));
 
                         // Put the items not being dragged in the grid
-                        if(getItemBeingDragged() != hb) {
+                        if(Hud.getItemBeingDragged() != hb) {
                             hb.setY(yPos);
                             hb.setX(xPos);
                         }
@@ -167,7 +164,7 @@ public class Hotbar {
                     hb.setHeight(uiSize);
 
                     // Snap items not being dragged to the grid
-                    if(getItemBeingDragged() != hb) {
+                    if(Hud.getItemBeingDragged() != hb) {
                         hb.setX(xPos);
                         hb.setY(yPos);
                     }
@@ -178,38 +175,5 @@ public class Hotbar {
 
     public Integer getMouseOverSlot() {
         return mouseOverSlot;
-    }
-
-    public static InventoryItemButton getItemBeingDragged() {
-        return itemBeingDragged;
-    }
-
-    public static void setItemBeingDragged(InventoryItemButton itemButton) {
-        itemBeingDragged = itemButton;
-
-        if(itemButton == null) {
-            Game.dragging = null;
-            return;
-        }
-
-        if(itemBeingDragged.inventorySlot != null) {
-            Game.dragging = Game.instance.player.inventory.get(itemBeingDragged.inventorySlot);
-            return;
-        }
-        if(itemButton.equipLoc != null) {
-            Game.dragging = Game.instance.player.equippedItems.get(itemButton.equipLoc.equipLoc);
-            return;
-        }
-        if(itemButton.itemFromWorld != null) {
-            Game.dragging = itemButton.itemFromWorld;
-        }
-    }
-
-    public static InventoryItemButton getItemAtTouchStart() {
-        return itemClickedInitially;
-    }
-
-    public static void setItemAtTouchStart(InventoryItemButton clickStartItem) {
-        itemClickedInitially = clickStartItem;
     }
 }

@@ -38,6 +38,10 @@ public class Hud {
 	public ArrayMap<String,EquipLoc> equipLocations = new ArrayMap<String,EquipLoc>();
 	public enum DragAndDropResult { equip, drop, invalid, ignore };
 
+    // Item Button being dragged
+    private static InventoryItemButton itemBeingDragged;
+    private static InventoryItemButton itemClickedInitially;
+
 	public void init(TextureRegion itemTextures[])
 	{
 		this.itemTextures = itemTextures;
@@ -180,4 +184,37 @@ public class Hud {
     }
 
 	public boolean isAttackPressed() { return false; }
+
+    public static InventoryItemButton getItemBeingDragged() {
+        return itemBeingDragged;
+    }
+
+    public static void setItemBeingDragged(InventoryItemButton itemButton) {
+        itemBeingDragged = itemButton;
+
+        if(itemButton == null) {
+            Game.dragging = null;
+            return;
+        }
+
+        if(itemBeingDragged.inventorySlot != null) {
+            Game.dragging = Game.instance.player.inventory.get(itemBeingDragged.inventorySlot);
+            return;
+        }
+        if(itemButton.equipLoc != null) {
+            Game.dragging = Game.instance.player.equippedItems.get(itemButton.equipLoc.equipLoc);
+            return;
+        }
+        if(itemButton.itemFromWorld != null) {
+            Game.dragging = itemButton.itemFromWorld;
+        }
+    }
+
+    public static InventoryItemButton getItemAtTouchStart() {
+        return itemClickedInitially;
+    }
+
+    public static void setItemAtTouchStart(InventoryItemButton clickStartItem) {
+        itemClickedInitially = clickStartItem;
+    }
 }
