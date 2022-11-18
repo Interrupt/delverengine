@@ -25,15 +25,13 @@ public class EquipLoc {
 
 	protected TextureRegion itemTextures[];
 	public final HashMap<String, InventoryItemButton> itemButtons = new HashMap<>();
-	private String mouseOverSlot = null;
+    private boolean isHovered = false;
 
 	public float yOffset = 0;
 	public float xOffset = 0;
 	public int bgTex = 127;
 
 	public boolean visible = false;
-
-	public Item dragging = null;
 
 	public Integer lastUiTouchPointer = null;
 
@@ -58,10 +56,7 @@ public class EquipLoc {
 		}
 
 		lastUiTouchPointer = null;
-
 		itemButtons.clear();
-		//wasPressedLast.clear();
-		//isDragging.clear();
 
 		if(Game.ui == null || !visible) return;
 
@@ -117,8 +112,7 @@ public class EquipLoc {
 		final float uiSize = Game.GetUiSize();
 		final float xCursorPos = input.getPointerX(uiTouchPointer) - Gdx.graphics.getWidth() / 2.0f;
 		final float yCursorPos = input.getPointerY(uiTouchPointer);
-		mouseOverSlot = null;
-		dragging = null;
+        isHovered = false;
 
 		if(!visible) return;
 
@@ -131,7 +125,7 @@ public class EquipLoc {
 
 			if((Game.isMobile || !input.caughtCursor) && xCursorPos > xPosD && xCursorPos <= xPosD + uiSize && yCursorPos <= ((y + 1) * uiSize) + (yOffset * uiSize) && yCursorPos > (y * uiSize) + (yOffset * uiSize))
 			{
-				mouseOverSlot = equipLoc;
+				isHovered = true;
 			}
 		}
 
@@ -154,7 +148,7 @@ public class EquipLoc {
 		}
 	}
 
-	public String getMouseOverSlot() {
-		return mouseOverSlot;
-	}
+    public boolean isHovered() {
+        return isHovered;
+    }
 }

@@ -169,8 +169,10 @@ public class Hud {
 			String equipOverSlot = null;
 			for(EquipLoc loc : equipLocations.values())
 			{
-				equipOverSlot = loc.getMouseOverSlot();
-				if(equipOverSlot != null) break;
+                if(loc.isHovered()) {
+                    equipOverSlot = loc.equipLoc;
+                    break;
+                }
 			}
 
 			if(Game.hudManager.quickSlots.getMouseOverSlot() != null) {
@@ -263,9 +265,8 @@ public class Hud {
 		Integer hotbarOver = Game.hudManager.quickSlots.getMouseOverSlot();
 		if(hotbarOver != null) return Game.instance.player.inventory.get(hotbarOver + Game.hudManager.quickSlots.invOffset);
 
-		for(EquipLoc loc : equipLocations.values())
-		{
-			if(loc.getMouseOverSlot() != null) {
+		for(EquipLoc loc : equipLocations.values()) {
+            if(loc.isHovered()) {
 				return Game.instance.player.equippedItems.get(loc.equipLoc);
 			}
 		}

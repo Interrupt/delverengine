@@ -1714,7 +1714,7 @@ public class GlRenderer {
 			// pick a color for this box
 			uiBatch.enableBlending();
 
-			if((Game.isMobile || !game.input.caughtCursor) && equipLoc.getMouseOverSlot() != null && equipLoc.getMouseOverSlot() == equipLoc.equipLoc)
+			if((Game.isMobile || !game.input.caughtCursor) && equipLoc.isHovered())
 				if(Game.dragging != null && Game.dragging.GetEquipLoc().equals(equipLoc.equipLoc))
 					uiBatch.setColor(INVBOX_CAN_EQUIP_HOVER);
 				else

@@ -1138,10 +1138,11 @@ public class Game {
 		}
 
 		String equipOverSlot = null;
-		for(EquipLoc loc : hud.equipLocations.values())
-		{
-			equipOverSlot = loc.getMouseOverSlot();
-			if(equipOverSlot != null) break;
+		for(EquipLoc loc : hud.equipLocations.values()) {
+            if(loc.isHovered()) {
+                equipOverSlot = loc.equipLoc;
+                break;
+            }
 		}
 
 		if(equipOverSlot != null) {
