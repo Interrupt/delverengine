@@ -21,8 +21,10 @@ public class InventoryItemButton extends Button {
 	public boolean isBeingDragged = false;
     public int cursor;
 
+    // Either dragging an item from an inventory slot, an equip location, or from the world
     public Integer inventorySlot;
-    EquipLoc equipLoc;
+    public EquipLoc equipLoc;
+    public Item itemFromWorld;
 
     GameInput gameInput;
 
@@ -55,7 +57,8 @@ public class InventoryItemButton extends Button {
                 if(thisButton.isBeingDragged)
                     return;
 
-                Game.instance.player.UseInventoryItem(inventorySlot);
+                if(inventorySlot != null)
+                    Game.instance.player.UseInventoryItem(inventorySlot);
 
                 // Reset for next time
                 thisButton.isTouched = false;
@@ -79,7 +82,22 @@ public class InventoryItemButton extends Button {
         Hotbar.setItemBeingDragged(this);
         isBeingDragged = true;
 
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
+        final float uiSize = Game.GetUiSize();
+        setWidth(uiSize);
+        setHeight(uiSize);
+
+        setCursorVisibility(false);
+    }
+
+    public void setCursorVisibility(boolean visible) {
+        if(Game.isMobile || gameInput.showingGamepadCursor)
+            return;
+
+        if(visible) {
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        } else {
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.None);
+        }
     }
 
     public void touchEnded() {
@@ -127,8 +145,13 @@ public class InventoryItemButton extends Button {
             }
         }
 
+        if(itemFromWorld != null)
+            getParent().removeActor(this);
+
         Game.RefreshUI();
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+
+        // Show the cursor again
+        setCursorVisibility(true);
     }
 
     @Override
@@ -150,6 +173,8 @@ public class InventoryItemButton extends Button {
             // If we are being dragged, our position should be the cursor position
             setY(-gameInput.getPointerY(cursor) + Gdx.graphics.getHeight() - uiSize / 2);
             setX(gameInput.getPointerX(cursor) - uiSize / 2);
+            setWidth(uiSize);
+            setHeight(uiSize);
             return;
         }
 
@@ -169,6 +194,10 @@ public class InventoryItemButton extends Button {
     }
 
     public Item getItem() {
+        if(itemFromWorld != null) {
+            return itemFromWorld;
+        }
+
         if(inventorySlot != null) {
             return Game.instance.player.inventory.get(inventorySlot);
         }

@@ -196,9 +196,12 @@ public class Hotbar {
             Game.dragging = Game.instance.player.inventory.get(itemBeingDragged.inventorySlot);
             return;
         }
-
         if(itemButton.equipLoc != null) {
             Game.dragging = Game.instance.player.equippedItems.get(itemButton.equipLoc.equipLoc);
+            return;
+        }
+        if(itemButton.itemFromWorld != null) {
+            Game.dragging = itemButton.itemFromWorld;
         }
     }
 

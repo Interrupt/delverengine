@@ -716,19 +716,30 @@ public class GlRenderer {
 
 		if(!game.gameOver)
 		{
-			if(!Options.instance.hideUI || Game.instance.getShowingMenu()) Game.ui.draw();
+            // Draw the UI
+			if(!Options.instance.hideUI || Game.instance.getShowingMenu())
+                Game.ui.draw();
 
 			float uiSize = Game.GetUiSize();
 
-			Item hoverItm = Game.hud.getMouseOverItem();
-			if(hoverItm == null) hoverItm = game.player.hovering;
+            // Draw any tooltips
+			Item hoverItm = null;
+
+            // If nothing is being dragged, see what is under the cursor
+            if(Hotbar.getItemBeingDragged() == null) {
+                hoverItm = Game.hud.getHoveredInventoryItem();
+                if(hoverItm == null)
+                    hoverItm = game.player.hovering;
+            }
 
             boolean usingGamepadCursor = game.input.getGamepadCursorPosition() != null;
-
 			if(Game.isMobile || usingGamepadCursor) {
-                if(Game.isMobile) hoverItm = Game.hudManager.quickSlots.dragging;
-				if(hoverItm == null) hoverItm = Game.hudManager.backpack.dragging;
-				if(hoverItm == null) hoverItm = Game.hud.dragging;
+                InventoryItemButton draggingButton = Hotbar.getItemBeingDragged();
+                if(draggingButton != null) {
+                    hoverItm = draggingButton.getItem();
+                }
+				if(hoverItm == null)
+                    hoverItm = Game.hud.dragging;
 			}
 
 			if(hoverItm != null && (OverlayManager.instance.current() == null || !OverlayManager.instance.shouldPauseGame()))
@@ -743,7 +754,8 @@ public class GlRenderer {
 				} else {
                     int tooltipX = game.input.getPointerX(uiTouchPointer);
                     int tooltipY = game.input.getPointerY(uiTouchPointer);
-					Game.tooltip.show(tooltipX, -tooltipY + Gdx.graphics.getHeight(), hoverItm);
+
+                    Game.tooltip.show(tooltipX, -tooltipY + Gdx.graphics.getHeight(), hoverItm);
 				}
 
 				uiBatch.end();
