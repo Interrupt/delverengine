@@ -45,6 +45,7 @@ public class LevelUpOverlay extends WindowOverlay {
 	public LevelUpOverlay(Player player) {
 		this.player = player;
 		background = null;
+		canCancelOverlay = false; // Don't allow the gamepad to close this!
 	}
 
 	@Override
@@ -139,7 +140,7 @@ public class LevelUpOverlay extends WindowOverlay {
                 Actions.fadeIn(0.2f),
                 Actions.moveTo(xLocation, 0, 0.1f + attributeNum * 0.1f, Interpolation.exp5),
                 Actions.delay(0.01f + (2 - attributeNum) * 0.9f),
-                Actions.addListener(cardClickListener, true)
+                Actions.addListener(cardClickListener, false)
             )
         );
 
