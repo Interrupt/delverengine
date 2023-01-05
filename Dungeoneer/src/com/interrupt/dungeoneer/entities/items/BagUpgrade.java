@@ -48,7 +48,7 @@ public class BagUpgrade extends Item {
                     Game.ShowMessage(upgradeStr, 3f);
                 }
             } else {
-                player.addInventorySlot();
+                player.addBackpackSlot();
 
                 String upgradeStr = StringManager.get("message.bagupgrade");
 

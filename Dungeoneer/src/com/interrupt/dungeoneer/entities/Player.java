@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntArray;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameInput;
@@ -40,7 +39,6 @@ import com.interrupt.dungeoneer.statuseffects.*;
 import com.interrupt.dungeoneer.tiles.ExitTile;
 import com.interrupt.dungeoneer.tiles.Tile;
 import com.interrupt.helpers.PlayerHistory;
-import com.interrupt.managers.HUDManager;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -127,7 +125,7 @@ public class Player extends Actor {
 	public int levelNum = 0;
 
 	/** Player inventory. */
-	public Array<Item> inventory = new Array<Item>();
+	public Array<Item> inventory = new Array<>();
 	public Integer selectedBarItem = null;
 	public Integer heldItem = null;
 
@@ -142,7 +140,15 @@ public class Player extends Actor {
 
 	private Integer tapLength = null;
 
-	public int hotbarSize = 5;
+    private static final int DEFAULT_HOTBAR_SIZE = 5;
+    private static final int MAX_HOTBAR_SIZE = 10;
+	public int hotbarSize = DEFAULT_HOTBAR_SIZE;
+
+    private static final int DEFAULT_BACKPACK_SIZE = 18;
+    private static int MAX_BACKPACK_SIZE = 36;
+    public int backpackSize = DEFAULT_BACKPACK_SIZE;
+
+    @Deprecated
 	public int inventorySize = 23;
 
 	public Item hovering = null;
@@ -267,47 +273,44 @@ public class Player extends Actor {
 		canStepUpOn = false;
 	}
 
-	public boolean canAddInventorySlot() {
-		return inventorySize - hotbarSize < 36;
+	public boolean canAddBackpackSlot() {
+		return backpackSize < MAX_BACKPACK_SIZE;
 	}
 
-	public void addInventorySlot() {
-		if(canAddInventorySlot()) {
-			inventorySize++;
-			inventory.add(null);
-			Game.hudManager.backpack.refresh();
-			Game.hudManager.quickSlots.refresh();
+    public void addBackpackSlot() {
+        if (!canAddBackpackSlot())
+            return;
 
-			if(inventorySize - hotbarSize >= 35) {
-				SteamApi.api.achieve("SQUID3");
-			}
-		}
-	}
+        backpackSize++;
+        inventory.add(null);
+        Game.hudManager.backpack.refresh();
+        Game.hudManager.quickSlots.refresh();
+
+        if (backpackSize >= MAX_BACKPACK_SIZE - 1) {
+            SteamApi.api.achieve("SQUID3");
+        }
+    }
 
 	public boolean canAddHotbarSlot() {
-		return hotbarSize < 10;
+		return hotbarSize < MAX_HOTBAR_SIZE;
 	}
 
-	public void addHotbarSlot() {
-		if(canAddHotbarSlot()) {
-			hotbarSize++;
-			inventorySize++;
-			inventory.add(null);
-			Game.hudManager.backpack.refresh();
-			Game.hudManager.quickSlots.refresh();
+    public void addHotbarSlot() {
+        if (!canAddHotbarSlot())
+            return;
 
-			if(hotbarSize >= 9) {
-				SteamApi.api.achieve("SQUID4");
-			}
-		}
-	}
+        hotbarSize++;
+        inventory.add(null);
+        Game.hudManager.backpack.refresh();
+        Game.hudManager.quickSlots.refresh();
+
+        if (hotbarSize >= MAX_HOTBAR_SIZE - 1) {
+            SteamApi.api.achieve("SQUID4");
+        }
+    }
 
 	public void makeStartingInventory() {
-
-		// initialize the inventory
-		if(inventory.size < inventorySize) {
-			for (int i = 0; i < inventorySize; i++) inventory.add(null);
-		}
+        initInventory();
 
 		if(startingInventory != null && startingInventory.size > 0) {
 			boolean equippedWeapon = false;
@@ -1823,14 +1826,16 @@ public class Player extends Actor {
 		return addToInventory(item, true);
 	}
 
-	public boolean addToInventory(Item item, boolean autoEquip)
-	{
-		if(item instanceof Key) {
+	public boolean addToInventory(Item item, boolean autoEquip) {
+		initInventory();
+
+        if(item instanceof Key) {
 			keys++;
 			return true;
 		}
 
-		if(inventory.contains(item, true)) return false;
+		if (inventoryContains(item))
+            return false;
 
 		// this might be a stack
 		if(item instanceof ItemStack) {
@@ -1846,21 +1851,15 @@ public class Player extends Actor {
 			}
 		}
 
-		if(inventory.size < inventorySize) inventory.add(item);
-		else
-		{
-			// find an open spot
-			boolean foundSpot = false;
-			for(int i = 0; i < inventorySize && !foundSpot; i++)
-			{
-				if(inventory.get(i) == null)
-				{
-					inventory.set(i, item);
-					foundSpot = true;
-				}
-			}
-			if(!foundSpot) return false;
-		}
+        // find an open spot
+        boolean foundSpot = false;
+        for(int i = 0; i < inventory.size && !foundSpot; i++) {
+            if(inventory.get(i) == null) {
+                inventory.set(i, item);
+                foundSpot = true;
+            }
+        }
+        if(!foundSpot) return false;
 
 		if((item instanceof Weapon || item instanceof Decoration || item instanceof FusedBomb) && heldItem == null && autoEquip) {
 			equip(item);
@@ -1872,27 +1871,32 @@ public class Player extends Actor {
 		return true;
 	}
 
-	public boolean addToBackpack(Item item) {
+    public boolean addToBackpack(Item item) {
+        initInventory();
 
-		if(inventory.contains(item, true)) return false;
+        if (inventoryContains(item))
+            return false;
 
-		// Find a spot in the backpack
-		for(int i = hotbarSize; i < inventorySize; i++) {
-			if(inventory.get(i) == null) {
-				inventory.set(i, item);
-				item.onPickup();
-				Game.RefreshUI();
-				return true;
-			}
-		}
+        // Find a spot in the backpack
+        for (int i = hotbarSize; i < getTargetInventorySize(); i++) {
+            if (inventory.get(i) == null) {
+                inventory.set(i, item);
+                item.onPickup();
+                Game.RefreshUI();
 
-		return false;
-	}
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 	public void removeFromInventory(Item item)
 	{
-		if(!inventory.contains(item, true)) return;
-		dequip(item);
+		if (!inventoryContains(item))
+            return;
+
+        dequip(item);
 
 		// save all the equipped items, so we can update their locations when the array changes
 		Item held = GetHeldItem();
@@ -2370,5 +2374,23 @@ public class Player extends Actor {
 			if(itm != null && itm.drawable != null)
 				itm.drawable.refresh();
 		}
+    }
+
+    public int getTargetInventorySize() {
+        return hotbarSize + backpackSize;
+    }
+
+    public void initInventory() {
+        if (null == inventory)
+            inventory = new Array<>();
+
+        if (inventory.size < getTargetInventorySize()) {
+            for (int i = 0; i < getTargetInventorySize(); i++)
+                inventory.add(null);
+        }
+    }
+
+    private boolean inventoryContains(Item item) {
+        return inventory.contains(item, true);
     }
 }

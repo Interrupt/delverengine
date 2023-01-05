@@ -20,24 +20,24 @@ import com.interrupt.helpers.Upgrade;
 import com.interrupt.managers.StringManager;
 
 public class TriggeredShop extends Trigger {
-	
+
 	public enum ShopType { upgrades, scrolls, potions, weapons, wands, armor, persistent }
 
 	@EditorProperty
 	public String messageFile = null;
-	
+
 	@EditorProperty
 	public ShopType shopType = ShopType.upgrades;
-	
+
 	@EditorProperty
 	public String title = StringManager.get("triggers.TriggeredShop.titleText");
-	
+
 	@EditorProperty
 	public String description = StringManager.get("triggers.TriggeredShop.descriptionText");
 
 	@EditorProperty
 	public boolean pausesGame = false;
-	
+
 	public Array<ShopItem> items = null;
 
 	public TriggeredShop() { hidden = true; spriteAtlas = "editor"; tex = 16; isSolid = true; }
@@ -69,7 +69,7 @@ public class TriggeredShop extends Trigger {
 
 		super.init(level, source);
 	}
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 
@@ -95,7 +95,7 @@ public class TriggeredShop extends Trigger {
 		else {
 			showShopOverlay(null);
 		}
-		
+
 		super.doTriggerEvent(value);
 	}
 
@@ -151,19 +151,19 @@ public class TriggeredShop extends Trigger {
 			if(items == null) items = new Array<ShopItem>();
 			else items.clear();
 
-			if(Game.instance.player.canAddInventorySlot()) {
-				BagUpgrade inventoryUpgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.INVENTORY, true);
-				inventoryUpgrade.name = "Soulbound Bag Expansion";
-				inventoryUpgrade.cost = 30;
-				inventoryUpgrade.cost += (Game.instance.progression.inventoryUpgrades * Game.instance.progression.inventoryUpgrades) * (int) (inventoryUpgrade.cost * 0.75f);
-				items.add(new ShopItem(inventoryUpgrade, true,"SQUID2"));
+			if(Game.instance.player.canAddBackpackSlot()) {
+				BagUpgrade upgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.INVENTORY, true);
+				upgrade.name = "Soulbound Bag Expansion";
+				upgrade.cost = 30;
+				upgrade.cost += (Game.instance.progression.inventoryUpgrades * Game.instance.progression.inventoryUpgrades) * (int) (upgrade.cost * 0.75f);
+				items.add(new ShopItem(upgrade, true,"SQUID2"));
 			}
 			if(Game.instance.player.canAddHotbarSlot()) {
-				BagUpgrade hotbarUpgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.HOTBAR, true);
-				hotbarUpgrade.name = "Soulbound Belt Expansion";
-				hotbarUpgrade.cost = 60;
-				hotbarUpgrade.cost += (Game.instance.progression.hotbarUpgrades * Game.instance.progression.hotbarUpgrades) * (int) (hotbarUpgrade.cost);
-				items.add(new ShopItem(hotbarUpgrade, true, "SQUID1"));
+				BagUpgrade upgrade = new BagUpgrade(BagUpgrade.BagUpgradeType.HOTBAR, true);
+				upgrade.name = "Soulbound Belt Expansion";
+				upgrade.cost = 60;
+				upgrade.cost += (Game.instance.progression.hotbarUpgrades * Game.instance.progression.hotbarUpgrades) * (int) (upgrade.cost);
+				items.add(new ShopItem(upgrade, true, "SQUID1"));
 			}
 
 			// No upgrades, sell scrolls instead
