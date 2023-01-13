@@ -104,7 +104,8 @@ public class Tooltip {
 
         // Might need to adjust for the gamepad cursor position
         if(Game.instance.input.getGamepadCursorPosition() != null) {
-            x += Options.instance.uiSize * 75f;
+            x += Options.instance.uiSize * 30f;
+            y += Options.instance.uiSize * -30f;
         }
 
         float fontScale = Options.instance != null ? Options.instance.uiSize : 1f;

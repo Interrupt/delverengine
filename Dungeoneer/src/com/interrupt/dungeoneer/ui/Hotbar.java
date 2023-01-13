@@ -1,26 +1,17 @@
 package com.interrupt.dungeoneer.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.interrupt.dungeoneer.GameInput;
+import com.interrupt.dungeoneer.entities.Item;
+import com.interrupt.dungeoneer.game.Game;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.interrupt.dungeoneer.GameInput;
-import com.interrupt.dungeoneer.GameManager;
-import com.interrupt.dungeoneer.collision.Collidor;
-import com.interrupt.dungeoneer.entities.Item;
-import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
-
 public class Hotbar {
-    public final Map<Integer, MultiTouchButton> itemButtons = new HashMap<>();
-    public final Map<Integer, Boolean> wasPressedLast = new HashMap<>();
-    public final Map<Integer, Boolean> isDragging = new HashMap<>();
+    public final Map<Integer, InventoryItemButton> itemButtons = new HashMap<>();
     public int columns = 6;
     public int rows = 1;
     public int invOffset = 0;
@@ -32,7 +23,7 @@ public class Hotbar {
     private Integer mouseOverSlot = null;
     private Integer lastUiTouchPointer = null;
 
-    public Hotbar() {}
+    public Hotbar() { }
 
     public Hotbar(int columns, int rows, int invOffset) {
         this.columns = columns;
@@ -45,15 +36,15 @@ public class Hotbar {
     }
 
     public void refresh() {
-        for (Entry<Integer, MultiTouchButton> entry : itemButtons.entrySet()) {
+        GameInput input = Game.instance.input;
+
+        for (Entry<Integer, InventoryItemButton> entry : itemButtons.entrySet()) {
             Game.ui.getActors().removeValue(entry.getValue(), true);
         }
 
         lastUiTouchPointer = null;
 
         itemButtons.clear();
-        wasPressedLast.clear();
-        isDragging.clear();
 
         if (Game.ui == null || !visible)
             return;
@@ -73,26 +64,9 @@ public class Hotbar {
                 if (btnLoc < Game.instance.player.inventorySize) {
                     Item itm = Game.instance.player.inventory.get(btnLoc);
                     if (itm != null) {
-                        MultiTouchButton itmButton = new MultiTouchButton(
-                                new TextureRegionDrawable(itm.getInventoryTextureRegion()),
-                                new TextureRegionDrawable(itm.getInventoryTextureRegion()));
+                        InventoryItemButton itmButton = new InventoryItemButton(null, btnLoc, new TextureRegionDrawable(itm.getInventoryTextureRegion()));
                         itemButtons.put(btnLoc, itmButton);
-
                         Game.ui.addActor(itmButton);
-
-                        itmButton.addListener(new ClickListener() {
-                            @Override
-                            public void clicked(InputEvent event, float x, float y) {
-                                if (Game.isMobile || !Game.instance.input.caughtCursor) {
-                                    if (!isDragging.containsKey(btnLoc) || !isDragging.get(btnLoc)) {
-                                        isDragging.clear();
-                                        wasPressedLast.clear();
-                                        mouseOverSlot = null;
-                                        Game.instance.player.UseInventoryItem(btnLoc);
-                                    }
-                                }
-                            }
-                        });
                     }
                 }
             }
@@ -109,13 +83,14 @@ public class Hotbar {
                 final int i = x + (y * columns) + invOffset;
                 if (i < Game.instance.player.inventorySize) {
                     if (itemButtons.containsKey(i)) {
-                        MultiTouchButton hb = itemButtons.get(i);
+                        InventoryItemButton hb = itemButtons.get(i);
 
                         int yPos = (int) (((Gdx.graphics.getHeight() - uiSize) - (int) (y * uiSize))
                                 - (yOffset * uiSize));
                         int xPos = (int) (uiSize * x + Gdx.graphics.getWidth() / 2.0 - uiSize * (columns / 2.0));
 
-                        if (!hb.isDragging) {
+                        // Put the items not being dragged in the grid
+                        if(Hud.getItemBeingDragged() != hb) {
                             hb.setY(yPos);
                             hb.setX(xPos);
                         }
@@ -128,6 +103,30 @@ public class Hotbar {
         }
     }
 
+    public Integer getMouseOverSlot(GameInput input, Integer uiTouchPointer) {
+        final float uiSize = Game.GetUiSize();
+        final float xCursorPos = input.getPointerX(uiTouchPointer) - Gdx.graphics.getWidth() / 2.0f;
+        final float yCursorPos = input.getPointerY(uiTouchPointer);
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < columns; x++) {
+                final int i = x + (y * columns);
+                float xPos = -((uiSize * columns) / 2.0f) + (uiSize * x);
+                float yPos = (y * uiSize) + (yOffset * uiSize);
+
+                if (xCursorPos > xPos && xCursorPos <= xPos + uiSize
+                    && yCursorPos > yPos && yCursorPos <= yPos + uiSize) {
+                    final int btnLoc = x + (y * columns) + invOffset;
+                    if (btnLoc < Game.instance.player.inventorySize) {
+                        return i;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public void tickUI(GameInput input) {
         Integer uiTouchPointer = input.uiTouchPointer;
         if (uiTouchPointer != null)
@@ -138,100 +137,36 @@ public class Hotbar {
             uiTouchPointer = 0;
 
         final float uiSize = Game.GetUiSize();
-        final float xCursorPos = input.getPointerX(uiTouchPointer) - Gdx.graphics.getWidth() / 2.0f;
-        final float yCursorPos = input.getPointerY(uiTouchPointer);
         mouseOverSlot = null;
         dragging = null;
 
         if (!visible)
             return;
 
-        if (Game.isMobile || !Game.instance.input.caughtCursor) {
-            for (int y = 0; y < rows; y++) {
-                for (int x = 0; x < columns; x++) {
-                    final int i = x + (y * columns);
-                    float xPos1 = -((uiSize * columns) / 2.0f) + uiSize * x;
-                    float xPosD = xPos1;
+        // We are able to drag inventory items whenever in mobile mode, or whenever the cursor is showing
+        boolean canDrag = Game.isMobile || !Game.instance.input.caughtCursor;
 
-                    if ((Game.isMobile || !input.caughtCursor) && xCursorPos > xPosD && xCursorPos <= xPosD + uiSize
-                            && yCursorPos <= ((y + 1) * uiSize) + (yOffset * uiSize)
-                            && yCursorPos > (y * uiSize) + (yOffset * uiSize)) {
-                        final int btnLoc = x + (y * columns) + invOffset;
-                        if (btnLoc < Game.instance.player.inventorySize) {
-                            mouseOverSlot = i;
-                        }
-                    }
-                }
-            }
+        // If we can drag, figure out which inventory slot the cursor is over
+        if (canDrag) {
+            mouseOverSlot = getMouseOverSlot(input, uiTouchPointer);
         }
 
+        // Snap the button positions to the grid
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 final int i = x + (y * columns) + invOffset;
                 if (itemButtons.containsKey(i)) {
-                    MultiTouchButton hb = itemButtons.get(i);
-
+                    InventoryItemButton hb = itemButtons.get(i);
                     int yPos = (int) (((Gdx.graphics.getHeight() - uiSize) - (int) (y * uiSize)) - (yOffset * uiSize));
                     int xPos = (int) (uiSize * x + Gdx.graphics.getWidth() / 2.0 - uiSize * (columns / 2.0));
 
                     hb.setWidth(uiSize);
                     hb.setHeight(uiSize);
 
-                    if (hb.isDragging) {
-                        if (Game.isMobile || !Game.instance.input.caughtCursor) {
-                            if ((isDragging.containsKey(i) && isDragging.get(i))
-                                    || Math.abs(input.getUiTouchPosition().x
-                                            - input.getPointerX(uiTouchPointer)) > uiSize / 8
-                                    || Math.abs(input.getUiTouchPosition().y
-                                            - input.getPointerY(uiTouchPointer)) > uiSize / 8) {
-                                hb.setY(-input.getPointerY(uiTouchPointer) + Gdx.graphics.getHeight() - uiSize / 2);
-                                hb.setX(input.getPointerX(uiTouchPointer) - uiSize / 2);
-                                isDragging.put(i, true);
-
-                                dragging = Game.instance.player.inventory.get(i);
-                                Game.dragging = dragging;
-                            }
-                        }
-
-                        if (!isDragging.containsKey(i) || !isDragging.get(i)) {
-                            hb.setX(xPos);
-                            hb.setY(yPos);
-                        }
-                    } else {
-                        // item was dragged, switch inv slot or drop item
-                        if (wasPressedLast.containsKey(i) && wasPressedLast.get(i)) {
-                            DragAndDropResult movedItem = Game
-                                    .DragAndDropInventoryItem(Game.instance.player.inventory.get(i), i, null);
-
-                            if (movedItem == DragAndDropResult.drop) {
-                                Item draggedItem = Game.instance.player.inventory.get(i);
-                                Game.instance.player.dropItemFromInv(i, Game.GetLevel(), 0, 0);
-
-                                Vector3 levelIntersection = new Vector3();
-                                Ray ray = Game.camera.getPickRay(input.getPointerX(uiTouchPointer),
-                                        input.getPointerY(uiTouchPointer));
-                                float distance = 0;
-                                if (Collidor.intersectRayTriangles(ray,
-                                        GameManager.renderer.GetCollisionTrianglesAlong(ray, 20f), levelIntersection,
-                                        null)) {
-                                    distance = ray.origin.sub(levelIntersection).len();
-                                }
-
-                                draggedItem.xa = ray.direction.x * 0.28f * Math.min(1, distance / 6.0f);
-                                draggedItem.za = ray.direction.y * 0.5f * Math.min(1, distance / 6.0f) + 0.04f;
-                                draggedItem.ya = ray.direction.z * 0.28f * Math.min(1, distance / 6.0f);
-                            }
-
-                            Game.RefreshUI();
-                            break;
-                        }
-
-                        hb.setY(yPos);
+                    // Snap items not being dragged to the grid
+                    if(Hud.getItemBeingDragged() != hb) {
                         hb.setX(xPos);
-                    }
-
-                    if (Game.isMobile || !Game.instance.input.caughtCursor) {
-                        wasPressedLast.put(i, hb.isDragging);
+                        hb.setY(yPos);
                     }
                 }
             }

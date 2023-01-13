@@ -46,10 +46,7 @@ import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.partitioning.TriangleSpatialHash;
 import com.interrupt.dungeoneer.statuseffects.StatusEffect;
 import com.interrupt.dungeoneer.tiles.Tile;
-import com.interrupt.dungeoneer.ui.EquipLoc;
-import com.interrupt.dungeoneer.ui.FontBounds;
-import com.interrupt.dungeoneer.ui.Hotbar;
-import com.interrupt.dungeoneer.ui.UiSkin;
+import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.managers.ShaderManager;
 import com.interrupt.managers.TileManager;
 import com.noise.PerlinNoise;
@@ -719,17 +716,30 @@ public class GlRenderer {
 
 		if(!game.gameOver)
 		{
-			if(!Options.instance.hideUI || Game.instance.getShowingMenu()) Game.ui.draw();
+            // Draw the UI
+			if(!Options.instance.hideUI || Game.instance.getShowingMenu())
+                Game.ui.draw();
 
 			float uiSize = Game.GetUiSize();
 
-			Item hoverItm = Game.hud.getMouseOverItem();
-			if(hoverItm == null) hoverItm = game.player.hovering;
+            // Draw any tooltips
+			Item hoverItm = null;
 
-			if(Game.isMobile) {
-				hoverItm = Game.hudManager.quickSlots.dragging;
-				if(hoverItm == null) hoverItm = Game.hudManager.backpack.dragging;
-				if(hoverItm == null) hoverItm = Game.hud.dragging;
+            // If nothing is being dragged, see what is under the cursor
+            if(Hud.getItemBeingDragged() == null) {
+                hoverItm = Game.hud.getHoveredInventoryItem();
+                if(hoverItm == null)
+                    hoverItm = game.player.hovering;
+            }
+
+            boolean usingGamepadCursor = game.input.getGamepadCursorPosition() != null;
+			if(Game.isMobile || usingGamepadCursor) {
+                InventoryItemButton draggingButton = Hud.getItemBeingDragged();
+                if(draggingButton != null) {
+                    hoverItm = draggingButton.getItem();
+                }
+				if(hoverItm == null)
+                    hoverItm = Game.hud.dragging;
 			}
 
 			if(hoverItm != null && (OverlayManager.instance.current() == null || !OverlayManager.instance.shouldPauseGame()))
@@ -742,7 +752,10 @@ public class GlRenderer {
 				if(Game.isMobile) {
 					this.drawTextOnScreen(hoverItm.GetInfoText(), Gdx.input.getX(uiTouchPointer) - Gdx.graphics.getWidth() / 2 + uiSize * 1.25f, -Gdx.input.getY(uiTouchPointer) + Gdx.graphics.getHeight() / 2, uiSize / 5, Color.WHITE, Color.BLACK);
 				} else {
-					Game.tooltip.show(game.input.getPointerX(uiTouchPointer), -game.input.getPointerY(uiTouchPointer) + Gdx.graphics.getHeight(), hoverItm);
+                    int tooltipX = game.input.getPointerX(uiTouchPointer);
+                    int tooltipY = game.input.getPointerY(uiTouchPointer);
+
+                    Game.tooltip.show(tooltipX, -tooltipY + Gdx.graphics.getHeight(), hoverItm);
 				}
 
 				uiBatch.end();
@@ -1713,7 +1726,7 @@ public class GlRenderer {
 			// pick a color for this box
 			uiBatch.enableBlending();
 
-			if((Game.isMobile || !game.input.caughtCursor) && equipLoc.getMouseOverSlot() != null && equipLoc.getMouseOverSlot() == equipLoc.equipLoc)
+			if((Game.isMobile || !game.input.caughtCursor) && equipLoc.isHovered())
 				if(Game.dragging != null && Game.dragging.GetEquipLoc().equals(equipLoc.equipLoc))
 					uiBatch.setColor(INVBOX_CAN_EQUIP_HOVER);
 				else
@@ -1731,16 +1744,22 @@ public class GlRenderer {
 
 			uiBatch.draw(itemTextures.getSprite(equipLoc.bgTex), xPos + xOffset, yPos - yOffset, uiSize, uiSize);
 
-			if(at instanceof ItemStack && !( equipLoc.isDragging.containsKey(equipLoc)) ) {
-				ItemStack stack = (ItemStack)at;
-				drawText(CachePools.toString(stack.count), xPos + xOffset + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-			}
+            // Draw number of charges, unless being dragged
+            InventoryItemButton itemButton = Hud.getItemBeingDragged();
+            Item beingDragged = itemButton != null ? itemButton.getItem() : null;
 
-			if(at instanceof Wand && !( equipLoc.isDragging.containsKey(equipLoc))) {
-				Wand wand = (Wand)at;
-				String chargeText = wand.getChargeText();
-				drawText(chargeText, xPos + xOffset + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-			}
+            if(at != beingDragged) {
+                if (at instanceof ItemStack) {
+                    ItemStack stack = (ItemStack) at;
+                    drawText(CachePools.toString(stack.count), xPos + xOffset + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                }
+
+                if (at instanceof Wand) {
+                    Wand wand = (Wand) at;
+                    String chargeText = wand.getChargeText();
+                    drawText(chargeText, xPos + xOffset + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                }
+            }
 
 			uiBatch.end();
 		}
@@ -1787,16 +1806,22 @@ public class GlRenderer {
 
 				uiBatch.draw(itemTextures.getSprite(127), xPos, yPos - yOffset, uiSize, uiSize);
 
-				if(at instanceof ItemStack && !( hotbar.isDragging.containsKey(i + hotbar.invOffset)) ) {
-					ItemStack stack = (ItemStack)at;
-					drawText(CachePools.toString(stack.count), xPos + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-				}
+                // Draw the number of charges, unless we are being dragged
+                InventoryItemButton itemButton = Hud.getItemBeingDragged();
 
-				if(at instanceof Wand && !( hotbar.isDragging.containsKey(i + hotbar.invOffset))) {
-					Wand wand = (Wand)at;
-					String chargeText = wand.getChargeText();
-					drawText(chargeText, xPos + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
-				}
+                Item beingDragged = itemButton != null ? itemButton.getItem() : null;
+                if(at != beingDragged) {
+                    if (at instanceof ItemStack) {
+                        ItemStack stack = (ItemStack) at;
+                        drawText(CachePools.toString(stack.count), xPos + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                    }
+
+                    if (at instanceof Wand) {
+                        Wand wand = (Wand) at;
+                        String chargeText = wand.getChargeText();
+                        drawText(chargeText, xPos + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                    }
+                }
 			}
 		}
 
@@ -1815,14 +1840,14 @@ public class GlRenderer {
 	}
 
 	protected void drawGamepadCursor() {
-		if(game.input.getGamepadCursorPosition() != null) {
+		if(game.input.getGamepadCursorPosition() != null && Hud.getItemBeingDragged() == null) {
 			float uiSize = Game.GetUiSize();
 			Vector2 gamepadCursorPos = game.input.getGamepadCursorPosition();
 
 			Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 			uiBatch.begin();
-			uiBatch.disableBlending();
-			uiBatch.setColor(Color.WHITE);
+			uiBatch.enableBlending();
+            uiBatch.setColor(Color.WHITE);
 			uiBatch.draw(itemTextures.getSprite(126), -Gdx.graphics.getWidth() / 2f + gamepadCursorPos.x - uiSize / 2.6f, -Gdx.graphics.getHeight() / 2f + gamepadCursorPos.y - uiSize / 1.25f, uiSize, uiSize);
 			uiBatch.end();
 			Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);

@@ -781,6 +781,19 @@ public class Player extends Actor {
 		tick(level, delta);
 	}
 
+    private boolean canShowUseMessages(GameInput input) {
+        if(isDead)
+            return false;
+        if(Game.isMobile)
+            return false;
+        if(OverlayManager.instance.shouldPauseGame())
+            return false;
+        if(input.showingGamepadCursor)
+            return false;
+
+        return true;
+    }
+
 	public void tick(Level level, float delta, GameInput input) {
 
 		boolean isInOverlay = OverlayManager.instance.current() != null && OverlayManager.instance.current().catchInput;
@@ -918,35 +931,45 @@ public class Player extends Actor {
 				}
 
 				input.gamepadCursorPosition.x = Math.min(input.gamepadCursorPosition.x, Gdx.graphics.getWidth());
-				input.gamepadCursorPosition.y = Math.min(input.gamepadCursorPosition.y, Gdx.graphics.getHeight());
+				input.gamepadCursorPosition.y = Math.min(input.gamepadCursorPosition.y, Gdx.graphics.getHeight() - 1);
 				input.gamepadCursorPosition.x = Math.max(input.gamepadCursorPosition.x, 0);
 				input.gamepadCursorPosition.y = Math.max(input.gamepadCursorPosition.y, 0);
 
 				Game.ui.mouseMoved((int)input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int)input.gamepadCursorPosition.y);
 
 				if(controllerState.use) {
-					wasGamepadDragging = true;
-					input.touchDown((int)input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int)input.gamepadCursorPosition.y, input.gamepadPointerNum, 0);
+                    // Kick off a gamepad drag
+                    if(!wasGamepadDragging) {
+                        wasGamepadDragging = true;
+                        input.touchDown((int) input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int) input.gamepadCursorPosition.y, input.gamepadPointerNum, 0);
+                    }
 				}
 				else if(wasGamepadDragging) {
+                    // End a gamepad drag
 					wasGamepadDragging = false;
 					input.touchUp((int)input.gamepadCursorPosition.x, Gdx.graphics.getHeight() - (int)input.gamepadCursorPosition.y, input.gamepadPointerNum, 0);
 				}
 			}
 		}
 
+        // If the cursor is over an item in the game world, pick it up if the cursor is pressed
 		touchingItem = false;
 		boolean inOverlay = OverlayManager.instance.current() != null && OverlayManager.instance.current().catchInput;
 
-		if(!inOverlay && !isDead && ((Game.isMobile || !input.isCursorCatched()) && Gdx.input.isButtonPressed(Input.Buttons.LEFT))) {
+        boolean shouldPickupItem = (!input.isCursorCatched() || input.showingGamepadCursor) &&
+            Game.instance.input.isPointerTouched(0);
+
+		if(!inOverlay && !isDead && shouldPickupItem) {
+            boolean wasJustTouched = Gdx.input.justTouched() || input.isNewlyTouched;
 			if(Game.hud.dragging != null) {
 				touchingItem = true;
 			}
-			else if(Gdx.input.justTouched() && !attack && input.uiTouchPointer == null && input.lastTouchedPointer != null) {
-				Entity touching = pickEntity(level, Gdx.input.getX(input.lastTouchedPointer), Gdx.input.getY(input.lastTouchedPointer), 0.9f);
-				if(touching != null) input.uiTouchPointer = input.lastTouchedPointer;
+			else if(wasJustTouched && !attack && input.uiTouchPointer == null && input.lastTouchedPointer != null) {
+				Entity touching = pickEntity(level, input.getPointerX(), input.getPointerY(), 0.9f);
+				if(touching != null)
+                    input.uiTouchPointer = input.lastTouchedPointer;
 
-				if(touching != null && touching instanceof Item) {
+				if(touching instanceof Item) {
 					touchingItem = true;
 
 					// drag item
@@ -955,10 +978,7 @@ public class Player extends Actor {
 							touching.use(this, 0, 0);
 						}
 						else {
-							touching.isActive = false;
-							Game.hud.dragging = (Item)touching;
-							Game.dragging = Game.hud.dragging;
-							Game.hud.refresh();
+                            Game.hud.startDragFromWorld((Item)touching, input.uiTouchPointer);
 						}
 					}
 				}
@@ -969,11 +989,12 @@ public class Player extends Actor {
 		}
 
 		hovering = null;
-		if(!touchingItem && !Game.isMobile && !input.isCursorCatched()) {
+		if(!touchingItem && !Game.isMobile && (!input.isCursorCatched() || input.showingGamepadCursor)) {
 			hovering = pickItem(level, input.getPointerX(), input.getPointerY(), 0.9f);
 		}
 
-		if(!isDead && (!Game.isMobile || input.isCursorCatched()) && !OverlayManager.instance.shouldPauseGame()) {
+        boolean showUseMessages = canShowUseMessages(input);
+		if(showUseMessages) {
 			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
 			if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
 
@@ -1507,6 +1528,11 @@ public class Player extends Actor {
 			}
 		}
 
+        // Don't try to use items if we are not showing use messages
+        boolean canShowUseMessages = canShowUseMessages(Game.instance.input);
+        if(!canShowUseMessages)
+            return;
+
 		// use the entity / wall hit by the camera ray
 		float usedist = 0.95f;
 		Tile hit = null;
@@ -1665,7 +1691,7 @@ public class Player extends Actor {
 
 		itm.isActive = true;
 		itm.isDynamic = true;
-		itm.z = z + 0.5f;
+		itm.z = z + 0.35f;
 		itm.xa = projx * (throwPower * 0.3f);
 		itm.ya = projy * (throwPower * 0.3f);
 		itm.za = throwPower * 0.05f;

@@ -1,5 +1,6 @@
 package com.interrupt.dungeoneer.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -7,31 +8,46 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 public class MultiTouchButton extends Button {
-	
+
 	public boolean isDragging = false;
 
 	public MultiTouchButton(Drawable region) {
 		super(region);
 	}
-	
+
 	public MultiTouchButton(Drawable regionUp, Drawable regionDown) {
 		super(regionUp, regionDown);
-		
+
 		final MultiTouchButton btn = this;
-		
+
 		addListener(new InputListener() {
 			@Override
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 	        	btn.isDragging = button == 0;
 	        	return true;
 	        }
-	        
+
 	        @Override
 	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 	        	btn.isDragging = false;
 	        }
 		});
 	}
+
+    public void touchStarted() {
+        isDragging = true;
+    }
+
+    public void touchEnded() {
+        isDragging = false;
+
+        // Do drag and drop here!
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+    }
 
 	/*@Override
 	public boolean touchDown (float x, float y, int pointer) {
