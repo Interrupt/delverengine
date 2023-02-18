@@ -1977,7 +1977,7 @@ public class GlRenderer {
 
 	public void drawCenteredText(String text, float sPosY, float size, Color color, Color shadowColor)
 	{
-		if(text == null) return;
+		if(text == null || size == 0f) return;
 
 		font.getData().setScale(size * 0.14f);
         GlyphLayout bounds = FontBounds.GetBounds(font, text);
