@@ -81,6 +81,7 @@ public class Game {
 	public MonsterManager monsterManager;
 	public EntityManager entityManager;
     public static HUDManager hudManager;
+    public ScriptingManager scriptingManager;
 
 	public static boolean isMobile = false;
 	public static boolean isDebugMode = false;
@@ -1419,6 +1420,12 @@ public class Game {
 
 	public static void init() {
 		initGamepadManager();
+
+        // Create the scripting manager
+        if(ScriptingManager.instance == null) {
+            ScriptingManager scriptingManager = new ScriptingManager();
+            ScriptingManager.setSingleton(scriptingManager);
+        }
 
 		// Load the base game data
 		if(gameData == null) {
