@@ -105,12 +105,33 @@ public class ShaderManager {
         }
     }
 
+    public String ProcessShaderData(String shaderProgram) {
+        if(shaderProgram == null) {
+            return null;
+        }
+
+        // Automatically use a lower precision for Android or other GL_ES devices
+        String shaderPrecisionPrefix = "#ifdef GL_ES\nprecision mediump float;\n#endif\n\n";
+        shaderProgram = shaderPrecisionPrefix + shaderProgram;
+
+        // Automatically set the number of dynamic lights
+        String maxDynamicLightsString = Integer.toString(GlRenderer.MAX_DYNAMIC_LIGHTS);
+        shaderProgram = shaderProgram.replace("{{MAX_DYNAMIC_LIGHTS}}", maxDynamicLightsString);
+
+        // All processed, ready to return
+        return shaderProgram;
+    }
+
     // Load a shader, and throw an exception if it doesn't compile properly
     public ShaderProgram loadShader(String prefix, String vertexShaderFilename, String fragmentShaderFilename) {
         String maxDynamicLightsString = Integer.toString(GlRenderer.MAX_DYNAMIC_LIGHTS);
 
         try {
-            ShaderProgram shaderProgram = new ShaderProgram(Game.modManager.findFile("shaders/" + prefix + vertexShaderFilename).readString().replace("{{MAX_DYNAMIC_LIGHTS}}", maxDynamicLightsString), Game.modManager.findFile("shaders/" + prefix + fragmentShaderFilename).readString().replace("{{MAX_DYNAMIC_LIGHTS}}", maxDynamicLightsString));
+            ShaderProgram shaderProgram = new ShaderProgram(
+                ProcessShaderData(Game.modManager.findFile("shaders/" + prefix + vertexShaderFilename).readString()),
+                ProcessShaderData(Game.modManager.findFile("shaders/" + prefix + fragmentShaderFilename).readString())
+            );
+
             if (!shaderProgram.isCompiled()) {
                 Gdx.app.log("DelverShaders", shaderProgram.getLog());
                 throw new GdxRuntimeException("Couldn't compile shader (" + prefix + vertexShaderFilename + "," + prefix + fragmentShaderFilename + "): " + shaderProgram.getLog());
