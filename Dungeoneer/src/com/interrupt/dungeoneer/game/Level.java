@@ -2387,10 +2387,10 @@ public class Level {
 			Entity e = entities.get(i);
 			if(e.type == EntityType.item || e instanceof Stairs)
 			{
-				float xx1 = e.x - e.collision.x - 0.5f - width;
-				float xx2 = e.x + e.collision.x  - 0.5f + width;
-				float yy1 = e.y - e.collision.y  - 0.5f - width;
-				float yy2 = e.y + e.collision.y  - 0.5f + width;
+				float xx1 = e.x - e.collision.x - width;
+				float xx2 = e.x + e.collision.x + width;
+				float yy1 = e.y - e.collision.y - width;
+				float yy2 = e.y + e.collision.y + width;
 
 				// simple AABB test
 				if(x > xx1 && x < xx2 && y > yy1 && y < yy2) return e;
