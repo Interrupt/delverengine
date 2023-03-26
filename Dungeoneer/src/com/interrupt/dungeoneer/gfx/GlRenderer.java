@@ -323,10 +323,8 @@ public class GlRenderer {
 	}
 
 	public static String getShaderPrefix() {
-		if(Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS)
-			return "android/";
-		else
-			return "";
+        // We no longer need to be loading special shaders for mobile, no prefix required
+		return "";
 	}
 
 	public void initShaders() {
