@@ -29,8 +29,6 @@ import com.interrupt.managers.StringManager;
 public class Hud {
 
 	protected TextureRegion itemTextures[];
-	MultiTouchButton inventoryBtn;
-	MultiTouchButton mapBtn;
 
     // Item currently being dragged
 	public Item dragging = null;
@@ -79,78 +77,13 @@ public class Hud {
 		{
 			loc.refresh();
 		}
-
-		if(inventoryBtn != null) Game.ui.getActors().removeValue(inventoryBtn, true);
-		if(mapBtn != null) Game.ui.getActors().removeValue(mapBtn, true);
-
-		inventoryBtn = new MultiTouchButton(new TextureRegionDrawable(itemTextures[57]));
-		inventoryBtn.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				if(Game.isMobile || !Game.instance.input.caughtCursor)
-					Game.instance.toggleInventory();
-			}
-		});
-
-		if(Game.isMobile) {
-			Game.ui.addActor(inventoryBtn);
-		}
-
-		//mapBtn = new MultiTouchButton(itemTextures[61]);
-		mapBtn = new MultiTouchButton(null);
-		mapBtn.addListener(new ClickListener() {
-
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				if(Game.isMobile || !Game.instance.input.caughtCursor)
-					GameManager.renderer.showMap = !GameManager.renderer.showMap;
-			}
-
-		});
-		Game.ui.addActor(mapBtn);
-
-		final float uiSize = Game.GetUiSize();
-		final float inventoryBtnSize = uiSize + (inventoryBtn.isPressed() ? 0f : 0.1f) * uiSize;
-
-		inventoryBtn.setWidth(inventoryBtnSize);
-		inventoryBtn.setHeight(inventoryBtnSize);
-
-		mapBtn.setWidth(uiSize * 1.4f);
-		mapBtn.setHeight(uiSize * 1.4f);
-
-		int yPos = (int) (Gdx.graphics.getHeight() - uiSize);
-		int xPos = (int) (Gdx.graphics.getWidth() - uiSize);
-		inventoryBtn.setY(yPos);
-		inventoryBtn.setX(xPos);
-
-		mapBtn.setX(0);
-		mapBtn.setY((int) (Gdx.graphics.getHeight() - mapBtn.getHeight()));
 	}
 
 	public void tick(GameInput input) {
-
 		for(EquipLoc loc : equipLocations.values())
 		{
 			loc.tickUI(input);
 		}
-
-		float uiSize = Game.GetUiSize();
-		final float inventoryBtnSize = uiSize + (inventoryBtn.isPressed() ? 0.1f : 0f) * uiSize;
-
-        // Inventory Button position and sizing
-		int yPos = (int) (Gdx.graphics.getHeight() - uiSize);
-		int xPos = (int) (Gdx.graphics.getWidth() - uiSize);
-		inventoryBtn.setY(yPos);
-		inventoryBtn.setX(xPos);
-
-        inventoryBtn.setWidth(inventoryBtnSize);
-        inventoryBtn.setHeight(inventoryBtnSize);
-
-        // Map Button position and sizing
-		mapBtn.setX(0);
-		mapBtn.setY((int) (Gdx.graphics.getHeight() - mapBtn.getHeight()));
-
-        mapBtn.setWidth(uiSize * 1.4f);
-        mapBtn.setHeight(uiSize * 1.4f);
 	}
 
 	public Item getHoveredInventoryItem()
