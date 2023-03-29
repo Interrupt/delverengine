@@ -1314,7 +1314,7 @@ public class Game {
 
 		// Refresh the UI
 		Game.RefreshUI();
-		if(input != null) input.setCursorCatched(menuMode == MenuMode.Hidden);
+		if(input != null && !Game.isMobile) input.setCursorCatched(menuMode == MenuMode.Hidden);
 
 		// Hide the map!
 		if(Game.instance.getShowingMenu()) {
@@ -1481,7 +1481,7 @@ public class Game {
 		min = (min / 10f);
 
 		// Increase the base UI scale for Mobile devices
-		if(Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
+		if(isMobile) {
 			min *= 1.2f;
 		}
 
