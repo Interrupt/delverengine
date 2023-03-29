@@ -1475,8 +1475,15 @@ public class Game {
 		float scaleX = Gdx.graphics.getWidth() / 1800f;
 		float scaleY = Gdx.graphics.getHeight() / 1020f;
 		float min = Math.min(scaleX, scaleY);
+
+		// Clamp to some nice integers
 		min = (int) (min * 10f);
 		min = (min / 10f);
+
+		// Increase the base UI scale for Mobile devices
+		if(Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS) {
+			min *= 1.2f;
+		}
 
 		return min;
 	}
