@@ -1766,7 +1766,7 @@ public class GlRenderer {
 	protected void drawInventory(Hotbar hotbar) {
 		if(hotbar == null || !hotbar.visible) return;
 
-		float uiSize = Game.GetUiSize();
+		float uiSize = Game.GetInventoryUiSize();
 		int invLength = hotbar.columns;
 
 		float yOffset = hotbar.yOffset * uiSize;

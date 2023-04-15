@@ -76,7 +76,7 @@ public class Hotbar {
     }
 
     private void initButtons() {
-        final float uiSize = Game.GetUiSize();
+        final float uiSize = Game.GetInventoryUiSize();
 
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
@@ -104,7 +104,7 @@ public class Hotbar {
     }
 
     public Integer getMouseOverSlot(GameInput input, Integer uiTouchPointer) {
-        final float uiSize = Game.GetUiSize();
+        final float uiSize = Game.GetInventoryUiSize();
         final float xCursorPos = input.getPointerX(uiTouchPointer) - Gdx.graphics.getWidth() / 2.0f;
         final float yCursorPos = input.getPointerY(uiTouchPointer);
 
@@ -136,7 +136,7 @@ public class Hotbar {
         else
             uiTouchPointer = 0;
 
-        final float uiSize = Game.GetUiSize();
+        final float uiSize = Game.GetInventoryUiSize();
         mouseOverSlot = null;
         dragging = null;
 

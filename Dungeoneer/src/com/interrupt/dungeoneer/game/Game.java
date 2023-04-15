@@ -1119,6 +1119,16 @@ public class Game {
 		return uiSize * Options.instance.uiSize;
 	}
 
+	public static float GetInventoryUiSize()
+	{
+		float uiSize = GetUiSize();
+		if(!isMobile)
+			return uiSize;
+
+		// Bump up the inventory size for mobile
+		return uiSize * 1.5f;
+	}
+
 	public static void RefreshUI() {
 		hudManager.quickSlots.refresh();
 		hudManager.backpack.refresh();
