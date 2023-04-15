@@ -1122,11 +1122,16 @@ public class Game {
 	public static float GetInventoryUiSize()
 	{
 		float uiSize = GetUiSize();
-		if(!isMobile)
-			return uiSize;
+        if(!isMobile)
+            return uiSize;
 
-		// Bump up the inventory size for mobile
-		return uiSize * 1.5f;
+        // Scale the inventory size up more for mobile
+		return uiSize * GetMobileUiScalingBoost();
+	}
+
+	public static float GetMobileUiScalingBoost() {
+		// Mobile devices have small screens, scale everything up for them!
+		return 1.5f;
 	}
 
 	public static void RefreshUI() {

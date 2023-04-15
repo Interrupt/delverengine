@@ -1708,7 +1708,7 @@ public class GlRenderer {
 		{
 			if(equipLoc == null || !equipLoc.visible) continue;
 
-			float uiSize = Game.GetUiSize();
+			float uiSize = Game.GetInventoryUiSize();
 
 			int x = 0;
 			int y = 0;
