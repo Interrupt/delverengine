@@ -20,6 +20,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.overlays.MapOverlay;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
+import com.interrupt.dungeoneer.overlays.PauseOverlay;
 
 public class MobileHud extends Hud {
 
@@ -27,6 +28,7 @@ public class MobileHud extends Hud {
 	private MultiTouchButton useBtn;
 	private MultiTouchButton inventoryBtn;
 	private MultiTouchButton mapBtn;
+	private MultiTouchButton pauseBtn;
 
 	private boolean wasAttackPressed = false;
 
@@ -76,12 +78,24 @@ public class MobileHud extends Hud {
         mapBtn.setColor(1.0f, 1.0f, 1.0f, 0.0f);
         Game.ui.addActor(mapBtn);
 
+        // Pause Button, to show the pause menu
+        if(pauseBtn != null) Game.ui.getActors().removeValue(pauseBtn, true);
+        pauseBtn = new MultiTouchButton(new TextureRegionDrawable(itemTextures[61]));
+        pauseBtn.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                // Show the pause overlay!
+                OverlayManager.instance.push(new PauseOverlay());
+            }
+        });
+        Game.ui.addActor(pauseBtn);
+
         // Size all of the mobile buttons
 		final float uiSize = Game.GetUiSize() * 2.0f;
 		attackBtn.setSize(uiSize, uiSize);
 		useBtn.setSize(uiSize, uiSize);
         inventoryBtn.setSize(uiSize, uiSize);
         mapBtn.setSize(uiSize, uiSize);
+        pauseBtn.setSize(uiSize, uiSize);
 	}
 
 	public void tick(GameInput input) {
@@ -126,6 +140,15 @@ public class MobileHud extends Hud {
             mapBtn.setSize(btnSize, btnSize);
             mapBtn.setY((int) (Gdx.graphics.getHeight() - (drawSize + gutterSize * 0.5f)));
             mapBtn.setX((int) (Gdx.graphics.getWidth() - (drawSize + gutterSize)));
+        }
+
+        if(pauseBtn != null) {
+            float btnSize = uiSize + uiSize * (pauseBtn.isPressed() ? 0.1f : 0);
+            float drawSize = (btnSize - uiSize) / 2f + uiSize;
+
+            pauseBtn.setSize(btnSize, btnSize);
+            pauseBtn.setY((int) Gdx.graphics.getHeight() - (drawSize + gutterSize) - drawSize);
+            pauseBtn.setX((int) (gutterSize));
         }
 	}
 
