@@ -17,6 +17,7 @@ import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.overlays.MapOverlay;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 
@@ -24,8 +25,8 @@ public class MobileHud extends Hud {
 
 	private MultiTouchButton attackBtn;
 	private MultiTouchButton useBtn;
-    MultiTouchButton inventoryBtn;
-    MultiTouchButton mapBtn;
+	private MultiTouchButton inventoryBtn;
+	private MultiTouchButton mapBtn;
 
 	private boolean wasAttackPressed = false;
 
@@ -71,6 +72,8 @@ public class MobileHud extends Hud {
                 toggleMap();
             }
         });
+        // Hide the button to make the minimap show through behind!
+        mapBtn.setColor(1.0f, 1.0f, 1.0f, 0.0f);
         Game.ui.addActor(mapBtn);
 
         // Size all of the mobile buttons
