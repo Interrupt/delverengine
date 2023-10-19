@@ -162,7 +162,7 @@ public class MainMenuScreen extends BaseScreen {
         buttonTable.add(textButton).spaceBottom(spacing).fillX();
 
         // Quit
-        if (OSUtils.isDesktop() || OSUtils.isMobile()) {
+        if (OSUtils.isDesktop()) {
             buttonTable.row();
             textButton = new TextButton(StringManager.get("screens.MainMenuScreen.quitButton"), skin);
             textButton.addListener(new ClickListener() {
