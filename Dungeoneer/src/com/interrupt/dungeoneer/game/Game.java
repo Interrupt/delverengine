@@ -1119,6 +1119,21 @@ public class Game {
 		return uiSize * Options.instance.uiSize;
 	}
 
+	public static float GetInventoryUiSize()
+	{
+		float uiSize = GetUiSize();
+        if(!isMobile)
+            return uiSize;
+
+        // Scale the inventory size up more for mobile
+		return uiSize * GetMobileUiScalingBoost();
+	}
+
+	public static float GetMobileUiScalingBoost() {
+		// Mobile devices have small screens, scale everything up for them!
+		return 1.5f;
+	}
+
 	public static void RefreshUI() {
 		hudManager.quickSlots.refresh();
 		hudManager.backpack.refresh();
@@ -1314,7 +1329,7 @@ public class Game {
 
 		// Refresh the UI
 		Game.RefreshUI();
-		if(input != null) input.setCursorCatched(menuMode == MenuMode.Hidden);
+		if(input != null && !Game.isMobile) input.setCursorCatched(menuMode == MenuMode.Hidden);
 
 		// Hide the map!
 		if(Game.instance.getShowingMenu()) {
@@ -1475,8 +1490,15 @@ public class Game {
 		float scaleX = Gdx.graphics.getWidth() / 1800f;
 		float scaleY = Gdx.graphics.getHeight() / 1020f;
 		float min = Math.min(scaleX, scaleY);
+
+		// Clamp to some nice integers
 		min = (int) (min * 10f);
 		min = (min / 10f);
+
+		// Increase the base UI scale for Mobile devices
+		if(isMobile) {
+			min *= 1.2f;
+		}
 
 		return min;
 	}

@@ -231,9 +231,6 @@ public class Item extends Entity {
 			}
 		}
 
-		if(Game.isMobile)
-			Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Item.mobileUseMessageText"),GetInfoText()));
-
 		if(!ignorePlayerCollision) {
 			ignorePlayerCollision = true;
 		}

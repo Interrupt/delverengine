@@ -323,10 +323,8 @@ public class GlRenderer {
 	}
 
 	public static String getShaderPrefix() {
-		if(Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS)
-			return "android/";
-		else
-			return "";
+        // We no longer need to be loading special shaders for mobile, no prefix required
+		return "";
 	}
 
 	public void initShaders() {
@@ -1710,7 +1708,7 @@ public class GlRenderer {
 		{
 			if(equipLoc == null || !equipLoc.visible) continue;
 
-			float uiSize = Game.GetUiSize();
+			float uiSize = Game.GetInventoryUiSize();
 
 			int x = 0;
 			int y = 0;
@@ -1768,7 +1766,7 @@ public class GlRenderer {
 	protected void drawInventory(Hotbar hotbar) {
 		if(hotbar == null || !hotbar.visible) return;
 
-		float uiSize = Game.GetUiSize();
+		float uiSize = Game.GetInventoryUiSize();
 		int invLength = hotbar.columns;
 
 		float yOffset = hotbar.yOffset * uiSize;

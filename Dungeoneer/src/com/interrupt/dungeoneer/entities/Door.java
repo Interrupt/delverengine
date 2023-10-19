@@ -408,14 +408,6 @@ public class Door extends Entity {
 			makeDust(animUnit);
 		}
 
-		// show mobile use message
-		if(Game.isMobile)
-		{
-			if(Math.abs(Game.instance.player.x - x) < 1f && Math.abs(Game.instance.player.y - y) < 1f && Math.abs(Game.instance.player.z - z) < 1f) {
-				Game.ShowUseMessage(MessageFormat.format(StringManager.get("entities.Door.mobileUseText"), getUseText()));
-			}
-		}
-
 		this.color = level.GetLightmapAt(x, y, z);
 
 		if(shakeTimer > 0) shakeTimer -= delta;

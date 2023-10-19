@@ -76,15 +76,15 @@ public class ButtonModel extends Model {
 	/** Triggered animation time. */
 	@EditorProperty
 	public float triggerAnimationTime = 20f;
-	
+
 	protected TriggerStatus triggerStatus=TriggerStatus.WAITING;
 	private float triggerTime = 0;
-	
+
 	private float animationTime = 0;
 	private boolean animating = false;
-	
+
 	public ButtonModel() { meshFile = "meshes/obelisk.obj"; isSolid = true; }
-	
+
 	@Override
 	public void init(Level level, Source source) {
 		if(source == Source.LEVEL_START)
@@ -92,34 +92,34 @@ public class ButtonModel extends Model {
 
 		super.init(level, source);
 	}
-	
+
 	@Override
 	public void tick(Level level, float delta) {
-		
+
 		if(animating) {
 			animationTime += delta;
-			
+
 			if(animationTime >= triggerAnimationTime) {
 				animating = false;
 				animationTime = triggerAnimationTime;
 				fire(null);
 			}
 		}
-		
+
 		if (triggerStatus==TriggerStatus.RESETTING){
 			triggerTime -= delta;
-			
+
 			if (triggerTime<=0){
 				triggerStatus=TriggerStatus.WAITING;
 				triggerTime=triggerDelay;
 			}
-			
+
 			if(triggerResetTime > 0)
 				animationTime = (triggerTime / triggerResetTime) * triggerAnimationTime;
 			else
 				animationTime = 0;
 		}
-		
+
 		if (triggerStatus==TriggerStatus.TRIGGERED){
 			triggerTime-=delta;
 			if (triggerTime<=0){
@@ -132,12 +132,6 @@ public class ButtonModel extends Model {
 				}
 			}
 		}
-		
-		if(Game.isMobile && Math.abs(Game.instance.player.x - x) < 0.8f && Math.abs(Game.instance.player.y - y) < 0.8f) {
-			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
-			if(Game.isMobile) useText = StringManager.get("triggers.ButtonModel.useMobileText");
-			Game.ShowUseMessage(MessageFormat.format(StringManager.get("triggers.ButtonModel.useText"), useText, this.useVerb));
-		}
 	}
 
 	@Override
@@ -147,59 +141,59 @@ public class ButtonModel extends Model {
 			animationTime = 0;
 		}
 	}
-	
+
 	public void fire(String value) {
 		// Triggering an already triggered trigger will do nothing
 		if (triggerStatus==TriggerStatus.WAITING){
 			triggerStatus=TriggerStatus.TRIGGERED;
 			triggerTime=triggerDelay;
-			
+
 			// update the value if one was given
 			if(value != null && !value.equals(""))
 				triggerValue=value;
 		}
 	}
-	
+
 	@Override
 	public void onTrigger(Entity instigator, String value) {
 		if(triggerPropogates) {
 			fire(value);
 		}
-		else { 
+		else {
 			// just update the value if one was given
 			if(value != null && !value.equals(""))
 				triggerValue=value;
 		}
 	}
-	
+
 	// triggers can be delayed, fire the actual trigger here
 	public void doTriggerEvent(String value) {
 		Audio.playPositionedSound(triggerSound, new Vector3((float)x,(float)y,(float)z), 0.8f, 11f);
 		Game.instance.level.trigger(this, triggersId, triggerValue);
 		if(message != null && !message.equals("")) Game.ShowMessage(message, messageTime, messageSize);
 	}
-	
+
 	@Override
 	public void updateDrawable() {
 		super.updateDrawable();
-		
+
 		// animate
 		float a = animationTime / triggerAnimationTime;
 		if(a > 1) a = 0;
-		
+
 		drawable.drawOffset.set(
 			Interpolation.fade.apply(0, triggeredTransformation.x, a),
 			Interpolation.fade.apply(0, triggeredTransformation.y, a),
 			Interpolation.fade.apply(0, triggeredTransformation.z, a));
 
 		yOffset = drawable.drawOffset.z;
-		
+
 		if(startRotation != null) {
 			rotation.set(
 					Interpolation.fade.apply(0, triggeredRotation.x, a),
 					Interpolation.fade.apply(0, triggeredRotation.y, a),
 					Interpolation.fade.apply(0, triggeredRotation.z, a));
-			
+
 			rotation.add(startRotation);
 		}
 	}

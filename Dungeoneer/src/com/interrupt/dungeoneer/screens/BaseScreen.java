@@ -227,8 +227,11 @@ public class BaseScreen implements Screen {
 		gl.glClearColor(0, 0, 0, 1);
 
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_STENCIL_BUFFER_BIT);
-		gl.glDisable(GL20.GL_ALPHA);
-		gl.glDisable(GL20.GL_BLEND);
+
+        // Android: these lines cause a GL error 0x500 under Android!
+		//gl.glDisable(GL20.GL_ALPHA);
+		//gl.glDisable(GL20.GL_BLEND);
+
         gl.glEnable(GL20.GL_CULL_FACE);
 
 		GlRenderer.time += delta;

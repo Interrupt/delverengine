@@ -80,7 +80,7 @@ public class EquipLoc {
 
 	public void initButtons()
 	{
-		final float uiSize = Game.GetUiSize();
+		final float uiSize = Game.GetInventoryUiSize();
 
 		int x = 0;
 		int y = 0;
@@ -109,7 +109,7 @@ public class EquipLoc {
 		else if (lastUiTouchPointer != null) uiTouchPointer = lastUiTouchPointer;
 		else uiTouchPointer = 0;
 
-		final float uiSize = Game.GetUiSize();
+		final float uiSize = Game.GetInventoryUiSize();
 		final float xCursorPos = input.getPointerX(uiTouchPointer) - Gdx.graphics.getWidth() / 2.0f;
 		final float yCursorPos = input.getPointerY(uiTouchPointer);
         isHovered = false;

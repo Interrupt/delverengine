@@ -31,6 +31,10 @@ public class InventoryScreen {
         float uiScale = Options.instance != null ? Options.instance.uiSize : 1f;
         uiScale *= Game.getDynamicUiScale();
 
+        // Scale up for mobile
+        if(Game.isMobile)
+            uiScale *= Game.GetMobileUiScalingBoost();
+
         fontScale = 2f;
 
         outerWindow.clear();

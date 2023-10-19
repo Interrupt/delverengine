@@ -784,8 +784,6 @@ public class Player extends Actor {
     private boolean canShowUseMessages(GameInput input) {
         if(isDead)
             return false;
-        if(Game.isMobile)
-            return false;
         if(OverlayManager.instance.shouldPauseGame())
             return false;
         if(input.showingGamepadCursor)
@@ -847,20 +845,6 @@ public class Player extends Actor {
 		if(Game.isMobile && !isInOverlay)
 		{
 			attack = input.isAttackPressed() || Game.hud.isAttackPressed() || controllerState.attack;
-
-			if(!attack && (input.isLeftTouched()) )
-			{
-				if(tapLength == null) tapLength = 0;
-				else tapLength++;
-			}
-			else if(tapLength != null)
-			{
-				if(tapLength < 10) {
-					Use(level, Gdx.input.getX(),Gdx.input.getY());
-				}
-
-				tapLength = null;
-			}
 		}
 
 		lastZ = z;
@@ -956,7 +940,9 @@ public class Player extends Actor {
 		touchingItem = false;
 		boolean inOverlay = OverlayManager.instance.current() != null && OverlayManager.instance.current().catchInput;
 
+        // Only allow picking up items from the world if the inventory is showing
         boolean shouldPickupItem = (!input.isCursorCatched() || input.showingGamepadCursor) &&
+            !Game.isMobile &&
             Game.instance.input.isPointerTouched(0);
 
 		if(!inOverlay && !isDead && shouldPickupItem) {
@@ -1066,7 +1052,7 @@ public class Player extends Actor {
 		if(Game.isMobile && !isDead && !isInOverlay) {
 			float max = 60;
 
-			if(input.isLeftTouched() && !(touchingItem && input.uiTouchPointer == input.leftPointer)) {
+			if(input.isLeftTouched() && !(touchingItem && input.uiTouchPointer == input.leftPointer) && Game.dragging == null) {
 				deltaX = input.getLeftTouchPosition().x - Gdx.input.getX(input.leftPointer);
 				deltaY = input.getLeftTouchPosition().y - Gdx.input.getY(input.leftPointer);
 
@@ -1094,7 +1080,7 @@ public class Player extends Actor {
 				}
 			}
 
-            if((Game.hud.isAttackPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer)) {
+            if((Game.hud.isAttackPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer) && Game.dragging == null) {
 
 				deltaX = 0;
 				deltaY = 0;
@@ -1483,51 +1469,6 @@ public class Player extends Actor {
 
 	public void Use(Level level)
 	{
-		// try simple using first
-		if(Game.isMobile) {
-			Array<Entity> entities = Game.instance.level.entities;
-			for(int i = 0; i < entities.size; i++) {
-				Entity e = entities.get(i);
-				if(e instanceof Item || e instanceof Stairs) {
-					if(Math.abs(x - e.x) < 0.5f && Math.abs(y - e.y) < 0.5f && Math.abs(z - e.z) < 1f) {
-						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
-						return;
-					}
-				}
-				else if(e instanceof Door) {
-					if(Math.abs(x - e.x) < 1f && Math.abs(y - e.y) < 1f && Math.abs(z - e.z) < 1f) {
-						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
-						return;
-					}
-				}
-				else if(e instanceof Trigger) {
-					Trigger trigger = (Trigger)e;
-					if(trigger.triggerType == TriggerType.USE && Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
-						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
-						return;
-					}
-				}
-				else if(e instanceof ButtonModel) {
-					ButtonModel trigger = (ButtonModel)e;
-					if(Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
-						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
-						return;
-					}
-				}
-				else if(e instanceof Actor) {
-					if(Math.abs(x - e.x) < 0.8f && Math.abs(y - e.y) < 0.8f) {
-						e.use(this, 0, 0);
-						Game.ShowMessage("", 1);
-						return;
-					}
-				}
-			}
-		}
-
         // Don't try to use items if we are not showing use messages
         boolean canShowUseMessages = canShowUseMessages(Game.instance.input);
         if(!canShowUseMessages)

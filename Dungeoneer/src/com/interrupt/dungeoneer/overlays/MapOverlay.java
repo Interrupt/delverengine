@@ -116,6 +116,9 @@ public class MapOverlay extends Overlay {
 
             @Override
             public boolean touchUp(int i, int i2, int i3, int i4) {
+                if(Game.isMobile)
+                    OverlayManager.instance.pop();
+
                 return false;
             }
 
