@@ -26,6 +26,7 @@ allprojects {
         kryoVersion = '2.24.0'
         reflectionsVersion = '0.9.12'
         inkVersion = '1.0.0'
+        luaJavaVersion = '3.3.0-SNAPSHOT'
     }
 
     repositories {
@@ -49,6 +50,7 @@ project(":DungeoneerDesktop") {
         //api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion" // Needed for Mac to start on the correct thread
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+        api "party.iroiro.luajava:luajit-platform:$luaJavaVersion:natives-desktop"
     }
 }
 
@@ -67,7 +69,7 @@ project(":DelvEdit") {
     }
 }
 
-project(":DungeoneerAndroid") {
+/*project(":DungeoneerAndroid") {
     apply plugin: "android"
 
     configurations { natives }
@@ -83,7 +85,7 @@ project(":DungeoneerAndroid") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
     }
-}
+}*/
 
 project(":Dungeoneer") {
     apply plugin: "java-library"
@@ -93,5 +95,7 @@ project(":Dungeoneer") {
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.esotericsoftware.kryo:kryo:$kryoVersion"
         api "com.bladecoder.ink:blade-ink:$inkVersion"
+        api "party.iroiro.luajava:luajava:$luaJavaVersion"
+        api "party.iroiro.luajava:luajit:$luaJavaVersion"
     }
 }
