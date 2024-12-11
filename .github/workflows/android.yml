@@ -35,11 +35,11 @@ jobs:
     - name: Bundle Debug Apk
       uses: actions/upload-artifact@v4
       with:
-        name: apks
+        name: debug-apk
         path: DungeoneerAndroid/build/outputs/apk/debug/DungeoneerAndroid-debug.apk
 
     - name: Bundle Release Apk
       uses: actions/upload-artifact@v4
       with:
-        name: apks
+        name: release-apk
         path: DungeoneerAndroid/build/outputs/apk/release/DungeoneerAndroid-release-unsigned.apk
