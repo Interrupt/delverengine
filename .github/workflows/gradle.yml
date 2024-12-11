@@ -35,11 +35,11 @@ jobs:
     - name: Bundle Game Jar
       uses: actions/upload-artifact@v4
       with:
-        name: jars
+        name: game-jar
         path: DungeoneerDesktop/build/libs/game.jar
 
     - name: Bundle Editor Jar
       uses: actions/upload-artifact@v4
       with:
-        name: jars
+        name: editor-jar
         path: DelvEdit/build/libs/editor.jar
