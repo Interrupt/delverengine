@@ -4,7 +4,6 @@ buildscript {
         mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        jcenter()
         google()
     }
     dependencies {
@@ -19,7 +18,7 @@ allprojects {
     version = '1.4.0'
     ext {
         appName = "delver"
-        gdxVersion = '1.11.1-SNAPSHOT'
+        gdxVersion = '1.12.1'
         gdxControllersVersion = '2.2.2'
         jamepadVersion = '2.0.14.2'
         roboVMVersion = '2.3.9'
@@ -73,7 +72,7 @@ project(":DungeoneerAndroid") {
     configurations { natives }
 
     dependencies {
-        implementation("com.badlogicgames.gdx:gdx-backend-android:1.11.0!!")
+        implementation("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
 
         implementation project(":Dungeoneer")
         api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
