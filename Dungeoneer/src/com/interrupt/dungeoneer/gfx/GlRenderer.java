@@ -747,14 +747,10 @@ public class GlRenderer {
 				Integer uiTouchPointer = game.input.uiTouchPointer;
 				if(uiTouchPointer == null) uiTouchPointer = 0;
 
-				if(Game.isMobile) {
-					this.drawTextOnScreen(hoverItm.GetInfoText(), Gdx.input.getX(uiTouchPointer) - Gdx.graphics.getWidth() / 2 + uiSize * 1.25f, -Gdx.input.getY(uiTouchPointer) + Gdx.graphics.getHeight() / 2, uiSize / 5, Color.WHITE, Color.BLACK);
-				} else {
-                    int tooltipX = game.input.getPointerX(uiTouchPointer);
-                    int tooltipY = game.input.getPointerY(uiTouchPointer);
+                int tooltipX = game.input.getPointerX(uiTouchPointer);
+                int tooltipY = game.input.getPointerY(uiTouchPointer);
 
-                    Game.tooltip.show(tooltipX, -tooltipY + Gdx.graphics.getHeight(), hoverItm);
-				}
+                Game.tooltip.show(tooltipX, -tooltipY + Gdx.graphics.getHeight(), hoverItm);
 
 				uiBatch.end();
 			}
