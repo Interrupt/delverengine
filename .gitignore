@@ -12,11 +12,11 @@
 **/.DS_Store
 
 save/
-Dungeoneer/save/
-Dungeoneer/assets/packaged_files.txt
-Dungeoneer/assets/errorlog.txt
-DungeoneerDesktop/save
-DungeoneerAndroid/libs
+core/save/
+assets/packaged_files.txt
+assets/errorlog.txt
+lwjgl3/save
+android/libs
 
 *.iml
 .idea/*
@@ -27,9 +27,9 @@ Manifest.java
 # Gradle ignores
 /local.properties
 .gradle
-Dungeoneer/build
-DungeoneerDesktop/build
-DelvEdit/build
+core/build
+lwjgl3/build
+editor/build
 build/
 **/BuildConfig.java
 

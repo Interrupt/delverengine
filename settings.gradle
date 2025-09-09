@@ -1,1 +1,1 @@
-include 'DungeoneerDesktop', 'DungeoneerAndroid', 'core', 'DelvEdit'
+include 'lwjgl3', 'android', 'core', 'editor'
