@@ -1,7 +1,7 @@
 apply plugin: "java"
 
 sourceCompatibility = 1.8
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = [ "src/main/java" ]
 
 project.ext.mainClassName = "com.interrupt.dungeoneer.DesktopStarter"
 project.ext.assetsDir = new File("../assets")
