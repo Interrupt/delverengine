@@ -10,11 +10,11 @@ task packageFiles {
             "# used to let the game list directories for packaged files\n" +
             "./\n"
 
-    fileTree(dir: "./assets", exclude: "save").visit { FileVisitDetails details ->
+    fileTree(dir: "../assets", exclude: "save").visit { FileVisitDetails details ->
         text += "./" + details.relativePath.toString().replace("\\\\", "/") + "\n"
     }
 
-    def file = file("./assets/packaged_files.txt")
+    def file = file("../assets/packaged_files.txt")
     file.text = text
 }
 

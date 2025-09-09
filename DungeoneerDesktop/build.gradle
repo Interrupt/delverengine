@@ -4,7 +4,7 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.interrupt.dungeoneer.DesktopStarter"
-project.ext.assetsDir = new File("../Dungeoneer/assets")
+project.ext.assetsDir = new File("../assets")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName

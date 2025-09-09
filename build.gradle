@@ -41,7 +41,7 @@ project(":DungeoneerDesktop") {
     apply plugin: "java-library"
 
     dependencies {
-        implementation project(":Dungeoneer")
+        implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
         // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
@@ -55,7 +55,7 @@ project(":DelvEdit") {
     apply plugin: "java-library"
 
     dependencies {
-        implementation project(":Dungeoneer")
+        implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
         // Can't use this next yet due to: https://github.com/libgdx/libgdx/issues/6989
@@ -74,7 +74,7 @@ project(":DungeoneerAndroid") {
     dependencies {
         implementation("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
 
-        implementation project(":Dungeoneer")
+        implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
@@ -84,7 +84,7 @@ project(":DungeoneerAndroid") {
     }
 }
 
-project(":Dungeoneer") {
+project(":core") {
     apply plugin: "java-library"
 
     dependencies {

@@ -1,1 +1,1 @@
-include 'DungeoneerDesktop', 'DungeoneerAndroid', 'Dungeoneer', 'DelvEdit'
+include 'DungeoneerDesktop', 'DungeoneerAndroid', 'core', 'DelvEdit'
