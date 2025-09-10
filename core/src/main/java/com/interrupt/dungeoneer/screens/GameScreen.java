@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
@@ -203,7 +204,7 @@ public class GameScreen implements Screen {
 		if(Game.instance.level.ambientSound != null && !Game.isMobile)
 			Audio.playAmbientSound(Game.instance.level.ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
 
-		if(Game.isMobile) Gdx.input.setCatchBackKey( true );
+		if(Game.isMobile) Gdx.input.setCatchKey(Input.Keys.BACK, true );
 
 		Gdx.app.log("DelverGameScreen", "Finished showing");
 	}
@@ -214,7 +215,7 @@ public class GameScreen implements Screen {
 
 		doPause();
 
-		if(Game.isMobile) Gdx.input.setCatchBackKey( false );
+		if(Game.isMobile) Gdx.input.setCatchKey(Input.Keys.BACK, true );
 		Audio.stopLoopingSounds();
 
 		if(editorLevel != null) GameApplication.editorRunning = false;

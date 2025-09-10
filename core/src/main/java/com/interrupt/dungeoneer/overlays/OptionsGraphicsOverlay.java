@@ -57,7 +57,7 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         Options.loadOptions();
 
         if(Gdx.app.getType() == Application.ApplicationType.Android)
-            Gdx.input.setCatchBackKey(true);
+            Gdx.input.setCatchKey(Input.Keys.BACK, true );
 
         skin = UiSkin.getSkin();
 

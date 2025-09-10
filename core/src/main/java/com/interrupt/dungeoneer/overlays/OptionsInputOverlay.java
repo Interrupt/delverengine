@@ -45,7 +45,7 @@ public class OptionsInputOverlay extends WindowOverlay {
         Options options = Options.instance;
 
         if(Gdx.app.getType() == Application.ApplicationType.Android)
-            Gdx.input.setCatchBackKey(true);
+            Gdx.input.setCatchKey(Input.Keys.BACK, true );
 
         TextButton backBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.backButton"), skin.get(TextButton.TextButtonStyle.class));
         backBtn.setWidth(200);
