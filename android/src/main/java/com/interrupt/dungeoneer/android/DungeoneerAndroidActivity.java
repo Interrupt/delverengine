@@ -10,7 +10,8 @@ public class DungeoneerAndroidActivity extends AndroidApplication {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        initialize(new GameApplication(), config);
+        AndroidApplicationConfiguration configuration = new AndroidApplicationConfiguration();
+        configuration.useImmersiveMode = true; // Recommended, but not required.
+        initialize(new GameApplication(), configuration);
     }
 }

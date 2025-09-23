@@ -49,7 +49,6 @@ meshes/shadows/rectangle.obj
 meshes/shadows/sphere.obj
 meshes/sky.obj
 meshes/sphere.obj
-packaged_files.txt
 particles.png
 save/1/levels/0.bin
 save/1/player.dat
