@@ -285,8 +285,8 @@ public class Game {
 
 	private static String[] getPackagedFiles() {
 		// find packaged files
-		Gdx.app.debug("Delver", "Looking in packaged_files");
-		FileHandle allAssets = getInternal("packaged_files.txt");
+		Gdx.app.debug("Delver", "Looking in assets.txt");
+		FileHandle allAssets = getInternal("assets.txt");
 		if(allAssets != null)  return allAssets.readString().split("\\r?\\n");
 		else return new String[] { };
 	}
