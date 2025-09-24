@@ -15,7 +15,7 @@ save/
 core/save/
 assets/packaged_files.txt
 assets/errorlog.txt
-lwjgl3/save
+desktop/save
 android/libs
 
 *.iml
@@ -28,7 +28,7 @@ Manifest.java
 /local.properties
 .gradle
 core/build
-lwjgl3/build
+desktop/build
 editor/build
 build/
 **/BuildConfig.java

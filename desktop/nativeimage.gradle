@@ -1,5 +1,5 @@
 
-project(":lwjgl3") {
+project(":desktop") {
   apply plugin: "org.graalvm.buildtools.native"
 
   graalvmNative {
@@ -26,7 +26,7 @@ project(":lwjgl3") {
   // This has to run before nativeCompile, so it runs at the start of an unrelated resource-handling command.
   generateResourcesConfigFile.doFirst {
     def assetsFolder = new File("${project.rootDir}/assets/")
-    def lwjgl3 = project(':lwjgl3')
+    def lwjgl3 = project(':desktop')
     def resFolder = new File("${lwjgl3.projectDir}/src/main/resources/META-INF/native-image/${lwjgl3.ext.appName}")
     resFolder.mkdirs()
     def resFile = new File(resFolder, "resource-config.json")

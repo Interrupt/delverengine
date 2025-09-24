@@ -21,7 +21,7 @@ import io.github.fourlastor.construo.Target
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
 mainClassName = 'com.interrupt.dungeoneer.DesktopStarter'
 application.setMainClass(mainClassName)
-eclipse.project.name = appName + '-lwjgl3'
+eclipse.project.name = appName + '-desktop'
 java.sourceCompatibility = 8
 java.targetCompatibility = 8
 if (JavaVersion.current().isJava9Compatible()) {
@@ -176,7 +176,7 @@ distributions {
   }
 }
 
-startScripts.dependsOn(':lwjgl3:jar')
+startScripts.dependsOn(':desktop:jar')
 startScripts.classpath = project.tasks.jar.outputs.files
 
 if(enableGraalNative == 'true') {

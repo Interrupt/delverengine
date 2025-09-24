@@ -27,7 +27,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build desktop
-      run: ./gradlew lwjgl3:dist
+      run: ./gradlew desktop:dist
 
     - name: Build editor
       run: ./gradlew editor:dist
@@ -36,7 +36,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: game-jar
-        path: lwjgl3/build/libs/game.jar
+        path: desktop/build/libs/game.jar
 
     - name: Bundle Editor Jar
       uses: actions/upload-artifact@v4
