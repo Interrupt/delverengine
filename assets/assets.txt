@@ -50,12 +50,6 @@ meshes/shadows/sphere.obj
 meshes/sky.obj
 meshes/sphere.obj
 particles.png
-save/1/levels/0.bin
-save/1/player.dat
-save/editor.txt
-save/game_0.dat
-save/game_1.dat
-save/options.txt
 shaders/animate.frag
 shaders/animate.vert
 shaders/blur.frag
