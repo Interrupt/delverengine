@@ -21,9 +21,6 @@ import com.interrupt.dungeoneer.editor.ui.menu.generator.RoomGeneratorMenuItem;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 public class EditorUi {
     Stage stage;
     Table mainTable;
@@ -43,10 +40,10 @@ public class EditorUi {
 
     public Actor showingModal;
 
-    ActionListener resizeWindowAction;
-    ActionListener pickAction;
-    ActionListener uploadModAction;
-    ActionListener setThemeAction;
+    MenuAction resizeWindowAction;
+    MenuAction pickAction;
+    MenuAction uploadModAction;
+    MenuAction setThemeAction;
 
     private final Vector2 propertiesSize = new Vector2();
 
@@ -71,8 +68,8 @@ public class EditorUi {
         mainTable.setFillParent(true);
         mainTable.align(Align.left | Align.top);
 
-        resizeWindowAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        resizeWindowAction = new MenuAction() {
+            public void invoke() {
                 NewLevelDialog newLevelDialog = new NewLevelDialog(smallSkin) {
                     @Override
                     protected void result(Object object) {
@@ -85,8 +82,8 @@ public class EditorUi {
             }
         };
 
-        setThemeAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        setThemeAction = new MenuAction() {
+            public void invoke() {
                 SetThemeDialog themeDialog = new SetThemeDialog(smallSkin, Editor.app.getLevel()) {
                     @Override
                     protected void result(Object object) {
@@ -99,8 +96,8 @@ public class EditorUi {
         };
 
         // action listener for the editor pick action
-        pickAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        pickAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.doPick();
             }
         };
@@ -138,9 +135,9 @@ public class EditorUi {
                 int recentFilesAdded = 0;
                 for (final String recentFile : Editor.options.recentlyOpenedFiles) {
                     item.addItem(
-                        new MenuItem(recentFile, smallSkin, new ActionListener() {
+                        new MenuItem(recentFile, smallSkin, new MenuAction() {
                             @Override
-                            public void actionPerformed(ActionEvent e) {
+                            public void invoke() {
                                 FileHandle fh = Gdx.files.absolute(recentFile);
                                 Editor.app.file.open(fh);
                             }
@@ -162,9 +159,9 @@ public class EditorUi {
                 }
 
                 item.addSeparator();
-                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, new ActionListener() {
+                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, new MenuAction() {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void invoke() {
                         Editor.options.recentlyOpenedFiles.clear();
                         Editor.options.save();
                     }

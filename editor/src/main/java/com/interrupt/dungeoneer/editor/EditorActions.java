@@ -2,106 +2,104 @@ package com.interrupt.dungeoneer.editor;
 
 import com.badlogic.gdx.Gdx;
 import com.interrupt.dungeoneer.editor.file.SaveAdapter;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.interrupt.dungeoneer.editor.ui.menu.MenuAction;
 
 public class EditorActions {
-    public ActionListener newAction;
-    public ActionListener saveAction;
-    public ActionListener saveAsAction;
-    public ActionListener openAction;
-    public ActionListener exitAction;
-    public ActionListener rotateLeftAction;
-    public ActionListener rotateRightAction;
-    public ActionListener playFromCameraAction;
-    public ActionListener playFromStartAction;
-    public ActionListener carveAction;
-    public ActionListener paintAction;
-    public ActionListener deleteAction;
-    public ActionListener planeHeightAction;
-    public ActionListener vertexHeightAction;
-    public ActionListener vertexToggleAction;
-    public ActionListener undoAction;
-    public ActionListener redoAction;
-    public ActionListener toggleGizmosAction;
-    public ActionListener toggleLightsAction;
-    public ActionListener escapeAction;
-    public ActionListener rotateCeilTexAction;
-    public ActionListener rotateFloorTexAction;
-    public ActionListener rotateWallAngle;
-    public ActionListener copyAction;
-    public ActionListener pasteAction;
-    public ActionListener moveTileNorthAction;
-    public ActionListener moveTileSouthAction;
-    public ActionListener moveTileEastAction;
-    public ActionListener moveTileWestAction;
-    public ActionListener moveTileUpAction;
-    public ActionListener moveTileDownAction;
-    public ActionListener raiseFloorAction;
-    public ActionListener lowerFloorAction;
-    public ActionListener raiseCeilingAction;
-    public ActionListener lowerCeilingAction;
-    public ActionListener paintWallAction;
-    public ActionListener pickWallAction;
-    public ActionListener pickNewWallTexAction;
-    public ActionListener fillTextureAction;
-    public ActionListener xDragMode;
-    public ActionListener yDragMode;
-    public ActionListener zDragMode;
-    public ActionListener rotateMode;
-    public ActionListener turnLeftAction;
-    public ActionListener turnRightAction;
-    public ActionListener flattenFloor;
-    public ActionListener flattenCeiling;
-    public ActionListener toggleSimulation;
-    public ActionListener viewSelectedAction;
+    public MenuAction newAction;
+    public MenuAction saveAction;
+    public MenuAction saveAsAction;
+    public MenuAction openAction;
+    public MenuAction exitAction;
+    public MenuAction rotateLeftAction;
+    public MenuAction rotateRightAction;
+    public MenuAction playFromCameraAction;
+    public MenuAction playFromStartAction;
+    public MenuAction carveAction;
+    public MenuAction paintAction;
+    public MenuAction deleteAction;
+    public MenuAction planeHeightAction;
+    public MenuAction vertexHeightAction;
+    public MenuAction vertexToggleAction;
+    public MenuAction undoAction;
+    public MenuAction redoAction;
+    public MenuAction toggleGizmosAction;
+    public MenuAction toggleLightsAction;
+    public MenuAction escapeAction;
+    public MenuAction rotateCeilTexAction;
+    public MenuAction rotateFloorTexAction;
+    public MenuAction rotateWallAngle;
+    public MenuAction copyAction;
+    public MenuAction pasteAction;
+    public MenuAction moveTileNorthAction;
+    public MenuAction moveTileSouthAction;
+    public MenuAction moveTileEastAction;
+    public MenuAction moveTileWestAction;
+    public MenuAction moveTileUpAction;
+    public MenuAction moveTileDownAction;
+    public MenuAction raiseFloorAction;
+    public MenuAction lowerFloorAction;
+    public MenuAction raiseCeilingAction;
+    public MenuAction lowerCeilingAction;
+    public MenuAction paintWallAction;
+    public MenuAction pickWallAction;
+    public MenuAction pickNewWallTexAction;
+    public MenuAction fillTextureAction;
+    public MenuAction xDragMode;
+    public MenuAction yDragMode;
+    public MenuAction zDragMode;
+    public MenuAction rotateMode;
+    public MenuAction turnLeftAction;
+    public MenuAction turnRightAction;
+    public MenuAction flattenFloor;
+    public MenuAction flattenCeiling;
+    public MenuAction toggleSimulation;
+    public MenuAction viewSelectedAction;
 
     public EditorActions() {
         initActions();
     }
 
     private void initActions() {
-        newAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        newAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.file.create();
             }
         };
 
-        saveAction = new ActionListener() {
+        saveAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent event) {
+            public void invoke() {
                 Editor.app.file.save();
             }
         };
 
-        saveAsAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        saveAsAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.file.saveAs(new SaveAdapter());
             }
         };
 
-        openAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        openAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.file.open();
             }
         };
 
-        exitAction = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        exitAction = new MenuAction() {
+            public void invoke() {
                 Gdx.app.exit();
             }
         };
 
-        rotateLeftAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        rotateLeftAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.level.rotate90();
                 Editor.app.refresh();
             }
         };
 
-        rotateRightAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        rotateRightAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.level.rotate90();
                 Editor.app.level.rotate90();
                 Editor.app.level.rotate90();
@@ -109,294 +107,294 @@ public class EditorActions {
             }
         };
 
-        playFromCameraAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        playFromCameraAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.testLevel(true);
             }
         };
 
-        playFromStartAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        playFromStartAction = new MenuAction() {
+            public void invoke() {
                 Editor.app.testLevel(false);
             }
         };
 
-        carveAction = new ActionListener() {
+        carveAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.doCarve();
             }
         };
 
-        paintAction = new ActionListener() {
+        paintAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.doPaint();
             }
         };
 
-        deleteAction = new ActionListener() {
+        deleteAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.doDelete();
             }
         };
 
-        planeHeightAction = new ActionListener() {
+        planeHeightAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.setPlaneHeightMode();
             }
         };
 
-        vertexHeightAction = new ActionListener() {
+        vertexHeightAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.setVertexHeightMode();
             }
         };
 
-        vertexToggleAction = new ActionListener() {
+        vertexToggleAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.toggleVertexHeightMode();
             }
         };
 
-        undoAction = new ActionListener() {
+        undoAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.undo();
             }
         };
 
-        redoAction = new ActionListener() {
+        redoAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.redo();
             }
         };
 
-        toggleGizmosAction = new ActionListener() {
+        toggleGizmosAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.toggleGizmos();
             }
         };
 
-        toggleLightsAction = new ActionListener() {
+        toggleLightsAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.toggleLights();
             }
         };
 
-        escapeAction = new ActionListener() {
+        escapeAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.clearSelection();
             }
         };
 
-        rotateCeilTexAction = new ActionListener() {
+        rotateCeilTexAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.rotateCeilTex(1);
             }
         };
 
-        rotateFloorTexAction = new ActionListener() {
+        rotateFloorTexAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.rotateFloorTex(1);
             }
         };
 
-        raiseFloorAction = new ActionListener() {
+        raiseFloorAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.doFloorMoveUp();
             }
         };
 
-        lowerFloorAction = new ActionListener() {
+        lowerFloorAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.doFloorMoveDown();
             }
         };
 
-        raiseCeilingAction = new ActionListener() {
+        raiseCeilingAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.doCeilMoveUp();
             }
         };
 
-        lowerCeilingAction = new ActionListener() {
+        lowerCeilingAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.doCeilMoveDown();
             }
         };
 
-        paintWallAction = new ActionListener() {
+        paintWallAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.paintSurfaceAtCursor();
             }
         };
 
-        pickWallAction = new ActionListener() {
+        pickWallAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.pickTextureAtSurface();
             }
         };
 
-        pickNewWallTexAction = new ActionListener() {
+        pickNewWallTexAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.pickNewSurfaceTexture();
             }
         };
 
-        fillTextureAction = new ActionListener() {
+        fillTextureAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.fillSurfaceTexture();
             }
         };
 
-        rotateWallAngle = new ActionListener() {
+        rotateWallAngle = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.rotateAngle();
             }
         };
 
-        copyAction = new ActionListener() {
+        copyAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 EditorClipboard.copy();
             }
         };
 
-        pasteAction = new ActionListener() {
+        pasteAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 EditorClipboard.paste();
             }
         };
 
-        moveTileNorthAction = new ActionListener() {
+        moveTileNorthAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.moveTiles(0, 1, 0);
             }
         };
 
-        moveTileSouthAction = new ActionListener() {
+        moveTileSouthAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.moveTiles(0, -1, 0);
             }
         };
 
-        moveTileEastAction = new ActionListener() {
+        moveTileEastAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.moveTiles(1, 0, 0);
             }
         };
 
-        moveTileWestAction = new ActionListener() {
+        moveTileWestAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.moveTiles(-1, 0, 0);
             }
         };
 
-        moveTileUpAction = new ActionListener() {
+        moveTileUpAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.moveTiles(0, 0, 0.5f);
             }
         };
 
-        moveTileDownAction = new ActionListener() {
+        moveTileDownAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.moveTiles(0, 0, -0.5f);
             }
         };
 
-        toggleSimulation = new ActionListener() {
+        toggleSimulation = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.toggleSimulation();
             }
         };
 
-        viewSelectedAction = new ActionListener() {
+        viewSelectedAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void invoke() {
                 Editor.app.viewSelected();
             }
         };
 
-        xDragMode = new ActionListener() {
+        xDragMode = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.setDragMode(EditorApplication.DragMode.X);
             }
         };
-        yDragMode = new ActionListener() {
+        yDragMode = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.setDragMode(EditorApplication.DragMode.Y);
             }
         };
-        zDragMode = new ActionListener() {
+        zDragMode = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.setDragMode(EditorApplication.DragMode.Z);
             }
         };
 
-        rotateMode = new ActionListener() {
+        rotateMode = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.setMoveMode(EditorApplication.MoveMode.ROTATE);
             }
         };
 
-        turnLeftAction = new ActionListener() {
+        turnLeftAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent event) {
+            public void invoke() {
                 Editor.app.turnPickedEntityLeft();
                 Editor.app.refresh();
             }
         };
 
-        turnRightAction = new ActionListener() {
+        turnRightAction = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent event) {
+            public void invoke() {
                 Editor.app.turnPickedEntityRight();
                 Editor.app.refresh();
             }
         };
 
-        flattenFloor = new ActionListener() {
+        flattenFloor = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.flattenFloor();
             }
         };
 
-        flattenCeiling = new ActionListener() {
+        flattenCeiling = new MenuAction() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+            public void invoke() {
                 Editor.app.flattenCeiling();
             }
         };

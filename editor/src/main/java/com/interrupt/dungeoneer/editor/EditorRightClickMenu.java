@@ -1,11 +1,9 @@
 package com.interrupt.dungeoneer.editor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
+import com.interrupt.dungeoneer.editor.ui.menu.MenuAction;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
 import com.interrupt.dungeoneer.entities.Entity;
@@ -31,8 +29,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
     		MenuItem unGroup = new MenuItem("Ungroup", skin);
     		addItem(unGroup);
 
-    		unGroup.addActionListener(new ActionListener() {
-    			public void actionPerformed (ActionEvent event) {
+    		unGroup.addActionListener(new MenuAction() {
+    			public void invoke() {
     				Group g = (Group)entity;
 
     				for(Entity grouped : g.entities) {
@@ -54,16 +52,16 @@ public class EditorRightClickMenu extends Scene2dMenu {
 
     	addItem(remove);
 
-        remove.addActionListener(new ActionListener() {
-			public void actionPerformed (ActionEvent event) {
+        remove.addActionListener(new MenuAction() {
+			public void invoke() {
 				lvl.entities.removeValue(entity, true);
 				Editor.app.refreshLights();
 			}
 		});
 
         addItem(onFloor);
-		onFloor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		onFloor.addActionListener(new MenuAction() {
+			public void invoke() {
 				float floorHeight = lvl.getTile((int)entity.x, (int)entity.y).getFloorHeight(entity.x, entity.y);
 				entity.z = floorHeight + 0.5f;
 				Editor.app.refreshEntity(entity);
@@ -71,8 +69,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
 		});
 
 	addItem(onCeiling);
-		onCeiling.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		onCeiling.addActionListener(new MenuAction() {
+			public void invoke() {
 				float ceilHeight = lvl.getTile((int)entity.x, (int)entity.y).getCeilHeight(entity.x, entity.y);
 				entity.z = ceilHeight - entity.collision.z + 0.5f;
 				Editor.app.refreshEntity(entity);
@@ -80,8 +78,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
 		});
 
         addItem(center);
-		center.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		center.addActionListener(new MenuAction() {
+			public void invoke() {
 				entity.x = (int)entity.x + 0.5f;
 				entity.y = (int)entity.y + 0.5f;
 				Editor.app.refreshEntity(entity);
@@ -97,8 +95,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
     	MenuItem group = new MenuItem("Group Together", skin);
     	MenuItem remove = new MenuItem("Remove Entities", skin);
 
-    	group.addActionListener(new ActionListener() {
-			public void actionPerformed (ActionEvent event) {
+    	group.addActionListener(new MenuAction() {
+			public void invoke() {
 				Group newGroup = new Group();
 				newGroup.x = main.x;
 				newGroup.y = main.y;
@@ -125,8 +123,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
 			}
     	});
 
-    	remove.addActionListener(new ActionListener() {
-			public void actionPerformed (ActionEvent event) {
+    	remove.addActionListener(new MenuAction() {
+			public void invoke() {
 				level.entities.removeValue(main, true);
 				Editor.app.markWorldAsDirty((int)main.x, (int)main.y, 4);
 
@@ -147,8 +145,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
 		MenuItem center = new MenuItem("Center in Tile", skin);
 
 		addItem(onFloor);
-		onFloor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		onFloor.addActionListener(new MenuAction() {
+			public void invoke() {
 				Array<Entity> allSelected = new Array<Entity>();
 				allSelected.add(main);
 				allSelected.addAll(additionalSelected);
@@ -162,8 +160,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
 		});
 
 		addItem(onCeiling);
-		onCeiling.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		onCeiling.addActionListener(new MenuAction() {
+			public void invoke() {
 				Array<Entity> allSelected = new Array<Entity>();
 				allSelected.add(main);
 				allSelected.addAll(additionalSelected);
@@ -177,8 +175,8 @@ public class EditorRightClickMenu extends Scene2dMenu {
 		});
 
 		addItem(center);
-		center.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		center.addActionListener(new MenuAction() {
+			public void invoke() {
 				Array<Entity> allSelected = new Array<Entity>();
 				allSelected.add(main);
 				allSelected.addAll(additionalSelected);

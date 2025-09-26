@@ -78,11 +78,9 @@ import com.interrupt.managers.StringManager;
 import com.interrupt.utils.JsonUtil;
 import com.noise.PerlinNoise;
 
-import javax.swing.*;
 import java.util.HashMap;
 
 public class EditorApplication implements ApplicationListener {
-	public JFrame frame;
 	public EditorUi ui = null;
 	public PerspectiveCamera camera = new PerspectiveCamera();
 	public EditorCameraController cameraController = null;
@@ -328,8 +326,6 @@ public class EditorApplication implements ApplicationListener {
 	public GeneratorInfo generatorInfo;
 
 	public EditorApplication() {
-		frame = new JFrame("DelvEdit");
-
         // We are the app now!
         Editor.app = this;
 

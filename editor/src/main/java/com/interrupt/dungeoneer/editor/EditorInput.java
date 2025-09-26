@@ -43,7 +43,7 @@ public class EditorInput implements InputProcessor {
                 }
 
                 if(matched) {
-                    item.actionListener.actionPerformed(null);
+                    item.menuAction.invoke();
                     return true;
                 }
             }
