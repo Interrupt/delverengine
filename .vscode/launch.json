@@ -2,26 +2,26 @@
   "configurations": [
     {
       "type": "java",
-      "name": "DungeoneerDesktop",
+      "name": "Delver Desktop",
       "request": "launch",
       "mainClass": "com.interrupt.dungeoneer.DesktopStarter",
-      "projectName": "DungeoneerDesktop",
-      "cwd": "${workspaceFolder}/Dungeoneer",
+      "projectName": "delver-desktop",
+      "cwd": "${workspaceFolder}",
       "args": "debug=true"
     },
     {
       "type": "java",
-      "name": "DelvEdit",
+      "name": "Delver Editor",
       "request": "launch",
       "mainClass": "com.interrupt.dungeoneer.EditorStarter",
-      "projectName": "DelvEdit",
-      "cwd": "${workspaceFolder}/Dungeoneer"
+      "projectName": "delver-editor",
+      "cwd": "${workspaceFolder}"
     },
     {
       "type": "node-terminal",
-      "name": "DungeoneerAndroid",
+      "name": "Delver Android",
       "request": "launch",
-      "command": "gradle DungeoneerAndroid:installDebug DungeoneerAndroid:run"
+      "command": "gradle delver-android:installDebug delver-android:run"
     }
   ]
 }
