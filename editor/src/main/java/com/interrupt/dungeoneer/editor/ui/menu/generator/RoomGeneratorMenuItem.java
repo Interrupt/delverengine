@@ -75,21 +75,18 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
             }
 
             private MenuAction makeRoomGeneratorAction(Level template) {
-                return new MenuAction() {
-                    @Override
-                    public void invoke() {
-                        if (template != null) {
-                            if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
-                                WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this room generator. Make sure it exists.");
-                                warningDialog.show(Editor.app.ui.getStage());
-                            }
-                            else {
-                                Editor.app.generateRoomFromTemplate(template);
+                return () -> {
+                    if (template != null) {
+                        if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
+                            WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this room generator. Make sure it exists.");
+                            warningDialog.show(Editor.app.ui.getStage());
+                        }
+                        else {
+                            Editor.app.generateRoomFromTemplate(template);
 
-                                if (!Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
-                                    Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
-                                    needsRefresh = true;
-                                }
+                            if (!Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
+                                Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
+                                needsRefresh = true;
                             }
                         }
                     }
@@ -97,13 +94,8 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
             }
 
             private MenuAction makeRoomGeneratorAction() {
-                return new MenuAction() {
-                    @Override
-                    public void invoke() {
-                        makeRoomGeneratorAction(Editor.app.generatorInfo.lastGeneratedRoomTemplate)
-                                .invoke();
-                    }
-                };
+                return () -> makeRoomGeneratorAction(Editor.app.generatorInfo.lastGeneratedRoomTemplate)
+                        .invoke();
             }
         });
     }

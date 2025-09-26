@@ -36,11 +36,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     		Array<Entity> baseEntities = baseEntities();
     		for(final Entity basic : baseEntities) {
                 MenuItem menuItem = new MenuItem(basic.getClass().getSimpleName(), skin);
-    			menuItem.addActionListener(new MenuAction() {
-					public void invoke() {
-						placeEntity(basic, xPos, yPos, zPos, Editor.app.pickedSurface);
-					}
-    			});
+    			menuItem.addActionListener(() -> placeEntity(basic, xPos, yPos, zPos, Editor.app.pickedSurface));
     			baseEntityMenu.addItem(menuItem);
     		}
 
@@ -107,23 +103,19 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
     		    	final Entity entity = Editor.app.entityManager.Copy(entry.value);
 
-    		    	menuItem.addActionListener(new MenuAction() {
-    					public void invoke() {
-    						if(entity != null) {
-								placeEntity(entity, xPos, yPos, zPos, Editor.app.pickedSurface);
-    						}
-    					}
-    				});
+    		    	menuItem.addActionListener(() -> {
+                        if(entity != null) {
+                            placeEntity(entity, xPos, yPos, zPos, Editor.app.pickedSurface);
+                        }
+                    });
 
     		    	final MenuItem prefabMenuItem = new MenuItem(entry.key, skin);
     		    	prefabCategoryMenu.addItem(prefabMenuItem);
 
-    		    	prefabMenuItem.addActionListener(new MenuAction() {
-    		    		public void invoke() {
-    		    			Prefab prefab = new Prefab(categoryEntry.getKey(), prefabMenuItem.getText().toString());
-							placeEntity(prefab, xPos, yPos, zPos, Editor.app.pickedSurface);
-    		    		}
-    		    	});
+    		    	prefabMenuItem.addActionListener(() -> {
+                        Prefab prefab = new Prefab(categoryEntry.getKey(), prefabMenuItem.getText().toString());
+                        placeEntity(prefab, xPos, yPos, zPos, Editor.app.pickedSurface);
+                    });
         		}
 
         		categoryMenu.sortItems();
@@ -191,23 +183,19 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 
 					final Entity entity = Editor.app.entityManager.Copy(entry);
 
-					menuItem.addActionListener(new MenuAction() {
-						public void invoke() {
-							if(entity != null) {
-								placeEntity(entity, xPos, yPos, zPos, Editor.app.pickedSurface);
-							}
-						}
-					});
+					menuItem.addActionListener(() -> {
+                        if(entity != null) {
+                            placeEntity(entity, xPos, yPos, zPos, Editor.app.pickedSurface);
+                        }
+                    });
 
 					final MenuItem prefabMenuItem = new MenuItem(entry.name, skin);
 					prefabCategoryMenu.addItem(prefabMenuItem);
 
-					prefabMenuItem.addActionListener(new MenuAction() {
-						public void invoke() {
-							Prefab prefab = new MonsterPrefab(categoryEntry.getKey(), prefabMenuItem.getText().toString());
-							placeEntity(prefab, xPos, yPos, zPos, Editor.app.pickedSurface);
-						}
-					});
+					prefabMenuItem.addActionListener(() -> {
+                        Prefab prefab = new MonsterPrefab(categoryEntry.getKey(), prefabMenuItem.getText().toString());
+                        placeEntity(prefab, xPos, yPos, zPos, Editor.app.pickedSurface);
+                    });
 				}
 
 				categoryMenu.sortItems();
@@ -220,11 +208,7 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 	    			MenuItem markerItem = new MenuItem(marker.name(), skin);
 	    			markersMenu.addItem(markerItem);
 
-	    			markerItem.addActionListener(new MenuAction() {
-	    				public void invoke() {
-							Editor.app.addEntityMarker(marker);
-	    				}
-	    			});
+	    			markerItem.addActionListener(() -> Editor.app.addEntityMarker(marker));
     			}
     		}
 
@@ -243,12 +227,10 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     			MenuItem clearMarkers = new MenuItem("Remove Marker", skin);
     			addItem(clearMarkers);
 
-    			clearMarkers.addActionListener(new MenuAction() {
-    				public void invoke() {
-						Editor.app.clearSelectedMarkers();
-						Editor.app.history.saveState(level);
-    				}
-    			});
+    			clearMarkers.addActionListener(() -> {
+                    Editor.app.clearSelectedMarkers();
+                    Editor.app.history.saveState(level);
+                });
     		}
 
     		// tile editing stuff
@@ -257,29 +239,13 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
     		MenuItem pickTiles = new MenuItem("Pick Tile", skin);
     		MenuItem deleteTiles = new MenuItem("Delete", skin);
 
-    		carveTiles.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.doCarve();
-				}
-    		});
+    		carveTiles.addActionListener(() -> Editor.app.doCarve());
 
-    		paintTiles.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.doPaint();
-				}
-    		});
+    		paintTiles.addActionListener(() -> Editor.app.doPaint());
 
-    		pickTiles.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.doPick();
-				}
-    		});
+    		pickTiles.addActionListener(() -> Editor.app.doPick());
 
-    		deleteTiles.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.doDelete();
-				}
-    		});
+    		deleteTiles.addActionListener(() -> Editor.app.doDelete());
 
     		tilesMenu.addItem(carveTiles);
     		tilesMenu.addItem(paintTiles);
@@ -294,29 +260,13 @@ public class EditorRightClickEntitiesMenu extends Scene2dMenu {
 			MenuItem surfaceGrabTexture = new MenuItem("Grab Texture", skin);
 			MenuItem surfaceChangeTexture = new MenuItem("Change Texture", skin);
 
-			surfacePaint.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.paintSurfaceAtCursor();
-				}
-			});
+			surfacePaint.addActionListener(() -> Editor.app.paintSurfaceAtCursor());
 
-			surfaceGrabTexture.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.pickTextureAtSurface();
-				}
-			});
+			surfaceGrabTexture.addActionListener(() -> Editor.app.pickTextureAtSurface());
 
-			surfaceChangeTexture.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.pickNewSurfaceTexture();
-				}
-			});
+			surfaceChangeTexture.addActionListener(() -> Editor.app.pickNewSurfaceTexture());
 
-			floodPaintTexture.addActionListener(new MenuAction() {
-				public void invoke() {
-					Editor.app.fillSurfaceTexture();
-				}
-			});
+			floodPaintTexture.addActionListener(() -> Editor.app.fillSurfaceTexture());
 
 			surfaceMenu.addItem(surfacePaint);
 			surfaceMenu.addItem(floodPaintTexture);

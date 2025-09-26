@@ -68,39 +68,31 @@ public class EditorUi {
         mainTable.setFillParent(true);
         mainTable.align(Align.left | Align.top);
 
-        resizeWindowAction = new MenuAction() {
-            public void invoke() {
-                NewLevelDialog newLevelDialog = new NewLevelDialog(smallSkin) {
-                    @Override
-                    protected void result(Object object) {
-                        if((Boolean)object)
-                            Editor.app.resizeLevel(getLevelWidth(),getLevelHeight());
-                    }
-                };
+        resizeWindowAction = () -> {
+            NewLevelDialog newLevelDialog = new NewLevelDialog(smallSkin) {
+                @Override
+                protected void result(Object object) {
+                    if((Boolean)object)
+                        Editor.app.resizeLevel(getLevelWidth(),getLevelHeight());
+                }
+            };
 
-                newLevelDialog.show(stage);
-            }
+            newLevelDialog.show(stage);
         };
 
-        setThemeAction = new MenuAction() {
-            public void invoke() {
-                SetThemeDialog themeDialog = new SetThemeDialog(smallSkin, Editor.app.getLevel()) {
-                    @Override
-                    protected void result(Object object) {
-                        Editor.app.getLevel().theme = getSelectedTheme();
-                    }
-                };
+        setThemeAction = () -> {
+            SetThemeDialog themeDialog = new SetThemeDialog(smallSkin, Editor.app.getLevel()) {
+                @Override
+                protected void result(Object object) {
+                    Editor.app.getLevel().theme = getSelectedTheme();
+                }
+            };
 
-                themeDialog.show(stage);
-            }
+            themeDialog.show(stage);
         };
 
         // action listener for the editor pick action
-        pickAction = new MenuAction() {
-            public void invoke() {
-                Editor.app.doPick();
-            }
-        };
+        pickAction = () -> Editor.app.doPick();
 
         MenuItem openRecent = new DynamicMenuItem("Open Recent", smallSkin, new DynamicMenuItemAction() {
             private String mostRecentFile = null;
@@ -135,12 +127,9 @@ public class EditorUi {
                 int recentFilesAdded = 0;
                 for (final String recentFile : Editor.options.recentlyOpenedFiles) {
                     item.addItem(
-                        new MenuItem(recentFile, smallSkin, new MenuAction() {
-                            @Override
-                            public void invoke() {
-                                FileHandle fh = Gdx.files.absolute(recentFile);
-                                Editor.app.file.open(fh);
-                            }
+                        new MenuItem(recentFile, smallSkin, () -> {
+                            FileHandle fh = Gdx.files.absolute(recentFile);
+                            Editor.app.file.open(fh);
                         })
                     );
 
@@ -159,12 +148,9 @@ public class EditorUi {
                 }
 
                 item.addSeparator();
-                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, new MenuAction() {
-                    @Override
-                    public void invoke() {
-                        Editor.options.recentlyOpenedFiles.clear();
-                        Editor.options.save();
-                    }
+                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, () -> {
+                    Editor.options.recentlyOpenedFiles.clear();
+                    Editor.options.save();
                 }));
             }
         });
@@ -376,29 +362,23 @@ public class EditorUi {
                 stage.addActor(sidebarTable);
 
                 // Only listen to events when mouse is hovering over ScrollPane.
-                entityPropertiesPane.addListener(new EventListener() {
-                    @Override
-                    public boolean handle(Event event) {
-                        if(event instanceof InputEvent) {
-                            if (((InputEvent) event).getType() == InputEvent.Type.enter) {
-                                event.getStage().setScrollFocus(entityPropertiesPane);
-                            }
+                entityPropertiesPane.addListener(event -> {
+                    if(event instanceof InputEvent) {
+                        if (((InputEvent) event).getType() == InputEvent.Type.enter) {
+                            event.getStage().setScrollFocus(entityPropertiesPane);
                         }
-                        return false;
                     }
+                    return false;
                 });
 
                 // Stop listening to events when mouse leaves ScrollPane.
-                entityPropertiesPane.addListener(new EventListener() {
-                    @Override
-                    public boolean handle(Event event) {
-                        if(event instanceof InputEvent) {
-                            if (((InputEvent) event).getType() == InputEvent.Type.exit) {
-                                event.getStage().setScrollFocus(null);
-                            }
+                entityPropertiesPane.addListener(event -> {
+                    if(event instanceof InputEvent) {
+                        if (((InputEvent) event).getType() == InputEvent.Type.exit) {
+                            event.getStage().setScrollFocus(null);
                         }
-                        return false;
                     }
+                    return false;
                 });
             }
             else {

@@ -75,21 +75,18 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
             }
 
             private MenuAction makeLevelGeneratorAction(Level template) {
-                return new MenuAction() {
-                    @Override
-                    public void invoke() {
-                        if (template != null) {
-                            if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
-                                WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this level generator. Make sure it exists.");
-                                warningDialog.show(Editor.app.ui.getStage());
-                            }
-                            else {
-                                Editor.app.generateLevelFromTemplate(template);
+                return () -> {
+                    if (template != null) {
+                        if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
+                            WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this level generator. Make sure it exists.");
+                            warningDialog.show(Editor.app.ui.getStage());
+                        }
+                        else {
+                            Editor.app.generateLevelFromTemplate(template);
 
-                                if (!Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
-                                    Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
-                                    needsRefresh = true;
-                                }
+                            if (!Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
+                                Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
+                                needsRefresh = true;
                             }
                         }
                     }
@@ -97,13 +94,8 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
             }
 
             private MenuAction makeLevelGeneratorAction() {
-                return new MenuAction() {
-                    @Override
-                    public void invoke() {
-                        makeLevelGeneratorAction(Editor.app.generatorInfo.lastGeneratedLevelTemplate)
-                                .invoke();
-                    }
-                };
+                return () -> makeLevelGeneratorAction(Editor.app.generatorInfo.lastGeneratedLevelTemplate)
+                        .invoke();
             }
         });
     }
