@@ -1,19 +1,12 @@
 package com.interrupt.dungeoneer.editor.ui.menu.generator;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.ui.WarningDialog;
-import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
-import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
+import com.interrupt.dungeoneer.editor.ui.menu.*;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.generator.RoomGenerator;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 
 public class RoomGeneratorMenuItem extends DynamicMenuItem {
@@ -81,36 +74,28 @@ public class RoomGeneratorMenuItem extends DynamicMenuItem {
                 }
             }
 
-            private ActionListener makeRoomGeneratorAction(Level template) {
-                return new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        if (template != null) {
-                            if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
-                                WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this room generator. Make sure it exists.");
-                                warningDialog.show(Editor.app.ui.getStage());
-                            }
-                            else {
-                                Editor.app.generateRoomFromTemplate(template);
-    
-                                if (!Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
-                                    Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
-                                    needsRefresh = true;
-                                }
+            private MenuAction makeRoomGeneratorAction(Level template) {
+                return () -> {
+                    if (template != null) {
+                        if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
+                            WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this room generator. Make sure it exists.");
+                            warningDialog.show(Editor.app.ui.getStage());
+                        }
+                        else {
+                            Editor.app.generateRoomFromTemplate(template);
+
+                            if (!Editor.app.generatorInfo.isLastGeneratedRoomTemplateSelected(template)) {
+                                Editor.app.generatorInfo.lastGeneratedRoomTemplate = template;
+                                needsRefresh = true;
                             }
                         }
                     }
                 };
             }
 
-            private ActionListener makeRoomGeneratorAction() {
-                return new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        makeRoomGeneratorAction(Editor.app.generatorInfo.lastGeneratedRoomTemplate)
-                                .actionPerformed(actionEvent);
-                    }
-                };
+            private MenuAction makeRoomGeneratorAction() {
+                return () -> makeRoomGeneratorAction(Editor.app.generatorInfo.lastGeneratedRoomTemplate)
+                        .invoke();
             }
         });
     }

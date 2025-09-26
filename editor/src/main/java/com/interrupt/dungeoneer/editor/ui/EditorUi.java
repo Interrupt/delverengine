@@ -21,9 +21,6 @@ import com.interrupt.dungeoneer.editor.ui.menu.generator.RoomGeneratorMenuItem;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 public class EditorUi {
     Stage stage;
     Table mainTable;
@@ -43,10 +40,10 @@ public class EditorUi {
 
     public Actor showingModal;
 
-    ActionListener resizeWindowAction;
-    ActionListener pickAction;
-    ActionListener uploadModAction;
-    ActionListener setThemeAction;
+    MenuAction resizeWindowAction;
+    MenuAction pickAction;
+    MenuAction uploadModAction;
+    MenuAction setThemeAction;
 
     private final Vector2 propertiesSize = new Vector2();
 
@@ -71,39 +68,31 @@ public class EditorUi {
         mainTable.setFillParent(true);
         mainTable.align(Align.left | Align.top);
 
-        resizeWindowAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                NewLevelDialog newLevelDialog = new NewLevelDialog(smallSkin) {
-                    @Override
-                    protected void result(Object object) {
-                        if((Boolean)object)
-                            Editor.app.resizeLevel(getLevelWidth(),getLevelHeight());
-                    }
-                };
+        resizeWindowAction = () -> {
+            NewLevelDialog newLevelDialog = new NewLevelDialog(smallSkin) {
+                @Override
+                protected void result(Object object) {
+                    if((Boolean)object)
+                        Editor.app.resizeLevel(getLevelWidth(),getLevelHeight());
+                }
+            };
 
-                newLevelDialog.show(stage);
-            }
+            newLevelDialog.show(stage);
         };
 
-        setThemeAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                SetThemeDialog themeDialog = new SetThemeDialog(smallSkin, Editor.app.getLevel()) {
-                    @Override
-                    protected void result(Object object) {
-                        Editor.app.getLevel().theme = getSelectedTheme();
-                    }
-                };
+        setThemeAction = () -> {
+            SetThemeDialog themeDialog = new SetThemeDialog(smallSkin, Editor.app.getLevel()) {
+                @Override
+                protected void result(Object object) {
+                    Editor.app.getLevel().theme = getSelectedTheme();
+                }
+            };
 
-                themeDialog.show(stage);
-            }
+            themeDialog.show(stage);
         };
 
         // action listener for the editor pick action
-        pickAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                Editor.app.doPick();
-            }
-        };
+        pickAction = () -> Editor.app.doPick();
 
         MenuItem openRecent = new DynamicMenuItem("Open Recent", smallSkin, new DynamicMenuItemAction() {
             private String mostRecentFile = null;
@@ -138,12 +127,9 @@ public class EditorUi {
                 int recentFilesAdded = 0;
                 for (final String recentFile : Editor.options.recentlyOpenedFiles) {
                     item.addItem(
-                        new MenuItem(recentFile, smallSkin, new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                FileHandle fh = Gdx.files.absolute(recentFile);
-                                Editor.app.file.open(fh);
-                            }
+                        new MenuItem(recentFile, smallSkin, () -> {
+                            FileHandle fh = Gdx.files.absolute(recentFile);
+                            Editor.app.file.open(fh);
                         })
                     );
 
@@ -162,12 +148,9 @@ public class EditorUi {
                 }
 
                 item.addSeparator();
-                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Editor.options.recentlyOpenedFiles.clear();
-                        Editor.options.save();
-                    }
+                item.addItem(new MenuItem("Clear Recently Opened", smallSkin, () -> {
+                    Editor.options.recentlyOpenedFiles.clear();
+                    Editor.options.save();
                 }));
             }
         });
@@ -379,29 +362,23 @@ public class EditorUi {
                 stage.addActor(sidebarTable);
 
                 // Only listen to events when mouse is hovering over ScrollPane.
-                entityPropertiesPane.addListener(new EventListener() {
-                    @Override
-                    public boolean handle(Event event) {
-                        if(event instanceof InputEvent) {
-                            if (((InputEvent) event).getType() == InputEvent.Type.enter) {
-                                event.getStage().setScrollFocus(entityPropertiesPane);
-                            }
+                entityPropertiesPane.addListener(event -> {
+                    if(event instanceof InputEvent) {
+                        if (((InputEvent) event).getType() == InputEvent.Type.enter) {
+                            event.getStage().setScrollFocus(entityPropertiesPane);
                         }
-                        return false;
                     }
+                    return false;
                 });
 
                 // Stop listening to events when mouse leaves ScrollPane.
-                entityPropertiesPane.addListener(new EventListener() {
-                    @Override
-                    public boolean handle(Event event) {
-                        if(event instanceof InputEvent) {
-                            if (((InputEvent) event).getType() == InputEvent.Type.exit) {
-                                event.getStage().setScrollFocus(null);
-                            }
+                entityPropertiesPane.addListener(event -> {
+                    if(event instanceof InputEvent) {
+                        if (((InputEvent) event).getType() == InputEvent.Type.exit) {
+                            event.getStage().setScrollFocus(null);
                         }
-                        return false;
                     }
+                    return false;
                 });
             }
             else {

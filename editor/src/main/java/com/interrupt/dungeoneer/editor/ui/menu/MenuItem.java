@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.editor.ui.menu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,13 +13,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.interrupt.dungeoneer.editor.ui.EditorUi;
 
-import java.awt.event.ActionListener;
-
 public class MenuItem extends TextButton implements Comparable {
     public Scene2dMenu subMenu;
     public Skin skin;
     public Scene2dMenu parent;
-    public ActionListener actionListener;
+    public MenuAction menuAction;
     public ClickListener clickListener;
 
     private Label acceleratorLabel = null;
@@ -62,8 +59,8 @@ public class MenuItem extends TextButton implements Comparable {
                     p = p.parentMenuItem.parent;
                 }
 
-                if(actionListener != null && p != null) p.close();
-                if(actionListener != null) actionListener.actionPerformed(null);
+                if(menuAction != null && p != null) p.close();
+                if(menuAction != null) menuAction.invoke();
             }
         };
 
@@ -71,9 +68,9 @@ public class MenuItem extends TextButton implements Comparable {
         setWidth(400f);
     }
 
-    public MenuItem(CharSequence text, Skin skin, ActionListener actionListener) {
+    public MenuItem(CharSequence text, Skin skin, MenuAction menuAction) {
         this(text, skin);
-        this.actionListener = actionListener;
+        this.menuAction = menuAction;
     }
 
     public MenuItem addItem(MenuItem item) {
@@ -162,8 +159,8 @@ public class MenuItem extends TextButton implements Comparable {
         }
     }
 
-    public void addActionListener(ActionListener actionListener) {
-        this.actionListener = actionListener;
+    public void addActionListener(MenuAction menuAction) {
+        this.menuAction = menuAction;
     }
 
     public void setParentMenu(Scene2dMenu parent) {

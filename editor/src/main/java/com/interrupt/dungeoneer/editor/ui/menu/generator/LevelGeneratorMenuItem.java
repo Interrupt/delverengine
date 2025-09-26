@@ -1,17 +1,11 @@
 package com.interrupt.dungeoneer.editor.ui.menu.generator;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.ui.WarningDialog;
-import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItem;
-import com.interrupt.dungeoneer.editor.ui.menu.DynamicMenuItemAction;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
+import com.interrupt.dungeoneer.editor.ui.menu.*;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.generator.SectionDefinition;
 
@@ -80,36 +74,28 @@ public class LevelGeneratorMenuItem extends DynamicMenuItem {
                 }
             }
 
-            private ActionListener makeLevelGeneratorAction(Level template) {
-                return new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (template != null) {
-                            if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
-                                WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this level generator. Make sure it exists.");
-                                warningDialog.show(Editor.app.ui.getStage());
-                            }
-                            else {
-                                Editor.app.generateLevelFromTemplate(template);
+            private MenuAction makeLevelGeneratorAction(Level template) {
+                return () -> {
+                    if (template != null) {
+                        if (!Editor.app.generatorInfo.isLevelTemplateValid(template)) {
+                            WarningDialog warningDialog = new WarningDialog(skin, "We were not able to find the level template used for this level generator. Make sure it exists.");
+                            warningDialog.show(Editor.app.ui.getStage());
+                        }
+                        else {
+                            Editor.app.generateLevelFromTemplate(template);
 
-                                if (!Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
-                                    Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
-                                    needsRefresh = true;
-                                }
+                            if (!Editor.app.generatorInfo.isLastGeneratedLevelTemplateSelected(template)) {
+                                Editor.app.generatorInfo.lastGeneratedLevelTemplate = template;
+                                needsRefresh = true;
                             }
                         }
                     }
                 };
             }
 
-            private ActionListener makeLevelGeneratorAction() {
-                return new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        makeLevelGeneratorAction(Editor.app.generatorInfo.lastGeneratedLevelTemplate)
-                                .actionPerformed(e);
-                    }
-                };
+            private MenuAction makeLevelGeneratorAction() {
+                return () -> makeLevelGeneratorAction(Editor.app.generatorInfo.lastGeneratedLevelTemplate)
+                        .invoke();
             }
         });
     }
