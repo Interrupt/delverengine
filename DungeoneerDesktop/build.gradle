@@ -1,6 +1,9 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_18
+}
+
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.interrupt.dungeoneer.DesktopStarter"
