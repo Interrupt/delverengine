@@ -1,9 +1,11 @@
+#!/bin/sh
+
 # This script builds and packages for distribution.
 
 # Build game jar
-gradle DungeoneerDesktop:processResources
-gradle DungeoneerDesktop:dist
+./gradlew DungeoneerDesktop:processResources
+./gradlew DungeoneerDesktop:dist
 
 # Build editor jar
-gradle DelvEdit:processResources
-gradle DelvEdit:dist
+./gradlew DelvEdit:processResources
+./gradlew DelvEdit:dist

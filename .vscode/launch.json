@@ -21,7 +21,7 @@
       "type": "node-terminal",
       "name": "DungeoneerAndroid",
       "request": "launch",
-      "command": "gradle DungeoneerAndroid:installDebug DungeoneerAndroid:run"
+      "command": "./gradlew DungeoneerAndroid:installDebug DungeoneerAndroid:run"
     }
   ]
 }
