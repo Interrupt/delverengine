@@ -7,17 +7,17 @@ Delver engine and editor source code release
 This source release does not contain or cover the game data from Delver, the game data remains subject to the original copyright and applicable law.
 
 ## Building
-To compile on your own ensure you have installed [JDK8](https://adoptium.net/) or higher. Open a terminal to the repo root and run the following commands:
+To compile on your own ensure you have installed [JDK17](https://adoptium.net/) or higher. Open a terminal to the repo root and run the following commands:
 
 ### Game
- 
-_Running:_ `gradlew DungeoneerDesktop:run`  
-_Building:_ `gradlew DungeoneerDesktop:dist`  
+
+- _Running:_ `gradlew desktop:run`
+- _Building:_ `gradlew desktop:dist`
 
 ### Editor
 
-_Running:_ `gradlew DelvEdit:run`   
-_Building:_ `gradlew DelvEdit:dist`  
+- _Running:_ `gradlew editor:run`
+- _Building:_ `gradlew editor:dist`
 
 ## License
 
@@ -35,10 +35,9 @@ For discussion and help, check out the [Official Delver Community Discord](https
 
 Run configurations for IntelliJ have been included, for manual setup use the following:
 
-Game: `DungeoneerDesktop/src/com/interrupt/dungeoneer/DesktopStarter.java`
+Game: `desktop/src/main/java/com/interrupt/dungeoneer/DesktopStarter.java`
 
-Editor: `DelvEdit/src/com/interrupt/dungeoneer/EditorStarter.java`
+Editor: `editor/src/main/java/com/interrupt/dungeoneer/EditorStarter.java`
 
-Working directory: `Dungeoneer`
 
-Resources directory: `Dungeoneer/assets`
+Resources directory: `assets`

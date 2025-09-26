@@ -1,0 +1,184 @@
+
+buildscript {
+  repositories {
+    gradlePluginPortal()
+  }
+  dependencies {
+    classpath "io.github.fourlastor:construo:1.7.1"
+    if(enableGraalNative == 'true') {
+      classpath "org.graalvm.buildtools.native:org.graalvm.buildtools.native.gradle.plugin:0.9.28"
+    }
+  }
+}
+plugins {
+  id "application"
+}
+apply plugin: 'io.github.fourlastor.construo'
+
+
+import io.github.fourlastor.construo.Target
+
+sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
+mainClassName = 'com.interrupt.dungeoneer.DesktopStarter'
+application.setMainClass(mainClassName)
+eclipse.project.name = appName + '-desktop'
+java.sourceCompatibility = 8
+java.targetCompatibility = 8
+if (JavaVersion.current().isJava9Compatible()) {
+        compileJava.options.release.set(8)
+}
+
+dependencies {
+  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+  implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+  implementation "com.badlogicgames.gdx:gdx-lwjgl3-angle:$gdxVersion"
+  implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+  implementation project(':core')
+
+  if(enableGraalNative == 'true') {
+    implementation "io.github.berstanio:gdx-svmhelper-backend-lwjgl3:$graalHelperVersion"
+
+    }
+}
+
+def os = System.properties['os.name'].toLowerCase()
+
+run {
+  workingDir = rootProject.file('.').path
+// You can uncomment the next line if your IDE claims a build failure even when the app closed properly.
+  //setIgnoreExitValue(true)
+
+  if (os.contains('mac')) jvmArgs += "-XstartOnFirstThread"
+}
+
+jar {
+// sets the name of the .jar file this produces to the name of the game or app, with the version after.
+//  archiveFileName.set("${appName}-${projectVersion}.jar")
+  archiveFileName.set("game.jar")
+// the duplicatesStrategy matters starting in Gradle 7.0; this setting works.
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+  dependsOn configurations.runtimeClasspath
+  from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+// these "exclude" lines remove some unnecessary duplicate files in the output JAR.
+  exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+  dependencies {
+    exclude('META-INF/INDEX.LIST', 'META-INF/maven/**')
+  }
+// setting the manifest makes the JAR runnable.
+  manifest {
+    attributes 'Main-Class': project.mainClassName
+  }
+// this last step may help on some OSes that need extra instruction to make runnable JARs.
+  doLast {
+    file(archiveFile).setExecutable(true, false)
+  }
+}
+
+// Builds a JAR that only includes the files needed to run on macOS, not Windows or Linux.
+// The file size for a Mac-only JAR is about 7MB smaller than a cross-platform JAR.
+tasks.register("jarMac") {
+  dependsOn("jar")
+  group("build")
+  jar.archiveFileName.set("${appName}-${projectVersion}-mac.jar")
+  jar.exclude("windows/x86/**", "windows/x64/**", "linux/arm32/**", "linux/arm64/**", "linux/x64/**", "**/*.dll", "**/*.so",
+    'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+  dependencies {
+    jar.exclude("windows/x86/**", "windows/x64/**", "linux/arm32/**", "linux/arm64/**", "linux/x64/**",
+      'META-INF/INDEX.LIST', 'META-INF/maven/**')
+  }
+}
+
+// Builds a JAR that only includes the files needed to run on Linux, not Windows or macOS.
+// The file size for a Linux-only JAR is about 5MB smaller than a cross-platform JAR.
+tasks.register("jarLinux") {
+  dependsOn("jar")
+  group("build")
+  jar.archiveFileName.set("${appName}-${projectVersion}-linux.jar")
+  jar.exclude("windows/x86/**", "windows/x64/**", "macos/arm64/**", "macos/x64/**", "**/*.dll", "**/*.dylib",
+    'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+  dependencies {
+    jar.exclude("windows/x86/**", "windows/x64/**", "macos/arm64/**", "macos/x64/**",
+      'META-INF/INDEX.LIST', 'META-INF/maven/**')
+  }
+}
+
+// Builds a JAR that only includes the files needed to run on Windows, not Linux or macOS.
+// The file size for a Windows-only JAR is about 6MB smaller than a cross-platform JAR.
+tasks.register("jarWin") {
+  dependsOn("jar")
+  group("build")
+  jar.archiveFileName.set("${appName}-${projectVersion}-win.jar")
+  jar.exclude("macos/arm64/**", "macos/x64/**", "linux/arm32/**", "linux/arm64/**", "linux/x64/**", "**/*.dylib", "**/*.so",
+    'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+  dependencies {
+    jar.exclude("macos/arm64/**", "macos/x64/**", "linux/arm32/**", "linux/arm64/**", "linux/x64/**",
+      'META-INF/INDEX.LIST', 'META-INF/maven/**')
+  }
+}
+
+construo {
+    // name of the executable
+    name.set(appName)
+    // human-readable name, used for example in the `.app` name for macOS
+    humanName.set(appName)
+    // Optional, defaults to project version property
+    version.set("$projectVersion")
+
+    targets.configure {
+      register("linuxX64", Target.Linux) {
+        architecture.set(Target.Architecture.X86_64)
+        jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jdk_x64_linux_hotspot_17.0.15_6.tar.gz")
+        // Linux does not currently have a way to set the icon on the executable
+      }
+      register("macM1", Target.MacOs) {
+        architecture.set(Target.Architecture.AARCH64)
+        jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.15_6.tar.gz")
+        // macOS needs an identifier
+        identifier.set("com.interrupt.dungeoneer." + appName)
+        // Optional: icon for macOS, as an ICNS file
+        macIcon.set(project.file("icons/logo.icns"))
+      }
+      register("macX64", Target.MacOs) {
+        architecture.set(Target.Architecture.X86_64)
+        jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jdk_x64_mac_hotspot_17.0.15_6.tar.gz")
+        // macOS needs an identifier
+        identifier.set("com.interrupt.dungeoneer." + appName)
+        // Optional: icon for macOS, as an ICNS file
+        macIcon.set(project.file("icons/logo.icns"))
+      }
+      register("winX64", Target.Windows) {
+        architecture.set(Target.Architecture.X86_64)
+        // Optional: icon for Windows, as a PNG
+        icon.set(project.file("icons/logo.png"))
+        jdkUrl.set("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.15%2B6/OpenJDK17U-jdk_x64_windows_hotspot_17.0.15_6.zip")
+        // Uncomment the next line to show a console when the game runs, to print messages.
+        //useConsole.set(true)
+      }
+    }
+}
+
+// Equivalent to the jar task; here for compatibility with gdx-setup.
+tasks.register('dist') {
+  dependsOn 'jar'
+}
+
+distributions {
+  main {
+    contents {
+      into('libs') {
+        project.configurations.runtimeClasspath.files.findAll { file ->
+          file.getName() != project.tasks.jar.outputs.files.singleFile.name
+        }.each { file ->
+          exclude file.name
+        }
+      }
+    }
+  }
+}
+
+startScripts.dependsOn(':desktop:jar')
+startScripts.classpath = project.tasks.jar.outputs.files
+
+if(enableGraalNative == 'true') {
+  apply from: file("nativeimage.gradle")
+}
