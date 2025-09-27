@@ -24,7 +24,7 @@ public class StatsScreen extends BaseScreen {
 		Table mainTable = new Table();
 		mainTable.setFillParent(true);
 
-		int goldThisRun = Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun;
+		int goldThisRun = Math.max(0, Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun);
 		
 		Table innerTable = new Table();
 		if(progress > 0) makeStat(innerTable, StringManager.get("screens.GameOverScreen.playtimeStatLabel"), Game.instance.player.getPlaytime(), doFade);
