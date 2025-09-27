@@ -21,7 +21,7 @@
       "type": "node-terminal",
       "name": "Delver Android",
       "request": "launch",
-      "command": "gradle delver-android:installDebug delver-android:run"
+      "command": "./gradlew android:installDebug android:run"
     }
   ]
 }
