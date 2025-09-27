@@ -55,11 +55,5 @@
         "filename": "dust_puffs.png",
         "scale": 1,
         "name": "dust_puffs"
-    },
-    {
-        "columns": 4,
-        "filename": "vfx.png",
-        "scale": 1,
-        "name": "vfx"
     }
 ]
