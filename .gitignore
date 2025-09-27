@@ -15,6 +15,7 @@ save/
 core/save/
 assets/packaged_files.txt
 assets/errorlog.txt
+errorlog.txt
 desktop/save
 android/libs
 
