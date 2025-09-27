@@ -913,6 +913,9 @@ public class Game {
 		FileHandle file = getFile(saveDir + "player.dat");
 		JsonUtil.toJson(player, file);
 
+		// Make sure that gold amount is synced.
+		progression.gold = player.gold;
+
 		// save progress!
 		saveProgression(progression, Game.instance.getSaveSlot());
 		gameMode.saveGameState(saveLoc);
