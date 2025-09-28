@@ -305,7 +305,7 @@ public class GameOverScreen extends StatsScreen {
         }
 
         int goldThisRun = Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun;
-        if(goldThisRun > 300) {
+        if(goldThisRun >= 300) {
             SteamApi.api.achieve("RUN_GOLD");
         }
     }
