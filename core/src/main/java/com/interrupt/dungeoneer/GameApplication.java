@@ -30,6 +30,9 @@ public class GameApplication extends Game {
 
     @Override
 	public void create() {
+        // Initialize SteamApi
+        SteamApi.api.init();
+
 		instance = this;
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create");
 

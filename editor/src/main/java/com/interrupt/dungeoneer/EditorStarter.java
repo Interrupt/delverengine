@@ -20,11 +20,10 @@ public class EditorStarter {
         // We must call this first to get the correct display options
         Options.loadOptions();
 
+        // Set target SteamAPI
+        SteamApi.api = new NullSteamApi();
+
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "DelvEdit");
         Editor.init();
-
-        // Start the null steam API
-        SteamApi.api = new NullSteamApi();
-        SteamApi.api.init();
     }
 }
