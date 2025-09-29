@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.*;
+import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.*;
 import com.interrupt.dungeoneer.collision.Collidor;
@@ -384,6 +385,9 @@ public class EditorApplication implements ApplicationListener {
 	}
 
 	public void init(){
+        // Initialize SteamApi
+        SteamApi.api.init();
+
         renderer = new GlRenderer();
         EditorArt.initAtlases();
 
