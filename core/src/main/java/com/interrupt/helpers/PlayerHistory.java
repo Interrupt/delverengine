@@ -1,7 +1,6 @@
 package com.interrupt.helpers;
 
 import com.badlogic.gdx.Gdx;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Monster;
@@ -28,7 +27,7 @@ public class PlayerHistory {
 		monstersKilled++;
 
 		if(monstersKilled > 150) {
-			SteamApi.api.achieve("RUN_MONSTERS");
+			Game.achievementManager.achievementDealer.achieve("RUN_MONSTERS");
 		}
 	}
 	
@@ -37,7 +36,7 @@ public class PlayerHistory {
 		foodEaten++;
 
 		if(foodEaten > 40) {
-			SteamApi.api.achieve("RUN_FOOD");
+			Game.achievementManager.achievementDealer.achieve("RUN_FOOD");
 		}
 	}
 	
@@ -46,7 +45,7 @@ public class PlayerHistory {
 		potionsDrank++;
 
 		if(potionsDrank >= 15) {
-			SteamApi.api.achieve("RUN_POTIONS");
+			Game.achievementManager.achievementDealer.achieve("RUN_POTIONS");
 		}
 	}
 	
@@ -55,7 +54,7 @@ public class PlayerHistory {
 		scrollsUsed++;
 
 		if(scrollsUsed >= 10) {
-			SteamApi.api.achieve("RUN_SCROLLS");
+			Game.achievementManager.achievementDealer.achieve("RUN_SCROLLS");
 		}
 	}
 	
@@ -65,7 +64,7 @@ public class PlayerHistory {
 
 		if(Game.instance != null && Game.instance.player != null && Game.instance.player.isAlive()) {
 			if (damageTaken >= 400) {
-				SteamApi.api.achieve("RUN_DAMAGE_TAKEN");
+				Game.achievementManager.achievementDealer.achieve("RUN_DAMAGE_TAKEN");
 			}
 		}
 	}
@@ -75,7 +74,7 @@ public class PlayerHistory {
 		wandsUsed++;
 
 		if(wandsUsed >= 300) {
-			SteamApi.api.achieve("RUN_WANDS");
+			Game.achievementManager.achievementDealer.achieve("RUN_WANDS");
 		}
 	}
 	
@@ -84,7 +83,7 @@ public class PlayerHistory {
 		trapsActivated++;
 
 		if(trapsActivated >= 10) {
-			SteamApi.api.achieve("RUN_TRAPS");
+			Game.achievementManager.achievementDealer.achieve("RUN_TRAPS");
 		}
 	}
 	
@@ -93,7 +92,7 @@ public class PlayerHistory {
 		timesTeleported++;
 
 		if(timesTeleported >= 10) {
-			SteamApi.api.achieve("RUN_TELEPORTED");
+			Game.achievementManager.achievementDealer.achieve("RUN_TELEPORTED");
 		}
 	}
 	
@@ -103,7 +102,7 @@ public class PlayerHistory {
 		timesPoisoned++;
 
 		if(timesPoisoned >= 10) {
-			SteamApi.api.achieve("RUN_POISONED");
+			Game.achievementManager.achievementDealer.achieve("RUN_POISONED");
 		}
 	}
 
@@ -112,7 +111,7 @@ public class PlayerHistory {
 		thingsIdentified++;
 
 		if(thingsIdentified >= 5) {
-			SteamApi.api.achieve("RUN_IDENTIFIED");
+			Game.achievementManager.achievementDealer.achieve("RUN_IDENTIFIED");
 		}
 	}
 
@@ -121,7 +120,7 @@ public class PlayerHistory {
 		secretsFound++;
 
 		if(secretsFound >= 5) {
-			SteamApi.api.achieve("RUN_SECRETS");
+			Game.achievementManager.achievementDealer.achieve("RUN_SECRETS");
 		}
 	}
 }

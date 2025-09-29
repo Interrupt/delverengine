@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
@@ -189,7 +188,7 @@ public class WinScreen extends StatsScreen {
     }
 
     private void showStats() {
-        SteamApi.api.achieve("WON");
+        Game.achievementManager.achievementDealer.achieve("WON");
         showingStats = true;
         showStats(1);
     }

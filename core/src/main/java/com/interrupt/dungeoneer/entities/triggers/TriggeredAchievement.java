@@ -1,7 +1,5 @@
 package com.interrupt.dungeoneer.entities.triggers;
 
-import com.badlogic.gdx.math.Vector3;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 
@@ -14,7 +12,7 @@ public class TriggeredAchievement extends Trigger {
 	
 	@Override
 	public void doTriggerEvent(String value) {
-		SteamApi.api.achieve(achievementName);
+		Game.achievementManager.achievementDealer.achieve(achievementName);
 		super.doTriggerEvent(value);
 	}
 }

@@ -3,17 +3,14 @@ package com.interrupt.dungeoneer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
@@ -298,15 +295,15 @@ public class GameOverScreen extends StatsScreen {
         dealtAchievements = true;
 
         if(gameOver) {
-            SteamApi.api.achieve("DIED");
+            Game.achievementManager.achievementDealer.achieve("DIED");
         }
         else {
-            SteamApi.api.achieve("WON");
+            Game.achievementManager.achievementDealer.achieve("WON");
         }
 
         int goldThisRun = Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun;
         if(goldThisRun > 300) {
-            SteamApi.api.achieve("RUN_GOLD");
+            Game.achievementManager.achievementDealer.achieve("RUN_GOLD");
         }
     }
 
