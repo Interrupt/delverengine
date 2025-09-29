@@ -1,5 +1,6 @@
 package com.interrupt.managers.achievements;
 
+import com.interrupt.api.googleplay.GooglePlayApi;
 import com.interrupt.api.steam.SteamApi;
 
 public class AchievementManager {
@@ -10,8 +11,8 @@ public class AchievementManager {
             achievementDealer = new SteamAchievementDealer();
         }
 
-        // if (GooglePlayApi.api.isAvailable()) {
-        //     achievementDealer = new GooglePlayAchievementDealer();
-        // }
+        if (GooglePlayApi.api.isAvailable()) {
+            achievementDealer = new GooglePlayAchievementDealer();
+        }
     }
 }
