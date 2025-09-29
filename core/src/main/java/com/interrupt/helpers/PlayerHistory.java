@@ -20,6 +20,7 @@ public class PlayerHistory {
 	public int timesPoisoned = 0;
 	public int thingsIdentified = 0;
 	public int secretsFound = 0;
+	public int goldTaken = 0;
 	
 	public PlayerHistory() { }
 	
@@ -122,6 +123,15 @@ public class PlayerHistory {
 
 		if(secretsFound >= 5) {
 			SteamApi.api.achieve("RUN_SECRETS");
+		}
+	}
+
+	public void tookGold(int amount) {
+		Gdx.app.log("PlayerHistory", "Took gold");
+		goldTaken += amount;
+
+		if(goldTaken >= 300) {
+			SteamApi.api.achieve("RUN_GOLD");
 		}
 	}
 }

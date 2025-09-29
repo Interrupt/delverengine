@@ -190,12 +190,6 @@ public class WinScreen extends StatsScreen {
 
     private void showStats() {
         SteamApi.api.achieve("WON");
-
-        int goldThisRun = Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun;
-        if(goldThisRun >= 300) {
-            SteamApi.api.achieve("RUN_GOLD");
-        }
-
         showingStats = true;
         showStats(1);
     }
