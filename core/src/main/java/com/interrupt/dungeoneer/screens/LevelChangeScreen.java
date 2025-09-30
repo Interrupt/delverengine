@@ -47,6 +47,7 @@ public class LevelChangeScreen extends BaseScreen {
 			GameManager.renderer.disposeMeshes();
 			Art.KillCache();
 			GameManager.renderer.initTextures();
+            GameManager.renderer.initHud();
 		}
 	}
 
