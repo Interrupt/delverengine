@@ -4,6 +4,8 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.interrupt.api.steam.NullSteamApi;
+import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 
@@ -55,6 +57,9 @@ public class DesktopStarter {
         config.setWindowIcon(Files.FileType.Internal, "icon-128.png"); // 128x128 icon (mac OS)
         config.setWindowIcon(Files.FileType.Internal, "icon-32.png");  // 32x32 icon (Windows + Linux)
         config.setWindowIcon(Files.FileType.Internal, "icon-16.png");  // 16x16 icon (Windows)
+
+        // Set target SteamAPI
+        SteamApi.api = new NullSteamApi();
 
         new Lwjgl3Application(new GameApplication(), config);
     }
