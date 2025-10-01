@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.entities.items;
 
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.AmbientSound;
@@ -12,7 +11,6 @@ import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.gfx.GlRenderer;
 import com.interrupt.managers.StringManager;
 
 import java.text.MessageFormat;
@@ -130,7 +128,7 @@ public class QuestItem extends Item {
 		Audio.playMusic(Game.instance.level.actionMusic, Game.instance.level.loopMusic);
 
 		if(giveAchievement)
-			SteamApi.api.achieve("ORB");
+			Game.achievementManager.achievementDealer.achieve("ORB");
 	}
 	
 	public void onDispose() {

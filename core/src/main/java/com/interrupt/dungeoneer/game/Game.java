@@ -36,6 +36,7 @@ import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
 import com.interrupt.dungeoneer.ui.Hud.DragAndDropResult;
 import com.interrupt.managers.*;
+import com.interrupt.managers.achievements.AchievementManager;
 import com.interrupt.utils.JsonUtil;
 import com.interrupt.utils.Logger;
 import com.interrupt.utils.OSUtils;
@@ -81,6 +82,7 @@ public class Game {
 	public MonsterManager monsterManager;
 	public EntityManager entityManager;
     public static HUDManager hudManager;
+	public static AchievementManager achievementManager;
 
 	public static boolean isMobile = false;
 	public static boolean isDebugMode = false;
@@ -179,6 +181,7 @@ public class Game {
 		EntityManager.setSingleton(entityManager);
 
         loadHUDManager(modManager);
+		loadAchievementManager();
 	}
 
     // Set the static game instance
@@ -1511,6 +1514,11 @@ public class Game {
             ShowMessage(MessageFormat.format(StringManager.get("game.Game.errorLoadingDataText"), "HUD.DAT"), 2, 1f);
         }
     }
+
+	private static void loadAchievementManager() {
+		achievementManager = new AchievementManager();
+		achievementManager.init();
+	}
 
     public GameModeInterface getGameMode() {
         return gameMode;
