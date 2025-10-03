@@ -43,11 +43,12 @@ public class QuestItem extends Item {
 	@Override
 	public void init(Level level, Level.Source source) {
 		super.init(level, source);
-
-		if(source != Level.Source.SPAWNED) {
-			Audio.preload(ambientSoundFile);
-		}
 	}
+
+    @Override
+    public void preloadSounds() {
+        Audio.preload(ambientSoundFile);
+    }
 
 	@Override
 	public void tick(Level level, float delta) {

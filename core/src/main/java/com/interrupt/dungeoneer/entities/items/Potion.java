@@ -33,6 +33,7 @@ public class Potion extends Item {
 	public void preloadSounds() {
 		super.preloadSounds();
 		Audio.preload("cons_drink.mp3");
+		Audio.preload("potions/sfx_boil.mp3");
 	}
 
 	public void Drink(Player player) {

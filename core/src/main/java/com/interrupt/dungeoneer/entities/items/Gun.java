@@ -96,6 +96,14 @@ public class Gun extends Weapon {
         super.preloadSounds();
         Audio.preload(fireSound);
         Audio.preload(outOfAmmoSound);
+
+        if (muzzleFlash != null) {
+            muzzleFlash.preloadSounds();
+        }
+
+        if (hitEffect != null) {
+            hitEffect.preloadSounds();
+        }
     }
 
 	@Override

@@ -47,7 +47,7 @@ public class MagicMissile extends Spell {
 
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
-		
+
 		int dmg = doAttackRoll();
 
 		if (Math.abs(this.shotAccuracy) < 1.0f) {
@@ -63,9 +63,13 @@ public class MagicMissile extends Spell {
 	@Override
 	public void preloadSounds() {
 		super.preloadSounds();
-		if(explosion != null) {
+
+        Audio.preload(hitSound);
+
+        if(explosion != null) {
 			Audio.preload(explosion.explodeSound);
 		}
+
 		if(magicMissileProjectile != null) {
 			magicMissileProjectile.preloadSounds();
 		}

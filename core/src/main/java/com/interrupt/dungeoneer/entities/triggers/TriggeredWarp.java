@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.entities.triggers;
 
 import com.badlogic.gdx.graphics.Color;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
@@ -129,4 +130,11 @@ public class TriggeredWarp extends Trigger {
 
 		super.init(level, source);
 	}
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(levelChangeSound);
+        Audio.preload(ambientSound);
+    }
 }

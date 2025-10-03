@@ -41,6 +41,7 @@ public class Sword extends Weapon {
 		super.preloadSounds();
 		Audio.preload(wallHitSound);
 		Audio.preload(swingSound);
+        Audio.preload("hit.mp3,hit_02.mp3,hit_03.mp3,hit_04.mp3");
 	}
 
 	@Override

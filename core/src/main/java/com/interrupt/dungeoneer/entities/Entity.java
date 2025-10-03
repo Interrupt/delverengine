@@ -1069,5 +1069,7 @@ public class Entity {
 	public HaloMode getHaloMode() { return HaloMode.NONE; }
 	public boolean hasShadow() { return shadowType != ShadowType.NONE; }
 
-	public void preloadSounds() { }
+	public void preloadSounds() {
+        Audio.preload(dropSound);
+    }
 }
