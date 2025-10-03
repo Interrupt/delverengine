@@ -104,6 +104,10 @@ public class Gun extends Weapon {
         if (hitEffect != null) {
             hitEffect.preloadSounds();
         }
+
+        if (spell != null) {
+            spell.preloadSounds();
+        }
     }
 
 	@Override
