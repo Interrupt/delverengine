@@ -360,4 +360,15 @@ public class TriggeredElevator extends Trigger {
 		super.onDispose();
 		if(movingAmbientSound != null) movingAmbientSound.onDispose();
 	}
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+
+        Audio.preload(startSound);
+        Audio.preload(endSound);
+        Audio.preload(returnStartSound);
+        Audio.preload(returnEndSound);
+        Audio.preload(movingSound);
+    }
 }

@@ -372,6 +372,19 @@ public class Monster extends Actor implements Directional {
 		placeMonster(level);
 	}
 
+	@Override
+	public void preloadSounds() {
+		Audio.preload(alertSound);
+		Audio.preload(attackSound);
+		Audio.preload(attackSwingSound);
+		Audio.preload(dieSound);
+		Audio.preload(fleeSound);
+		Audio.preload(hitSound);
+		Audio.preload(hurtSound);
+		Audio.preload(idleSound);
+		Audio.preload(walkSound);
+	}
+
 	public void placeMonster(Level level) {
 		// Don't spawn if we are spawning *inside* something else
 		boolean levelFree = level.isFree(x, y, z, collision, stepHeight, floating, null);
@@ -1346,24 +1359,15 @@ public class Monster extends Actor implements Directional {
 			attackAnimation = new SpriteAnimation(tex + 2, tex + 2, 24f, null);
 		}
 
-		// preload some sounds
-		/*if(!Game.isMobile) {
-			Audio.preload(dieSound);
-			Audio.preload(attackSwingSound);
-			Audio.preload(hurtSound);
-			Audio.preload(idleSound);
-			Audio.preload(alertSound);
-		}*/
-
-		// Let the lightmap color fade
-		if(drawable instanceof DrawableSprite)
-		{
-			DrawableSprite s = (DrawableSprite)drawable;
-			if(s.colorLastFrame == null) {
-				Color lightmap = GameManager.renderer.GetLightmapAt(level, x + drawable.drawOffset.x, z, y + drawable.drawOffset.y);
-				s.colorLastFrame = new Color(lightmap.r, lightmap.g, lightmap.b, 1f);
-			}
-		}
+        // Let the lightmap color fade
+        if(drawable instanceof DrawableSprite)
+        {
+            DrawableSprite s = (DrawableSprite)drawable;
+            if(s.colorLastFrame == null) {
+                Color lightmap = GameManager.renderer.GetLightmapAt(level, x + drawable.drawOffset.x, z, y + drawable.drawOffset.y);
+                s.colorLastFrame = new Color(lightmap.r, lightmap.g, lightmap.b, 1f);
+            }
+        }
 	}
 
 	public void stun(float stunTime) {

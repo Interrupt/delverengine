@@ -234,4 +234,9 @@ public class Trigger extends Entity {
 	public TriggerStatus getTriggerStatus() {
 		return triggerStatus;
 	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload(triggerSound);
+	}
 }

@@ -209,4 +209,9 @@ public class ButtonModel extends Model {
 		super.makeEntityIdUnique(idPrefix);
 		triggersId = makeUniqueIdentifier(triggersId, idPrefix);
 	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload(triggerSound);
+	}
 }

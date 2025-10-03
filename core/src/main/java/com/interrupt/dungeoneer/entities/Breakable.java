@@ -421,4 +421,10 @@ public class Breakable extends Model {
             hit(0, 0, hp, 0, DamageType.PHYSICAL, e);
         }
     }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(breakSound);
+    }
 }

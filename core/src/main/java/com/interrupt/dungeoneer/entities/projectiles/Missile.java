@@ -767,4 +767,10 @@ public class Missile extends Item implements Directional {
 
         this.resetTickCount();
     }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload("hit.mp3,hit_02.mp3,hit_03.mp3,hit_04.mp3");
+    }
 }

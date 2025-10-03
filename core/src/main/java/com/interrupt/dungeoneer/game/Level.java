@@ -3289,7 +3289,7 @@ public class Level {
 
 		Audio.playMusic(music, true);
 
-		if(ambientSound != null && !Game.isMobile)
+		if(ambientSound != null)
 			Audio.playAmbientSound(ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
 	}
 

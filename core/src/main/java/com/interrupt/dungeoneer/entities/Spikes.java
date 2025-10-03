@@ -182,4 +182,9 @@ public class Spikes extends Model {
             drawable.update(this);
         }
     }
+
+    @Override
+    public void preloadSounds() {
+        Audio.preload("trap/trap_spike.mp3");
+    }
 }

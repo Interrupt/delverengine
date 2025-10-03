@@ -20,10 +20,6 @@ public class Bow extends Weapon {
 	@EditorProperty
 	public int range = 4;
 
-	/** Sound played when Bow is shot. */
-	@EditorProperty
-	public String fireSound = "bow.mp3,bow_02.mp3,bow_03.mp3,bow_04.mp3";
-
 	public Bow() { super(0, 0, 15, ItemType.bow, StringManager.get("items.Bow.defaultName")); this.yOffset = 0.085f; attackAnimation = "bowAttack"; chargeAnimation = "bowCharge"; shadowType = ShadowType.BLOB;  }
 
 	public Bow(float x, float y) {
@@ -32,6 +28,17 @@ public class Bow extends Weapon {
 
 	public String GetInfoText() {
 		return MessageFormat.format(StringManager.get("items.Bow.rangeText"), this.range) + "\n" + super.GetInfoText();
+	}
+
+    /** Sound played when Bow is shot. */
+	@EditorProperty
+	public String fireSound = "bow.mp3,bow_02.mp3,bow_03.mp3,bow_04.mp3";
+
+	@Override
+	public void preloadSounds() {
+		super.preloadSounds();
+		Audio.preload(fireSound);
+		Audio.preload("ui/ui_noammo_bow.mp3");
 	}
 
 	@Override
@@ -45,7 +52,7 @@ public class Bow extends Weapon {
 
 		int damageRoll = doAttackRoll(attackPower, p);
 		if(damageRoll == 0) damageRoll = 1;
-		
+
 		float power = attackPower * (this.range / 4.0f) * 0.5f;
 		missile.isActive = true;
 		missile.isDynamic = true;
@@ -76,7 +83,7 @@ public class Bow extends Weapon {
 		}
 
 		lvl.entities.add(missile);
-		
+
 		Audio.playSound(fireSound, 0.25f);
 	}
 
@@ -101,7 +108,7 @@ public class Bow extends Weapon {
 		}
 		return null;
 	}
-	
+
 	public Missile getAmmo() {
 		Item found = findAmmo();
 		if(found != null) {
@@ -120,7 +127,7 @@ public class Bow extends Weapon {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Integer getHeldTex() {
 		Item found = findAmmo();

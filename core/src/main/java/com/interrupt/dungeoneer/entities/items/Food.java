@@ -35,6 +35,14 @@ public class Food extends Item {
 		super(x, y, 0, ItemType.potion, StringManager.get("items.Food.defaultNameText"));
 	}
 
+	@Override
+	public void preloadSounds() {
+		super.preloadSounds();
+		Audio.preload("cons_drink.mp3");
+		Audio.preload("cons_food.mp3");
+		Audio.preload(consumeSound);
+	}
+
 	public void Eat(Player player) {
 		player.history.ateFood(this);
 

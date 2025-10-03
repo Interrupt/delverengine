@@ -15,14 +15,20 @@ public class TriggeredAmbientSound extends Trigger {
 
 	@EditorProperty
 	public float changeSpeed = 0.1f;
-	
+
 	@Override
 	public void doTriggerEvent(String value) {
 		Audio.playAmbientSound(ambientSound, ambientVolume, changeSpeed);
 	}
-	
+
 	@Override
 	public void tick(Level level, float delta) {
 		super.tick(level, delta);
 	}
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(ambientSound);
+    }
 }

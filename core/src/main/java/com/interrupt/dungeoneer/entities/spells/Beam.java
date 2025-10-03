@@ -52,4 +52,9 @@ public class Beam extends Spell {
 	public void playCastSound(Actor owner) {
 		Audio.playPositionedSound("mg_light_shoot_01.mp3,mg_light_shoot_02.mp3,mg_light_shoot_03.mp3,mg_light_shoot_04.mp3", new Vector3(owner.x, owner.y, owner.z), 0.75f, 13f);
 	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload("mg_light_shoot_01.mp3,mg_light_shoot_02.mp3,mg_light_shoot_03.mp3,mg_light_shoot_04.mp3");
+	}
 }

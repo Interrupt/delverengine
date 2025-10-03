@@ -222,4 +222,10 @@ public class Critter extends AnimatedSprite {
             Audio.playPositionedSound(dieSound, new Vector3(x, y, z), 0.5f, 3f);
         }
     }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(dieSound);
+    }
 }

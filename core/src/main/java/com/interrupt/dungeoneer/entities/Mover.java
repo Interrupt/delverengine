@@ -418,4 +418,13 @@ public class Mover extends Model {
 		triggersIdAtStart = makeUniqueIdentifier(triggersIdAtStart, idPrefix);
 		triggersIdWhenDone = makeUniqueIdentifier(triggersIdWhenDone, idPrefix);
 	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload(endSound);
+		Audio.preload(movingSound);
+		Audio.preload(returnEndSound);
+		Audio.preload(returnStartSound);
+		Audio.preload(startSound);
+	}
 }

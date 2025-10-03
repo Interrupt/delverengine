@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.items.Weapon;
@@ -220,5 +221,11 @@ public class Fire extends AnimatedSprite {
                 }
             }
         }
+    }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload("torch.mp3");
     }
 }

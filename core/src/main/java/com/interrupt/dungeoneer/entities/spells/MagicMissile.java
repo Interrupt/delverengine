@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.entities.spells;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.*;
 import com.interrupt.dungeoneer.entities.projectiles.MagicMissileProjectile;
 import com.interrupt.dungeoneer.game.Game;
@@ -46,7 +47,7 @@ public class MagicMissile extends Spell {
 
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
-		
+
 		int dmg = doAttackRoll();
 
 		if (Math.abs(this.shotAccuracy) < 1.0f) {
@@ -57,6 +58,21 @@ public class MagicMissile extends Spell {
 
 		MagicMissileProjectile projectile = makeProjectile(position, direction, dmg, owner);
 		Game.GetLevel().entities.add(projectile);
+	}
+
+	@Override
+	public void preloadSounds() {
+		super.preloadSounds();
+
+        Audio.preload(hitSound);
+
+        if(explosion != null) {
+			Audio.preload(explosion.explodeSound);
+		}
+
+		if(magicMissileProjectile != null) {
+			magicMissileProjectile.preloadSounds();
+		}
 	}
 
 	// Make the projectile to fire

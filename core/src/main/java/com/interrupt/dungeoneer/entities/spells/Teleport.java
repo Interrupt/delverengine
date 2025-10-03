@@ -21,13 +21,13 @@ import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.tiles.Tile;
 
 public class Teleport extends Spell {
-	
+
 	public Teleport() { }
-	
+
 	public Teleport(DamageType damageType) {
 		this.damageType = damageType;
 	}
-	
+
 	/** Handles individual teleport (ex. casting a spell from a scroll). */
 	@Override
 	public void doCast(Entity owner, Vector3 direction, Vector3 position) {
@@ -37,22 +37,22 @@ public class Teleport extends Spell {
 	/** Handles teleport for every actor, including the player, within a certain radius (ex. stepping on a pressure plate trap). */
 	public void doCast(Vector3 pos, Vector3 direction) {
 		Level level = Game.GetLevel();
-		
+
 		int seed = (int)pos.x * level.width + (int)pos.y;
-		
+
 		for(Entity e : level.entities) {
 			if(e.isActive && e.isDynamic && !(e instanceof Door) && !(e instanceof Mover) && !(e instanceof Trigger) && Math.abs(e.x - pos.x) < 0.5f + e.collision.x && Math.abs(e.y - pos.y) < 0.5f + e.collision.y) {
 				teleport(e, seed);
 			}
 		}
-		
+
 		Player p = Game.instance.player;
 		if(Math.abs(p.x - pos.x) < 0.5f + p.collision.x && Math.abs(p.y - pos.y) < 0.5f + p.collision.y) {
 			teleport(p, seed);
 			p.history.teleported();
 		}
 	}
-	
+
 	/**
 	 * Teleports the specified entity to a random location based on the provided seed number. Providing the same seed
 	 * will result in the same location. Any actor entity, such as a monster, already at that location will be killed.
@@ -60,7 +60,7 @@ public class Teleport extends Spell {
 	public void teleport(Entity e, int seed) {
 		Level level = Game.GetLevel();
 		if(level.dungeonLevel == 0) return;
-		
+
 		Random r = new Random(seed);
 		int tries = 0;
 		while(tries++ < 1000) {
@@ -101,7 +101,7 @@ public class Teleport extends Spell {
 		int particleCount = 20;
 		particleCount *= Options.instance.gfxQuality;
 		if(particleCount <= 0) particleCount = 1;
-		
+
 		for(int i = 0; i < particleCount; i++)
 		{
 			int speed = r.nextInt(45) + 10;
@@ -119,9 +119,15 @@ public class Teleport extends Spell {
 
 			level.SpawnNonCollidingEntity(part);
 		}
-		
+
 		level.SpawnNonCollidingEntity( new DynamicLight(pos.x,pos.y,pos.z, new Vector3(Color.ORANGE.r * 2f, Color.ORANGE.g * 2f, Color.ORANGE.b * 2f)).startLerp(new Vector3(0,0,0), 40, true).setHaloMode(Entity.HaloMode.BOTH) );
-		
+
 		Audio.playPositionedSound("trap_tele.mp3", new Vector3(pos.x, pos.y, pos.z), 0.6f, 12f);
 	}
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload("trap_tele.mp3");
+    }
 }

@@ -35,7 +35,7 @@ public class Explosion extends Entity {
 
     /** Particle sprite animation speed. */
     public float explosionAnimSpeed = 22f;
-	
+
 	// Physics
     /** Impulse range. */
 	public float impulseDistance = 1f;
@@ -82,7 +82,7 @@ public class Explosion extends Entity {
     @Deprecated
     public boolean hasHalo = true;
     public HaloMode haloMode = HaloMode.NONE;
-	
+
 	// Damage!
     /** Damage amount. */
 	public float damage = 0f;
@@ -115,7 +115,7 @@ public class Explosion extends Entity {
 
     /** Status effect. */
     public StatusEffect applyStatusEffect = null;
-	
+
 	public transient Entity owner = null;
 
 	public Explosion() {
@@ -378,7 +378,7 @@ public class Explosion extends Entity {
             rot += rotAmount;
         }
     }
-	
+
 	@Override
 	public void tick(Level level, float delta) {
 	    if(explodeDelay == 0) {
@@ -393,7 +393,7 @@ public class Explosion extends Entity {
             fuseTimer += delta;
         }
 	}
-	
+
 	public void makeDecal() {
 		if(hitDecal != null) {
             if (makeDustRing) {
@@ -453,5 +453,11 @@ public class Explosion extends Entity {
                 level.SpawnEntity(e);
             }
         }
+    }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(explodeSound);
     }
 }

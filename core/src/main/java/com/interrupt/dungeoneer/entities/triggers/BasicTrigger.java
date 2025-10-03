@@ -177,4 +177,9 @@ public class BasicTrigger extends Entity {
     public Trigger.TriggerStatus getTriggerStatus() {
         return triggerStatus;
     }
+
+    @Override
+    public void preloadSounds() {
+        Audio.preload(triggerSound);
+    }
 }
