@@ -87,6 +87,14 @@ public class Audio {
 		}
 	}
 
+    static public int maxSoundsPerPlatform() {
+        if (Game.isMobile) {
+            return 1;
+        }
+
+        return 20;
+    }
+
 	static public Sound loadSound(String filename)
 	{
 		try {
@@ -117,7 +125,7 @@ public class Audio {
 
 		String[] files = getFileList(filename);
 
-		int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+		int numSounds = maxSoundsPerPlatform();
 		if(numSounds > files.length) numSounds = files.length;
 
 		for(int i = 0; i < numSounds; i++) {
@@ -390,7 +398,7 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			int numSounds = maxSoundsPerPlatform();
 			if(numSounds > files.length) numSounds = files.length;
 			theFile = files[Game.rand.nextInt(numSounds)];
 
@@ -410,7 +418,7 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			int numSounds = maxSoundsPerPlatform();
 			if(numSounds > files.length) numSounds = files.length;
 			theFile = files[Game.rand.nextInt(numSounds)];
 
@@ -441,7 +449,7 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			int numSounds = maxSoundsPerPlatform();
 			if(numSounds > files.length) numSounds = files.length;
 			theFile = files[Game.rand.nextInt(numSounds)];
 
@@ -463,7 +471,7 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+			int numSounds = maxSoundsPerPlatform();
 			if(numSounds > files.length) numSounds = files.length;
 			theFile = files[Game.rand.nextInt(numSounds)];
 
@@ -528,7 +536,7 @@ public class Audio {
 		String[] files = getFileList(filename);
 		String theFile = null;
 
-		int numSounds = MaxSoundsPerPlatform.get(Game.gamePlatform.ordinal());
+		int numSounds = maxSoundsPerPlatform();
 		if(numSounds > files.length) numSounds = files.length;
 		theFile = files[Game.rand.nextInt(numSounds)];
 

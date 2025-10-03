@@ -10,10 +10,7 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.GameData;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
-import com.interrupt.dungeoneer.screens.GameScreen;
-import com.interrupt.dungeoneer.screens.LevelChangeScreen;
-import com.interrupt.dungeoneer.screens.MainMenuScreen;
-import com.interrupt.dungeoneer.screens.SplashScreen;
+import com.interrupt.dungeoneer.screens.*;
 import com.interrupt.utils.JsonUtil;
 
 public class GameApplication extends Game {
@@ -44,9 +41,7 @@ public class GameApplication extends Game {
 
         mainMenuScreen = new SplashScreen();
         mainScreen = new GameScreen(gameManager, input);
-        gameoverScreen = new GameOverScreen(gameManager);
-        levelChangeScreen = new LevelChangeScreen(gameManager);
-        winScreen = new WinScreen(gameManager);
+        levelChangeScreen = new LevelChangeScreen();
 
         if (com.interrupt.dungeoneer.game.Game.skipIntro)
         {
@@ -55,11 +50,6 @@ public class GameApplication extends Game {
         else {
             setScreen(new SplashScreen());
         }
-
-        // Set the max sounds per platform
-		Audio.MaxSoundsPerPlatform.put(com.interrupt.dungeoneer.game.Game.GamePlatform.Mobile.ordinal(), 1);
-		Audio.MaxSoundsPerPlatform.put(com.interrupt.dungeoneer.game.Game.GamePlatform.PC.ordinal(), 20);
-		Audio.MaxSoundsPerPlatform.put(com.interrupt.dungeoneer.game.Game.GamePlatform.Console.ordinal(), 2);
 	}
 
 	public void createFromEditor(Level level) {

@@ -20,10 +20,6 @@ public class Bow extends Weapon {
 	@EditorProperty
 	public int range = 4;
 
-	/** Sound played when Bow is shot. */
-	@EditorProperty
-	public String fireSound = "bow.mp3,bow_02.mp3,bow_03.mp3,bow_04.mp3";
-
 	public Bow() { super(0, 0, 15, ItemType.bow, StringManager.get("items.Bow.defaultName")); this.yOffset = 0.085f; attackAnimation = "bowAttack"; chargeAnimation = "bowCharge"; shadowType = ShadowType.BLOB;  }
 
 	public Bow(float x, float y) {
@@ -34,6 +30,7 @@ public class Bow extends Weapon {
 		return MessageFormat.format(StringManager.get("items.Bow.rangeText"), this.range) + "\n" + super.GetInfoText();
 	}
 
+    /** Sound played when Bow is shot. */
 	@EditorProperty
 	public String fireSound = "bow.mp3,bow_02.mp3,bow_03.mp3,bow_04.mp3";
 
