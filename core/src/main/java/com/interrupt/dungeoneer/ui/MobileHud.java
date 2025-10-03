@@ -25,7 +25,6 @@ import com.interrupt.dungeoneer.overlays.PauseOverlay;
 public class MobileHud extends Hud {
 
 	private MultiTouchButton attackBtn;
-	private MultiTouchButton useBtn;
 	private MultiTouchButton inventoryBtn;
 	private MultiTouchButton mapBtn;
 	private MultiTouchButton pauseBtn;
@@ -45,16 +44,6 @@ public class MobileHud extends Hud {
 			}
 		});
 		Game.ui.addActor(attackBtn);
-
-        // Use button
-		if(useBtn != null) Game.ui.getActors().removeValue(useBtn, true);
-		useBtn = new MultiTouchButton(new TextureRegionDrawable(itemTextures[125]));
-		useBtn.addListener(new ClickListener() {
-			public void clicked(InputEvent event, float x, float y) {
-				Game.instance.player.Use(Game.instance.level);
-			}
-		});
-		Game.ui.addActor(useBtn);
 
         // Inventory button
         if(inventoryBtn != null) Game.ui.getActors().removeValue(inventoryBtn, true);
@@ -92,14 +81,13 @@ public class MobileHud extends Hud {
         // Size all of the mobile buttons
 		final float uiSize = Game.GetUiSize() * 2.0f;
 		attackBtn.setSize(uiSize, uiSize);
-		useBtn.setSize(uiSize, uiSize);
         inventoryBtn.setSize(uiSize, uiSize);
         mapBtn.setSize(uiSize, uiSize);
         pauseBtn.setSize(uiSize, uiSize);
 	}
 
 	public void tick(GameInput input) {
-		if(attackBtn == null || useBtn == null || inventoryBtn == null) GameManager.renderer.initHud();
+		if(attackBtn == null || inventoryBtn == null) GameManager.renderer.initHud();
 
 		super.tick(input);
 
@@ -107,21 +95,12 @@ public class MobileHud extends Hud {
         final float gutterSize = Gdx.graphics.getWidth() * 0.02f;
 
 		if(attackBtn != null) {
-			float btnSize = uiSize + uiSize * (attackBtn.isPressed() ? 0.1f : 0);
+			float btnSize = (uiSize + uiSize * (attackBtn.isPressed() ? 0.1f : 0)) * 2.0f;
 			float drawSize = (btnSize - uiSize) / 2f + uiSize;
 
 			attackBtn.setSize(btnSize, btnSize);
-			attackBtn.setY((int) btnSize / 10f);
-			attackBtn.setX((int) (Gdx.graphics.getWidth() - ((drawSize * 1.5f) + gutterSize)));
-		}
-
-		if(useBtn != null) {
-			float btnSize = uiSize + uiSize * (useBtn.isPressed() ? 0.1f : 0);
-			float drawSize = (btnSize - uiSize) / 2f + uiSize;
-
-			useBtn.setSize(btnSize, btnSize);
-			useBtn.setY((int) uiSize * 1.2f);
-			useBtn.setX((int) (Gdx.graphics.getWidth() - (drawSize + gutterSize)));
+			attackBtn.setY((int) gutterSize);
+			attackBtn.setX((int) (Gdx.graphics.getWidth() - (btnSize + gutterSize)));
 		}
 
         if(inventoryBtn != null) {
