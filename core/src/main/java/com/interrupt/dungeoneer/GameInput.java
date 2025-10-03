@@ -80,7 +80,6 @@ public class GameInput implements InputProcessor {
 		newlyMouseScrollDown=false;
 
         isNewlyTouched = false;
-        //tapped = false;
 
 		if(!Gdx.input.isCursorCatched()) {
 			ignoreLastMouseLocation = true;
@@ -218,9 +217,8 @@ public class GameInput implements InputProcessor {
         }
 
         if (tapped) {
-            Integer binding = Actions.keyBindings.get(Action.USE);
-            keysDown[binding] = true;
-            keyEvents.add(binding);
+            requestAction(Action.USE);
+            tapped = false;
         }
 
 		return false;
@@ -288,6 +286,12 @@ public class GameInput implements InputProcessor {
 		if(binding == null || binding < 0 || binding > keysDown.length) return false;
 		return keysDown[binding];
 	}
+
+    private void requestAction(Action action) {
+        Integer binding = Actions.keyBindings.get(action);
+        keysDown[binding] = true;
+        keyEvents.add(binding);
+    }
 
 	public boolean isActionRequested(Action action){
 		boolean isActionRequested = checkKeyDown(action);
