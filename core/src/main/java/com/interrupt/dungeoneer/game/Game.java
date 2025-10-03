@@ -378,6 +378,7 @@ public class Game {
 		boolean didLoad = load();
 
 		isMobile = Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS;
+        isMobile = true;
 
 		if(!isMobile) {
 			Gdx.input.setCursorCatched(true);

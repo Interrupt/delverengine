@@ -53,6 +53,7 @@ public class GameInput implements InputProcessor {
 	public final int gamepadPointerNum = 0;
 
     public boolean isNewlyTouched = false;
+    public boolean tapped = false;
 
 	public void setGamepadManager(GamepadManager gamepadManager) {
 		this.gamepadManager = gamepadManager;
@@ -79,6 +80,7 @@ public class GameInput implements InputProcessor {
 		newlyMouseScrollDown=false;
 
         isNewlyTouched = false;
+        //tapped = false;
 
 		if(!Gdx.input.isCursorCatched()) {
 			ignoreLastMouseLocation = true;
@@ -123,6 +125,7 @@ public class GameInput implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
+        tapped = true;
 		lastTouchedPointer = pointer;
         isNewlyTouched = true;
 
@@ -161,6 +164,7 @@ public class GameInput implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
+        tapped = false;
 		usingGamepad = false;
 
 		if(menuUi != null)
@@ -209,8 +213,15 @@ public class GameInput implements InputProcessor {
 		if(rightPointer != null && pointer == rightPointer) rightPointer = null;
 		if(uiTouchPointer != null && pointer == uiTouchPointer) uiTouchPointer = null;
 
-		if(Game.ui != null)
-			Game.ui.touchUp(x, y, pointer, button);
+		if(Game.ui != null) {
+            if (Game.ui.touchUp(x, y, pointer, button)) return true;
+        }
+
+        if (tapped) {
+            Integer binding = Actions.keyBindings.get(Action.USE);
+            keysDown[binding] = true;
+            keyEvents.add(binding);
+        }
 
 		return false;
 	}
