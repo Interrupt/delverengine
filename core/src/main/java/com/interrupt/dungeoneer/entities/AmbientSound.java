@@ -45,12 +45,6 @@ public class AmbientSound extends PositionedSound {
 	@Override
 	public void tick(Level level, float delta)
 	{
-		// ambient looping sounds aren't supported on mobile
-		if(Game.isMobile) {
-			isActive = false;
-			return;
-		}
-
 		curVolume = getPositionalVolume();
 
 		try {
@@ -141,7 +135,7 @@ public class AmbientSound extends PositionedSound {
 
 	@Override
 	public void init(Level level, Source source) {
-		if(loadOnStartup && !Game.isMobile) {
+		if(loadOnStartup) {
 			sound = Audio.loadSound(soundFile);
 			if(sound != null) {
 				soundInstance = sound.play(0f);

@@ -528,11 +528,8 @@ public class Audio {
 	}
 
 	public static PlayingSound playSound(String filename, float volume, float pitch, boolean loops) {
+		if(filename == null || filename.isEmpty()) return null;
 
-		// looping sounds aren't supported on mobile
-		if(loops && Game.isMobile) return null;
-
-		if(filename == null || filename.equals("")) return null;
 		String[] files = getFileList(filename);
 		String theFile = null;
 
