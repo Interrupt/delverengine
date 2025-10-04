@@ -62,17 +62,14 @@ public class Audio {
 	private static ArrayMap<String, Float> ambientSoundStackPlayTime = new ArrayMap<String, Float>();
 	private static float ambientSoundChangeSpeed = 0.1f;
 
-	private static String audioFilePrefix = "audio/";
-	private static String audioFilePostfix = ".wav";
-
-	public static IntMap<Integer> MaxSoundsPerPlatform = new IntMap<Integer>();
-
 	static public void init() {
 		attack = loadSound("whoosh1.mp3");
 		explode = loadSound("explode.mp3");
 		spell = loadSound("spell-missile-2.mp3");
 		clang = loadSound("clang.mp3");
 		splash = loadSound("splash2.mp3");
+        torch = loadSound("torch.mp3");
+        steps = loadSound("steps.mp3");
 
 		loadSound("hit.ogg");
 		loadSound("inventory/drop_item.ogg");
@@ -80,11 +77,6 @@ public class Audio {
 		loadSound("pu_gen.ogg");
 		loadSound("pu_glass.ogg");
 		loadSound("pu_gold.ogg");
-
-		if(Gdx.app.getType() != ApplicationType.Android && Gdx.app.getType() != ApplicationType.iOS) {
-			torch = loadSound("torch.mp3");
-			steps = loadSound("steps.mp3");
-		}
 	}
 
     static public int maxSoundsPerPlatform() {
