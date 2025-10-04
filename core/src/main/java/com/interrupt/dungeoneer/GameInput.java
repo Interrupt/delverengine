@@ -122,9 +122,13 @@ public class GameInput implements InputProcessor {
 		return false;
 	}
 
+    private Vector2 lastTapLocation = new Vector2();
+
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
         tapped = true;
+        lastTapLocation.set(x, y);
+
 		lastTouchedPointer = pointer;
         isNewlyTouched = true;
 
@@ -163,7 +167,10 @@ public class GameInput implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
-        tapped = false;
+        if (!lastTapLocation.epsilonEquals(x, y)) {
+            tapped = false;
+        }
+
 		usingGamepad = false;
 
 		if(menuUi != null)
