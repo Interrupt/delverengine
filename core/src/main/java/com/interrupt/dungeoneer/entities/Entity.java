@@ -820,6 +820,10 @@ public class Entity {
 				attached.get(i).init(level, source);
 			}
 		}
+
+		if(source != Level.Source.SPAWNED) {
+			preloadSounds();
+		}
 	}
 
 	// overload this to do any cleanup work when unloaded
@@ -1064,4 +1068,8 @@ public class Entity {
 	// for stencil shadows and halos
 	public HaloMode getHaloMode() { return HaloMode.NONE; }
 	public boolean hasShadow() { return shadowType != ShadowType.NONE; }
+
+	public void preloadSounds() {
+        Audio.preload(dropSound);
+    }
 }

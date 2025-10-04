@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.interrupt.dungeoneer.audio.PlayingSound;
@@ -78,6 +79,14 @@ public class Audio {
 		loadSound("pu_gold.ogg");
 	}
 
+    static public int maxSoundsPerPlatform() {
+        if (Game.isMobile) {
+            return 1;
+        }
+
+        return 20;
+    }
+
 	static public Sound loadSound(String filename)
 	{
 		try {
@@ -104,15 +113,15 @@ public class Audio {
 	}
 
 	static public void preload(String filename) {
-		if(filename == null) return;
+		if(filename == null || filename.isEmpty()) return;
 
 		String[] files = getFileList(filename);
-		if(!Game.isMobile) {
-			for(int i = 0; i < files.length; i++) {
-				loadSound(files[i]);
-			}
-		} else {
-			loadSound(files[0]);
+
+		int numSounds = maxSoundsPerPlatform();
+		if(numSounds > files.length) numSounds = files.length;
+
+		for(int i = 0; i < numSounds; i++) {
+			loadSound(files[i]);
 		}
 	}
 
@@ -381,10 +390,9 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+			int numSounds = maxSoundsPerPlatform();
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 			Sound sfx = getSound(theFile);
 			if(sfx != null) {
@@ -401,10 +409,10 @@ public class Audio {
 			if(filename == null || filename.equals("")) return;
 			String[] files = getFileList(filename);
 			String theFile = null;
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+
+			int numSounds = maxSoundsPerPlatform();
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 			Sound sfx = getSound(theFile);
 			if(sfx != null) {
@@ -433,10 +441,9 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+			int numSounds = maxSoundsPerPlatform();
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 	 		Sound sfx = Audio.getSound(theFile);
 			if(sfx != null && Game.instance.level != null) {
@@ -456,10 +463,9 @@ public class Audio {
 			String[] files = getFileList(filename);
 			String theFile = null;
 
-			if(!Game.isMobile)
-				theFile = files[Game.rand.nextInt(files.length)];
-			else
-				theFile = files[0];
+			int numSounds = maxSoundsPerPlatform();
+			if(numSounds > files.length) numSounds = files.length;
+			theFile = files[Game.rand.nextInt(numSounds)];
 
 	 		Sound sfx = Audio.getSound(theFile);
 			if(sfx != null && Game.instance.level != null) {
@@ -484,50 +490,44 @@ public class Audio {
 			Gdx.app.log("DelverAudio", "Couldn't unload music");
 		}
 
-		if(!Game.isMobile) {
-			for(Entry<String, Sound> sound : loadedSounds.entries()) {
-				try {
-					// don't unload level change sounds
-					if(ignore != null && ignore.contains(sound.key)) continue;
+        for(Entry<String, Sound> sound : loadedSounds.entries()) {
+            try {
+                // don't unload level change sounds
+                if(ignore != null && ignore.contains(sound.key)) continue;
 
-					Sound s = sound.value;
-					s.stop();
-					s.dispose();
-					s = null;
-				}
-				catch(Exception ex) {
-					Gdx.app.log("DelverAudio", "Couldn't unload sound");
-				}
-			}
-			loadedSounds.clear();
-			loopingSounds.clear();
-			ambientSounds.clear();
-			soundFileCache.clear();
+                Sound s = sound.value;
+                s.stop();
+                s.dispose();
+                s = null;
+            }
+            catch(Exception ex) {
+                Gdx.app.log("DelverAudio", "Couldn't unload sound");
+            }
+        }
+        loadedSounds.clear();
+        loopingSounds.clear();
+        ambientSounds.clear();
+        soundFileCache.clear();
 
-			attack = null;
-			hit = null;
-			explode = null;
-			torch = null;
-			spell = null;
-			clang = null;
-			splash = null;
-			steps = null;
-		}
+        attack = null;
+        hit = null;
+        explode = null;
+        torch = null;
+        spell = null;
+        clang = null;
+        splash = null;
+        steps = null;
 	}
 
 	public static PlayingSound playSound(String filename, float volume, float pitch, boolean loops) {
+		if(filename == null || filename.isEmpty()) return null;
 
-		// looping sounds aren't supported on mobile
-		if(loops && Game.isMobile) return null;
-
-		if(filename == null || filename.equals("")) return null;
 		String[] files = getFileList(filename);
 		String theFile = null;
 
-		if(!Game.isMobile)
-			theFile = files[Game.rand.nextInt(files.length)];
-		else
-			theFile = files[0];
+		int numSounds = maxSoundsPerPlatform();
+		if(numSounds > files.length) numSounds = files.length;
+		theFile = files[Game.rand.nextInt(numSounds)];
 
 		Sound sfx = getSound(theFile);
 		if(sfx != null) {

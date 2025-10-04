@@ -125,4 +125,10 @@ public class TeleportArea extends Area {
         super.makeEntityIdUnique(idPrefix);
         toWarpMarkerId = makeUniqueIdentifier(toWarpMarkerId, idPrefix);
     }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload("trap_tele.mp3");
+    }
 }

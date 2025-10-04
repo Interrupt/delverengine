@@ -136,10 +136,6 @@ public class Player extends Actor {
 
 	public HashMap<String,Item> equippedItems = new HashMap<String,Item>();
 
-	// audio stuff
-	private Long torchSoundInstance = null;
-	private Long stepsSoundInstance = null;
-
 	private Integer tapLength = null;
 
 	public int hotbarSize = 5;
@@ -344,6 +340,31 @@ public class Player extends Actor {
 	public void init() {
 		makeStartingInventory();
 		setupController();
+		preloadSounds();
+	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload(dropSound);
+		Audio.preload("/ui/ui_map_open.mp3");
+		Audio.preload("/ui/ui_map_close.mp3");
+		Audio.preload("splash2.mp3");
+		Audio.preload("sfx_death.mp3");
+		Audio.preload("inventory/drop_item.mp3");
+		Audio.preload("ui/ui_equip_armor.mp3");
+		Audio.preload("break/earthquake1.mp3,break/earthquake2.mp3");
+		Audio.preload("magic/mg_fwoosh.mp3");
+
+		if(inventory == null) {
+			return;
+		}
+
+		for(int i = 0; i < inventory.size; i++) {
+			Item item = inventory.get(i);
+			if(item != null) {
+				item.preloadSounds();
+			}
+		}
 	}
 
 	@Override

@@ -77,4 +77,10 @@ public class BagUpgrade extends Item {
 
         Audio.playSound("inventory/open_inventory.mp3", 0.9f);
     }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload("inventory/open_inventory.mp3");
+    }
 }

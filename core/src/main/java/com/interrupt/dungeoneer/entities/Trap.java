@@ -125,4 +125,9 @@ public class Trap extends SpriteDecal {
 			drawable.update(this);
 		}
 	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload("trap_activate.mp3");
+	}
 }
