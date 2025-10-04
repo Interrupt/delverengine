@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.entities.infos;
 
 import com.badlogic.gdx.graphics.Color;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Level;
@@ -185,5 +186,11 @@ public class LevelInfo extends Entity {
         if (!Objects.equals(level.skybox.textureFile, skyboxTexture)) return true;
 
         return false;
+    }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(ambientSound);
     }
 }

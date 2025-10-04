@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.entities;
 
 import com.badlogic.gdx.graphics.Color;
+import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -34,7 +35,7 @@ public class Torch extends Light {
 	protected SpriteAnimation animation = null;
 
 	public ParticleEmitter emitter = null;
-	
+
 	public Torch() { spriteAtlas = "sprite"; hidden = false; collision.set(0.05f,0.05f,0.2f); fullbrite = true; haloMode = HaloMode.BOTH; haloOffset = 0.8f; }
 
 	/** Looping ambient sound. */
@@ -48,14 +49,14 @@ public class Torch extends Light {
 	/** Make ParticleEmitter? */
 	@EditorProperty
 	public boolean makeEmitter = true;
-	
+
 	public Torch(float x, float y, int tex, Color lightColor) {
 		super(x, y, lightColor, 3.2f);
 		artType = ArtType.sprite;
 		collision.set(0.05f,0.05f,0.2f);
 		this.tex = texAnimStart;
 	}
-	
+
 	@Override
 	public void tick(Level level, float delta)
 	{
@@ -76,18 +77,18 @@ public class Torch extends Light {
 				if(animation.done) isActive = false;	// die when done playing an animation
 			}
 		}
-		
+
 		if(emitter != null) {
 			emitter.tick(level, delta);
 		}
-		
+
 		color = lightColor;
 	}
-	
+
 	@Override
 	public void init(Level level, Source source) {
 		this.tex = texAnimStart;
-		
+
 		super.init(level, source);
 		collision.set(0.05f,0.05f,0.2f);
 
@@ -162,4 +163,10 @@ public class Torch extends Light {
 	public void stopAnimation() {
 		animation = null;
 	}
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(audio);
+    }
 }

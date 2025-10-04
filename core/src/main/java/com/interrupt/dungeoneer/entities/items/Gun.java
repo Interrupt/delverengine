@@ -91,6 +91,25 @@ public class Gun extends Weapon {
         return super.GetItemText();
     }
 
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(fireSound);
+        Audio.preload(outOfAmmoSound);
+
+        if (muzzleFlash != null) {
+            muzzleFlash.preloadSounds();
+        }
+
+        if (hitEffect != null) {
+            hitEffect.preloadSounds();
+        }
+
+        if (spell != null) {
+            spell.preloadSounds();
+        }
+    }
+
 	@Override
 	public void doAttack(Player p, Level lvl, float attackPower) {
 

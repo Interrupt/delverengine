@@ -120,4 +120,8 @@ public class Spell {
 		
 		return dmg;
 	}
+
+    public void preloadSounds() {
+		Audio.preload(castSound);
+    }
 }
