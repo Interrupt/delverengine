@@ -1,6 +1,5 @@
 package com.interrupt.dungeoneer.entities.items;
 
-import com.badlogic.gdx.math.Vector3;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Item;
@@ -58,7 +57,7 @@ public class Gold extends Item {
 		if(isActive && autoPickup) {
 			Player p = Game.instance.player;
 			if(Math.abs(p.x + 0.5f - x) < 0.3f && Math.abs(p.y + 0.5f - y ) < 0.3f) {
-				p.gold++;
+				p.addGold(1);;
 				isActive = false;
 			}
 		}
@@ -66,7 +65,7 @@ public class Gold extends Item {
 	
 	protected void pickup(Player player) {
 		if(isActive) {
-			player.gold += goldAmount;
+			player.addGold(goldAmount);
 			isActive = false;
 			Audio.playSound(pickupSound, 0.3f, 1f);
 			makeItemPickupAnimation(player);
