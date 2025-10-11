@@ -1,6 +1,8 @@
 package com.interrupt.dungeoneer.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameManager;
@@ -17,7 +20,6 @@ import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.game.Game;
-import com.interrupt.dungeoneer.gfx.drawables.Drawable;
 import com.interrupt.dungeoneer.overlays.MapOverlay;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.overlays.PauseOverlay;
@@ -35,9 +37,12 @@ public class MobileHud extends Hud {
 
 		super.refresh();
 
+        FileHandle upFile = Game.getInternal("ui/discord_up.png");
+        FileHandle downFile = Game.getInternal("ui/discord_down.png");
+
         // Attack button
 		if(attackBtn != null) Game.ui.getActors().removeValue(attackBtn, true);
-		attackBtn = new MultiTouchButton(new TextureRegionDrawable(itemTextures[124]));
+		attackBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(upFile)), new TextureRegionDrawable(new Texture(downFile)));
 		attackBtn.addListener(new ClickListener() {
 			public void clicked(InputEvent event, float x, float y) {
 				Game.instance.player.attackButtonTouched();
@@ -89,16 +94,18 @@ public class MobileHud extends Hud {
 	public void tick(GameInput input) {
 		if(attackBtn == null || inventoryBtn == null) GameManager.renderer.initHud();
 
-		super.tick(input);
+        if (input != null) {
+		    super.tick(input);
+        }
 
 		final float uiSize = Game.GetUiSize() * 2f;
         final float gutterSize = Gdx.graphics.getWidth() * 0.02f;
 
 		if(attackBtn != null) {
-			float btnSize = (uiSize + uiSize * (attackBtn.isPressed() ? 0.1f : 0)) * 2.0f;
-			float drawSize = (btnSize - uiSize) / 2f + uiSize;
+			float btnSize = uiSize * 2;
+            float aspect = attackBtn.getStyle().up.getMinHeight() / attackBtn.getStyle().up.getMinWidth();
 
-			attackBtn.setSize(btnSize, btnSize);
+			attackBtn.setSize(btnSize, btnSize * aspect);
 			attackBtn.setY((int) gutterSize);
 			attackBtn.setX((int) (Gdx.graphics.getWidth() - (btnSize + gutterSize)));
 		}
@@ -110,6 +117,14 @@ public class MobileHud extends Hud {
             inventoryBtn.setSize(btnSize, btnSize);
             inventoryBtn.setY((int) Gdx.graphics.getHeight() - (drawSize + gutterSize));
             inventoryBtn.setX((int) (gutterSize));
+
+            if (Game.isMobile) {
+                float invSize = Game.GetInventoryUiSize();
+                float xx = (Gdx.graphics.getWidth() + Game.hudManager.quickSlots.columns * invSize) / 2.0f;
+                inventoryBtn.setSize(invSize, invSize);
+                inventoryBtn.setX(xx);
+                inventoryBtn.setY(Gdx.graphics.getHeight() - invSize);
+            }
         }
 
         if(mapBtn != null) {
@@ -126,7 +141,7 @@ public class MobileHud extends Hud {
             float drawSize = (btnSize - uiSize) / 2f + uiSize;
 
             pauseBtn.setSize(btnSize, btnSize);
-            pauseBtn.setY((int) Gdx.graphics.getHeight() - (drawSize + gutterSize) - drawSize);
+            pauseBtn.setY((int) Gdx.graphics.getHeight() - (btnSize + gutterSize));
             pauseBtn.setX((int) (gutterSize));
         }
 	}

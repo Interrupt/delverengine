@@ -609,7 +609,7 @@ public class GlRenderer {
 		Game.hudManager.backpack.yOffset = 1.7f;
 
 		if(!Options.instance.hideUI || Game.instance.getShowingMenu()) {
-			drawInventory(Game.hudManager.quickSlots);
+			drawQuickSlots(Game.hudManager.quickSlots);
 			drawInventory(Game.hudManager.backpack);
 			drawInventory(Game.hud.equipLocations);
 		}
@@ -1832,6 +1832,83 @@ public class GlRenderer {
 		}
 		uiBatch.end();
 	}
+
+    protected void drawQuickSlots(Hotbar hotbar) {
+        if(hotbar == null || !hotbar.visible) return;
+
+        float uiSize = Game.GetInventoryUiSize();
+        int invLength = hotbar.columns;
+
+        float yOffset = hotbar.yOffset * uiSize;
+
+        uiBatch.begin();
+        int y = 0;
+
+        // Draw slots
+        for(int x = 0; x < hotbar.columns; x++)
+        {
+            if(x + hotbar.invOffset >= game.player.inventory.size) continue;
+
+            Item at = null;
+            if(game.player.inventory.size > x + hotbar.invOffset) {
+                at = game.player.inventory.get(x + hotbar.invOffset);
+            }
+
+            float xPos = -((uiSize * invLength) / 2.0f) + uiSize * x;
+            float yPos = camera2D.viewportHeight / 2 - (y + 1) * uiSize;
+
+            // pick a color for this box
+            uiBatch.enableBlending();
+
+            if(hotbar.gamepadPosition != null && x == hotbar.gamepadPosition) {
+                uiBatch.setColor(1,0,0,1);
+            }
+            else if(game.player.selectedBarItem != null && (x + hotbar.invOffset) == game.player.selectedBarItem) {
+                uiBatch.setColor(INVBOXSELECTED);
+            }
+            else if(at != null && game.player.equipped(at)) {
+                uiBatch.setColor(INVBOXEQUIPPED);
+            }
+            else if((Game.isMobile || !game.input.caughtCursor) && hotbar.getMouseOverSlot() != null && hotbar.getMouseOverSlot() == x) {
+                uiBatch.setColor(INVBOXHOVER);
+            }
+            else {
+                uiBatch.setColor(INVBOX);
+            }
+
+            uiBatch.draw(itemTextures.getSprite(127), xPos, yPos - yOffset, uiSize, uiSize);
+
+            // Draw the number of charges, unless we are being dragged
+            InventoryItemButton itemButton = Hud.getItemBeingDragged();
+
+            Item beingDragged = itemButton != null ? itemButton.getItem() : null;
+            if(at != beingDragged) {
+                if (at instanceof ItemStack) {
+                    ItemStack stack = (ItemStack) at;
+                    drawText(CachePools.toString(stack.count), xPos + uiSize * 0.95f - (CachePools.toString(stack.count).length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                }
+
+                if (at instanceof Wand) {
+                    Wand wand = (Wand) at;
+                    String chargeText = wand.getChargeText();
+                    drawText(chargeText, xPos + uiSize * 0.95f - (chargeText.length() * uiSize * 0.2f), yPos - yOffset + uiSize * 0.65f, uiSize * 0.2f, Color.WHITE);
+                }
+            }
+        }
+
+        if(hotbar == Game.hudManager.quickSlots) {
+            for(int x = 0; x < hotbar.columns; x++) {
+                float xPos = -((uiSize * invLength) / 2.0f) + uiSize * x + (uiSize * 0.05f);
+                float yPos = camera2D.viewportHeight / 2 - uiSize + (uiSize * 0.05f);
+
+                int str_pos = x + 1;
+                if(str_pos == 10) str_pos = 0;
+
+                this.drawText(CachePools.toString(str_pos), xPos, yPos, uiSize * 0.2f, Color.GRAY);
+            }
+        }
+        uiBatch.end();
+    }
 
 	protected void drawGamepadCursor() {
 		if(game.input.getGamepadCursorPosition() != null && Hud.getItemBeingDragged() == null) {
