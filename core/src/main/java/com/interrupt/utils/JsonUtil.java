@@ -5,8 +5,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 
-import java.util.function.Supplier;
-
 /** Helper class for working with JSON. */
 public class JsonUtil {
     /** Serializes the given object to the given file. */
