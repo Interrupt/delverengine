@@ -279,8 +279,13 @@ public class GamepadManager implements ControllerListener {
 
     public void init() {
     	controllerMapping.clear();
-    	Controller first = Controllers.getControllers().first();
-    	if(first != null) mapController(first);
+        Controller first = null;
+
+        if (Workarounds.ignoreBrokenGdxControllersOniOS()) {
+            first = Controllers.getControllers().first();
+        }
+
+        if (first != null) mapController(first);
     }
 
     public void mapController(Controller controller) {
