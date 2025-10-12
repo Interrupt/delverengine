@@ -16,8 +16,7 @@ import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
 import com.interrupt.utils.JsonUtil;
-
-import java.util.function.Supplier;
+import com.interrupt.utils.Supplier;
 
 public class OptionsOverlay extends WindowOverlay {
 
@@ -226,12 +225,7 @@ public class OptionsOverlay extends WindowOverlay {
         }
         else {
             FileHandle file = Game.findInternalFileInMods("data/player.dat");
-            playerData = JsonUtil.fromJson(Player.class, file, new Supplier<Player>() {
-                @Override
-                public Player get() {
-                    return new Player();
-                }
-            });
+            playerData = JsonUtil.fromJson(Player.class, file, Player::new);
         }
 
         if (playerData.handLagStrength > 0f) {
