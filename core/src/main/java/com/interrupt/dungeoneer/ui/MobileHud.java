@@ -15,11 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.Features;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.items.QuestItem;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.input.Actions;
 import com.interrupt.dungeoneer.overlays.MapOverlay;
 import com.interrupt.dungeoneer.overlays.OverlayManager;
 import com.interrupt.dungeoneer.overlays.PauseOverlay;
@@ -28,6 +30,7 @@ public class MobileHud extends Hud {
 
 	private MultiTouchButton attackBtn;
 	private MultiTouchButton throwBtn;
+	private MultiTouchButton jumpBtn;
 	private MultiTouchButton inventoryBtn;
 	private MultiTouchButton mapBtn;
 	private MultiTouchButton pauseBtn;
@@ -55,6 +58,18 @@ public class MobileHud extends Hud {
         if (throwBtn != null) Game.ui.getActors().removeValue(throwBtn, true);
         throwBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(upFile)), new TextureRegionDrawable(new Texture(downFile)));
         Game.ui.addActor(throwBtn);
+
+        // Jump button if feature enabled
+        if (Features.playerJumpEnabled()) {
+            if (jumpBtn != null) Game.ui.getActors().removeValue(jumpBtn, true);
+            jumpBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(upFile)), new TextureRegionDrawable(new Texture(downFile)));
+            jumpBtn.addListener(new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+                    Game.instance.input.requestAction(Actions.Action.JUMP);
+                }
+            });
+            Game.ui.addActor(jumpBtn);
+        }
 
         // Inventory button
         if(inventoryBtn != null) Game.ui.getActors().removeValue(inventoryBtn, true);
@@ -96,10 +111,15 @@ public class MobileHud extends Hud {
         inventoryBtn.setSize(uiSize, uiSize);
         mapBtn.setSize(uiSize, uiSize);
         pauseBtn.setSize(uiSize, uiSize);
+
+        if (Features.playerJumpEnabled()) {
+            jumpBtn.setSize(uiSize, uiSize);
+        }
 	}
 
 	public void tick(GameInput input) {
 		if(attackBtn == null || inventoryBtn == null || throwBtn == null) GameManager.renderer.initHud();
+        if (Features.playerJumpEnabled() && jumpBtn == null) GameManager.renderer.initHud();
 
         if (input != null) {
 		    super.tick(input);
@@ -124,6 +144,15 @@ public class MobileHud extends Hud {
             throwBtn.setSize(btnSize, btnSize * aspect);
             throwBtn.setY((int)gutterSize);
             throwBtn.setX((int) attackBtn.getX() - (attackBtn.getWidth() + gutterSize));
+        }
+
+        if (jumpBtn != null) {
+            float btnSize = uiSize;
+            float aspect = jumpBtn.getStyle().up.getMinHeight() / jumpBtn.getStyle().up.getMinWidth();
+
+            jumpBtn.setSize(btnSize, btnSize * aspect);
+            jumpBtn.setY(attackBtn.getY() + attackBtn.getHeight() + (int)gutterSize);
+            jumpBtn.setX(attackBtn.getX());
         }
 
         if(inventoryBtn != null) {
@@ -216,4 +245,28 @@ public class MobileHud extends Hud {
         wasThrowPressed = false;
         return false;
     }
+
+    private boolean wasJumpPressed;
+
+    public boolean isJumpPressed() {
+        if (jumpBtn == null) return false;
+
+        if(jumpBtn.isPressed()) {
+            boolean p = wasJumpPressed;
+            wasJumpPressed = true;
+            return !p;
+        }
+
+        if(Game.instance.input.getRightTouchPosition() != null && Game.instance.input.isRightTouched()) {
+            Vector2 touchPos = Game.instance.input.getRightTouchPosition();
+            if(Math.abs(touchPos.x - (jumpBtn.getX() + jumpBtn.getWidth())) < jumpBtn.getWidth() && Math.abs(touchPos.y - (Gdx.graphics.getHeight() - jumpBtn.getY())) < jumpBtn.getHeight())
+                return true;
+        }
+
+        if(Game.instance.input.uiTouchPointer != null && wasJumpPressed) return true;
+
+        wasJumpPressed = false;
+        return false;
+    }
 }
+
