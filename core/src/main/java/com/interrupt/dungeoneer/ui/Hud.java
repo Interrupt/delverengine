@@ -118,6 +118,10 @@ public class Hud {
 
 	public boolean isAttackPressed() { return false; }
 
+    public boolean isThrowPressed() { return false; }
+
+    public boolean isAttackOrThrowPressed() { return isAttackPressed() || isThrowPressed(); }
+
     public static InventoryItemButton getItemBeingDragged() {
         return itemBeingDragged;
     }

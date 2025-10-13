@@ -27,6 +27,7 @@ import com.interrupt.dungeoneer.overlays.PauseOverlay;
 public class MobileHud extends Hud {
 
 	private MultiTouchButton attackBtn;
+	private MultiTouchButton throwBtn;
 	private MultiTouchButton inventoryBtn;
 	private MultiTouchButton mapBtn;
 	private MultiTouchButton pauseBtn;
@@ -49,6 +50,11 @@ public class MobileHud extends Hud {
 			}
 		});
 		Game.ui.addActor(attackBtn);
+
+        // Throw button
+        if (throwBtn != null) Game.ui.getActors().removeValue(throwBtn, true);
+        throwBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(upFile)), new TextureRegionDrawable(new Texture(downFile)));
+        Game.ui.addActor(throwBtn);
 
         // Inventory button
         if(inventoryBtn != null) Game.ui.getActors().removeValue(inventoryBtn, true);
@@ -86,13 +92,14 @@ public class MobileHud extends Hud {
         // Size all of the mobile buttons
 		final float uiSize = Game.GetUiSize() * 2.0f;
 		attackBtn.setSize(uiSize, uiSize);
+        throwBtn.setSize(uiSize, uiSize);
         inventoryBtn.setSize(uiSize, uiSize);
         mapBtn.setSize(uiSize, uiSize);
         pauseBtn.setSize(uiSize, uiSize);
 	}
 
 	public void tick(GameInput input) {
-		if(attackBtn == null || inventoryBtn == null) GameManager.renderer.initHud();
+		if(attackBtn == null || inventoryBtn == null || throwBtn == null) GameManager.renderer.initHud();
 
         if (input != null) {
 		    super.tick(input);
@@ -102,13 +109,22 @@ public class MobileHud extends Hud {
         final float gutterSize = Gdx.graphics.getWidth() * 0.02f;
 
 		if(attackBtn != null) {
-			float btnSize = uiSize * 2;
+			float btnSize = uiSize;// * 2;
             float aspect = attackBtn.getStyle().up.getMinHeight() / attackBtn.getStyle().up.getMinWidth();
 
 			attackBtn.setSize(btnSize, btnSize * aspect);
 			attackBtn.setY((int) gutterSize);
 			attackBtn.setX((int) (Gdx.graphics.getWidth() - (btnSize + gutterSize)));
 		}
+
+        if (throwBtn != null) {
+            float btnSize = uiSize;
+            float aspect = throwBtn.getStyle().up.getMinHeight() / throwBtn.getStyle().up.getMinWidth();
+
+            throwBtn.setSize(btnSize, btnSize * aspect);
+            throwBtn.setY((int)gutterSize);
+            throwBtn.setX((int) attackBtn.getX() - (attackBtn.getWidth() + gutterSize));
+        }
 
         if(inventoryBtn != null) {
             float btnSize = uiSize + uiSize * (inventoryBtn.isPressed() ? 0.1f : 0);
@@ -179,4 +195,25 @@ public class MobileHud extends Hud {
 		wasAttackPressed = false;
 		return false;
 	}
+
+    private boolean wasThrowPressed;
+
+    public boolean isThrowPressed() {
+        if(throwBtn == null) return false;
+        if(throwBtn.isPressed()) {
+            wasThrowPressed = true;
+            return true;
+        }
+
+        if(Game.instance.input.getRightTouchPosition() != null && Game.instance.input.isRightTouched()) {
+            Vector2 touchPos = Game.instance.input.getRightTouchPosition();
+            if(Math.abs(touchPos.x - (throwBtn.getX() + throwBtn.getWidth())) < throwBtn.getWidth() && Math.abs(touchPos.y - (Gdx.graphics.getHeight() - throwBtn.getY())) < throwBtn.getHeight())
+                return true;
+        }
+
+        if(Game.instance.input.uiTouchPointer != null && wasThrowPressed) return true;
+
+        wasThrowPressed = false;
+        return false;
+    }
 }
