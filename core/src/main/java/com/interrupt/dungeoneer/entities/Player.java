@@ -867,6 +867,7 @@ public class Player extends Actor {
 		{
 			attack = input.isAttackPressed() || Game.hud.isAttackPressed() || controllerState.attack;
             drop = input.isDropPressed() || Game.hud.isThrowPressed() || controllerState.drop;
+            jump = input.isJumpPressed() || Game.hud.isJumpPressed();
 		}
 
 		lastZ = z;

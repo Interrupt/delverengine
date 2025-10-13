@@ -294,8 +294,14 @@ public class GameInput implements InputProcessor {
 		return keysDown[binding];
 	}
 
-    private void requestAction(Action action) {
+    public void requestAction(Action action) {
         Integer binding = Actions.keyBindings.get(action);
+
+        if (binding < 0 || binding > keysDown.length) {
+            Gdx.app.log("GameInput", "Requested key " + action + " has no keybinding");
+            return;
+        }
+
         keysDown[binding] = true;
         keyEvents.add(binding);
     }
