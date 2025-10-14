@@ -145,6 +145,9 @@ public class MobileHud extends Hud {
 			attackBtn.setSize(btnSize, btnSize * aspect);
 			attackBtn.setY((int) gutterSize);
 			attackBtn.setX((int) (Gdx.graphics.getWidth() - (btnSize + gutterSize)));
+
+            // Hide if player isn't holding something
+            attackBtn.setVisible(Game.instance.player.GetHeldItem() != null);
 		}
 
         if (throwBtn != null) {
@@ -154,6 +157,9 @@ public class MobileHud extends Hud {
             throwBtn.setSize(btnSize, btnSize * aspect);
             throwBtn.setY((int)gutterSize);
             throwBtn.setX((int) attackBtn.getX() - (throwBtn.getWidth() + 2.0f * gutterSize));
+
+            // Hide if player isn't holding something
+            throwBtn.setVisible(Game.instance.player.GetHeldItem() != null);
         }
 
         if (jumpBtn != null) {
