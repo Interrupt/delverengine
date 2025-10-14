@@ -1,0 +1,35 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$robovmVersion"
+  }
+}
+apply plugin: 'robovm'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+ext {
+  mainClassName = "com.interrupt.dungeoneer.IOSLauncher"
+}
+
+
+launchIPhoneSimulator.dependsOn build
+launchIPadSimulator.dependsOn build
+launchIOSDevice.dependsOn build
+createIPA.dependsOn build
+
+eclipse.project {
+  name = appName + "-ios"
+  natures 'org.robovm.eclipse.RoboVMNature'
+}
+
+dependencies {
+  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
+  implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+  implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+  implementation "com.mobidevelop.robovm:robovm-cocoatouch:$robovmVersion"
+  implementation "com.mobidevelop.robovm:robovm-rt:$robovmVersion"
+  implementation project(':core')
+}
