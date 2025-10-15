@@ -139,7 +139,7 @@ public class MobileHud extends Hud {
         final float gutterSize = Gdx.graphics.getWidth() * 0.02f;
 
 		if(attackBtn != null) {
-			float btnSize = uiSize;// * 1.5f;
+			float btnSize = uiSize * 1.5f;
             float aspect = attackBtn.getStyle().up.getMinHeight() / attackBtn.getStyle().up.getMinWidth();
 
 			attackBtn.setSize(btnSize, btnSize * aspect);
