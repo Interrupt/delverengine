@@ -167,7 +167,7 @@ public class GameInput implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
-        if (!lastTapLocation.epsilonEquals(x, y)) {
+        if (!lastTapLocation.epsilonEquals(x, y, 4.0f)) {
             tapped = false;
         }
 
