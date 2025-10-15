@@ -139,7 +139,7 @@ public class MobileHud extends Hud {
         final float gutterSize = Gdx.graphics.getWidth() * 0.02f;
 
 		if(attackBtn != null) {
-			float btnSize = uiSize;// * 2;
+			float btnSize = uiSize;// * 1.5f;
             float aspect = attackBtn.getStyle().up.getMinHeight() / attackBtn.getStyle().up.getMinWidth();
 
 			attackBtn.setSize(btnSize, btnSize * aspect);
@@ -212,6 +212,7 @@ public class MobileHud extends Hud {
         else Audio.playSound("/ui/ui_map_close.mp3", 0.3f);
     }
 
+    private final Vector2 workVec = new Vector2();
 	public boolean isAttackPressed() {
 		if(attackBtn == null) return false;
 		if(attackBtn.isPressed()) {
@@ -219,10 +220,24 @@ public class MobileHud extends Hud {
 			return true;
 		}
 
+        // Allow for a margin of guttersize around attack button
 		if(Game.instance.input.getRightTouchPosition() != null && Game.instance.input.isRightTouched()) {
 			Vector2 touchPos = Game.instance.input.getRightTouchPosition();
-			if(Math.abs(touchPos.x - (attackBtn.getX() + attackBtn.getWidth())) < attackBtn.getWidth() && Math.abs(touchPos.y - (Gdx.graphics.getHeight() - attackBtn.getY())) < attackBtn.getHeight())
-				return true;
+
+            float gutterSize = Gdx.graphics.getWidth() * 0.02f;
+            float halfWidth = attackBtn.getWidth() / 2.0f;
+            float halfHeight = attackBtn.getHeight() / 2.0f;
+
+            // Get button center
+            workVec.set(attackBtn.getX() + halfWidth, Gdx.graphics.getHeight() - attackBtn.getY() - halfHeight);
+
+            // Get center - pointer
+            workVec.sub(touchPos);
+            workVec.set(Math.abs(workVec.x), Math.abs(workVec.y));
+
+            if (workVec.x < halfWidth + gutterSize && workVec.y < halfHeight + gutterSize) {
+                return true;
+            }
 		}
 
 		if(Game.instance.input.uiTouchPointer != null && wasAttackPressed) return true;
@@ -240,12 +255,6 @@ public class MobileHud extends Hud {
             return true;
         }
 
-        if(Game.instance.input.getRightTouchPosition() != null && Game.instance.input.isRightTouched()) {
-            Vector2 touchPos = Game.instance.input.getRightTouchPosition();
-            if(Math.abs(touchPos.x - (throwBtn.getX() + throwBtn.getWidth())) < throwBtn.getWidth() && Math.abs(touchPos.y - (Gdx.graphics.getHeight() - throwBtn.getY())) < throwBtn.getHeight())
-                return true;
-        }
-
         if(Game.instance.input.uiTouchPointer != null && wasThrowPressed) return true;
 
         wasThrowPressed = false;
@@ -261,12 +270,6 @@ public class MobileHud extends Hud {
             boolean p = wasJumpPressed;
             wasJumpPressed = true;
             return !p;
-        }
-
-        if(Game.instance.input.getRightTouchPosition() != null && Game.instance.input.isRightTouched()) {
-            Vector2 touchPos = Game.instance.input.getRightTouchPosition();
-            if(Math.abs(touchPos.x - (jumpBtn.getX() + jumpBtn.getWidth())) < jumpBtn.getWidth() && Math.abs(touchPos.y - (Gdx.graphics.getHeight() - jumpBtn.getY())) < jumpBtn.getHeight())
-                return true;
         }
 
         if(Game.instance.input.uiTouchPointer != null && wasJumpPressed) return true;
