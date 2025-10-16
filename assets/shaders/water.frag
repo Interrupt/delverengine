@@ -1,7 +1,3 @@
-#ifdef GL_ES
-precision mediump float;
-#endif
-
 uniform sampler2D u_texture;
 uniform vec4 u_FogColor;
 uniform float u_time;
@@ -24,7 +20,7 @@ vec4 tex_Color;
 //     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
 //               Distributed under the MIT License. See LICENSE file.
 //               https://github.com/ashima/webgl-noise
-// 
+//
 
 vec3 mod289(vec3 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
