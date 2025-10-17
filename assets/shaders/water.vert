@@ -1,7 +1,3 @@
-#ifdef GL_ES
-precision mediump float;
-#endif
-
 uniform mat4 u_projectionViewMatrix;
 uniform float u_fogStart;
 uniform float u_fogEnd;
@@ -45,14 +41,14 @@ void main() {
 
     newPosition.y += v_waveFactor * 0.1;
     newPosition.y += 0.05;
-    
+
     gl_Position = u_projectionViewMatrix * newPosition;
-    
+
     v_texCoords.y = v_texCoords.y + sin(u_time * 0.01 + a_position.x) * 0.1;
     v_texCoords.y -= u_time * u_waterSpeed;
-    
+
     v_color = a_color;
-    
+
     if(u_UsedLights != 0) {
       for(int i=0; i < {{MAX_DYNAMIC_LIGHTS}}; i++)
       {
@@ -67,7 +63,7 @@ void main() {
 
     v_color.rgb *= 1.0 + (v_waveFactor * 0.3);
     v_color.a = 1.0;
-    
+
     vertexPositionInEye = gl_Position;
     v_fogFactor = calcFogFactor(-vertexPositionInEye.z - u_fogEnd * (1.0 - a_color.a));
     v_eyeDistance = -vertexPositionInEye.z;
@@ -77,7 +73,7 @@ float calcFogFactor(float distanceToEye)
 {
     float f = (u_fogEnd - -distanceToEye) / (u_fogEnd - u_fogStart);
 	return clamp(f, c_zerof, c_onef);
-    
+
     // Exponential
 	/*float f = exp((distanceToEye * u_fogDensity));
      return clamp(f, c_zerof, c_onef);*/

@@ -1,7 +1,3 @@
-#ifdef GL_ES
-precision mediump float;
-#endif
-
 uniform sampler2D u_texture;
 uniform vec4 u_FogColor;
 
@@ -39,6 +35,6 @@ void main() {
     if(tex_color.a < 0.01) discard;
 
     color.rgb *= getShadowMod();
-    
+
     gl_FragColor = mix(u_FogColor, color, fogFactor);
 }
