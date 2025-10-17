@@ -1,7 +1,3 @@
-#ifdef GL_ES
-precision mediump float;
-#endif
-
 uniform sampler2D u_texture;
 uniform vec4 u_FogColor;
 
@@ -22,7 +18,7 @@ void main() {
 
     CoordOffset = vec2(dx * floor(gl_FragCoord.x / dx),
                       dy * floor(gl_FragCoord.y / dy));
-    
+
     color = v_color * texture2D( u_texture, v_texCoords );
     gl_FragColor = mix(u_FogColor, color, fogFactor);
     gl_FragColor.a *= clamp(((-v_eyeDistance - 1.5) * 0.4) * color.a, 0.0, color.a);

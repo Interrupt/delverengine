@@ -110,10 +110,6 @@ public class ShaderManager {
             return null;
         }
 
-        // Automatically use a lower precision for Android or other GL_ES devices
-        String shaderPrecisionPrefix = "#ifdef GL_ES\nprecision mediump float;\n#endif\n\n";
-        shaderProgram = shaderPrecisionPrefix + shaderProgram;
-
         // Automatically set the number of dynamic lights
         String maxDynamicLightsString = Integer.toString(GlRenderer.MAX_DYNAMIC_LIGHTS);
         shaderProgram = shaderProgram.replace("{{MAX_DYNAMIC_LIGHTS}}", maxDynamicLightsString);
