@@ -110,6 +110,10 @@ public class ShaderManager {
             return null;
         }
 
+        // Desktop platform requires explicit float precicion specification.
+        String shaderPrecisionPrefix = "#ifdef GL_ES\nprecision highp float;\n#endif\n\n";
+        shaderProgram = shaderPrecisionPrefix + shaderProgram;
+
         // Automatically set the number of dynamic lights
         String maxDynamicLightsString = Integer.toString(GlRenderer.MAX_DYNAMIC_LIGHTS);
         shaderProgram = shaderProgram.replace("{{MAX_DYNAMIC_LIGHTS}}", maxDynamicLightsString);
