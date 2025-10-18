@@ -832,7 +832,7 @@ public class Player extends Actor {
 			else if(rot < 0) rot = rot % 6.28318531f;
 		}
 
-		boolean up = false, down = false, left = false, right = false, turnLeft = false, turnRight = false, turnUp = false, turnDown = false, attack = false, jump = false;
+		boolean up = false, down = false, left = false, right = false, turnLeft = false, turnRight = false, turnUp = false, turnDown = false, attack = false, jump = false, drop = false;
 
         if(!isDead && !isInOverlay) {
             up = input.isMoveForwardPressed();
@@ -861,6 +861,8 @@ public class Player extends Actor {
 		if(Game.isMobile && !isInOverlay)
 		{
 			attack = input.isAttackPressed() || Game.hud.isAttackPressed() || controllerState.attack;
+            drop = input.isDropPressed() || Game.hud.isThrowPressed() || controllerState.drop;
+            jump = input.isJumpPressed() || Game.hud.isJumpPressed();
 		}
 
 		lastZ = z;
@@ -1096,7 +1098,7 @@ public class Player extends Actor {
 				}
 			}
 
-            if((Game.hud.isAttackPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer) && Game.dragging == null) {
+            if((Game.hud.isAttackOrThrowPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer) && Game.dragging == null) {
 
 				deltaX = 0;
 				deltaY = 0;
@@ -1108,7 +1110,7 @@ public class Player extends Actor {
 					thisX = Gdx.input.getX(input.rightPointer);
 					thisY = Gdx.input.getY(input.rightPointer);
 				}
-				else if(Game.hud.isAttackPressed() && input.uiTouchPointer != null) {
+				else if(Game.hud.isAttackOrThrowPressed() && input.uiTouchPointer != null) {
 					thisX = Gdx.input.getX(input.uiTouchPointer);
 					thisY = Gdx.input.getY(input.uiTouchPointer);
 				}
@@ -1139,7 +1141,7 @@ public class Player extends Actor {
 				lastDelta.set(thisX, thisY);
 			}
 
-            if(!(Game.hud.isAttackPressed() || input.isRightTouched())) {
+            if(!(Game.hud.isAttackOrThrowPressed() || input.isRightTouched())) {
                 lastDelta = null;
             }
 		}
@@ -1301,7 +1303,7 @@ public class Player extends Actor {
             if(input.doUseAction() ||
                     controllerState.buttonEvents.contains(Action.USE, true)) Use(level);
 
-            if(input.isDropPressed() && Game.instance.menuMode == Game.MenuMode.Hidden) {
+            if(drop && Game.instance.menuMode == Game.MenuMode.Hidden) {
                 chargeDrop(delta);
             }
             else {

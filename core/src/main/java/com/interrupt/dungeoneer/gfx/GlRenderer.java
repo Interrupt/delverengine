@@ -609,7 +609,7 @@ public class GlRenderer {
 		Game.hudManager.backpack.yOffset = 1.7f;
 
 		if(!Options.instance.hideUI || Game.instance.getShowingMenu()) {
-			drawInventory(Game.hudManager.quickSlots);
+            drawInventory(Game.hudManager.quickSlots);
 			drawInventory(Game.hudManager.backpack);
 			drawInventory(Game.hud.equipLocations);
 		}

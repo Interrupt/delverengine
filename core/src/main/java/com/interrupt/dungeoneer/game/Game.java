@@ -1145,6 +1145,9 @@ public class Game {
 		hudManager.quickSlots.refresh();
 		hudManager.backpack.refresh();
 		hud.refreshEquipLocations();
+
+        // Tick HUD so updating UI scale refreshes in real time
+        hud.tick(Game.instance.input);
 	}
 
 	public static DragAndDropResult DragAndDropInventoryItem( Item dragging, Integer invLoc, String equipLoc ) {
