@@ -12,7 +12,7 @@ public class TriggeredAchievement extends Trigger {
 	
 	@Override
 	public void doTriggerEvent(String value) {
-		Game.achievementManager.achievementDealer.achieve(achievementName);
+		Game.achievementManager.achieve(achievementName);
 		super.doTriggerEvent(value);
 	}
 }

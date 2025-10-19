@@ -4,7 +4,7 @@ import com.interrupt.api.googleplay.GooglePlayApi;
 import com.interrupt.api.steam.SteamApi;
 
 public class AchievementManager {
-    public AchievementDealerInterface achievementDealer = new NullAchievementDealer();
+    private AchievementDealerInterface achievementDealer = new NullAchievementDealer();
 
     public void init() {
         if (SteamApi.api.isAvailable()) {
@@ -14,5 +14,9 @@ public class AchievementManager {
         if (GooglePlayApi.api.isAvailable()) {
             achievementDealer = new GooglePlayAchievementDealer();
         }
+    }
+
+    public void achieve(String identifier) {
+        achievementDealer.achieve(identifier);
     }
 }

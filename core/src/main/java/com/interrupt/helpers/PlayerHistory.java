@@ -28,7 +28,7 @@ public class PlayerHistory {
 		monstersKilled++;
 
 		if(monstersKilled > 150) {
-			Game.achievementManager.achievementDealer.achieve("RUN_MONSTERS");
+			Game.achievementManager.achieve("RUN_MONSTERS");
 		}
 	}
 	
@@ -37,7 +37,7 @@ public class PlayerHistory {
 		foodEaten++;
 
 		if(foodEaten > 40) {
-			Game.achievementManager.achievementDealer.achieve("RUN_FOOD");
+			Game.achievementManager.achieve("RUN_FOOD");
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class PlayerHistory {
 		potionsDrank++;
 
 		if(potionsDrank >= 15) {
-			Game.achievementManager.achievementDealer.achieve("RUN_POTIONS");
+			Game.achievementManager.achieve("RUN_POTIONS");
 		}
 	}
 	
@@ -55,7 +55,7 @@ public class PlayerHistory {
 		scrollsUsed++;
 
 		if(scrollsUsed >= 10) {
-			Game.achievementManager.achievementDealer.achieve("RUN_SCROLLS");
+			Game.achievementManager.achieve("RUN_SCROLLS");
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class PlayerHistory {
 
 		if(Game.instance != null && Game.instance.player != null && Game.instance.player.isAlive()) {
 			if (damageTaken >= 400) {
-				Game.achievementManager.achievementDealer.achieve("RUN_DAMAGE_TAKEN");
+				Game.achievementManager.achieve("RUN_DAMAGE_TAKEN");
 			}
 		}
 	}
@@ -75,7 +75,7 @@ public class PlayerHistory {
 		wandsUsed++;
 
 		if(wandsUsed >= 300) {
-			Game.achievementManager.achievementDealer.achieve("RUN_WANDS");
+			Game.achievementManager.achieve("RUN_WANDS");
 		}
 	}
 	
@@ -84,7 +84,7 @@ public class PlayerHistory {
 		trapsActivated++;
 
 		if(trapsActivated >= 10) {
-			Game.achievementManager.achievementDealer.achieve("RUN_TRAPS");
+			Game.achievementManager.achieve("RUN_TRAPS");
 		}
 	}
 	
@@ -93,7 +93,7 @@ public class PlayerHistory {
 		timesTeleported++;
 
 		if(timesTeleported >= 10) {
-			Game.achievementManager.achievementDealer.achieve("RUN_TELEPORTED");
+			Game.achievementManager.achieve("RUN_TELEPORTED");
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class PlayerHistory {
 		timesPoisoned++;
 
 		if(timesPoisoned >= 10) {
-			Game.achievementManager.achievementDealer.achieve("RUN_POISONED");
+			Game.achievementManager.achieve("RUN_POISONED");
 		}
 	}
 
@@ -112,7 +112,7 @@ public class PlayerHistory {
 		thingsIdentified++;
 
 		if(thingsIdentified >= 5) {
-			Game.achievementManager.achievementDealer.achieve("RUN_IDENTIFIED");
+			Game.achievementManager.achieve("RUN_IDENTIFIED");
 		}
 	}
 
@@ -121,7 +121,7 @@ public class PlayerHistory {
 		secretsFound++;
 
 		if(secretsFound >= 5) {
-			Game.achievementManager.achievementDealer.achieve("RUN_SECRETS");
+			Game.achievementManager.achieve("RUN_SECRETS");
 		}
 	}
 
@@ -130,7 +130,7 @@ public class PlayerHistory {
 		goldTaken += amount;
 
 		if(goldTaken >= 300) {
-			SteamApi.api.achieve("RUN_GOLD");
+			Game.achievementManager.achieve("RUN_GOLD");
 		}
 	}
 }

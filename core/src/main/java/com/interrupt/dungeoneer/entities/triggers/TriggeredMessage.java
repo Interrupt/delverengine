@@ -84,7 +84,7 @@ public class TriggeredMessage extends Trigger {
 		}
 
 		if(messageFile != null && messageFile.equals("campfireguy5.dat")) {
-			Game.achievementManager.achievementDealer.achieve("OLDGUY");
+			Game.achievementManager.achieve("OLDGUY");
 		}
 
 		// Set a background, if one was given

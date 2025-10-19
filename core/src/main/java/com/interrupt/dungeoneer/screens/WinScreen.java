@@ -188,7 +188,7 @@ public class WinScreen extends StatsScreen {
     }
 
     private void showStats() {
-        Game.achievementManager.achievementDealer.achieve("WON");
+        Game.achievementManager.achieve("WON");
         showingStats = true;
         showStats(1);
     }

@@ -141,7 +141,7 @@ public class ShopOverlay extends WindowOverlay {
 
 						// Might have an attached achievement
 						if(item.achieveOnBuy != null) {
-							Game.achievementManager.achievementDealer.achieve(item.achieveOnBuy);
+							Game.achievementManager.achieve(item.achieveOnBuy);
 						}
 					}
 

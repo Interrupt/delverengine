@@ -138,7 +138,7 @@ public class QuestItem extends Item {
 		Audio.playMusic(Game.instance.level.actionMusic, Game.instance.level.loopMusic);
 
 		if(giveAchievement)
-			Game.achievementManager.achievementDealer.achieve("ORB");
+			Game.achievementManager.achieve("ORB");
 	}
 
 	public void onDispose() {

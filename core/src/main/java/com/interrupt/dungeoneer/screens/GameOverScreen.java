@@ -295,10 +295,10 @@ public class GameOverScreen extends StatsScreen {
         dealtAchievements = true;
 
         if(gameOver) {
-            Game.achievementManager.achievementDealer.achieve("DIED");
+            Game.achievementManager.achieve("DIED");
         }
         else {
-            Game.achievementManager.achievementDealer.achieve("WON");
+            Game.achievementManager.achieve("WON");
         }
     }
 
