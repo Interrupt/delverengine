@@ -300,11 +300,6 @@ public class GameOverScreen extends StatsScreen {
         else {
             Game.achievementManager.achievementDealer.achieve("WON");
         }
-
-        int goldThisRun = Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun;
-        if(goldThisRun > 300) {
-            Game.achievementManager.achievementDealer.achieve("RUN_GOLD");
-        }
     }
 
     public void startGameOver() {

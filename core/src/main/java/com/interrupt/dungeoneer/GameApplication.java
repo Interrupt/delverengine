@@ -10,10 +10,7 @@ import com.interrupt.dungeoneer.entities.triggers.TriggeredWarp;
 import com.interrupt.dungeoneer.game.GameData;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
-import com.interrupt.dungeoneer.screens.GameScreen;
-import com.interrupt.dungeoneer.screens.LevelChangeScreen;
-import com.interrupt.dungeoneer.screens.MainMenuScreen;
-import com.interrupt.dungeoneer.screens.SplashScreen;
+import com.interrupt.dungeoneer.screens.*;
 import com.interrupt.utils.JsonUtil;
 
 public class GameApplication extends Game {
@@ -30,6 +27,9 @@ public class GameApplication extends Game {
 
     @Override
 	public void create() {
+        // Initialize SteamApi
+        SteamApi.api.init();
+
 		instance = this;
 		Gdx.app.log("DelverLifeCycle", "LibGdx Create");
 

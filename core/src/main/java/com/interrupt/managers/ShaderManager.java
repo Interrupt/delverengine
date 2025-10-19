@@ -110,8 +110,8 @@ public class ShaderManager {
             return null;
         }
 
-        // Automatically use a lower precision for Android or other GL_ES devices
-        String shaderPrecisionPrefix = "#ifdef GL_ES\nprecision mediump float;\n#endif\n\n";
+        // Desktop platform requires explicit float precicion specification.
+        String shaderPrecisionPrefix = "#ifdef GL_ES\nprecision highp float;\n#endif\n\n";
         shaderProgram = shaderPrecisionPrefix + shaderProgram;
 
         // Automatically set the number of dynamic lights

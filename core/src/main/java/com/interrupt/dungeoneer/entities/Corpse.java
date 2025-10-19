@@ -210,4 +210,10 @@ public class Corpse extends Entity {
 			Game.instance.level.entities.add(proj);
 		}
 	}
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(dropSound);
+    }
 }

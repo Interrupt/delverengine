@@ -65,4 +65,10 @@ public class EnchantWeapon extends Spell {
 
         Audio.playPositionedSound("trap_tele.mp3", new Vector3(pos.x, pos.y, pos.z), 0.6f, 12f);
     }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload("trap_tele.mp3");
+    }
 }

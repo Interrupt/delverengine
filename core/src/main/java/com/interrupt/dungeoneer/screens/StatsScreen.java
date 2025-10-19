@@ -24,11 +24,9 @@ public class StatsScreen extends BaseScreen {
 		Table mainTable = new Table();
 		mainTable.setFillParent(true);
 
-		int goldThisRun = Game.instance.player.gold - Game.instance.progression.goldAtStartOfRun;
-		
 		Table innerTable = new Table();
 		if(progress > 0) makeStat(innerTable, StringManager.get("screens.GameOverScreen.playtimeStatLabel"), Game.instance.player.getPlaytime(), doFade);
-		if(progress > 1) makeStat(innerTable, StringManager.get("screens.GameOverScreen.goldStatLabel"), goldThisRun, doFade);
+		if(progress > 1) makeStat(innerTable, StringManager.get("screens.GameOverScreen.goldStatLabel"), Game.instance.player.history.goldTaken, doFade);
 		if(progress > 2) makeStat(innerTable, StringManager.get("screens.GameOverScreen.killsStatLabel"), Game.instance.player.history.monstersKilled, doFade);
 		if(progress > 3) makeStat(innerTable, StringManager.get("screens.GameOverScreen.damageStatLabel"), Game.instance.player.history.damageTaken, doFade);
 		if(progress > 4) makeStat(innerTable, StringManager.get("screens.GameOverScreen.potionsStatLabel"), Game.instance.player.history.potionsDrank, doFade);

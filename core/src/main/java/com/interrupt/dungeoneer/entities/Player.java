@@ -130,10 +130,6 @@ public class Player extends Actor {
 
 	public HashMap<String,Item> equippedItems = new HashMap<String,Item>();
 
-	// audio stuff
-	private Long torchSoundInstance = null;
-	private Long stepsSoundInstance = null;
-
 	private Integer tapLength = null;
 
 	public int hotbarSize = 5;
@@ -338,6 +334,31 @@ public class Player extends Actor {
 	public void init() {
 		makeStartingInventory();
 		setupController();
+		preloadSounds();
+	}
+
+	@Override
+	public void preloadSounds() {
+		Audio.preload(dropSound);
+		Audio.preload("/ui/ui_map_open.mp3");
+		Audio.preload("/ui/ui_map_close.mp3");
+		Audio.preload("splash2.mp3");
+		Audio.preload("sfx_death.mp3");
+		Audio.preload("inventory/drop_item.mp3");
+		Audio.preload("ui/ui_equip_armor.mp3");
+		Audio.preload("break/earthquake1.mp3,break/earthquake2.mp3");
+		Audio.preload("magic/mg_fwoosh.mp3");
+
+		if(inventory == null) {
+			return;
+		}
+
+		for(int i = 0; i < inventory.size; i++) {
+			Item item = inventory.get(i);
+			if(item != null) {
+				item.preloadSounds();
+			}
+		}
 	}
 
 	@Override
@@ -810,7 +831,7 @@ public class Player extends Actor {
 			else if(rot < 0) rot = rot % 6.28318531f;
 		}
 
-		boolean up = false, down = false, left = false, right = false, turnLeft = false, turnRight = false, turnUp = false, turnDown = false, attack = false, jump = false;
+		boolean up = false, down = false, left = false, right = false, turnLeft = false, turnRight = false, turnUp = false, turnDown = false, attack = false, jump = false, drop = false;
 
         if(!isDead && !isInOverlay) {
             up = input.isMoveForwardPressed();
@@ -839,6 +860,8 @@ public class Player extends Actor {
 		if(Game.isMobile && !isInOverlay)
 		{
 			attack = input.isAttackPressed() || Game.hud.isAttackPressed() || controllerState.attack;
+            drop = input.isDropPressed() || Game.hud.isThrowPressed() || controllerState.drop;
+            jump = input.isJumpPressed() || Game.hud.isJumpPressed();
 		}
 
 		lastZ = z;
@@ -1074,7 +1097,7 @@ public class Player extends Actor {
 				}
 			}
 
-            if((Game.hud.isAttackPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer) && Game.dragging == null) {
+            if((Game.hud.isAttackOrThrowPressed() || input.isRightTouched()) && !(touchingItem && input.uiTouchPointer == input.rightPointer) && Game.dragging == null) {
 
 				deltaX = 0;
 				deltaY = 0;
@@ -1086,7 +1109,7 @@ public class Player extends Actor {
 					thisX = Gdx.input.getX(input.rightPointer);
 					thisY = Gdx.input.getY(input.rightPointer);
 				}
-				else if(Game.hud.isAttackPressed() && input.uiTouchPointer != null) {
+				else if(Game.hud.isAttackOrThrowPressed() && input.uiTouchPointer != null) {
 					thisX = Gdx.input.getX(input.uiTouchPointer);
 					thisY = Gdx.input.getY(input.uiTouchPointer);
 				}
@@ -1117,7 +1140,7 @@ public class Player extends Actor {
 				lastDelta.set(thisX, thisY);
 			}
 
-            if(!(Game.hud.isAttackPressed() || input.isRightTouched())) {
+            if(!(Game.hud.isAttackOrThrowPressed() || input.isRightTouched())) {
                 lastDelta = null;
             }
 		}
@@ -1279,7 +1302,7 @@ public class Player extends Actor {
             if(input.doUseAction() ||
                     controllerState.buttonEvents.contains(Action.USE, true)) Use(level);
 
-            if(input.isDropPressed() && Game.instance.menuMode == Game.MenuMode.Hidden) {
+            if(drop && Game.instance.menuMode == Game.MenuMode.Hidden) {
                 chargeDrop(delta);
             }
             else {
@@ -2332,4 +2355,9 @@ public class Player extends Actor {
 				itm.drawable.refresh();
 		}
     }
+
+	public void addGold(int amount) {
+		gold += amount;
+		history.tookGold(amount);
+	}
 }

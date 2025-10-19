@@ -1,11 +1,4 @@
-#ifdef GL_ES
-#define LOWP lowp
-precision mediump float;
-#else
-#define LOWP 
-#endif
-
-varying LOWP vec4 v_color;
+varying vec4 v_color;
 varying vec2 v_texCoords;
 
 uniform sampler2D u_texture;
@@ -18,7 +11,7 @@ uniform vec2 u_resolution;
 vec4 blur9(sampler2D image, vec2 uv, vec2 resolution, vec2 direction);
 
 void main()
-{    
+{
 	// downsample the resolution
     float lowResolution = 240.0;
     float d = 1.0 / lowResolution;
@@ -42,6 +35,6 @@ void main()
 	color.rgb = floor(color.rgb);
 	color.rg /= 16.0;
 	color.b /= 8.0;
-   
+
     gl_FragColor = color;
 }

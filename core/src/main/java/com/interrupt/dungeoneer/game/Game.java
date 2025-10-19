@@ -31,6 +31,7 @@ import com.interrupt.dungeoneer.gfx.DecalManager;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
 import com.interrupt.dungeoneer.input.ControllerState;
 import com.interrupt.dungeoneer.input.GamepadManager;
+import com.interrupt.dungeoneer.input.Workarounds;
 import com.interrupt.dungeoneer.screens.GameScreen;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import com.interrupt.dungeoneer.ui.*;
@@ -473,7 +474,10 @@ public class Game {
 			if(gamepadManager == null) {
 				gamepadManager = new GamepadManager(new ControllerState());
 				gamepadManager.init();
-				Controllers.addListener(gamepadManager);
+
+                if (Workarounds.ignoreBrokenGdxControllersOniOS()) {
+                    Controllers.addListener(gamepadManager);
+                }
 			}
 		}
 		catch(Exception ex) { Gdx.app.log("Delver", ex.getMessage()); }
@@ -916,6 +920,9 @@ public class Game {
 		FileHandle file = getFile(saveDir + "player.dat");
 		JsonUtil.toJson(player, file);
 
+		// Make sure that gold amount is synced.
+		progression.gold = player.gold;
+
 		// save progress!
 		saveProgression(progression, Game.instance.getSaveSlot());
 		gameMode.saveGameState(saveLoc);
@@ -1141,6 +1148,9 @@ public class Game {
 		hudManager.quickSlots.refresh();
 		hudManager.backpack.refresh();
 		hud.refreshEquipLocations();
+
+        // Tick HUD so updating UI scale refreshes in real time
+        hud.tick(Game.instance.input);
 	}
 
 	public static DragAndDropResult DragAndDropInventoryItem( Item dragging, Integer invLoc, String equipLoc ) {

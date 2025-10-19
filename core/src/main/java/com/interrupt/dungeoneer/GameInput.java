@@ -53,6 +53,7 @@ public class GameInput implements InputProcessor {
 	public final int gamepadPointerNum = 0;
 
     public boolean isNewlyTouched = false;
+    public boolean tapped = false;
 
 	public void setGamepadManager(GamepadManager gamepadManager) {
 		this.gamepadManager = gamepadManager;
@@ -121,8 +122,13 @@ public class GameInput implements InputProcessor {
 		return false;
 	}
 
+    private Vector2 lastTapLocation = new Vector2();
+
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
+        tapped = true;
+        lastTapLocation.set(x, y);
+
 		lastTouchedPointer = pointer;
         isNewlyTouched = true;
 
@@ -161,6 +167,10 @@ public class GameInput implements InputProcessor {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
+        if (!lastTapLocation.epsilonEquals(x, y, 4.0f)) {
+            tapped = false;
+        }
+
 		usingGamepad = false;
 
 		if(menuUi != null)
@@ -209,8 +219,14 @@ public class GameInput implements InputProcessor {
 		if(rightPointer != null && pointer == rightPointer) rightPointer = null;
 		if(uiTouchPointer != null && pointer == uiTouchPointer) uiTouchPointer = null;
 
-		if(Game.ui != null)
-			Game.ui.touchUp(x, y, pointer, button);
+		if(Game.ui != null) {
+            if (Game.ui.touchUp(x, y, pointer, button)) return true;
+        }
+
+        if (tapped) {
+            requestAction(Action.USE);
+            tapped = false;
+        }
 
 		return false;
 	}
@@ -277,6 +293,18 @@ public class GameInput implements InputProcessor {
 		if(binding == null || binding < 0 || binding > keysDown.length) return false;
 		return keysDown[binding];
 	}
+
+    public void requestAction(Action action) {
+        Integer binding = Actions.keyBindings.get(action);
+
+        if (binding < 0 || binding > keysDown.length) {
+            Gdx.app.log("GameInput", "Requested key " + action + " has no keybinding");
+            return;
+        }
+
+        keysDown[binding] = true;
+        keyEvents.add(binding);
+    }
 
 	public boolean isActionRequested(Action action){
 		boolean isActionRequested = checkKeyDown(action);

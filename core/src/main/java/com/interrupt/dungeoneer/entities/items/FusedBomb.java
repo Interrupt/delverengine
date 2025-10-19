@@ -274,4 +274,12 @@ public class FusedBomb extends Item {
     private boolean wasJustPlacedInEditor(Level.Source source) {
         return source == Level.Source.EDITOR;
     }
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        if (explosion != null) {
+            explosion.preloadSounds();
+        }
+    }
 }

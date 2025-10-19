@@ -188,6 +188,14 @@ public class Item extends Entity {
 		canSleep = true;
 	}
 
+	public void preloadSounds() {
+        super.preloadSounds();
+		Audio.preload(equipSound);
+		Audio.preload(pickupSound);
+        Audio.preload("hit.mp3,hit_02.mp3,hit_03.mp3,hit_04.mp3");
+        Audio.preload("break/break_pottery_01.mp3,break/break_pottery_02.mp3,break/break_pottery_03.mp3");
+	}
+
 	@Override
 	public void init(Level level, Level.Source source) {
 		super.init(level, source);

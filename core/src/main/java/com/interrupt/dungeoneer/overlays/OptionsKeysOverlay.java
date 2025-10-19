@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.Features;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.GameData;
@@ -51,8 +52,7 @@ public class OptionsKeysOverlay extends WindowOverlay {
 
         // check if the Jump option should be enabled
         try {
-            GameData gameData = JsonUtil.fromJson(GameData.class, Game.findInternalFileInMods("data/game.dat"));
-            if (gameData != null && gameData.playerJumpEnabled) {
+            if (Features.playerJumpEnabled()) {
                 if (!Actions.keyOrder.contains(Actions.Action.JUMP, false)) {
                     Actions.keyOrder.add(Actions.Action.JUMP);
                 }

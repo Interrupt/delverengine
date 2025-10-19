@@ -192,7 +192,6 @@ public class Door extends Entity {
 		gibSpriteTexStart = toCopy.gibSpriteTexStart;
 		gibSpriteTexEnd = toCopy.gibSpriteTexEnd;
 		stuckChance = toCopy.stuckChance;
-		breakSound = toCopy.breakSound;
 		isActive = true;
 		isDynamic = true;
 
@@ -781,4 +780,13 @@ public class Door extends Entity {
 			}
 		}
 	}
+
+    @Override
+    public void preloadSounds() {
+        super.preloadSounds();
+        Audio.preload(openSound);
+        Audio.preload(closedSound);
+        Audio.preload(closingSound);
+        Audio.preload(breakSound);
+    }
 }
