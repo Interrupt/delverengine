@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.ui.ActionSpinnerButton;
@@ -57,16 +58,20 @@ public class OptionsInputOverlay extends WindowOverlay {
             }
         });
 
-        TextButton keysBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.keysButton"), skin.get(TextButton.TextButtonStyle.class));
-        keysBtn.setWidth(200);
-        keysBtn.setHeight(50);
-        keysBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                saveOptions();
-                OverlayManager.instance.replaceCurrent(new OptionsKeysOverlay(dimScreen, showBackground));
-            }
-        });
+        TextButton keysBtn = null;
+
+        if (!GameApplication.isMobile()) {
+            keysBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.keysButton"), skin.get(TextButton.TextButtonStyle.class));
+            keysBtn.setWidth(200);
+            keysBtn.setHeight(50);
+            keysBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    saveOptions();
+                    OverlayManager.instance.replaceCurrent(new OptionsKeysOverlay(dimScreen, showBackground));
+                }
+            });
+        }
 
         TextButton gamepadBtn = null;
         if (Game.gamepadManager.controllerCount() > 0) {
@@ -119,75 +124,84 @@ public class OptionsInputOverlay extends WindowOverlay {
 
         addGamepadButtonOrder(sliderLookY, lookYLabel);
 
-        // Invert Look
-
-        Label invertLookLabel = new Label(StringManager.get("screens.OptionsScreen.invertLookLabel"), skin.get(Label.LabelStyle.class));
-        mainTable.add(invertLookLabel);
-
-        invertLook = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
-        invertLook.setChecked((options.mouseInvert));
-
-        mainTable.add(invertLook);
-        mainTable.row();
-
-        addGamepadButtonOrder(invertLook, invertLookLabel);
-
         // Mouse Buttons
+        if (!GameApplication.isMobile()) {
+            // Invert Look
 
-        spinnerMouseButton1 = new ActionSpinnerButton(Options.instance.mouseButton1Action,skin.get(TextButton.TextButtonStyle.class));
+            Label invertLookLabel = new Label(StringManager.get("screens.OptionsScreen.invertLookLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(invertLookLabel);
 
-        Label mouseButton1Label = new Label(StringManager.get("screens.OptionsScreen.mouseButton1Label"), skin.get(Label.LabelStyle.class));
-        mainTable.add(mouseButton1Label);
-        mainTable.add(spinnerMouseButton1);
-        mainTable.row();
+            invertLook = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
+            invertLook.setChecked((options.mouseInvert));
 
-        addGamepadButtonOrder(spinnerMouseButton1, mouseButton1Label);
+            mainTable.add(invertLook);
+            mainTable.row();
 
-        spinnerMouseButton2 = new ActionSpinnerButton(Options.instance.mouseButton2Action,skin.get(TextButton.TextButtonStyle.class));
+            addGamepadButtonOrder(invertLook, invertLookLabel);
 
-        Label mouseButton2Label = new Label(StringManager.get("screens.OptionsScreen.mouseButton2Label"), skin.get(Label.LabelStyle.class));
-        mainTable.add(mouseButton2Label);
-        mainTable.add(spinnerMouseButton2);
-        mainTable.row();
+            spinnerMouseButton1 = new ActionSpinnerButton(Options.instance.mouseButton1Action, skin.get(TextButton.TextButtonStyle.class));
 
-        addGamepadButtonOrder(spinnerMouseButton2, mouseButton2Label);
+            Label mouseButton1Label = new Label(StringManager.get("screens.OptionsScreen.mouseButton1Label"), skin.get(Label.LabelStyle.class));
+            mainTable.add(mouseButton1Label);
+            mainTable.add(spinnerMouseButton1);
+            mainTable.row();
 
-        spinnerMouseButton3 = new ActionSpinnerButton(Options.instance.mouseButton3Action,skin.get(TextButton.TextButtonStyle.class));
+            addGamepadButtonOrder(spinnerMouseButton1, mouseButton1Label);
 
-        Label mouseButton3Label = new Label(StringManager.get("screens.OptionsScreen.mouseButton3Label"), skin.get(Label.LabelStyle.class));
-        mainTable.add(mouseButton3Label);
-        mainTable.add(spinnerMouseButton3);
-        mainTable.row();
+            spinnerMouseButton2 = new ActionSpinnerButton(Options.instance.mouseButton2Action, skin.get(TextButton.TextButtonStyle.class));
 
-        addGamepadButtonOrder(spinnerMouseButton3, mouseButton3Label);
+            Label mouseButton2Label = new Label(StringManager.get("screens.OptionsScreen.mouseButton2Label"), skin.get(Label.LabelStyle.class));
+            mainTable.add(mouseButton2Label);
+            mainTable.add(spinnerMouseButton2);
+            mainTable.row();
 
-        // Mouse Scroller
+            addGamepadButtonOrder(spinnerMouseButton2, mouseButton2Label);
 
-        Label mouseScrollLabel = new Label(StringManager.get("screens.OptionsScreen.mouseScrollLabel"), skin.get(Label.LabelStyle.class));
-        mainTable.add(mouseScrollLabel);
+            spinnerMouseButton3 = new ActionSpinnerButton(Options.instance.mouseButton3Action, skin.get(TextButton.TextButtonStyle.class));
 
-        chkMouseScroller = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
-        chkMouseScroller.setChecked(options.useMouseScroller);
+            Label mouseButton3Label = new Label(StringManager.get("screens.OptionsScreen.mouseButton3Label"), skin.get(Label.LabelStyle.class));
+            mainTable.add(mouseButton3Label);
+            mainTable.add(spinnerMouseButton3);
+            mainTable.row();
 
-        mainTable.add(chkMouseScroller);
-        mainTable.row();
+            addGamepadButtonOrder(spinnerMouseButton3, mouseButton3Label);
 
-        addGamepadButtonOrder(chkMouseScroller, mouseScrollLabel);
+            // Mouse Scroller
+
+            Label mouseScrollLabel = new Label(StringManager.get("screens.OptionsScreen.mouseScrollLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(mouseScrollLabel);
+
+            chkMouseScroller = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
+            chkMouseScroller.setChecked(options.useMouseScroller);
+
+            mainTable.add(chkMouseScroller);
+            mainTable.row();
+
+            addGamepadButtonOrder(chkMouseScroller, mouseScrollLabel);
+        }
 
         // Button Row
 
         Table buttonTable = new Table();
 
         buttonTable.add(backBtn);
-        buttonTable.add(keysBtn);
+
+        if (!GameApplication.isMobile()) {
+            buttonTable.add(keysBtn);
+            buttonTable.getCell(keysBtn).padRight(4);
+        }
+
         buttonTable.add(gamepadBtn);
 
         buttonTable.getCell(backBtn).padRight(4);
-        buttonTable.getCell(keysBtn).padRight(4);
         buttonTable.pack();
 
         buttonOrder.add(backBtn);
-        buttonOrder.add(keysBtn);
+
+        if (!GameApplication.isMobile()) {
+            buttonOrder.add(keysBtn);
+        }
+
         buttonOrder.add(gamepadBtn);
 
         mainTable.add(buttonTable);
@@ -210,13 +224,15 @@ public class OptionsInputOverlay extends WindowOverlay {
             valueLookXLast = sliderLookX.getValue();
         }
 
-        if((valueLookYLast != sliderLookY.getValue()) || (invertLookLastValue != invertLook.isChecked())) {
-            valueLookYLast = sliderLookY.getValue();
-            invertLookLastValue = invertLook.isChecked();
-        }
+        if (!GameApplication.isMobile()) {
+            if((valueLookYLast != sliderLookY.getValue()) || (invertLookLastValue != invertLook.isChecked())) {
+                valueLookYLast = sliderLookY.getValue();
+                invertLookLastValue = invertLook.isChecked();
+            }
 
-        if(mouseScrollerLastValue != chkMouseScroller.isChecked()) {
-            mouseScrollerLastValue = chkMouseScroller.isChecked();
+            if (mouseScrollerLastValue != chkMouseScroller.isChecked()) {
+                mouseScrollerLastValue = chkMouseScroller.isChecked();
+            }
         }
 
         // back
@@ -240,12 +256,15 @@ public class OptionsInputOverlay extends WindowOverlay {
     }
 
     public void saveOptions() {
-        Options.instance.mouseInvert = invertLook.isChecked();
         Options.instance.mouseXSensitivity = sliderLookX.getValue();
         Options.instance.mouseYSensitivity = sliderLookY.getValue();
-        Options.instance.mouseButton1Action = spinnerMouseButton1.getValue();
-        Options.instance.mouseButton2Action = spinnerMouseButton2.getValue();
-        Options.instance.mouseButton3Action = spinnerMouseButton3.getValue();
+
+        if (!GameApplication.isMobile()) {
+            Options.instance.mouseInvert = invertLook.isChecked();
+            Options.instance.mouseButton1Action = spinnerMouseButton1.getValue();
+            Options.instance.mouseButton2Action = spinnerMouseButton2.getValue();
+            Options.instance.mouseButton3Action = spinnerMouseButton3.getValue();
+        }
 
         Options.saveOptions();
     }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
@@ -164,19 +165,21 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         addGamepadButtonOrder(postProcessingOptions, postProcessingLabel);
 
         // Rendering Engine
-        Label renderingEngineLabel = new Label(StringManager.get("screens.OptionsScreen.renderingEngineLabel"),skin.get(Label.LabelStyle.class));
-        mainTable.add(renderingEngineLabel);
-        Array<Options.RenderingEngine> availableRenderers = new Array<>(Options.RenderingEngine.values());
-        renderingEngineSpinner = new SpinnerButton<>(availableRenderers, skin.get(TextButton.TextButtonStyle.class));
+        if (!GameApplication.isMobile()) {
+            Label renderingEngineLabel = new Label(StringManager.get("screens.OptionsScreen.renderingEngineLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(renderingEngineLabel);
+            Array<Options.RenderingEngine> availableRenderers = new Array<>(Options.RenderingEngine.values());
+            renderingEngineSpinner = new SpinnerButton<>(availableRenderers, skin.get(TextButton.TextButtonStyle.class));
 
-        if (Options.instance.renderingEngine != null) {
-            renderingEngineSpinner.setValue(Options.instance.renderingEngine);
+            if (Options.instance.renderingEngine != null) {
+                renderingEngineSpinner.setValue(Options.instance.renderingEngine);
+            }
+
+            addGamepadButtonOrder(renderingEngineSpinner, renderingEngineLabel);
+
+            mainTable.add(renderingEngineSpinner);
+            mainTable.row();
         }
-
-        addGamepadButtonOrder(renderingEngineSpinner, renderingEngineLabel);
-
-        mainTable.add(renderingEngineSpinner);
-        mainTable.row();
 
         // Anti Aliasing
         fxaaCheckbox = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
@@ -202,49 +205,51 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         addGamepadButtonOrder(shadows, shadowsLabel);
 
         // VSync
-        Label vsyncLabel = new Label(StringManager.getOrDefaultTo("screens.OptionsScreen.vsyncLabel", "VSync"),skin.get(Label.LabelStyle.class));
-        mainTable.add(vsyncLabel);
-        final CheckBox vsyncCheckbox = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
-        vsyncCheckbox.setChecked(Options.instance.vsyncEnabled);
+        if (!GameApplication.isMobile()) {
+            Label vsyncLabel = new Label(StringManager.getOrDefaultTo("screens.OptionsScreen.vsyncLabel", "VSync"), skin.get(Label.LabelStyle.class));
+            mainTable.add(vsyncLabel);
+            final CheckBox vsyncCheckbox = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
+            vsyncCheckbox.setChecked(Options.instance.vsyncEnabled);
 
-        vsyncCheckbox.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Options.instance.vsyncEnabled = vsyncCheckbox.isChecked();
-                try {
-                    Gdx.graphics.setVSync(Options.instance.vsyncEnabled);
+            vsyncCheckbox.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Options.instance.vsyncEnabled = vsyncCheckbox.isChecked();
+                    try {
+                        Gdx.graphics.setVSync(Options.instance.vsyncEnabled);
+                    } catch (Exception ex) {
+                        Gdx.app.log("Renderer", ex.getMessage());
+                    }
                 }
-                catch(Exception ex) {
-                    Gdx.app.log("Renderer", ex.getMessage());
+            });
+
+            mainTable.add(vsyncCheckbox);
+            mainTable.row();
+
+            addGamepadButtonOrder(vsyncCheckbox, vsyncLabel);
+
+            // FPS limit
+            Label limitFpsLabel = new Label(StringManager.getOrDefaultTo("screens.OptionsScreen.limitFpsLabel", "Limit FPS"), skin.get(Label.LabelStyle.class));
+            mainTable.add(limitFpsLabel);
+            final CheckBox limitFpsCheckbox = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
+            limitFpsCheckbox.setChecked(Options.instance.fpsLimit != 0);
+
+            limitFpsCheckbox.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (limitFpsCheckbox.isChecked()) {
+                        Options.instance.fpsLimit = 120;
+                    } else {
+                        Options.instance.fpsLimit = 0;
+                    }
                 }
-            }});
+            });
 
-        mainTable.add(vsyncCheckbox);
-        mainTable.row();
+            mainTable.add(limitFpsCheckbox);
+            mainTable.row();
 
-        addGamepadButtonOrder(vsyncCheckbox, vsyncLabel);
-
-        // FPS limit
-        Label limitFpsLabel = new Label(StringManager.getOrDefaultTo("screens.OptionsScreen.limitFpsLabel", "Limit FPS"),skin.get(Label.LabelStyle.class));
-        mainTable.add(limitFpsLabel);
-        final CheckBox limitFpsCheckbox = new CheckBox(null, skin.get(CheckBox.CheckBoxStyle.class));
-        limitFpsCheckbox.setChecked(Options.instance.fpsLimit != 0);
-
-        limitFpsCheckbox.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if(limitFpsCheckbox.isChecked()) {
-                    Options.instance.fpsLimit = 120;
-                }
-                else {
-                    Options.instance.fpsLimit = 0;
-                }
-            }});
-
-        mainTable.add(limitFpsCheckbox);
-        mainTable.row();
-
-        addGamepadButtonOrder(limitFpsCheckbox, limitFpsLabel);
+            addGamepadButtonOrder(limitFpsCheckbox, limitFpsLabel);
+        }
     }
 
     public void tick(float delta) {
@@ -276,7 +281,6 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         Options.instance.shadowsEnabled = shadows.isChecked();
         Options.instance.fxaaEnabled = fxaaCheckbox.isChecked();
         Options.instance.gfxQuality = particleDensity.getValue();
-        Options.instance.renderingEngine = renderingEngineSpinner.getValue();
         Options.instance.postProcessingQuality = (int)postProcessingQualitySlider.getValue();
         Options.instance.enablePostProcessing = (!postProcessingOptions.getValue().equals("Off") && Options.instance.postProcessingQuality != 0) || Options.instance.fxaaEnabled;
         Options.instance.postProcessFilter = "post_filter_" + postProcessingOptions.getValue();
@@ -287,6 +291,10 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
 
         if(Options.instance.enablePostProcessing != postProcessingWasEnabled) {
             GameManager.renderer.CreateFrameBuffers(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+
+        if (!GameApplication.isMobile()) {
+            Options.instance.renderingEngine = renderingEngineSpinner.getValue();
         }
 
         doForcedValuesUpdate=false;
@@ -307,7 +315,6 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
         Options.instance.fieldOfView = fovSlider.getValue();
         Options.instance.shadowsEnabled = shadows.isChecked();
         Options.instance.fxaaEnabled = fxaaCheckbox.isChecked();
-        Options.instance.renderingEngine = renderingEngineSpinner.getValue();
         Options.instance.postProcessingQuality = (int)postProcessingQualitySlider.getValue();
         Options.instance.enablePostProcessing = (!postProcessingOptions.getValue().equals("Off") && Options.instance.postProcessingQuality != 0) || Options.instance.fxaaEnabled;
         Options.instance.postProcessFilter = "post_filter_" + postProcessingOptions.getValue();
@@ -316,6 +323,9 @@ public class OptionsGraphicsOverlay extends WindowOverlay {
             Options.instance.postProcessFilter = null;
         }
 
+        if (!GameApplication.isMobile()) {
+            Options.instance.renderingEngine = renderingEngineSpinner.getValue();
+        }
 
         Options.saveOptions();
     }
