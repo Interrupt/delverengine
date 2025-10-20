@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
@@ -328,7 +329,7 @@ public abstract class WindowOverlay extends Overlay {
 
 		uiScale *= Math.min(1f, Options.instance.uiSize);
 
-		if(!Game.isMobile) uiScale *= 0.75f;
+		if(!GameApplication.isMobile()) uiScale *= 0.75f;
 
 		renderer = GameManager.renderer;
 		gl = renderer.getGL();

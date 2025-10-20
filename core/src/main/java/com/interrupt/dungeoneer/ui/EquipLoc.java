@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.interrupt.dungeoneer.GameManager;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.collision.Collidor;
 import com.interrupt.dungeoneer.entities.Item;
@@ -116,14 +117,14 @@ public class EquipLoc {
 
 		if(!visible) return;
 
-		if(Game.isMobile || !Game.instance.input.caughtCursor) {
+		if(GameApplication.isMobile() || !Game.instance.input.caughtCursor) {
 			int x = 0;
 			int y = 0;
 
 			float xPos1 = -((uiSize * 1) / 2.0f) + uiSize * x;
 			float xPosD = xPos1 + (xOffset * uiSize);
 
-			if((Game.isMobile || !input.caughtCursor) && xCursorPos > xPosD && xCursorPos <= xPosD + uiSize && yCursorPos <= ((y + 1) * uiSize) + (yOffset * uiSize) && yCursorPos > (y * uiSize) + (yOffset * uiSize))
+			if((GameApplication.isMobile() || !input.caughtCursor) && xCursorPos > xPosD && xCursorPos <= xPosD + uiSize && yCursorPos <= ((y + 1) * uiSize) + (yOffset * uiSize) && yCursorPos > (y * uiSize) + (yOffset * uiSize))
 			{
 				isHovered = true;
 			}

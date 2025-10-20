@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
@@ -858,7 +859,7 @@ public class Player extends Actor {
 		else if(heldItem == null) handAnimation = null;
 
 		// Check for mobile attack press
-		if(Game.isMobile && !isInOverlay)
+		if(GameApplication.isMobile() && !isInOverlay)
 		{
 			attack = input.isAttackPressed() || Game.hud.isAttackPressed() || controllerState.attack;
             drop = input.isDropPressed() || Game.hud.isThrowPressed() || controllerState.drop;
@@ -960,7 +961,7 @@ public class Player extends Actor {
 
         // Only allow picking up items from the world if the inventory is showing
         boolean shouldPickupItem = (!input.isCursorCatched() || input.showingGamepadCursor) &&
-            !Game.isMobile &&
+            !GameApplication.isMobile() &&
             Game.instance.input.isPointerTouched(0);
 
 		if(!inOverlay && !isDead && shouldPickupItem) {
@@ -993,14 +994,14 @@ public class Player extends Actor {
 		}
 
 		hovering = null;
-		if(!touchingItem && !Game.isMobile && (!input.isCursorCatched() || input.showingGamepadCursor)) {
+		if(!touchingItem && !GameApplication.isMobile() && (!input.isCursorCatched() || input.showingGamepadCursor)) {
 			hovering = pickItem(level, input.getPointerX(), input.getPointerY(), 0.9f);
 		}
 
         boolean showUseMessages = canShowUseMessages(input);
 		if(showUseMessages) {
 			String useText = ReadableKeys.keyNames.get(Actions.keyBindings.get(Action.USE));
-			if(Game.isMobile) useText = StringManager.get("entities.Player.mobileUseText");
+			if(GameApplication.isMobile()) useText = StringManager.get("entities.Player.mobileUseText");
 
 			Entity centered = pickEntity(level, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0.7f);
 			if(centered != null && centered != this) {
@@ -1067,7 +1068,7 @@ public class Player extends Actor {
 		}
 
 		// touch movement
-		if(Game.isMobile && !isDead && !isInOverlay) {
+		if(GameApplication.isMobile() && !isDead && !isInOverlay) {
 			float max = 60;
 
 			if(input.isLeftTouched() && !(touchingItem && input.uiTouchPointer == input.leftPointer) && Game.dragging == null) {
@@ -2092,7 +2093,7 @@ public class Player extends Actor {
 	}
 
 	public void updateMouseInput(GameInput input) {
-		/*if(!touchingItem && !Game.isMobile)
+		/*if(!touchingItem && !GameApplication.isMobile())
 		{
 			if(input.caughtCursor) {
 				rot -= (((float)Gdx.input.getDeltaX()) / 230.0) * Options.instance.mouseXSensitivity;
@@ -2285,7 +2286,7 @@ public class Player extends Actor {
 			return;
 		}
 
-		if(!touchingItem && !Game.isMobile )
+		if(!touchingItem && !GameApplication.isMobile() )
 		{
 			if(caughtCursor) {
 				rot -= deltaX * 0.003 * Options.instance.mouseXSensitivity;

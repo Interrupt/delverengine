@@ -309,7 +309,7 @@ public class GameInput implements InputProcessor {
 	public boolean isActionRequested(Action action){
 		boolean isActionRequested = checkKeyDown(action);
 
-        if (Gdx.app.getType() == Application.ApplicationType.Desktop && !Game.isMobile) {
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop && !GameApplication.isMobile()) {
 		    //Only trap caughtCursor for the primary button
             isActionRequested |= (caughtCursor && (Options.instance.mouseButton1Action == action) && isPressedMouse1);
             isActionRequested |= ((Options.instance.mouseButton2Action == action) && isPressedMouse2);

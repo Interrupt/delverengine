@@ -2,6 +2,7 @@ package com.interrupt.dungeoneer.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.game.Game;
@@ -144,7 +145,7 @@ public class Hotbar {
             return;
 
         // We are able to drag inventory items whenever in mobile mode, or whenever the cursor is showing
-        boolean canDrag = Game.isMobile || !Game.instance.input.caughtCursor;
+        boolean canDrag = GameApplication.isMobile() || !Game.instance.input.caughtCursor;
 
         // If we can drag, figure out which inventory slot the cursor is over
         if (canDrag) {

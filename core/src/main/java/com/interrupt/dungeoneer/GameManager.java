@@ -87,7 +87,7 @@ public class GameManager {
 			GameManager.renderer.clearLights();
 
 			if (game != null && game.player != null && !game.player.isDead) {
-				if (Game.isMobile && Gdx.input.isKeyPressed(Input.Keys.BACK)) {
+				if (GameApplication.isMobile() && Gdx.input.isKeyPressed(Input.Keys.BACK)) {
 					OverlayManager.instance.push(new PauseOverlay());
 				} else if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) || this.myGameApp.input.gamepadManager.controllerState.buttonEvents.contains(Actions.Action.PAUSE, true)) {
 

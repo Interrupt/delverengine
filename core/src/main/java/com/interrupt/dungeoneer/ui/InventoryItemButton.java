@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameInput;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.collision.Collidor;
@@ -90,7 +91,7 @@ public class InventoryItemButton extends Button {
     }
 
     public void setCursorVisibility(boolean visible) {
-        if(Game.isMobile || gameInput.showingGamepadCursor)
+        if(GameApplication.isMobile() || gameInput.showingGamepadCursor)
             return;
 
         if(visible) {

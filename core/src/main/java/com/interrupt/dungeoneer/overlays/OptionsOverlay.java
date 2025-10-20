@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
@@ -242,7 +243,7 @@ public class OptionsOverlay extends WindowOverlay {
         }
 
         // Fullscreen Mode
-        if(!(Gdx.app.getType() == Application.ApplicationType.Android || Gdx.app.getType() == Application.ApplicationType.iOS)) {
+        if(!GameApplication.isMobile()) {
             fullscreenMode = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
             fullscreenMode.setChecked(Options.instance.fullScreen);
 
