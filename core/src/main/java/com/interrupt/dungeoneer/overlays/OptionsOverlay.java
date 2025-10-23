@@ -39,6 +39,8 @@ public class OptionsOverlay extends WindowOverlay {
 
     private CheckBox fullscreenMode;
 
+    private Slider sliderLookSpeed;
+
     private String[] graphicsLabelValues = {
             StringManager.get("screens.OptionsScreen.graphicsLow"),
             StringManager.get("screens.OptionsScreen.graphicsMedium"),
@@ -270,10 +272,27 @@ public class OptionsOverlay extends WindowOverlay {
             mainTable.row();
         }
 
+        // Unified look speed slider for mobile
+        if (GameApplication.isMobile()) {
+            sliderLookSpeed  = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
+            sliderLookSpeed.setValue(options.mouseXSensitivity);
+
+            Label lookSpeedLabel = new Label(StringManager.get("screens.OptionsScreen.lookSpeedLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(lookSpeedLabel);
+            mainTable.add(sliderLookSpeed);
+            mainTable.row();
+
+            addGamepadButtonOrder(sliderLookSpeed, lookSpeedLabel);
+        }
+
         // Button Bar
         Table buttonTable = new Table();
         buttonTable.add(backBtn).padRight(4f);
-        buttonTable.add(controlsBtn).padRight(4f);
+
+        if (!GameApplication.isMobile()) {
+            buttonTable.add(controlsBtn).padRight(4f);
+        }
+
         buttonTable.add(graphicsBtn).padRight(4f);
         buttonTable.pack();
 
@@ -373,6 +392,12 @@ public class OptionsOverlay extends WindowOverlay {
         Options.instance.headBobEnabled = headBob.isChecked();
         Options.instance.handLagEnabled = handLag.isChecked();
         if(fullscreenMode != null) Options.instance.fullScreen = fullscreenMode.isChecked();
+
+        if (sliderLookSpeed != null) {
+            Options.instance.mouseXSensitivity = sliderLookSpeed.getValue();
+            Options.instance.mouseYSensitivity = sliderLookSpeed.getValue();
+        }
+
         Options.saveOptions();
     }
 }

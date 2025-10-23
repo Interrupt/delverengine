@@ -320,6 +320,11 @@
         "localizedName": "Look Y",
         "comment": "Label for the mouse y-axis sensitivity slider."
     },
+    "screens.OptionsScreen.lookSpeedLabel": {
+            "class": "com.interrupt.dungeoneer.game.LocalizedString",
+            "localizedName": "Look Speed",
+            "comment": "Label for the look speed slider."
+        },
     "screens.OptionsScreen.invertLookLabel": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Invert Look",
