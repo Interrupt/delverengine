@@ -159,4 +159,11 @@ public class GameApplication extends Game {
         if(newLevelChangeScreen != null)
             instance.levelChangeScreen = newLevelChangeScreen;
     }
+
+    public static boolean isMobile() {
+         if (Gdx.app.getType() == Application.ApplicationType.Android) return true;
+         if (Gdx.app.getType() == Application.ApplicationType.iOS) return true;
+
+         return false;
+    }
 }

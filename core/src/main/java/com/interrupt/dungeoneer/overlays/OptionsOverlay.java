@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
@@ -37,6 +38,8 @@ public class OptionsOverlay extends WindowOverlay {
     private float musicVolumeLastValue;
 
     private CheckBox fullscreenMode;
+
+    private Slider sliderLookSpeed;
 
     private String[] graphicsLabelValues = {
             StringManager.get("screens.OptionsScreen.graphicsLow"),
@@ -194,6 +197,19 @@ public class OptionsOverlay extends WindowOverlay {
         mainTable.add(showUI);
         mainTable.row();
 
+        // Look speed slider for mobile
+        if (GameApplication.isMobile()) {
+            sliderLookSpeed  = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
+            sliderLookSpeed.setValue(options.mouseXSensitivity);
+
+            Label lookSpeedLabel = new Label(StringManager.get("screens.OptionsScreen.lookSpeedLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(lookSpeedLabel);
+            mainTable.add(sliderLookSpeed);
+            mainTable.row();
+
+            addGamepadButtonOrder(sliderLookSpeed, lookSpeedLabel);
+        }
+
         // Show Crosshair
         Label showCrosshairLabel = new Label(StringManager.get("screens.OptionsScreen.showCrosshairLabel"),skin.get(Label.LabelStyle.class));
         mainTable.add(showCrosshairLabel);
@@ -242,7 +258,7 @@ public class OptionsOverlay extends WindowOverlay {
         }
 
         // Fullscreen Mode
-        if(!(Gdx.app.getType() == Application.ApplicationType.Android || Gdx.app.getType() == Application.ApplicationType.iOS)) {
+        if(!GameApplication.isMobile()) {
             fullscreenMode = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
             fullscreenMode.setChecked(Options.instance.fullScreen);
 
@@ -272,7 +288,11 @@ public class OptionsOverlay extends WindowOverlay {
         // Button Bar
         Table buttonTable = new Table();
         buttonTable.add(backBtn).padRight(4f);
-        buttonTable.add(controlsBtn).padRight(4f);
+
+        if (!GameApplication.isMobile()) {
+            buttonTable.add(controlsBtn).padRight(4f);
+        }
+
         buttonTable.add(graphicsBtn).padRight(4f);
         buttonTable.pack();
 
@@ -372,6 +392,12 @@ public class OptionsOverlay extends WindowOverlay {
         Options.instance.headBobEnabled = headBob.isChecked();
         Options.instance.handLagEnabled = handLag.isChecked();
         if(fullscreenMode != null) Options.instance.fullScreen = fullscreenMode.isChecked();
+
+        if (sliderLookSpeed != null) {
+            Options.instance.mouseXSensitivity = sliderLookSpeed.getValue();
+            Options.instance.mouseYSensitivity = sliderLookSpeed.getValue();
+        }
+
         Options.saveOptions();
     }
 }

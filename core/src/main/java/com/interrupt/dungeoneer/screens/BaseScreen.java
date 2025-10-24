@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Art;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -146,7 +147,7 @@ public class BaseScreen implements Screen {
 	@Override
 	public void pause() {
 		Gdx.app.log(screenName, "LibGdx Pause");
-		if(Game.isMobile)
+		if(GameApplication.isMobile())
 			running = false;
 	}
 
