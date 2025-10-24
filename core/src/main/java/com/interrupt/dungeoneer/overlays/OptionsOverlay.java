@@ -197,6 +197,19 @@ public class OptionsOverlay extends WindowOverlay {
         mainTable.add(showUI);
         mainTable.row();
 
+        // Look speed slider for mobile
+        if (GameApplication.isMobile()) {
+            sliderLookSpeed  = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
+            sliderLookSpeed.setValue(options.mouseXSensitivity);
+
+            Label lookSpeedLabel = new Label(StringManager.get("screens.OptionsScreen.lookSpeedLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(lookSpeedLabel);
+            mainTable.add(sliderLookSpeed);
+            mainTable.row();
+
+            addGamepadButtonOrder(sliderLookSpeed, lookSpeedLabel);
+        }
+
         // Show Crosshair
         Label showCrosshairLabel = new Label(StringManager.get("screens.OptionsScreen.showCrosshairLabel"),skin.get(Label.LabelStyle.class));
         mainTable.add(showCrosshairLabel);
@@ -270,19 +283,6 @@ public class OptionsOverlay extends WindowOverlay {
             addGamepadButtonOrder(fullscreenMode, fullScreenLabel);
 
             mainTable.row();
-        }
-
-        // Unified look speed slider for mobile
-        if (GameApplication.isMobile()) {
-            sliderLookSpeed  = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
-            sliderLookSpeed.setValue(options.mouseXSensitivity);
-
-            Label lookSpeedLabel = new Label(StringManager.get("screens.OptionsScreen.lookSpeedLabel"), skin.get(Label.LabelStyle.class));
-            mainTable.add(lookSpeedLabel);
-            mainTable.add(sliderLookSpeed);
-            mainTable.row();
-
-            addGamepadButtonOrder(sliderLookSpeed, lookSpeedLabel);
         }
 
         // Button Bar
