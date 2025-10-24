@@ -14,6 +14,7 @@ public class DungeoneerAndroidActivity extends AndroidApplication {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration configuration = new AndroidApplicationConfiguration();
         configuration.useImmersiveMode = true; // Recommended, but not required.
+        configuration.stencil = 8;
 
         // Enable debug mode for debug builds
         Game.isDebugMode = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
