@@ -10,12 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Player;
@@ -143,7 +141,7 @@ public class ShopOverlay extends WindowOverlay {
 
 						// Might have an attached achievement
 						if(item.achieveOnBuy != null) {
-							SteamApi.api.achieve(item.achieveOnBuy);
+							Game.achievementManager.achieve(item.achieveOnBuy);
 						}
 					}
 
