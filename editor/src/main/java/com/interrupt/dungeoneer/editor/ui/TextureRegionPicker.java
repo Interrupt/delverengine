@@ -8,10 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Scaling;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
+import com.badlogic.gdx.Gdx;
 
 public abstract class TextureRegionPicker extends Window {
     float spriteSize = 60f;
@@ -20,7 +23,7 @@ public abstract class TextureRegionPicker extends Window {
 
     ScrollPane pane;
     Table buttonLayout;
-    Cell paneCell;
+    Cell<ScrollPane> paneCell;
     SelectBox selectBox;
 
     final Array<TextureAtlas> atlases;
@@ -108,8 +111,15 @@ public abstract class TextureRegionPicker extends Window {
 
         TextureAtlas atlas = atlases.get(selectBox.getSelectedIndex());
 
+        TextureRegion[] regions = new TextureRegion[0];
+        try {
+            regions = atlas.getSpriteRegions();
+        } catch (GdxRuntimeException exception) {
+            Gdx.app.log("DelvEdit", "Failed to load texture regions for atlas: " + exception.getMessage());
+        }
+
         int num = 0;
-        for(TextureRegion region : atlas.getSpriteRegions()) {
+        for(TextureRegion region : regions) {
             ImageButton button = new ImageButton(new TextureRegionDrawable(region));
             button.getImage().setScaling(Scaling.fill);
             button.getImageCell().width(spriteSize).height(spriteSize * atlas.rowScale);
