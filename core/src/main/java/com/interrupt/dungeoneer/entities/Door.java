@@ -140,6 +140,7 @@ public class Door extends Entity {
 	private transient float rotateAnimSolidPoint = 0.8f;
 
     public transient String lastMeshFile = null;
+    public transient String lastTextureFile = null;
 
 	public Vector3 dir = new Vector3(Vector3.Z);
 
@@ -503,10 +504,11 @@ public class Door extends Entity {
 	public void updateDrawable() {
 		// init the drawable
 		DrawableMesh doorDrawable = null;
-		if(!(drawable instanceof DrawableMesh) || (lastMeshFile != null && !lastMeshFile.equals(doorMesh))) {
+		if(!(drawable instanceof DrawableMesh) || (lastMeshFile != null && !lastMeshFile.equals(doorMesh)) || (lastTextureFile != null && !lastTextureFile.equals(doorTexture))) {
 			doorDrawable = new DrawableMesh(doorMesh, doorTexture);
 			drawable = doorDrawable;
             lastMeshFile = doorMesh;
+			lastTextureFile = doorTexture;
 		}
 
 		if(drawable != null) {
