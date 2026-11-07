@@ -12,6 +12,7 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
 import com.interrupt.dungeoneer.screens.*;
 import com.interrupt.utils.JsonUtil;
+import com.interrupt.utils.OSUtils;
 
 public class GameApplication extends Game {
 
@@ -161,9 +162,6 @@ public class GameApplication extends Game {
     }
 
     public static boolean isMobile() {
-         if (Gdx.app.getType() == Application.ApplicationType.Android) return true;
-         if (Gdx.app.getType() == Application.ApplicationType.iOS) return true;
-
-         return false;
+         return OSUtils.isMobile();
     }
 }
