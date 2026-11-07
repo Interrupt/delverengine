@@ -18,6 +18,8 @@ public class SpreadMagicMissile extends MagicMissile {
 
     Vector3 tempDir = new Vector3();
 
+    public SpreadMagicMissile() { trailInterval = 2f; splashForce = 0.005f; }
+
     @Override
     public void preloadSounds() {
         super.preloadSounds();
