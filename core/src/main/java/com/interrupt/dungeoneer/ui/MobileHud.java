@@ -84,7 +84,7 @@ public class MobileHud extends Hud {
 
         // Inventory button
         if(inventoryBtn != null) Game.ui.getActors().removeValue(inventoryBtn, true);
-        inventoryBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(inventoryUpIcon)));
+        inventoryBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(inventoryUpIcon)), new TextureRegionDrawable(new Texture(inventoryDownIcon)));
         inventoryBtn.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Game.instance.toggleInventory();
@@ -106,7 +106,7 @@ public class MobileHud extends Hud {
 
         // Pause Button, to show the pause menu
         if(pauseBtn != null) Game.ui.getActors().removeValue(pauseBtn, true);
-        pauseBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(pauseUpIcon)));
+        pauseBtn = new MultiTouchButton(new TextureRegionDrawable(new Texture(pauseUpIcon)), new TextureRegionDrawable(new Texture(pauseDownIcon)));
         pauseBtn.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 // Show the pause overlay!
