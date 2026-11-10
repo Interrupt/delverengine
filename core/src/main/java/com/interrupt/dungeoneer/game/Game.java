@@ -1524,7 +1524,6 @@ public class Game {
 
 	private static void loadAchievementManager() {
 		achievementManager = new AchievementManager();
-		achievementManager.init();
 	}
 
     public GameModeInterface getGameMode() {

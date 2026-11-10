@@ -8,6 +8,8 @@ import com.interrupt.api.steam.NullSteamApi;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.managers.achievements.AchievementManager;
+import com.interrupt.managers.achievements.SteamAchievementDealer;
 
 public class DesktopStarter {
     public static void main(String[] args) {
@@ -60,6 +62,7 @@ public class DesktopStarter {
 
         // Set target SteamAPI
         SteamApi.api = new NullSteamApi();
+        AchievementManager.achievementDealer = new SteamAchievementDealer();
 
         new Lwjgl3Application(new GameApplication(), config);
     }
