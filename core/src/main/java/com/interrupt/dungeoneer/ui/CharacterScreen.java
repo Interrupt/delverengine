@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.entities.Player;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
@@ -41,7 +42,7 @@ public class CharacterScreen {
         uiScale *= Game.getDynamicUiScale();
 
         // Scale up for mobile
-        if(Game.isMobile)
+        if(GameApplication.isMobile())
             uiScale *= Game.GetMobileUiScalingBoost();
 
         fontScale = 2f;

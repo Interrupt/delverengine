@@ -1,8 +1,10 @@
 package com.interrupt.dungeoneer.overlays;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -76,8 +78,20 @@ public class PauseOverlay extends WindowOverlay {
 			}
 		});
 
-		TextButton controlsBtn = new TextButton(" " + StringManager.get("overlays.PauseOverlay.quitButton") + " ", skin.get(TextButtonStyle.class));
-		controlsBtn.addListener(new ClickListener() {
+        TextButton debugBtn = null;
+        if (Game.isDebugMode) {
+            debugBtn = new TextButton("Debug", skin.get(TextButtonStyle.class));
+            debugBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    OverlayManager.instance.remove(thisOverlay);
+                    OverlayManager.instance.push(new DebugOverlay(Game.instance.player));
+                }
+            });
+        }
+
+		TextButton quitBtn = new TextButton(" " + StringManager.get("overlays.PauseOverlay.quitButton") + " ", skin.get(TextButtonStyle.class));
+		quitBtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				OverlayManager.instance.clear();
@@ -94,12 +108,24 @@ public class PauseOverlay extends WindowOverlay {
 	    contentTable.row();
 		contentTable.add(optionsBtn).padBottom(1f).fillX();
 	    contentTable.row();
-	    contentTable.add(controlsBtn).fillX();
+	    Cell<Actor> l = contentTable.add(quitBtn);
+        l.fillX();
+
+        if (debugBtn != null) {
+            l.padBottom(8f);
+            contentTable.row();
+            contentTable.add(debugBtn).padTop(1f).fillX();
+        }
+
 
 	    buttonOrder.clear();
 	    buttonOrder.add(backBtn);
 	    buttonOrder.add(optionsBtn);
-	    buttonOrder.add(controlsBtn);
+	    buttonOrder.add(quitBtn);
+
+        if (debugBtn != null) {
+            buttonOrder.add(debugBtn);
+        }
 
 		return contentTable;
 	}

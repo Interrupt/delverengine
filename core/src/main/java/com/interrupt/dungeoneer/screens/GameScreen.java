@@ -112,7 +112,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause() {
-		if(Game.isMobile) {
+		if(GameApplication.isMobile()) {
 			Gdx.app.log("DelverGameScreen", "LibGdx Pause");
 			doPause();
 		}
@@ -158,7 +158,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void resume() {
-		if(Game.isMobile) {
+		if(GameApplication.isMobile()) {
 			Gdx.app.log("DelverGameScreen", "Resume");
 
 			resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -201,10 +201,10 @@ public class GameScreen implements Screen {
 				Audio.playMusic(Game.instance.level.music, Game.instance.level.loopMusic);
 		}
 
-		if(Game.instance.level.ambientSound != null && !Game.isMobile)
+		if(Game.instance.level.ambientSound != null && !GameApplication.isMobile())
 			Audio.playAmbientSound(Game.instance.level.ambientSound, Game.instance.level.ambientSoundVolume, 0.1f);
 
-		if(Game.isMobile) Gdx.input.setCatchKey(Input.Keys.BACK, true );
+		if(GameApplication.isMobile()) Gdx.input.setCatchKey(Input.Keys.BACK, true );
 
 		Gdx.app.log("DelverGameScreen", "Finished showing");
 	}
@@ -215,7 +215,7 @@ public class GameScreen implements Screen {
 
 		doPause();
 
-		if(Game.isMobile) Gdx.input.setCatchKey(Input.Keys.BACK, true );
+		if(GameApplication.isMobile()) Gdx.input.setCatchKey(Input.Keys.BACK, true );
 		Audio.stopLoopingSounds();
 
 		if(editorLevel != null) GameApplication.editorRunning = false;

@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Audio;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.annotations.EditorProperty;
 import com.interrupt.dungeoneer.entities.Door.DoorState;
@@ -1238,7 +1239,7 @@ public class Monster extends Actor implements Directional {
 			Actor t = (Actor) target;
 			int dealt = t.damageRoll(atk + level, damageType, this);
 
-			if (!Game.isMobile && target instanceof Player)
+			if (!GameApplication.isMobile() && target instanceof Player)
 				Game.flash(Colors.HURT_FLASH, 20);
 
 			if (dealt > 0) {

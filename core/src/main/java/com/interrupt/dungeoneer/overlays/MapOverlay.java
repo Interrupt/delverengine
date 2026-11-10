@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
@@ -116,7 +117,7 @@ public class MapOverlay extends Overlay {
 
             @Override
             public boolean touchUp(int i, int i2, int i3, int i4) {
-                if(Game.isMobile)
+                if(GameApplication.isMobile())
                     OverlayManager.instance.pop();
 
                 return false;

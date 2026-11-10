@@ -12,6 +12,7 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.gamemode.GameModeInterface;
 import com.interrupt.dungeoneer.screens.*;
 import com.interrupt.utils.JsonUtil;
+import com.interrupt.utils.OSUtils;
 
 public class GameApplication extends Game {
 
@@ -158,5 +159,9 @@ public class GameApplication extends Game {
         // Letting the Game Mode override the Level Change Screen
         if(newLevelChangeScreen != null)
             instance.levelChangeScreen = newLevelChangeScreen;
+    }
+
+    public static boolean isMobile() {
+         return OSUtils.isMobile();
     }
 }

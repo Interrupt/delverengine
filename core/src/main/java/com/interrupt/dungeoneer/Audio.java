@@ -80,7 +80,7 @@ public class Audio {
 	}
 
     static public int maxSoundsPerPlatform() {
-        if (Game.isMobile) {
+        if (GameApplication.isMobile()) {
             return 1;
         }
 

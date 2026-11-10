@@ -731,7 +731,7 @@ public class GlRenderer {
             }
 
             boolean usingGamepadCursor = game.input.getGamepadCursorPosition() != null;
-			if(Game.isMobile || usingGamepadCursor) {
+			if(GameApplication.isMobile() || usingGamepadCursor) {
                 InventoryItemButton draggingButton = Hud.getItemBeingDragged();
                 if(draggingButton != null) {
                     hoverItm = draggingButton.getItem();
@@ -1720,7 +1720,7 @@ public class GlRenderer {
 			// pick a color for this box
 			uiBatch.enableBlending();
 
-			if((Game.isMobile || !game.input.caughtCursor) && equipLoc.isHovered())
+			if((GameApplication.isMobile() || !game.input.caughtCursor) && equipLoc.isHovered())
 				if(Game.dragging != null && Game.dragging.GetEquipLoc().equals(equipLoc.equipLoc))
 					uiBatch.setColor(INVBOX_CAN_EQUIP_HOVER);
 				else
@@ -1793,7 +1793,7 @@ public class GlRenderer {
 					uiBatch.setColor(INVBOXSELECTED);
 				else if(at != null && game.player.equipped(at))
 					uiBatch.setColor(INVBOXEQUIPPED);
-				else if((Game.isMobile || !game.input.caughtCursor) && hotbar.getMouseOverSlot() != null && hotbar.getMouseOverSlot() == i)
+				else if((GameApplication.isMobile() || !game.input.caughtCursor) && hotbar.getMouseOverSlot() != null && hotbar.getMouseOverSlot() == i)
 					uiBatch.setColor(INVBOXHOVER);
 				else
 					uiBatch.setColor(INVBOX);

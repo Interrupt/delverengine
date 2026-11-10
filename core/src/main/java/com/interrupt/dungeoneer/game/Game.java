@@ -85,7 +85,6 @@ public class Game {
     public static HUDManager hudManager;
 	public static AchievementManager achievementManager;
 
-	public static boolean isMobile = false;
 	public static boolean isDebugMode = false;
 	public static boolean drawDebugBoxes = false;
 	public static boolean ignoreEscape = false;
@@ -218,7 +217,6 @@ public class Game {
         gameMode.loadGameState(saveLoc);
 
         // init some of the UI
-		isMobile = false;
 		Gdx.input.setCursorCatched(true);
 		hud = new Hud();
 
@@ -258,7 +256,7 @@ public class Game {
 
 		if(message.size > 0) messageTimer = 400;
 
-		if(!isMobile)
+		if(!GameApplication.isMobile())
 			GameApplication.instance.input.caughtCursor = true;
 
 		GameScreen.resetDelta = true;
@@ -381,9 +379,7 @@ public class Game {
 
 		boolean didLoad = load();
 
-		isMobile = Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType() == ApplicationType.iOS;
-
-		if(!isMobile) {
+		if(!GameApplication.isMobile()) {
 			Gdx.input.setCursorCatched(true);
 			hud = new Hud();
 		} else {
@@ -458,8 +454,9 @@ public class Game {
 
 		if(message.size > 0) messageTimer = 400;
 
-		if(!isMobile)
-			GameApplication.instance.input.caughtCursor = true;
+		if(!GameApplication.isMobile()) {
+            GameApplication.instance.input.caughtCursor = true;
+        }
 
 		GameScreen.resetDelta = true;
 	}
@@ -1089,7 +1086,7 @@ public class Game {
             }
         }
 
-        if (OSUtils.isMobile() && Gdx.files != null) {
+        if (GameApplication.isMobile() && Gdx.files != null) {
             if (Gdx.files.isExternalStorageAvailable()) {
                 return Gdx.files.external("Delver/" + file);
             }
@@ -1132,7 +1129,7 @@ public class Game {
 	public static float GetInventoryUiSize()
 	{
 		float uiSize = GetUiSize();
-        if(!isMobile)
+        if(!GameApplication.isMobile())
             return uiSize;
 
         // Scale the inventory size up more for mobile
@@ -1342,7 +1339,7 @@ public class Game {
 
 		// Refresh the UI
 		Game.RefreshUI();
-		if(input != null && !Game.isMobile) input.setCursorCatched(menuMode == MenuMode.Hidden);
+		if(input != null && !GameApplication.isMobile()) input.setCursorCatched(menuMode == MenuMode.Hidden);
 
 		// Hide the map!
 		if(Game.instance.getShowingMenu()) {
@@ -1509,7 +1506,7 @@ public class Game {
 		min = (min / 10f);
 
 		// Increase the base UI scale for Mobile devices
-		if(isMobile) {
+		if(GameApplication.isMobile()) {
 			min *= 1.2f;
 		}
 
