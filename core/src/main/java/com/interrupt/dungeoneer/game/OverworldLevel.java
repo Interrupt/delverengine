@@ -349,12 +349,9 @@ public class  OverworldLevel extends Level {
 		Gdx.app.log("DelverOutdoors", "Creating new Chunk");
 
 		Player p = Game.instance.player;
-		if(c.entityIsInChunk(p) || firstLoad) {
-			c.generateOnThisThread(this);
-		}
-		else {
-			c.generateOnThread(this);
-		}
+		// Generation runs entity init/rotate/decoration, which load .obj model meshes
+		// (GL) on the worker, so it must stay on the main thread (issue #2).
+		c.generateOnThisThread(this);
 	}
 
 	public void madeNewChunkAt(int x, int y) {

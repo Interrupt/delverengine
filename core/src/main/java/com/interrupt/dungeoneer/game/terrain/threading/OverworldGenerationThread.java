@@ -8,7 +8,6 @@ import com.interrupt.dungeoneer.game.OverworldLevel;
 public class OverworldGenerationThread implements Runnable {
     private OverworldLevel level = null;
     private OverworldChunk chunk = null;
-    private boolean tesselateOnThread = true;
 
     Runnable afterRunnable = new Runnable() {
         @Override
@@ -18,10 +17,10 @@ public class OverworldGenerationThread implements Runnable {
             level.updateStaticSpatialHash();
             level.updateLightSpatialHash();
 
-            if(tesselateOnThread)
-                chunk.TesselateOnThread(level, GameManager.renderer);
-            else
-                chunk.TesselateOnThisThread(level, GameManager.renderer);
+            // generation runs on the main thread (entity model loading is GL-bound,
+            // issue #2), so tessellate on this thread; the mesh build is posted to
+            // the render thread inside TesselationThreadRunnable.
+            chunk.TesselateOnThisThread(level, GameManager.renderer);
 
             // FIXME: Do we still need this?
             GameManager.renderer.UpdateDirtyWorldChunks(level);
@@ -30,10 +29,9 @@ public class OverworldGenerationThread implements Runnable {
 
     public OverworldGenerationThread() { }
 
-    public void init(OverworldChunk chunk, OverworldLevel level, boolean tesselateOnThread) {
+    public void init(OverworldChunk chunk, OverworldLevel level) {
         this.chunk = chunk;
         this.level = level;
-        this.tesselateOnThread = tesselateOnThread;
     }
 
     @Override

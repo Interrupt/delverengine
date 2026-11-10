@@ -150,7 +150,7 @@ public class WorldChunk {
 
 	public void Tesselate(Level level, GlRenderer renderer)
 	{
-		tesselator.Tesselate(level, renderer, this, xOffset, yOffset, width, height, tesselators, makeFloors, makeCeilings, makeWalls, true);
+		tesselator.Tesselate(level, renderer, this, xOffset, yOffset, width, height, tesselators, makeFloors, makeCeilings, makeWalls, true, true);
 		needsRetessellation = false;
 
 		if(hasBuilt) return;

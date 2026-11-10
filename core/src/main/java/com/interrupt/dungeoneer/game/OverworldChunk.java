@@ -78,13 +78,8 @@ public class OverworldChunk implements Pool.Poolable {
 		}
 	}
 
-	public void generateOnThread(OverworldLevel level) {
-		generationRunnable.init(this, level, true);
-		Game.threadPool.submit(generationRunnable);
-	}
-
 	public void generateOnThisThread(OverworldLevel level) {
-		generationRunnable.init(this, level, false);
+		generationRunnable.init(this, level);
 		generationRunnable.run();
 	}
 
