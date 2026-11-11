@@ -10,10 +10,14 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
+import com.interrupt.dungeoneer.input.InputOptionsPolicy;
 import com.interrupt.dungeoneer.ui.ActionSpinnerButton;
 import com.interrupt.managers.StringManager;
 
 public class OptionsInputOverlay extends WindowOverlay {
+
+    private Slider sliderLookSpeed;
+    private float sliderLookSpeedOpenValue;
 
     private Slider sliderLookX;
     private float valueLookXLast;
@@ -48,6 +52,12 @@ public class OptionsInputOverlay extends WindowOverlay {
         if(Gdx.app.getType() == Application.ApplicationType.Android)
             Gdx.input.setCatchKey(Input.Keys.BACK, true );
 
+        // Device capability is sampled once, when the page opens. Attaching or detaching a
+        // gamepad or keyboard takes effect on re-entering the options screens.
+        boolean isMobile = GameApplication.isMobile();
+        boolean gamepadPresent = Game.gamepadManager.controllerCount() > 0;
+        boolean hardwareKeyboardPresent = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard);
+
         TextButton backBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.backButton"), skin.get(TextButton.TextButtonStyle.class));
         backBtn.setWidth(200);
         backBtn.setHeight(50);
@@ -60,7 +70,7 @@ public class OptionsInputOverlay extends WindowOverlay {
 
         TextButton keysBtn = null;
 
-        if (!GameApplication.isMobile()) {
+        if (InputOptionsPolicy.showKeysEntry(isMobile, hardwareKeyboardPresent)) {
             keysBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.keysButton"), skin.get(TextButton.TextButtonStyle.class));
             keysBtn.setWidth(200);
             keysBtn.setHeight(50);
@@ -74,7 +84,7 @@ public class OptionsInputOverlay extends WindowOverlay {
         }
 
         TextButton gamepadBtn = null;
-        if (Game.gamepadManager.controllerCount() > 0) {
+        if (InputOptionsPolicy.showGamepadEntry(gamepadPresent)) {
             gamepadBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.gamepadButton"), skin.get(TextButton.TextButtonStyle.class));
             gamepadBtn.setWidth(200);
             gamepadBtn.setHeight(50);
@@ -100,32 +110,52 @@ public class OptionsInputOverlay extends WindowOverlay {
         mainTable.add(header);
         mainTable.row();
 
-        // Look X Slider
+        // Look sensitivity: shape decided by platform and gamepad presence.
+        // Desktop always shows the Look X/Y sliders; Mobile shows them when a gamepad is
+        // present, and otherwise a single Look Speed slider that writes both axes.
 
-        sliderLookX = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
-        sliderLookX.setValue(options.mouseXSensitivity);
+        if (InputOptionsPolicy.lookControl(isMobile, gamepadPresent) == InputOptionsPolicy.LookControl.Unified) {
 
-        Label lookXLabel = new Label(StringManager.get("screens.OptionsScreen.lookXLabel"), skin.get(Label.LabelStyle.class));
-        mainTable.add(lookXLabel);
-        mainTable.add(sliderLookX);
-        mainTable.row();
+            sliderLookSpeed = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
+            sliderLookSpeed.setValue(InputOptionsPolicy.lookSpeedValue(options.mouseXSensitivity, options.mouseYSensitivity));
+            sliderLookSpeedOpenValue = sliderLookSpeed.getValue();
 
-        addGamepadButtonOrder(sliderLookX, lookXLabel);
+            Label lookSpeedLabel = new Label(StringManager.get("screens.OptionsScreen.lookSpeedLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(lookSpeedLabel);
+            mainTable.add(sliderLookSpeed);
+            mainTable.row();
 
-        // Look Y Slider
+            addGamepadButtonOrder(sliderLookSpeed, lookSpeedLabel);
+        }
+        else {
 
-        sliderLookY = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
-        sliderLookY.setValue(options.mouseYSensitivity);
+            // Look X Slider
 
-        Label lookYLabel = new Label(StringManager.get("screens.OptionsScreen.lookYLabel"), skin.get(Label.LabelStyle.class));
-        mainTable.add(lookYLabel);
-        mainTable.add(sliderLookY);
-        mainTable.row();
+            sliderLookX = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
+            sliderLookX.setValue(options.mouseXSensitivity);
 
-        addGamepadButtonOrder(sliderLookY, lookYLabel);
+            Label lookXLabel = new Label(StringManager.get("screens.OptionsScreen.lookXLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(lookXLabel);
+            mainTable.add(sliderLookX);
+            mainTable.row();
 
-        // Mouse Buttons
-        if (!GameApplication.isMobile()) {
+            addGamepadButtonOrder(sliderLookX, lookXLabel);
+
+            // Look Y Slider
+
+            sliderLookY = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
+            sliderLookY.setValue(options.mouseYSensitivity);
+
+            Label lookYLabel = new Label(StringManager.get("screens.OptionsScreen.lookYLabel"), skin.get(Label.LabelStyle.class));
+            mainTable.add(lookYLabel);
+            mainTable.add(sliderLookY);
+            mainTable.row();
+
+            addGamepadButtonOrder(sliderLookY, lookYLabel);
+        }
+
+        // Mouse Buttons — mouse-specific widgets are only shown on Desktop
+        if (!isMobile) {
             // Invert Look
 
             Label invertLookLabel = new Label(StringManager.get("screens.OptionsScreen.invertLookLabel"), skin.get(Label.LabelStyle.class));
@@ -186,23 +216,27 @@ public class OptionsInputOverlay extends WindowOverlay {
 
         buttonTable.add(backBtn);
 
-        if (!GameApplication.isMobile()) {
+        if (keysBtn != null) {
             buttonTable.add(keysBtn);
             buttonTable.getCell(keysBtn).padRight(4);
         }
 
-        buttonTable.add(gamepadBtn);
+        if (gamepadBtn != null) {
+            buttonTable.add(gamepadBtn);
+        }
 
         buttonTable.getCell(backBtn).padRight(4);
         buttonTable.pack();
 
         buttonOrder.add(backBtn);
 
-        if (!GameApplication.isMobile()) {
+        if (keysBtn != null) {
             buttonOrder.add(keysBtn);
         }
 
-        buttonOrder.add(gamepadBtn);
+        if (gamepadBtn != null) {
+            buttonOrder.add(gamepadBtn);
+        }
 
         mainTable.add(buttonTable);
 
@@ -220,19 +254,20 @@ public class OptionsInputOverlay extends WindowOverlay {
     @Override
     public void tick(float delta) {
 
-        if(valueLookXLast != sliderLookX.getValue()) {
+        if(sliderLookX != null && valueLookXLast != sliderLookX.getValue()) {
             valueLookXLast = sliderLookX.getValue();
         }
 
-        if (!GameApplication.isMobile()) {
-            if((valueLookYLast != sliderLookY.getValue()) || (invertLookLastValue != invertLook.isChecked())) {
-                valueLookYLast = sliderLookY.getValue();
-                invertLookLastValue = invertLook.isChecked();
-            }
+        if(sliderLookY != null && valueLookYLast != sliderLookY.getValue()) {
+            valueLookYLast = sliderLookY.getValue();
+        }
 
-            if (mouseScrollerLastValue != chkMouseScroller.isChecked()) {
-                mouseScrollerLastValue = chkMouseScroller.isChecked();
-            }
+        if (invertLook != null && invertLookLastValue != invertLook.isChecked()) {
+            invertLookLastValue = invertLook.isChecked();
+        }
+
+        if (chkMouseScroller != null && mouseScrollerLastValue != chkMouseScroller.isChecked()) {
+            mouseScrollerLastValue = chkMouseScroller.isChecked();
         }
 
         // back
@@ -256,15 +291,24 @@ public class OptionsInputOverlay extends WindowOverlay {
     }
 
     public void saveOptions() {
-        Options.instance.mouseXSensitivity = sliderLookX.getValue();
-        Options.instance.mouseYSensitivity = sliderLookY.getValue();
-
-        if (!GameApplication.isMobile()) {
-            Options.instance.mouseInvert = invertLook.isChecked();
-            Options.instance.mouseButton1Action = spinnerMouseButton1.getValue();
-            Options.instance.mouseButton2Action = spinnerMouseButton2.getValue();
-            Options.instance.mouseButton3Action = spinnerMouseButton3.getValue();
+        if (sliderLookSpeed != null) {
+            // Unified Look Speed: adjusting the single control unifies both look axes onto
+            // the new value. Leaving it untouched leaves diverged per-axis values alone.
+            float lookSpeed = sliderLookSpeed.getValue();
+            if (lookSpeed != sliderLookSpeedOpenValue) {
+                Options.instance.mouseXSensitivity = lookSpeed;
+                Options.instance.mouseYSensitivity = lookSpeed;
+            }
         }
+        else {
+            Options.instance.mouseXSensitivity = sliderLookX.getValue();
+            Options.instance.mouseYSensitivity = sliderLookY.getValue();
+        }
+
+        if (invertLook != null) Options.instance.mouseInvert = invertLook.isChecked();
+        if (spinnerMouseButton1 != null) Options.instance.mouseButton1Action = spinnerMouseButton1.getValue();
+        if (spinnerMouseButton2 != null) Options.instance.mouseButton2Action = spinnerMouseButton2.getValue();
+        if (spinnerMouseButton3 != null) Options.instance.mouseButton3Action = spinnerMouseButton3.getValue();
 
         Options.saveOptions();
     }
