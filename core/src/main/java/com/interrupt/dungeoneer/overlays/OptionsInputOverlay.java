@@ -15,13 +15,12 @@ import com.interrupt.managers.StringManager;
 
 public class OptionsInputOverlay extends WindowOverlay {
 
-    private Slider sliderLookSpeed;
-    private float sliderLookSpeedOpenValue;
-
     private Slider sliderLookX;
     private float valueLookXLast;
     private Slider sliderLookY;
     private float valueLookYLast;
+    private Slider sliderLookSpeed;
+    private float sliderLookSpeedOpenValue;
     private CheckBox invertLook;
     private boolean invertLookLastValue;
     private ActionSpinnerButton spinnerMouseButton1;
