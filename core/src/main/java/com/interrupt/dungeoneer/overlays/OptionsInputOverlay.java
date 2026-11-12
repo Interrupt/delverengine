@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Options;
-import com.interrupt.dungeoneer.input.InputOptionsPolicy;
 import com.interrupt.dungeoneer.ui.ActionSpinnerButton;
 import com.interrupt.managers.StringManager;
 
@@ -52,11 +51,11 @@ public class OptionsInputOverlay extends WindowOverlay {
         if(Gdx.app.getType() == Application.ApplicationType.Android)
             Gdx.input.setCatchKey(Input.Keys.BACK, true );
 
-        // Device capability is sampled once, when the page opens. Attaching or detaching a
-        // gamepad or keyboard takes effect on re-entering the options screens.
         boolean isMobile = GameApplication.isMobile();
         boolean gamepadPresent = Game.gamepadManager.controllerCount() > 0;
-        boolean hardwareKeyboardPresent = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard);
+
+        boolean showLookSpeed = isMobile && !gamepadPresent;
+        boolean showKeys = !isMobile || Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard);
 
         TextButton backBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.backButton"), skin.get(TextButton.TextButtonStyle.class));
         backBtn.setWidth(200);
@@ -70,7 +69,7 @@ public class OptionsInputOverlay extends WindowOverlay {
 
         TextButton keysBtn = null;
 
-        if (InputOptionsPolicy.showKeysEntry(isMobile, hardwareKeyboardPresent)) {
+        if (showKeys) {
             keysBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.keysButton"), skin.get(TextButton.TextButtonStyle.class));
             keysBtn.setWidth(200);
             keysBtn.setHeight(50);
@@ -84,7 +83,7 @@ public class OptionsInputOverlay extends WindowOverlay {
         }
 
         TextButton gamepadBtn = null;
-        if (InputOptionsPolicy.showGamepadEntry(gamepadPresent)) {
+        if (gamepadPresent) {
             gamepadBtn = new TextButton(StringManager.get("screens.OptionsInputScreen.gamepadButton"), skin.get(TextButton.TextButtonStyle.class));
             gamepadBtn.setWidth(200);
             gamepadBtn.setHeight(50);
@@ -110,14 +109,12 @@ public class OptionsInputOverlay extends WindowOverlay {
         mainTable.add(header);
         mainTable.row();
 
-        // Look sensitivity: shape decided by platform and gamepad presence.
-        // Desktop always shows the Look X/Y sliders; Mobile shows them when a gamepad is
-        // present, and otherwise a single Look Speed slider that writes both axes.
+        if (showLookSpeed) {
 
-        if (InputOptionsPolicy.lookControl(isMobile, gamepadPresent) == InputOptionsPolicy.LookControl.Unified) {
+            // Look Speed Slider
 
             sliderLookSpeed = new Slider(0.1f, 3f, 0.001f, false, skin.get(Slider.SliderStyle.class));
-            sliderLookSpeed.setValue(InputOptionsPolicy.lookSpeedValue(options.mouseXSensitivity, options.mouseYSensitivity));
+            sliderLookSpeed.setValue(options.mouseXSensitivity);
             sliderLookSpeedOpenValue = sliderLookSpeed.getValue();
 
             Label lookSpeedLabel = new Label(StringManager.get("screens.OptionsScreen.lookSpeedLabel"), skin.get(Label.LabelStyle.class));
@@ -154,7 +151,7 @@ public class OptionsInputOverlay extends WindowOverlay {
             addGamepadButtonOrder(sliderLookY, lookYLabel);
         }
 
-        // Mouse Buttons — mouse-specific widgets are only shown on Desktop
+        // Mouse Buttons
         if (!isMobile) {
             // Invert Look
 
@@ -292,8 +289,6 @@ public class OptionsInputOverlay extends WindowOverlay {
 
     public void saveOptions() {
         if (sliderLookSpeed != null) {
-            // Unified Look Speed: adjusting the single control unifies both look axes onto
-            // the new value. Leaving it untouched leaves diverged per-axis values alone.
             float lookSpeed = sliderLookSpeed.getValue();
             if (lookSpeed != sliderLookSpeedOpenValue) {
                 Options.instance.mouseXSensitivity = lookSpeed;
