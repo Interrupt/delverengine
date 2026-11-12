@@ -150,21 +150,22 @@ public class OptionsInputOverlay extends WindowOverlay {
             addGamepadButtonOrder(sliderLookY, lookYLabel);
         }
 
+
+        // Invert Look
+
+        Label invertLookLabel = new Label(StringManager.get("screens.OptionsScreen.invertLookLabel"), skin.get(Label.LabelStyle.class));
+        mainTable.add(invertLookLabel);
+
+        invertLook = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
+        invertLook.setChecked((options.mouseInvert));
+
+        mainTable.add(invertLook);
+        mainTable.row();
+
+        addGamepadButtonOrder(invertLook, invertLookLabel);
+
         // Mouse Buttons
         if (!isMobile) {
-            // Invert Look
-
-            Label invertLookLabel = new Label(StringManager.get("screens.OptionsScreen.invertLookLabel"), skin.get(Label.LabelStyle.class));
-            mainTable.add(invertLookLabel);
-
-            invertLook = new CheckBox("", skin.get(CheckBox.CheckBoxStyle.class));
-            invertLook.setChecked((options.mouseInvert));
-
-            mainTable.add(invertLook);
-            mainTable.row();
-
-            addGamepadButtonOrder(invertLook, invertLookLabel);
-
             spinnerMouseButton1 = new ActionSpinnerButton(Options.instance.mouseButton1Action, skin.get(TextButton.TextButtonStyle.class));
 
             Label mouseButton1Label = new Label(StringManager.get("screens.OptionsScreen.mouseButton1Label"), skin.get(Label.LabelStyle.class));
