@@ -1336,7 +1336,7 @@ public class Game {
 
 		// Refresh the UI
 		Game.RefreshUI();
-		if(input != null && !GameApplication.isMobile()) input.setCursorCatched(menuMode == MenuMode.Hidden);
+		if(input != null && !(GameApplication.isMobile() && !input.usingGamepad)) input.setCursorCatched(menuMode == MenuMode.Hidden);
 
 		// Hide the map!
 		if(Game.instance.getShowingMenu()) {
