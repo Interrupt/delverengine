@@ -631,6 +631,8 @@ public class GlRenderer {
 			miniMap.setRegion(startX / mapWidth, startY / mapHeight, endX / mapWidth, endY / mapHeight);
 
 			float mapSize = 175f * Options.instance.uiSize * Game.getDynamicUiScale();
+            // If mobile, increase the map size a little bit
+            if(GameApplication.isMobile()) mapSize *= 1.15f;
 
 			uiBatch.begin();
 
