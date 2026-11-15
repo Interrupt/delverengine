@@ -1586,12 +1586,27 @@ public class GlRenderer {
 		//drawText("Entities rendered: " + drawnEntities, -camera2D.viewportWidth / 2 + healthSize / 2, -camera2D.viewportHeight / 2 + healthSize / 2, healthSize, Color.WHITE);
 
 		if(game.player.statusEffects != null && game.player.statusEffects.size > 0) {
+            float mobileUIOffset = 0;
+
+            if (GameApplication.isMobile()) {
+                float btnSize = Game.GetInventoryUiSize();
+                float gutterSize = Gdx.graphics.getWidth() * 0.02f;
+                mobileUIOffset = btnSize + gutterSize * 1.5f;
+            }
+
 			for(int i = 0; i < game.player.statusEffects.size; i++) {
 				StatusEffect effect = game.player.statusEffects.get(i);
 				if (effect.timer < 10000){
 					int rounded = (int) (effect.timer / 100f + 1);
-					if(rounded > 0)
-						drawText(rounded + " " + effect.name, -camera2D.viewportWidth / 2 + healthSize / 2, camera2D.viewportHeight / 2f - Game.GetUiSize() * 2.5f - (Game.GetUiSize() * 0.4f) * i, Game.GetUiSize() * 0.175f, Color.WHITE);
+					if(rounded > 0) {
+                        drawText(
+                            rounded + " " + effect.name,
+                            -camera2D.viewportWidth / 2 + healthSize / 2 + mobileUIOffset,
+                            camera2D.viewportHeight / 2f - Game.GetUiSize() * 2.5f - (Game.GetUiSize() * 0.4f) * i,
+                            Game.GetUiSize() * 0.175f,
+                            Color.WHITE
+                        );
+                    }
 				}
 				else {
 					drawText(effect.name, -camera2D.viewportWidth / 2 + healthSize / 2, camera2D.viewportHeight / 2f - Game.GetUiSize() * 2.5f - (Game.GetUiSize() * 0.4f) * i, Game.GetUiSize() * 0.175f, Color.WHITE);
