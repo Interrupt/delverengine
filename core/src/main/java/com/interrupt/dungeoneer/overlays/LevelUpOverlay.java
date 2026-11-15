@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -107,8 +108,13 @@ public class LevelUpOverlay extends WindowOverlay {
 		card.setBackground(cardBackground);
 		card.setTouchable(Touchable.enabled);
 
+        // We want to scale and rotate cards later
+        card.setTransform(true);
+        card.setOrigin(card.getWidth() / 2f, card.getHeight() / 2f);
+
         // Card horizontal location
         final int xLocation = (attributeNum * 120) - 8;
+        final int cardIndex = attributeNum;
 
         ClickListener cardClickListener = new ClickListener() {
             @Override
@@ -119,13 +125,13 @@ public class LevelUpOverlay extends WindowOverlay {
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                card.addAction(Actions.moveTo(xLocation, 8, 0.1f, Interpolation.pow2));
+                card.addAction(Actions.scaleBy(0.1f, 0.1f, 0.15f, Interpolation.smooth));
                 hoverLabel.setText(StringManager.get("screens.CharacterScreen.tooltips." + text.toLowerCase()));
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                card.addAction(Actions.moveTo(xLocation, 0, 0.1f, Interpolation.pow2));
+                card.addAction(Actions.scaleBy(-0.1f, -0.1f, 0.15f, Interpolation.smooth));
                 hoverLabel.setText("");
             }
         };
@@ -133,14 +139,28 @@ public class LevelUpOverlay extends WindowOverlay {
 		card.addAction(
             Actions.sequence(
                 Actions.hide(),
-                Actions.delay(0.15f + attributeNum * 0.6f),
-                Actions.moveTo(0, 0),
+                Actions.delay(0.15f + attributeNum * 0.2f),
                 Actions.moveTo(112.0f, -120.0f),
                 Actions.show(),
-                Actions.fadeIn(0.2f),
-                Actions.moveTo(xLocation, 0, 0.1f + attributeNum * 0.1f, Interpolation.exp5),
-                Actions.delay(0.01f + (2 - attributeNum) * 0.9f),
-                Actions.addListener(cardClickListener, false)
+                Actions.parallel(
+                    Actions.fadeIn(0.1f),
+                    Actions.moveTo(xLocation, 0, 0.15f, Interpolation.exp5),
+                    Actions.rotateBy(-3f + Game.rand.nextFloat() * 6f, 0.15f)
+                ),
+                Actions.addListener(cardClickListener, false),
+                // Let's pre-select the first card when using a gamepad
+                Actions.delay(0.2f),
+                Actions.addAction(new Action() {
+                    @Override
+                    public boolean act(float delta) {
+                        if(cardIndex == 0 && gamepadSelectionIndex == null) {
+                            if(Game.gamepadManager.controllerCount() > 0 && !Game.gamepadManager.controllerState.use) {
+                                gamepadSelectionIndex = 0;
+                            }
+                        }
+                        return true;
+                    }
+                })
             )
         );
 
