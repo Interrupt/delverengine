@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
-import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.Audio;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.GameManager;
@@ -296,10 +295,10 @@ public class GameOverScreen extends StatsScreen {
         dealtAchievements = true;
 
         if(gameOver) {
-            SteamApi.api.achieve("DIED");
+            Game.achievementManager.achieve("DIED");
         }
         else {
-            SteamApi.api.achieve("WON");
+            Game.achievementManager.achieve("WON");
         }
     }
 
